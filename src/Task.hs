@@ -16,5 +16,12 @@ instance FromJSON Task
 
 type Tasks = [Task]
 
-jsonToTasks :: ByteString -> Maybe Tasks
-jsonToTasks s = decode s :: Maybe Tasks
+deMaybe :: Maybe Tasks -> Tasks
+deMaybe (Just ts) = ts
+deMaybe Nothing = []
+
+jsonToTasks' :: ByteString -> Maybe Tasks
+jsonToTasks' s = decode s :: Maybe Tasks
+
+jsonToTasks :: ByteString -> Tasks
+jsonToTasks = deMaybe . jsonToTasks'
