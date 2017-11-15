@@ -4,6 +4,7 @@ module Lib (
 
 import Graphics.Vty
 
+draw :: Vty -> IO ()
 draw vty = do
      let title = string (defAttr ` withForeColor ` green) ("Taskell")
          img = title
