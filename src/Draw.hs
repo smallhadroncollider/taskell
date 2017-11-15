@@ -7,7 +7,7 @@ import Keyboard (isChar)
 import Task (Tasks, description)
 
 bullet :: String -> Image
-bullet s = string (defAttr ` withForeColor ` magenta) ("- " ++ s)
+bullet s = string (defAttr ` withForeColor ` magenta) ("• " ++ s)
 
 title = pad 0 0 0 1 (string (defAttr ` withForeColor ` green) "[Taskell]")
 
