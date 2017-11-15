@@ -41,6 +41,8 @@ packages:
 # (e.g., acme-missiles-0.3)
 extra-deps: 
   - vty-5.16
+  - aeson-1.2.3.0
+  - bytestring-0.10.8.1
 
 # Override default flag values for local packages and extra-deps
 flags: {}
