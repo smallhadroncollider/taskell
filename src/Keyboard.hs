@@ -16,5 +16,5 @@ sameKeyChar c Nothing = False
 
 -- is a given character the same as the key pressed
 isChar :: Char -> Event -> Bool
-isChar char (EvKey key modifer) = sameKeyChar char $ getKeyChar key
+isChar char (EvKey key _) = sameKeyChar char $ getKeyChar key
 isChar _ _ = False
