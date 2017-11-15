@@ -3,6 +3,7 @@ module Lib (
 ) where
 
 import Graphics.Vty
+import Keyboard
 
 draw :: Vty -> IO ()
 draw vty = do
@@ -13,7 +14,7 @@ draw vty = do
 
      e <- nextEvent vty
 
-     if (show e) == "EvKey (KChar 'q') []"
+     if isChar 'q' e 
          then shutdown vty
          else draw vty
 
