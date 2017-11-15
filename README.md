@@ -6,11 +6,7 @@ A CLI task manager, written in Haskell
 
 - `q`: quit
 
----
-
-## Plan
-
-### Storage
+## Storage
 
 Stores in a `taskell.json` file:
 
@@ -26,6 +22,10 @@ Stores in a `taskell.json` file:
     }
 ]
 ```
+
+---
+
+## Plan
 
 ### Controls
 
