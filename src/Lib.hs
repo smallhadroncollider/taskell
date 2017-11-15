@@ -5,21 +5,27 @@ module Lib (
 import Graphics.Vty
 import Keyboard
 
+-- draws the title
 pic :: Picture
-pic = picForImage img
-    where
-        title = string (defAttr ` withForeColor ` green) ("[Taskell]")
-        img = title
+pic = picForImage title
+    where title = string (defAttr ` withForeColor ` green) ("[Taskell]")
 
+-- is it a quit event
+quit :: Event -> Bool
+quit = isChar 'q'
+
+-- whether to quit or not
 next :: Event -> (Vty -> IO ())
-next e = if isChar 'q' e then shutdown else draw
+next e = if quit e then shutdown else draw
 
+-- the draw loop
 draw :: Vty -> IO ()
 draw vty = do
      update vty pic
      e <- nextEvent vty
      next e vty
 
+-- setup vty and start the draw loop
 render :: IO ()
 render = do
      cfg <- standardIOConfig
