@@ -4,17 +4,36 @@ module Draw (
 
 import Graphics.Vty
 import Keyboard (isChar)
-import Task (Tasks, description)
+import Task (Task, Tasks, description, completed)
 
-bullet :: String -> Image
-bullet s = string (defAttr ` withForeColor ` magenta) ("• " ++ s)
+-- styles
+attrTask :: Attr
+attrTask = defAttr `withForeColor` magenta
 
-title = pad 0 0 0 1 (string (defAttr ` withForeColor ` green) "[Taskell]")
+attrDone :: Attr
+attrDone = defAttr `withStyle` dim 
 
--- draws the title
+attrTitle :: Attr
+attrTitle = defAttr `withForeColor` green
+
+marginBottom :: Image -> Image
+marginBottom = pad 0 0 0 1
+
+-- style a task
+bullet :: Task -> Image
+bullet t = string style ("• " ++ s ++ tick)
+    where
+        s = description t
+        tick = if completed t then " ✓" else ""
+        style = if completed t then attrDone else attrTask
+
+-- creates the title element
+title = marginBottom $ string attrTitle "[Taskell]"
+
+-- draws the screen
 pic :: Tasks -> Picture
 pic ts = picForImage $ title <-> imgs
-    where imgs = vertCat $ map (bullet . description) ts
+    where imgs = vertCat $ map bullet ts
 
 -- is it a quit event
 quit :: Event -> Bool
