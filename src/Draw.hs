@@ -52,6 +52,6 @@ draw vty ts = do
 -- setup vty and start the draw loop
 render :: Tasks -> IO ()
 render ts = do
-     cfg <- standardIOConfig
-     vty <- mkVty cfg
-     draw vty ts
+    cfg <- standardIOConfig
+    vty <- mkVty cfg
+    draw vty ts
