@@ -6,6 +6,8 @@ import Graphics.Vty
 import Keyboard (isChar)
 import Task (Task, Tasks, description, completed)
 import State
+import Data.Sequence (mapWithIndex) 
+import Data.Foldable (toList)
 
 -- styles
 attrTask :: Attr
@@ -14,6 +16,9 @@ attrTask = defAttr `withForeColor` magenta
 attrDone :: Attr
 attrDone = defAttr `withStyle` dim 
 
+attrCurrent :: Attr
+attrCurrent = defAttr `withForeColor` blue
+
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
 
@@ -21,12 +26,13 @@ marginBottom :: Image -> Image
 marginBottom = pad 0 0 0 1
 
 -- style a task
-bullet :: Task -> Image
-bullet t = string style ("• " ++ s ++ tick)
+bullet :: Int -> Int -> Task -> Image
+bullet cur i t = string style' ("• " ++ s ++ tick)
     where
         s = description t
         tick = if completed t then " ✓" else ""
         style = if completed t then attrDone else attrTask
+        style' = if cur == i then attrCurrent else style
 
 -- creates the title element
 title = marginBottom $ string attrTitle "[Taskell]"
@@ -34,7 +40,10 @@ title = marginBottom $ string attrTitle "[Taskell]"
 -- draws the screen
 pic :: State -> Picture
 pic state = picForImage $ title <-> imgs
-    where imgs = vertCat $ map bullet $ tasks state
+    where
+        bullet' = bullet $ current state
+        imgs = vertCat $ toList $ mapWithIndex bullet' $ tasks state
+
 
 -- is it a quit event
 quit :: Event -> Bool
