@@ -18,6 +18,7 @@ library
   exposed-modules:     Draw
                      , Keyboard
                      , Task
+                     , State
   build-depends:       base >= 4.7 && < 5
                      , vty
                      , bytestring

@@ -5,6 +5,7 @@ module Draw (
 import Graphics.Vty
 import Keyboard (isChar)
 import Task (Task, Tasks, description, completed)
+import State
 
 -- styles
 attrTask :: Attr
@@ -31,27 +32,27 @@ bullet t = string style ("• " ++ s ++ tick)
 title = marginBottom $ string attrTitle "[Taskell]"
 
 -- draws the screen
-pic :: Tasks -> Picture
-pic ts = picForImage $ title <-> imgs
-    where imgs = vertCat $ map bullet ts
+pic :: State -> Picture
+pic state = picForImage $ title <-> imgs
+    where imgs = vertCat $ map bullet $ tasks state
 
 -- is it a quit event
 quit :: Event -> Bool
 quit = isChar 'q'
 
 -- the draw loop
-draw :: Vty -> Tasks -> IO ()
-draw vty ts = do
-     update vty $ pic ts
+draw :: Vty -> State -> IO ()
+draw vty state = do
+     update vty $ pic state
      e <- nextEvent vty
      
      if quit e
          then shutdown vty
-         else draw vty ts
+         else draw vty state
 
 -- setup vty and start the draw loop
-render :: Tasks -> IO ()
-render ts = do
+render :: State -> IO ()
+render state = do
     cfg <- standardIOConfig
     vty <- mkVty cfg
-    draw vty ts
+    draw vty state

@@ -5,8 +5,10 @@ import Data.ByteString.Lazy (readFile)
 
 import Draw (render)
 import Task (jsonToTasks)
+import State
 
 main :: IO ()
 main = do
     x <- readFile "taskell.json" 
-    render $ jsonToTasks x
+    let ts = jsonToTasks x
+    render (State { tasks = ts, current = 0 }) 
