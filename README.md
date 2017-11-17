@@ -2,6 +2,9 @@
 
 A CLI task manager, written in Haskell
 
+- Tasks stored in a `json` file in the current working directory - for easy version control
+- Uses `vim` style key-bindings
+
 ## Controls
 
 - `q`: quit
@@ -37,9 +40,13 @@ Stores in a local `taskell.json` file:
 - ~`<space>` to mark completed~
 - add tasks using `a`
 - edit tasks using `e`
-- hide/show completed using `h`
+- ~hide/show completed using `.`~
 - save changes to `taskell.json`
 - create `taskell.json` if it doesn't exist
+
+#### Known Bugs
+
+- up/down/space all break when hiding completed
 
 ### 0.2
 

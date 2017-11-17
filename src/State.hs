@@ -6,6 +6,7 @@ import Data.Sequence (mapWithIndex)
 data State = State {
     tasks :: Tasks,
     current :: Int,
+    showCompleted :: Bool,
     running :: Bool
 } deriving (Show)
 
@@ -39,6 +40,9 @@ mapCompleted s = mapWithIndex set (tasks s)
 
 setCompleted :: StateUpdate
 setCompleted s = s { tasks = (mapCompleted s) }
+
+toggleShowCompleted :: StateUpdate
+toggleShowCompleted s = s { showCompleted = (not (showCompleted s)) }
 
 setTasks :: State -> Tasks -> State
 setTasks s ts = s { tasks = ts }

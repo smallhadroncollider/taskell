@@ -12,7 +12,8 @@ fns = [
         (([isChar 'q']), quit),
         ([isUp, isChar 'k'], previous),
         ([isDown, isChar 'j'], next),
-        ([isChar ' '], setCompleted)
+        ([isChar ' '], setCompleted),
+        ([isChar '.'], toggleShowCompleted)
     ]
 
 -- check if any of the KeyChecks for an Action pass

@@ -5,7 +5,8 @@ module Draw (
 import Graphics.Vty
 import Task (Task, Tasks, description, completed)
 import State
-import Data.Sequence (mapWithIndex) 
+import Prelude hiding (filter)
+import Data.Sequence (mapWithIndex, filter) 
 import Data.Foldable (toList)
 import Actions
 
@@ -37,12 +38,18 @@ bullet cur i t = string style' ("• " ++ s ++ tick)
 -- creates the title element
 title = marginBottom $ string attrTitle "[Taskell]"
 
+getTasks :: State -> Tasks
+getTasks s = filter show (tasks s)
+    where
+        sh = showCompleted s
+        show t = if sh then True else (not (completed t))
+
 -- draws the screen
 pic :: State -> Picture
 pic state = picForImage $ title <-> imgs
     where
         bullet' = bullet $ current state
-        imgs = vertCat $ toList $ mapWithIndex bullet' $ tasks state
+        imgs = vertCat $ toList $ mapWithIndex bullet' $ getTasks state
 
 -- the draw loop
 draw :: Vty -> State -> IO ()

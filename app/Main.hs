@@ -15,5 +15,6 @@ main = do
     render (State {
         tasks = ts,
         current = 0,
-        running = True
+        running = True,
+        showCompleted = True
     }) 
