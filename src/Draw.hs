@@ -49,7 +49,7 @@ draw :: Vty -> State -> IO ()
 draw vty state = do
      update vty $ pic state
      e <- nextEvent vty
-     let state' = event state e
+     let state' = event e state
      
      if running state'
         then draw vty state'
