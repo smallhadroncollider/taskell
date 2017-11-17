@@ -11,7 +11,7 @@ A CLI task manager, written in Haskell
 
 ## Storage
 
-Stores in a `taskell.json` file:
+Stores in a local `taskell.json` file:
 
 ```json
 [
@@ -28,10 +28,20 @@ Stores in a `taskell.json` file:
 
 ---
 
-## Plan
+## Roadmap
 
-### Controls
+### 0.1
 
-- `a`: add todo
-- `e`: edit todo
-- `h`: hide/show completed
+- ~`q` to quit~
+- ~`j`/`k` to move up and down~
+- ~`<space>` to mark completed~
+- add tasks using `a`
+- edit tasks using `e`
+- hide/show completed using `h`
+- save changes to `taskell.json`
+- create `taskell.json` if it doesn't exist
+
+### 0.2
+
+- add tags/labels to tasks
+- filter by tag/label
