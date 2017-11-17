@@ -11,4 +11,9 @@ main :: IO ()
 main = do
     x <- readFile "taskell.json" 
     let ts = jsonToTasks x
-    render (State { tasks = ts, current = 0 }) 
+
+    render (State {
+        tasks = ts,
+        current = 0,
+        running = True
+    }) 

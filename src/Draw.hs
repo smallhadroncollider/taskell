@@ -3,11 +3,11 @@ module Draw (
 ) where
 
 import Graphics.Vty
-import Keyboard (isChar)
 import Task (Task, Tasks, description, completed)
 import State
 import Data.Sequence (mapWithIndex) 
 import Data.Foldable (toList)
+import Actions
 
 -- styles
 attrTask :: Attr
@@ -44,20 +44,16 @@ pic state = picForImage $ title <-> imgs
         bullet' = bullet $ current state
         imgs = vertCat $ toList $ mapWithIndex bullet' $ tasks state
 
-
--- is it a quit event
-quit :: Event -> Bool
-quit = isChar 'q'
-
 -- the draw loop
 draw :: Vty -> State -> IO ()
 draw vty state = do
      update vty $ pic state
      e <- nextEvent vty
+     let state' = event state e
      
-     if quit e
-         then shutdown vty
-         else draw vty state
+     if running state'
+        then draw vty state'
+        else shutdown vty
 
 -- setup vty and start the draw loop
 render :: State -> IO ()
