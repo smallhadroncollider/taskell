@@ -11,7 +11,8 @@ fns :: [Action]
 fns = [
         (([isChar 'q']), quit),
         ([isUp, isChar 'k'], previous),
-        ([isDown, isChar 'j'], next)
+        ([isDown, isChar 'j'], next),
+        ([isChar ' '], setCompleted)
     ]
 
 -- check if any of the KeyChecks for an Action pass

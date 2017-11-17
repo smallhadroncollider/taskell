@@ -7,6 +7,7 @@ A CLI task manager, written in Haskell
 - `q`: quit
 - `j`/`Down`: move down
 - `k`/`Up`: move up
+- `Space`: mark as complete (currently not persisted)
 
 ## Storage
 
@@ -34,4 +35,3 @@ Stores in a `taskell.json` file:
 - `a`: add todo
 - `e`: edit todo
 - `h`: hide/show completed
-- `Space`: mark as complete
