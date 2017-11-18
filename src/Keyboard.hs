@@ -1,13 +1,10 @@
 module Keyboard (
-    KeyCheck,
     isChar,
     isUp,
     isDown
 ) where
 
 import Graphics.Vty.Input.Events
-
-type KeyCheck = Event -> Bool
 
 -- return the Char pressed if there was one
 getKeyChar :: Key -> Maybe Char
@@ -20,11 +17,11 @@ sameKeyChar c (Just c') = c == c'
 sameKeyChar c Nothing = False
 
 -- is a given character the same as the key pressed
-isChar :: Char -> KeyCheck
+isChar :: Char -> Event -> Bool
 isChar char (EvKey key _) = sameKeyChar char $ getKeyChar key
 isChar _ _ = False
 
-isUp :: KeyCheck
+isUp :: Event -> Bool
 isUp (EvKey key _) = isUp' key
     where
         isUp' :: Key -> Bool
@@ -32,7 +29,7 @@ isUp (EvKey key _) = isUp' key
         isUp' _ = False
 isUp _ = False
 
-isDown :: KeyCheck
+isDown :: Event -> Bool
 isDown (EvKey key _) = isDown' key
     where
         isDown' :: Key -> Bool

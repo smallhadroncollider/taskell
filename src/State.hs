@@ -10,8 +10,6 @@ data State = State {
     running :: Bool
 } deriving (Show)
 
-type StateUpdate = State -> State
-
 setCurrent :: State -> Int -> State
 setCurrent s i = s { current = i }
 
@@ -24,10 +22,10 @@ index i s = s { current = x }
         inc = ((current s) + i)
         x = inc `mod` count s
 
-next :: StateUpdate
+next :: State -> State
 next = index 1 
 
-previous :: StateUpdate
+previous :: State -> State
 previous = index (-1)
 
 -- not terribly efficient
@@ -38,14 +36,14 @@ mapCompleted s = mapWithIndex set (tasks s)
         i = current s
         set = \cur t -> if cur == i then t { completed = (not (completed t)) } else t
 
-setCompleted :: StateUpdate
+setCompleted :: State -> State
 setCompleted s = s { tasks = (mapCompleted s) }
 
-toggleShowCompleted :: StateUpdate
+toggleShowCompleted :: State -> State
 toggleShowCompleted s = s { showCompleted = (not (showCompleted s)) }
 
 setTasks :: State -> Tasks -> State
 setTasks s ts = s { tasks = ts }
 
-quit :: StateUpdate
+quit :: State -> State
 quit s = s { running = False }
