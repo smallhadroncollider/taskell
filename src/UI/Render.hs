@@ -48,6 +48,5 @@ draw vty state = do
 -- setup vty and start the draw loop
 render :: State -> IO ()
 render state = do
-    cfg <- standardIOConfig
-    vty <- mkVty cfg
+    vty <- standardIOConfig >>= mkVty
     draw vty state
