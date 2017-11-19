@@ -21,12 +21,12 @@ Stores in a local `taskell.json` file:
 ```json
 [
     {
-        "description": "Do this",
         "completed": true,
+        "description": "Do this"
     },
     {
-        "description": "Do this",
         "completed": false,
+        "description": "Do that"
     }
 ]
 ```
