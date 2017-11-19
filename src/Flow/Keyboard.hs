@@ -1,7 +1,9 @@
 module Flow.Keyboard (
     isChar,
     isUp,
-    isDown
+    isDown,
+    isLeft,
+    isRight
 ) where
 
 import Graphics.Vty.Input.Events
@@ -34,4 +36,16 @@ isUp e = case toKey e of
 isDown :: Event -> Bool
 isDown e = case toKey e of
     (Just KDown) -> True
+    _ -> False
+
+-- was the left key pressed
+isLeft :: Event -> Bool
+isLeft e = case toKey e of 
+    (Just KLeft) -> True
+    _ -> False
+
+-- was the right key pressed
+isRight :: Event -> Bool
+isRight e = case toKey e of
+    (Just KRight) -> True
     _ -> False

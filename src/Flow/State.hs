@@ -6,7 +6,8 @@ import Data.Sequence (mapWithIndex)
 data State = State {
     tasks :: Tasks,
     current :: Int,
-    running :: Bool
+    running :: Bool,
+    list :: Int
 } deriving (Show)
 
 initial :: State
@@ -33,6 +34,10 @@ next = index 1
 
 previous :: State -> State
 previous = index (-1)
+
+switch :: State -> State
+switch s = s { list = l }
+    where l = if list s == 1 then 0 else 1
 
 -- not terribly efficient
 -- goes over ever item
