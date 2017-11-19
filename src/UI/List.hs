@@ -2,6 +2,7 @@ module UI.List where
 
 import Data.Sequence (mapWithIndex) 
 import Data.Foldable (toList)
+import Data.Sequence (Seq)
 import Graphics.Vty
 
 import UI.Task (present)
@@ -13,6 +14,8 @@ attrTitle = defAttr `withForeColor` green
 title :: String -> Image
 title t = string attrTitle t
 
-list :: (Tasks -> Tasks) -> String -> Tasks -> Image
-list fn name tasks = (title name) <-> items
-    where items = vertCat $ toList $ mapWithIndex present $ fn $ tasks
+tasksToImage :: Seq Image -> Image
+tasksToImage = vertCat . toList 
+
+list :: String -> Tasks -> Image
+list name = (<->) (title name) . tasksToImage . mapWithIndex present

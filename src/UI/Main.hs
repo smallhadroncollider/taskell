@@ -23,5 +23,5 @@ pic :: State -> Picture
 pic state = picForImage $ title <-> todo <|> marginLeft done
     where
         ts = tasks state
-        todo = list incomplete "To Do" ts
-        done = list complete "Done" ts
+        todo = list "To Do" $ incomplete ts
+        done = list "Done" $ complete ts
