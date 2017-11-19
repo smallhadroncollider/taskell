@@ -31,6 +31,12 @@ Stores in a local `taskell.json` file:
 
 ---
 
+## Known Bugs
+
+- up/down/space all break when hiding completed
+
+---
+
 ## Roadmap
 
 ### 0.1
@@ -43,10 +49,6 @@ Stores in a local `taskell.json` file:
 - ~hide/show completed using `.`~
 - save changes to `taskell.json`
 - ~create `taskell.json` if it doesn't exist~
-
-#### Known Bugs
-
-- up/down/space all break when hiding completed
 
 ### 0.2
 
