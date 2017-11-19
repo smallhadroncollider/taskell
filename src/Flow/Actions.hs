@@ -9,5 +9,4 @@ event e | isChar 'q' e = quit
         | isUp e || isChar 'k' e = previous
         | isDown e || isChar 'j' e =  next
         | isChar ' ' e = setCompleted
-        | isChar '.' e = toggleShowCompleted
         | otherwise = id

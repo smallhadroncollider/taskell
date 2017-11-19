@@ -14,10 +14,8 @@ attrCurrent :: Attr
 attrCurrent = defAttr `withForeColor` blue
 
 -- style a task
-present :: Int -> Int -> Task -> Image
-present cur i t = string style' ("• " ++ s ++ tick)
+present :: Int -> Task -> Image
+present i t = string style ("• " ++ s)
     where
         s = description t
-        tick = if completed t then " ✓" else ""
         style = if completed t then attrDone else attrTask
-        style' = if cur == i then attrCurrent else style

@@ -21,5 +21,8 @@ type Tasks = Seq Task
 empty :: Tasks
 empty = fromList []
 
-filterCompleted :: Tasks -> Tasks 
-filterCompleted = filter (not . completed)
+complete :: Tasks -> Tasks 
+complete = filter completed
+
+incomplete :: Tasks -> Tasks 
+incomplete = filter (not . completed)

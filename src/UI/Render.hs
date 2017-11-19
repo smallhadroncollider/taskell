@@ -2,29 +2,12 @@ module UI.Render (
     render
 ) where
 
-import Prelude hiding (filter)
-import Data.Sequence (mapWithIndex, filter) 
-import Data.Foldable (toList)
-import Graphics.Vty
+import Graphics.Vty (Vty, standardIOConfig, mkVty, nextEvent, update, shutdown)
 
-import Flow.State
-import Flow.Actions
-import Data.Taskell.Task (Task, Tasks, description, completed, filterCompleted)
+import Flow.State (State, tasks, running)
+import Flow.Actions (event)
 import Persistence.Taskell (writeJSON)
-import UI.Task (present)
-import UI.Main (title)
-
--- filter out completed if option set
-getTasks :: State -> Tasks
-getTasks s = if showCompleted s then ts else filterCompleted ts
-    where ts = tasks s
-
--- draws the screen
-pic :: State -> Picture
-pic state = picForImage $ title <-> imgs
-    where
-        bullet' = present $ current state
-        imgs = vertCat $ toList $ mapWithIndex bullet' $ getTasks state
+import UI.Main (pic)
 
 -- the draw loop
 draw :: Vty -> State -> IO ()

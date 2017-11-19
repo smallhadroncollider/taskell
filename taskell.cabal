@@ -23,6 +23,7 @@ library
                      , Flow.State
                      , Persistence.Taskell
                      , UI.CLI
+                     , UI.List
                      , UI.Main
                      , UI.Render
                      , UI.Task
