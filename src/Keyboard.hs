@@ -21,18 +21,18 @@ isChar :: Char -> Event -> Bool
 isChar char (EvKey key _) = sameKeyChar char $ getKeyChar key
 isChar _ _ = False
 
+-- was the up key pressed
 isUp :: Event -> Bool
-isUp (EvKey key _) = isUp' key
-    where
-        isUp' :: Key -> Bool
-        isUp' KUp = True
-        isUp' _ = False
+isUp (EvKey key _) =
+    case key of
+        KUp -> True
+        _ -> False
 isUp _ = False
 
+-- was the down key pressed
 isDown :: Event -> Bool
-isDown (EvKey key _) = isDown' key
-    where
-        isDown' :: Key -> Bool
-        isDown' KDown = True
-        isDown' _ = False
+isDown (EvKey key _) =
+    case key of
+        KDown -> True
+        _ -> False
 isDown _ = False

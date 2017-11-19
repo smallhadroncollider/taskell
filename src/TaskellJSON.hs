@@ -12,9 +12,7 @@ path :: FilePath
 path = "taskell.json"
 
 exists :: IO Bool
-exists = do
-    go <- doesFileExist path >>= promptCreate
-    if go then return True else return False
+exists = doesFileExist path >>= promptCreate >>= return
 
 -- prompt whether to create taskell.json
 promptCreate :: Bool -> IO Bool
@@ -34,19 +32,10 @@ writeJSON tasks = BS.writeFile "taskell.json" $ encodePretty tasks
 
 -- reads json file
 readJSON :: IO Tasks
-readJSON = do
-    x <- BS.readFile path 
-    return $ jsonToTasks x
-
--- return tasks or empty list
-deMaybe :: Maybe Tasks -> Tasks
-deMaybe (Just ts) = ts
-deMaybe Nothing = empty 
-
--- returns a Maybe
-jsonToTasks' :: BS.ByteString -> Maybe Tasks
-jsonToTasks' s = decode s :: Maybe Tasks
+readJSON = BS.readFile path >>= return . jsonToTasks
 
 -- returns tasks or an empty list
 jsonToTasks :: BS.ByteString -> Tasks
-jsonToTasks = deMaybe . jsonToTasks'
+jsonToTasks s = case (decode s :: Maybe Tasks) of
+    Just ts -> ts
+    Nothing -> empty

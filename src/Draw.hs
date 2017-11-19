@@ -9,7 +9,7 @@ import Graphics.Vty
 
 import State
 import Actions
-import Task (Task, Tasks, description, completed)
+import Task (Task, Tasks, description, completed, filterCompleted)
 import TaskellJSON (writeJSON)
 
 -- styles
@@ -40,11 +40,10 @@ bullet cur i t = string style' ("• " ++ s ++ tick)
 -- creates the title element
 title = marginBottom $ string attrTitle "[Taskell]"
 
+-- filter out completed if option set
 getTasks :: State -> Tasks
-getTasks s = filter show (tasks s)
-    where
-        sh = showCompleted s
-        show t = if sh then True else (not (completed t))
+getTasks s = if showCompleted s then ts else filterCompleted ts
+    where ts = tasks s
 
 -- draws the screen
 pic :: State -> Picture
@@ -56,16 +55,19 @@ pic state = picForImage $ title <-> imgs
 -- the draw loop
 draw :: Vty -> State -> IO ()
 draw vty state = do
-     update vty $ pic state
-     e <- nextEvent vty
+    update vty $ pic state
+    e <- nextEvent vty
+    
+    -- get updated version of state
+    let state' = event e state
 
-     let state' = event e state
-
-     if tasks state == tasks state'
-         then return ()
-         else writeJSON $ tasks state'
-     
-     if running state'
+    -- update json if tasks changed
+    if tasks state == tasks state'
+        then return ()
+        else writeJSON $ tasks state'
+    
+    -- if event wasn't quit keep going, otherwise shutdown
+    if running state'
         then draw vty state'
         else shutdown vty
 

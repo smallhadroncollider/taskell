@@ -4,7 +4,8 @@ module Task where
 
 import GHC.Generics
 import Data.Aeson
-import Data.Sequence (Seq, fromList)
+import Prelude hiding (filter)
+import Data.Sequence (Seq, fromList, filter)
 
 data Task = Task {
     description :: String,
@@ -19,3 +20,6 @@ type Tasks = Seq Task
 
 empty :: Tasks
 empty = fromList []
+
+filterCompleted :: Tasks -> Tasks 
+filterCompleted = filter (not . completed)
