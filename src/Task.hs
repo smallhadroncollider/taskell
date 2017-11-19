@@ -4,8 +4,8 @@ module Task where
 
 import GHC.Generics
 import Data.Aeson
-import Data.ByteString.Lazy
-import Data.Sequence
+import Data.ByteString.Lazy (ByteString) 
+import Data.Sequence (Seq, fromList)
 
 data Task = Task {
     description :: String,
@@ -18,10 +18,13 @@ instance FromJSON Task
 -- a list of tasks
 type Tasks = Seq Task
 
+empty :: Tasks
+empty = fromList []
+
 -- return tasks or empty list
 deMaybe :: Maybe Tasks -> Tasks
 deMaybe (Just ts) = ts
-deMaybe Nothing = fromList []
+deMaybe Nothing = empty 
 
 -- returns a Maybe
 jsonToTasks' :: ByteString -> Maybe Tasks

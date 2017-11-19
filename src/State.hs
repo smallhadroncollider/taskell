@@ -1,6 +1,6 @@
 module State where
 
-import Task (Tasks, completed)
+import Task (Tasks, completed, empty)
 import Data.Sequence (mapWithIndex) 
 
 data State = State {
@@ -9,6 +9,14 @@ data State = State {
     showCompleted :: Bool,
     running :: Bool
 } deriving (Show)
+
+initial :: State
+initial = (State {
+        tasks = empty,
+        current = 0,
+        running = True,
+        showCompleted = True
+    }) 
 
 setCurrent :: State -> Int -> State
 setCurrent s i = s { current = i }
