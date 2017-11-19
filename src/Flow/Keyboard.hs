@@ -1,4 +1,4 @@
-module Keyboard (
+module Flow.Keyboard (
     isChar,
     isUp,
     isDown

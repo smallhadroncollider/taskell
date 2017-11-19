@@ -15,13 +15,17 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Draw
-                     , Actions
-                     , Keyboard
-                     , Task
-                     , State
-                     , CLI
-                     , TaskellJSON
+                     , src/UI
+                     , src/Data
+  exposed-modules:     Data.Taskell.Task
+                     , Flow.Actions
+                     , Flow.Keyboard
+                     , Flow.State
+                     , Persistence.Taskell
+                     , UI.CLI
+                     , UI.Main
+                     , UI.Render
+                     , UI.Task
   build-depends:       base >= 4.7 && < 5
                      , vty
                      , bytestring

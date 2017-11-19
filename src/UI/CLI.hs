@@ -1,4 +1,4 @@
-module CLI where
+module UI.CLI where
 
 import System.IO (stdout, hFlush)
 

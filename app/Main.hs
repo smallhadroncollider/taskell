@@ -1,8 +1,8 @@
 module Main where
 
-import Draw (render)
-import State (initial, setTasks)
-import TaskellJSON (exists, readJSON)
+import UI.Render (render)
+import Flow.State (initial, setTasks)
+import Persistence.Taskell (exists, readJSON)
 
 import Data.Bool
 

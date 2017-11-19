@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Task where
+module Data.Taskell.Task where
 
 import GHC.Generics
 import Data.Aeson

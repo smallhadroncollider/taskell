@@ -1,4 +1,4 @@
-module Draw (
+module UI.Render (
     render
 ) where
 
@@ -7,38 +7,12 @@ import Data.Sequence (mapWithIndex, filter)
 import Data.Foldable (toList)
 import Graphics.Vty
 
-import State
-import Actions
-import Task (Task, Tasks, description, completed, filterCompleted)
-import TaskellJSON (writeJSON)
-
--- styles
-attrTask :: Attr
-attrTask = defAttr `withForeColor` magenta
-
-attrDone :: Attr
-attrDone = defAttr `withStyle` dim 
-
-attrCurrent :: Attr
-attrCurrent = defAttr `withForeColor` blue
-
-attrTitle :: Attr
-attrTitle = defAttr `withForeColor` green
-
-marginBottom :: Image -> Image
-marginBottom = pad 0 0 0 1
-
--- style a task
-bullet :: Int -> Int -> Task -> Image
-bullet cur i t = string style' ("• " ++ s ++ tick)
-    where
-        s = description t
-        tick = if completed t then " ✓" else ""
-        style = if completed t then attrDone else attrTask
-        style' = if cur == i then attrCurrent else style
-
--- creates the title element
-title = marginBottom $ string attrTitle "[Taskell]"
+import Flow.State
+import Flow.Actions
+import Data.Taskell.Task (Task, Tasks, description, completed, filterCompleted)
+import Persistence.Taskell (writeJSON)
+import UI.Task (present)
+import UI.Main (title)
 
 -- filter out completed if option set
 getTasks :: State -> Tasks
@@ -49,7 +23,7 @@ getTasks s = if showCompleted s then ts else filterCompleted ts
 pic :: State -> Picture
 pic state = picForImage $ title <-> imgs
     where
-        bullet' = bullet $ current state
+        bullet' = present $ current state
         imgs = vertCat $ toList $ mapWithIndex bullet' $ getTasks state
 
 -- the draw loop

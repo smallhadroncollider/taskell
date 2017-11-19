@@ -1,12 +1,12 @@
-module TaskellJSON where
+module Persistence.Taskell where
 
 import System.Directory
 import Data.Aeson
 import Data.Aeson.Encode.Pretty
 import qualified Data.ByteString.Lazy as BS
 
-import CLI (promptYN)
-import Task (Tasks, empty)
+import UI.CLI (promptYN)
+import Data.Taskell.Task (Tasks, empty)
 
 path :: FilePath
 path = "taskell.json"

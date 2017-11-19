@@ -1,6 +1,6 @@
-module State where
+module Flow.State where
 
-import Task (Tasks, completed, empty)
+import Data.Taskell.Task (Tasks, completed, empty)
 import Data.Sequence (mapWithIndex) 
 
 data State = State {

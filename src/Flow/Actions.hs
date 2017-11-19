@@ -1,8 +1,8 @@
-module Actions (event) where
+module Flow.Actions (event) where
 
-import State
 import Graphics.Vty.Input.Events
-import Keyboard
+import Flow.State
+import Flow.Keyboard
 
 event :: Event -> State -> State
 event e | isChar 'q' e = quit
