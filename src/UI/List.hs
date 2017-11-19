@@ -11,11 +11,21 @@ import Data.Taskell.Task (Tasks)
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
 
+attrNoItems :: Attr
+attrNoItems = defAttr `withStyle` dim 
+
 title :: String -> Image
 title t = string attrTitle t
+
+noItems :: Image
+noItems = string attrNoItems "No items"
 
 tasksToImage :: Seq Image -> Image
 tasksToImage = vertCat . toList 
 
+mapTasks :: Tasks -> Image
+mapTasks = tasksToImage . mapWithIndex present
+
 list :: String -> Tasks -> Image
-list name = (<->) (title name) . tasksToImage . mapWithIndex present
+list name tasks = (title name) <-> items
+    where items = if length tasks /= 0 then mapTasks tasks else noItems 
