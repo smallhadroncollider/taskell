@@ -2,13 +2,15 @@ module Draw (
     render
 ) where
 
-import Graphics.Vty
-import Task (Task, Tasks, description, completed)
-import State
 import Prelude hiding (filter)
 import Data.Sequence (mapWithIndex, filter) 
 import Data.Foldable (toList)
+import Graphics.Vty
+
+import State
 import Actions
+import Task (Task, Tasks, description, completed)
+import TaskellJSON (writeJSON)
 
 -- styles
 attrTask :: Attr
@@ -56,7 +58,12 @@ draw :: Vty -> State -> IO ()
 draw vty state = do
      update vty $ pic state
      e <- nextEvent vty
+
      let state' = event e state
+
+     if tasks state == tasks state'
+         then return ()
+         else writeJSON $ tasks state'
      
      if running state'
         then draw vty state'

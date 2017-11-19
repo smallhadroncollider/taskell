@@ -1,22 +1,22 @@
 [
     {
-        "description": "Do this",
-        "completed": true
+        "completed": false,
+        "description": "Do this"
     },
     {
-        "description": "Do that",
-        "completed": false
+        "completed": false,
+        "description": "Do that"
     },
     {
-        "description": "Do other thing",
-        "completed": true
+        "completed": false,
+        "description": "Do other thing"
     },
     {
-        "description": "Do that other thing",
-        "completed": false
+        "completed": true,
+        "description": "Do that other thing"
     },
     {
-        "description": "Do this other thing",
-        "completed": false
+        "completed": false,
+        "description": "Do this other thing"
     }
 ]

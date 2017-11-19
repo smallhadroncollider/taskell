@@ -47,7 +47,7 @@ Stores in a local `taskell.json` file:
 - add tasks using `a`
 - edit tasks using `e`
 - ~hide/show completed using `.`~
-- save changes to `taskell.json`
+- ~save changes to `taskell.json`~
 - ~create `taskell.json` if it doesn't exist~
 
 ### 0.2
