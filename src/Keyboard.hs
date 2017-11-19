@@ -6,9 +6,13 @@ module Keyboard (
 
 import Graphics.Vty.Input.Events
 
+toKey :: Event -> Maybe Key
+toKey (EvKey key _) = Just key 
+toKey _ = Nothing
+
 -- return the Char pressed if there was one
-getKeyChar :: Key -> Maybe Char
-getKeyChar (KChar char) = Just char
+getKeyChar :: Maybe Key -> Maybe Char
+getKeyChar (Just (KChar char)) = Just char
 getKeyChar _ = Nothing 
 
 -- is a given Char the same as a Maybe Char
@@ -18,21 +22,16 @@ sameKeyChar c Nothing = False
 
 -- is a given character the same as the key pressed
 isChar :: Char -> Event -> Bool
-isChar char (EvKey key _) = sameKeyChar char $ getKeyChar key
-isChar _ _ = False
+isChar char = sameKeyChar char . getKeyChar . toKey
 
 -- was the up key pressed
 isUp :: Event -> Bool
-isUp (EvKey key _) =
-    case key of
-        KUp -> True
-        _ -> False
-isUp _ = False
+isUp e = case toKey e of 
+    (Just KUp) -> True
+    _ -> False
 
 -- was the down key pressed
 isDown :: Event -> Bool
-isDown (EvKey key _) =
-    case key of
-        KDown -> True
-        _ -> False
-isDown _ = False
+isDown e = case toKey e of
+    (Just KDown) -> True
+    _ -> False
