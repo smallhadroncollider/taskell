@@ -1,4 +1,4 @@
-module UI.Render (
+module Render (
     render
 ) where
 
@@ -10,8 +10,8 @@ import Persistence.Taskell (writeJSON)
 import UI.Main (pic)
 
 -- the draw loop
-draw :: Vty -> State -> IO ()
-draw vty state = do
+loop :: Vty -> State -> IO ()
+loop vty state = do
     update vty $ pic state
     e <- nextEvent vty
     
@@ -25,11 +25,11 @@ draw vty state = do
     
     -- if event wasn't quit keep going, otherwise shutdown
     if running state'
-        then draw vty state'
+        then loop vty state'
         else shutdown vty
 
--- setup vty and start the draw loop
+-- setup vty and start the loop
 render :: State -> IO ()
 render state = do
     vty <- standardIOConfig >>= mkVty
-    draw vty state
+    loop vty state

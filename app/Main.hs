@@ -1,6 +1,6 @@
 module Main where
 
-import UI.Render (render)
+import Render (render)
 import Flow.State (initial, setTasks)
 import Persistence.Taskell (exists, readJSON)
 
