@@ -10,8 +10,8 @@ A CLI task manager, written in Haskell
 - `q`: quit
 - `j`/`Down`: move down
 - `k`/`Up`: move up
-- `h`/`Left`: move left
-- `l`/`Right`: move right
+- `h`/`Left`: switch list 
+- `l`/`Right`: switch list 
 - `Space`: mark as complete
 
 ## Storage
@@ -40,13 +40,15 @@ Stores in a local `taskell.json` file:
 - ~`q` to quit~
 - ~`j`/`k` to move up and down~
 - ~`<space>` to mark completed~
-- `h`/`l` to move left and right 
-- add tasks using `a`
-- edit tasks using `e`
+- ~`h`/`l` to move left and right~
 - ~save changes to `taskell.json`~
 - ~create `taskell.json` if it doesn't exist~
+- add tasks using `a`
+- edit tasks using `e`
 
 ### 0.2
 
 - add tags/labels to tasks
 - filter by tag/label
+- run with a filename to open any file
+- 'o' open file
