@@ -5,7 +5,7 @@ module Data.Taskell.Task where
 import GHC.Generics
 import Data.Aeson
 import Prelude hiding (filter)
-import Data.Sequence (Seq, fromList, filter)
+import Data.Sequence (Seq, (|>), fromList, filter)
 
 data Task = Task {
     description :: String,
@@ -21,15 +21,10 @@ type Tasks = Seq Task
 empty :: Tasks
 empty = fromList []
 
-complete :: Tasks -> Tasks 
-complete = filter completed
-
-incomplete :: Tasks -> Tasks 
-incomplete = filter (not . completed)
-
--- reduce :: (Tasks, Tasks) -> Task -> (Tasks, Tasks)
--- reduce a ts = undefined 
+reduce :: (Tasks, Tasks) -> Task -> (Tasks, Tasks)
+reduce (todo, done) t
+    | completed t = (todo, done |> t)
+    | otherwise = (todo |> t, done)
 
 split :: Tasks -> (Tasks, Tasks)
--- split = foldl reduce (empty, empty) 
-split ts = (incomplete ts, complete ts)
+split = foldl reduce (empty, empty) 
