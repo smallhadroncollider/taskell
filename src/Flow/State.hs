@@ -100,6 +100,4 @@ toggleCompleted' s = case getList s of
     Done -> toggle (getDone, getToDo) (setDone, setToDo) s
 
 toggleCompleted :: State -> State
-toggleCompleted s = case toggleCompleted' s of
-    Just s' -> s'
-    Nothing -> s
+toggleCompleted s = maybe s id (toggleCompleted' s)
