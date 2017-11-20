@@ -82,10 +82,15 @@ getTasks :: State -> Tasks
 getTasks s = fst (tasks s) >< snd (tasks s)
 
 -- completed
-toggle s (fromGet, toGet) (fromSet, toSet) = fixIndex final
-    where (removed, current) = extract (getIndex s) (fromGet s)
-          updated = toSet s ((toGet s) |> (swap current))
+-- all rather grim... probably needs a monad
+toggleMaybe (removed, Just current) s toSet toGet fromSet = fixIndex final
+    where updated = toSet s ((toGet s) |> (swap current))
           final = fromSet updated removed
+
+toggleMaybe (_, Nothing) s _ _ _ = s
+
+toggle s (fromGet, toGet) (fromSet, toSet) = toggleMaybe extracted s toSet toGet fromSet
+    where extracted = extract (getIndex s) (fromGet s)
 
 toggleCompleted :: State -> State
 toggleCompleted s = case getList s of
