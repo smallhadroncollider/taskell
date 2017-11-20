@@ -11,11 +11,15 @@ import Data.Taskell.Task (Tasks)
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
 
+attrCurrent :: Attr
+attrCurrent = defAttr `withForeColor` blue
+
 attrNoItems :: Attr
 attrNoItems = defAttr `withStyle` dim 
 
-title :: String -> Image
-title t = string attrTitle t
+title :: Bool -> String -> Image
+title current t = string style t 
+    where style = if current then attrCurrent else attrTitle
 
 noItems :: Image
 noItems = string attrNoItems "No items"
@@ -28,5 +32,5 @@ mapTasks :: Bool -> Int -> Tasks -> Image
 mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
 list :: String -> Bool -> Int -> Tasks -> Image
-list name current index tasks = (title name) <-> items
+list name current index tasks = (title current name) <-> items
     where items = if length tasks /= 0 then (mapTasks current index tasks) else noItems 
