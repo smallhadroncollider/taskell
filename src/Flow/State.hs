@@ -1,57 +1,131 @@
 module Flow.State where
 
-import Data.Taskell.Task (Tasks, completed, empty)
-import Data.Sequence (mapWithIndex) 
+import Data.Taskell.Task (Tasks, Task, extract, split, empty, swap, update, append, backspace, blank)
+import Data.Sequence ((><), (|>)) 
+
+data CurrentList = ToDo | Done deriving (Show, Eq)
 
 data State = State {
-    tasks :: Tasks,
-    current :: Int,
-    showCompleted :: Bool,
-    running :: Bool
+    running :: Bool, -- whether the app is running
+    insert :: Bool,
+    tasks :: (Tasks, Tasks), -- the todo and done tasks 
+    current :: (CurrentList, Int) -- the list and index
 } deriving (Show)
 
 initial :: State
 initial = (State {
-        tasks = empty,
-        current = 0,
         running = True,
-        showCompleted = True
+        insert = False,
+        tasks = (empty, empty),
+        current = (ToDo, 0)
     }) 
 
-setCurrent :: State -> Int -> State
-setCurrent s i = s { current = i }
-
-count :: State -> Int
-count = length . tasks
-
-index :: Int -> State -> State
-index i s = s { current = x }
-    where
-        inc = ((current s) + i)
-        x = inc `mod` count s
-
-next :: State -> State
-next = index 1 
-
-previous :: State -> State
-previous = index (-1)
-
--- not terribly efficient
--- goes over ever item
-mapCompleted :: State -> Tasks
-mapCompleted s = mapWithIndex set (tasks s)
-    where
-        i = current s
-        set = \cur t -> if cur == i then t { completed = (not (completed t)) } else t
-
-setCompleted :: State -> State
-setCompleted s = s { tasks = (mapCompleted s) }
-
-toggleShowCompleted :: State -> State
-toggleShowCompleted s = s { showCompleted = (not (showCompleted s)) }
-
-setTasks :: State -> Tasks -> State
-setTasks s ts = s { tasks = ts }
-
+-- app state
 quit :: State -> State
 quit s = s { running = False }
+
+-- insert
+startInsert :: State -> State
+startInsert s = s { insert = True }
+
+finishInsert :: State -> State
+finishInsert s = s { insert = False }
+
+newAndStartInsert :: State -> State
+newAndStartInsert = startInsert . addTask
+
+addTask :: State -> State
+addTask s = setToDo indexed (getToDo indexed |> blank)
+    where listed = setList s ToDo 
+          indexed = setIndex listed (count ToDo listed)
+
+change :: (Task -> Task) -> State -> State
+change fn s = case getList s of
+    ToDo -> setToDo s $ update' $ getToDo s
+    Done -> setDone s $ update' $ getDone s
+    where update' = update (getIndex s) fn
+
+insertBS :: State -> State
+insertBS = change backspace
+
+insertCurrent :: Char -> State -> State
+insertCurrent = change . append
+
+-- list and index
+count :: CurrentList -> State -> Int
+count ToDo = length . getToDo
+count Done = length . getDone
+
+countCurrent :: State -> Int
+countCurrent s = count (getList s) s
+
+setIndex :: State -> Int -> State
+setIndex s i = s { current = (getList s, i) }
+
+setList :: State -> CurrentList -> State
+setList s l = s { current = (l, getIndex s) }
+
+getIndex :: State -> Int
+getIndex = snd . current
+
+getList :: State -> CurrentList
+getList = fst . current
+
+shiftIndex :: (Int -> Int) -> State -> State
+shiftIndex fn s = setIndex s x 
+    where
+        list = getList s
+        inc = fn $ getIndex s
+        c = count list s
+        x = if c /= 0 then inc `mod` c else 0 
+
+next :: State -> State
+next = shiftIndex succ
+
+previous :: State -> State
+previous = shiftIndex pred
+
+switch :: State -> State
+switch s = fixIndex $ case getList s of
+    ToDo -> setList s Done
+    Done -> setList s ToDo
+
+fixIndex :: State -> State
+fixIndex s = if getIndex s > c then setIndex s c' else s
+    where c = (countCurrent s) - 1
+          c' = if c < 0 then 0 else c
+
+-- tasks
+getDone :: State -> Tasks
+getDone = snd . tasks
+
+getToDo :: State -> Tasks
+getToDo = fst . tasks
+
+setDone :: State -> Tasks -> State
+setDone s ts = s { tasks = (getToDo s, ts) }
+
+setToDo :: State -> Tasks -> State
+setToDo s ts = s { tasks = (ts, getDone s) }
+
+setTasks :: State -> Tasks -> State
+setTasks s ts = s { tasks = split ts }
+
+getTasks :: State -> Tasks
+getTasks s = fst (tasks s) >< snd (tasks s)
+
+-- completed
+toggle :: (State -> Tasks, State -> Tasks) -> (State -> Tasks -> State, State -> Tasks -> State) -> State -> Maybe State
+toggle (fromGet, toGet) (fromSet, toSet) s = do
+    (removed, current) <- extract (getIndex s) (fromGet s)
+    let updated = toSet s ((toGet s) |> (swap current))
+    let final = fromSet updated removed
+    return $ fixIndex final
+
+toggleCompleted' :: State -> Maybe State
+toggleCompleted' s = case getList s of
+    ToDo -> toggle (getToDo, getDone) (setToDo, setDone) s
+    Done -> toggle (getDone, getToDo) (setDone, setToDo) s
+
+toggleCompleted :: State -> State
+toggleCompleted s = maybe s id (toggleCompleted' s)

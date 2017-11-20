@@ -36,6 +36,4 @@ readJSON = BS.readFile path >>= return . jsonToTasks
 
 -- returns tasks or an empty list
 jsonToTasks :: BS.ByteString -> Tasks
-jsonToTasks s = case (decode s :: Maybe Tasks) of
-    Just ts -> ts
-    Nothing -> empty
+jsonToTasks s = maybe empty id (decode s :: Maybe Tasks)
