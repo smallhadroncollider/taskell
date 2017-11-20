@@ -7,8 +7,8 @@ A CLI task manager, written in Haskell
 
 ## Controls
 
-- `a` add a to do (`Enter`/`Esc` to stop)
-- `e` edit a to do (`Enter`/`Esc` to stop)
+- `a` add a task (`Enter`/`Esc` to stop)
+- `e` edit a task (`Enter`/`Esc` to stop)
 - `Space`: mark as complete
 - `j`/`Down`: move down
 - `k`/`Up`: move up
