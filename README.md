@@ -37,20 +37,18 @@ Stores in a local `taskell.json` file:
 
 ## Roadmap
 
-### 0.1
-
-- ~`q` to quit~
-- ~`j`/`k` to move up and down~
-- ~`<space>` to mark completed~
-- ~`h`/`l` to move left and right~
-- ~save changes to `taskell.json`~
-- ~create `taskell.json` if it doesn't exist~
-- ~edit tasks using `e`~
-- ~add tasks using `a`~
-
 ### 0.2
 
+- cursor support
+- better layout
+- scrolling long lists
 - add tags/labels to tasks
 - filter by tag/label
+- delete with `dd`
+
+### 0.3
+
+- multiple lists?
+- undo with `u`
 - run with a filename to open any file
 - 'o' open file
