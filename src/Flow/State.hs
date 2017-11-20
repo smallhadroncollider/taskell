@@ -1,27 +1,55 @@
 module Flow.State where
 
-import Prelude hiding (take, drop)
-import Data.Taskell.Task (Tasks, extract, split, empty, swap)
+import Data.Taskell.Task (Tasks, Task, extract, split, empty, swap, update, append, backspace, blank)
 import Data.Sequence ((><), (|>)) 
 
 data CurrentList = ToDo | Done deriving (Show, Eq)
 
 data State = State {
     running :: Bool, -- whether the app is running
+    insert :: Bool,
     tasks :: (Tasks, Tasks), -- the todo and done tasks 
     current :: (CurrentList, Int) -- the list and index
 } deriving (Show)
 
 initial :: State
 initial = (State {
+        running = True,
+        insert = False,
         tasks = (empty, empty),
-        current = (ToDo, 0),
-        running = True
+        current = (ToDo, 0)
     }) 
 
 -- app state
 quit :: State -> State
 quit s = s { running = False }
+
+-- insert
+startInsert :: State -> State
+startInsert s = s { insert = True }
+
+finishInsert :: State -> State
+finishInsert s = s { insert = False }
+
+newAndStartInsert :: State -> State
+newAndStartInsert = startInsert . addTask
+
+addTask :: State -> State
+addTask s = setToDo indexed (getToDo indexed |> blank)
+    where listed = setList s ToDo 
+          indexed = setIndex listed (count ToDo listed)
+
+change :: (Task -> Task) -> State -> State
+change fn s = if getList s == ToDo then setToDo s ts else setDone s ts
+    where i = getIndex s
+          items = if getList s == ToDo then getToDo s else getDone s
+          ts = update i items fn
+
+insertBS :: State -> State
+insertBS = change backspace
+
+insertCurrent :: Char -> State -> State
+insertCurrent = change . append
 
 -- list and index
 count :: CurrentList -> State -> Int
