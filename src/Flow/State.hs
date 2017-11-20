@@ -1,7 +1,7 @@
 module Flow.State where
 
 import Prelude hiding (take, drop)
-import Data.Taskell.Task (Tasks, Task, extract, split, empty, swap)
+import Data.Taskell.Task (Tasks, extract, split, empty, swap)
 import Data.Sequence ((><), (|>)) 
 
 data CurrentList = ToDo | Done deriving (Show, Eq)
@@ -87,17 +87,19 @@ getTasks :: State -> Tasks
 getTasks s = fst (tasks s) >< snd (tasks s)
 
 -- completed
--- all rather grim... probably needs a monad
-toggleMaybe (removed, Just current) s toSet toGet fromSet = fixIndex final
-    where updated = toSet s ((toGet s) |> (swap current))
-          final = fromSet updated removed
+toggle :: (State -> Tasks, State -> Tasks) -> (State -> Tasks -> State, State -> Tasks -> State) -> State -> Maybe State
+toggle (fromGet, toGet) (fromSet, toSet) s = do
+    (removed, current) <- extract (getIndex s) (fromGet s)
+    let updated = toSet s ((toGet s) |> (swap current))
+    let final = fromSet updated removed
+    return $ fixIndex final
 
-toggleMaybe (_, Nothing) s _ _ _ = s
-
-toggle s (fromGet, toGet) (fromSet, toSet) = toggleMaybe extracted s toSet toGet fromSet
-    where extracted = extract (getIndex s) (fromGet s)
+toggleCompleted' :: State -> Maybe State
+toggleCompleted' s = case getList s of
+    ToDo -> toggle (getToDo, getDone) (setToDo, setDone) s
+    Done -> toggle (getDone, getToDo) (setDone, setToDo) s
 
 toggleCompleted :: State -> State
-toggleCompleted s = case getList s of
-    ToDo -> toggle s (getToDo, getDone) (setToDo, setDone)
-    Done -> toggle s (getDone, getToDo) (setDone, setToDo)
+toggleCompleted s = case toggleCompleted' s of
+    Just s' -> s'
+    Nothing -> s

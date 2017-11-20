@@ -25,10 +25,11 @@ type Tasks = Seq Task
 empty :: Tasks
 empty = fromList []
 
-extract :: Int -> Tasks -> (Tasks, Maybe Task)
-extract i ts = (a, c)
-    where c = ts !? i
-          a = deleteAt i ts
+extract :: Int -> Tasks -> Maybe (Tasks, Task)
+extract i ts = do
+    c <- ts !? i
+    let a = deleteAt i ts
+    return (a, c)
 
 reduce :: (Tasks, Tasks) -> Task -> (Tasks, Tasks)
 reduce (todo, done) t
