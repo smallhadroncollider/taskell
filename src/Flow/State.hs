@@ -19,6 +19,10 @@ initial = (State {
         running = True
     }) 
 
+-- app state
+quit :: State -> State
+quit s = s { running = False }
+
 -- list and index
 count :: CurrentList -> State -> Int
 count ToDo = length . getToDo
@@ -44,7 +48,8 @@ shiftIndex fn s = setIndex s x
     where
         list = getList s
         inc = fn $ getIndex s
-        x = mod inc $ count list s
+        c = count list s
+        x = if c /= 0 then inc `mod` c else 0 
 
 next :: State -> State
 next = shiftIndex succ
@@ -96,7 +101,3 @@ toggleCompleted :: State -> State
 toggleCompleted s = case getList s of
     ToDo -> toggle s (getToDo, getDone) (setToDo, setDone)
     Done -> toggle s (getDone, getToDo) (setDone, setToDo)
-
--- app state
-quit :: State -> State
-quit s = s { running = False }
