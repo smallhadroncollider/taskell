@@ -10,7 +10,9 @@ A CLI task manager, written in Haskell
 - `q`: quit
 - `j`/`Down`: move down
 - `k`/`Up`: move up
-- `Space`: mark as complete (currently not persisted)
+- `h`/`Left`: move left
+- `l`/`Right`: move right
+- `Space`: mark as complete
 
 ## Storage
 
@@ -19,21 +21,15 @@ Stores in a local `taskell.json` file:
 ```json
 [
     {
-        "description": "Do this",
         "completed": true,
+        "description": "Do this"
     },
     {
-        "description": "Do this",
         "completed": false,
+        "description": "Do that"
     }
 ]
 ```
-
----
-
-## Known Bugs
-
-- up/down/space all break when hiding completed
 
 ---
 
@@ -44,9 +40,9 @@ Stores in a local `taskell.json` file:
 - ~`q` to quit~
 - ~`j`/`k` to move up and down~
 - ~`<space>` to mark completed~
+- `h`/`l` to move left and right 
 - add tasks using `a`
 - edit tasks using `e`
-- ~hide/show completed using `.`~
 - ~save changes to `taskell.json`~
 - ~create `taskell.json` if it doesn't exist~
 

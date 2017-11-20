@@ -22,9 +22,10 @@ library
                      , Flow.Keyboard
                      , Flow.State
                      , Persistence.Taskell
+                     , Render
                      , UI.CLI
+                     , UI.List
                      , UI.Main
-                     , UI.Render
                      , UI.Task
   build-depends:       base >= 4.7 && < 5
                      , vty
