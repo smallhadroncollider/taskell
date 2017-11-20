@@ -1,7 +1,8 @@
 module Flow.State where
 
-import Data.Taskell.Task (Tasks, split, empty)
-import Data.Sequence ((><), mapWithIndex) 
+import Prelude hiding (take, drop)
+import Data.Taskell.Task (Tasks, Task, split, empty, completed)
+import Data.Sequence ((><), (|>), index, deleteAt) 
 
 data CurrentList = ToDo | Done deriving (Show, Eq)
 
@@ -57,8 +58,9 @@ switch s = fixIndex $ case getList s of
     Done -> setList s ToDo
 
 fixIndex :: State -> State
-fixIndex s = if getIndex s > c then setIndex s c else s
+fixIndex s = if getIndex s > c then setIndex s c' else s
     where c = (countCurrent s) - 1
+          c' = if c < 0 then 0 else c
 
 -- tasks
 getDone :: State -> Tasks
@@ -78,6 +80,22 @@ setTasks s ts = s { tasks = split ts }
 
 getTasks :: State -> Tasks
 getTasks s = fst (tasks s) >< snd (tasks s)
+
+-- completed
+extract :: Int -> Tasks -> (Tasks, Task)
+extract i ts = (a, c)
+    where c = index ts i
+          a = deleteAt i ts
+
+toggleCompleted :: State -> State
+toggleCompleted s = fixIndex final
+    where todos = getToDo s
+          done = getDone s 
+          e = extract $ getIndex s
+          (removed, current) = e $ if getList s == ToDo then todos else done
+          current' = current { completed = (not (completed current)) }
+          updated = if getList s == ToDo then setDone s (done |> current') else setToDo s (todos |> current')
+          final = if getList s == ToDo then setToDo updated removed else setDone updated removed
 
 -- app state
 quit :: State -> State

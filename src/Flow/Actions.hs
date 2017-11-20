@@ -10,5 +10,5 @@ event e | isChar 'q' e = quit
         | isDown e || isChar 'j' e =  next
         | isLeft e || isChar 'h' e = switch 
         | isRight e || isChar 'l' e = switch 
-        -- | isChar ' ' e = setCompleted
+        | isChar ' ' e = toggleCompleted
         | otherwise = id
