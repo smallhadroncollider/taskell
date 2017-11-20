@@ -41,15 +41,15 @@ extract i ts = do
     let a = deleteAt i ts
     return (a, c)
 
-update' :: Int -> Tasks -> (Task -> Task) -> Maybe Tasks
-update' i ts fn = do 
+update' :: Int -> (Task -> Task) -> Tasks -> Maybe Tasks
+update' i fn ts = do 
     let (a, b) = splitAt i ts 
     current <- b !? 0
     let b' = drop 1 b
     return ((a |> fn current) >< b')
 
-update :: Int -> Tasks -> (Task -> Task) -> Tasks
-update i ts fn = maybe ts id (update' i ts fn)
+update :: Int -> (Task -> Task) -> Tasks -> Tasks
+update i fn ts = maybe ts id (update' i fn ts)
 
 reduce :: (Tasks, Tasks) -> Task -> (Tasks, Tasks)
 reduce (todo, done) t

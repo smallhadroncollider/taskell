@@ -40,10 +40,10 @@ addTask s = setToDo indexed (getToDo indexed |> blank)
           indexed = setIndex listed (count ToDo listed)
 
 change :: (Task -> Task) -> State -> State
-change fn s = if getList s == ToDo then setToDo s ts else setDone s ts
-    where i = getIndex s
-          items = if getList s == ToDo then getToDo s else getDone s
-          ts = update i items fn
+change fn s = case getList s of
+    ToDo -> setToDo s $ update' $ getToDo s
+    Done -> setDone s $ update' $ getDone s
+    where update' = update (getIndex s) fn
 
 insertBS :: State -> State
 insertBS = change backspace
