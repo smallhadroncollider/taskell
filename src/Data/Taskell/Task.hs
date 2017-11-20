@@ -2,8 +2,8 @@
 
 module Data.Taskell.Task where
 
-import GHC.Generics
-import Data.Aeson
+import GHC.Generics (Generic)
+import Data.Aeson (FromJSON, ToJSON)
 import Prelude hiding (filter)
 import Data.Sequence (Seq, (|>), fromList, filter)
 
