@@ -23,9 +23,10 @@ noItems = string attrNoItems "No items"
 tasksToImage :: Seq Image -> Image
 tasksToImage = vertCat . toList 
 
-mapTasks :: Tasks -> Image
-mapTasks = tasksToImage . mapWithIndex present
+-- passing current and index feels inelegant...
+mapTasks :: Bool -> Int -> Tasks -> Image
+mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
-list :: String -> Tasks -> Image
-list name tasks = (title name) <-> items
-    where items = if length tasks /= 0 then mapTasks tasks else noItems 
+list :: String -> Bool -> Int -> Tasks -> Image
+list name current index tasks = (title name) <-> items
+    where items = if length tasks /= 0 then (mapTasks current index tasks) else noItems 

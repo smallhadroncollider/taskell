@@ -3,47 +3,62 @@ module Flow.State where
 import Data.Taskell.Task (Tasks, split, empty)
 import Data.Sequence ((><), mapWithIndex) 
 
+data CurrentList = ToDo | Done deriving (Show, Eq)
+
 data State = State {
     running :: Bool, -- whether the app is running
     tasks :: (Tasks, Tasks), -- the todo and done tasks 
-    current :: (Int, Int) -- the list and index
+    current :: (CurrentList, Int) -- the list and index
 } deriving (Show)
 
 initial :: State
 initial = (State {
         tasks = (empty, empty),
-        current = (0, 0),
+        current = (ToDo, 0),
         running = True
     }) 
 
 -- list and index
--- setIndex :: State -> Int -> State
--- setIndex s i = s { current = (getList s, i) }
---
--- setList :: State -> Int -> State
--- setList s l = s { current = (l, getIndex s) }
---
--- getIndex :: State -> Int
--- getIndex s = snd $ current s
---
--- getList :: State -> Int
--- getList s = fst $ current s
---
--- shiftIndex :: Int -> State -> State
--- shiftIndex i s = setIndex s x 
---     where
---         inc = (getIndex s) + i
---         x = inc `mod` count s
---
--- next :: State -> State
--- next = shiftIndex 1 
---
--- previous :: State -> State
--- previous = shiftIndex (-1)
---
--- switch :: State -> State
--- switch s = setList s l
---     where l = if getList s == 1 then 0 else 1
+count :: CurrentList -> State -> Int
+count ToDo = length . getToDo
+count Done = length . getDone
+
+countCurrent :: State -> Int
+countCurrent s = count (getList s) s
+
+setIndex :: State -> Int -> State
+setIndex s i = s { current = (getList s, i) }
+
+setList :: State -> CurrentList -> State
+setList s l = s { current = (l, getIndex s) }
+
+getIndex :: State -> Int
+getIndex = snd . current
+
+getList :: State -> CurrentList
+getList = fst . current
+
+shiftIndex :: (Int -> Int) -> State -> State
+shiftIndex fn s = setIndex s x 
+    where
+        list = getList s
+        inc = fn $ getIndex s
+        x = mod inc $ count list s
+
+next :: State -> State
+next = shiftIndex succ
+
+previous :: State -> State
+previous = shiftIndex pred
+
+switch :: State -> State
+switch s = fixIndex $ case getList s of
+    ToDo -> setList s Done
+    Done -> setList s ToDo
+
+fixIndex :: State -> State
+fixIndex s = if getIndex s > c then setIndex s c else s
+    where c = (countCurrent s) - 1
 
 -- tasks
 getDone :: State -> Tasks
