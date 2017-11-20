@@ -4,7 +4,7 @@ module Render (
 
 import Graphics.Vty (Vty, standardIOConfig, mkVty, nextEvent, update, shutdown)
 
-import Flow.State (State, tasks, running)
+import Flow.State (State, tasks, getTasks, running)
 import Flow.Actions (event)
 import Persistence.Taskell (writeJSON)
 import UI.Main (pic)
@@ -21,7 +21,7 @@ loop vty state = do
     -- update json if tasks changed
     if tasks state == tasks state'
         then return ()
-        else writeJSON $ tasks state'
+        else writeJSON $ getTasks state'
     
     -- if event wasn't quit keep going, otherwise shutdown
     if running state'

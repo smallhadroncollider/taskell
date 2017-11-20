@@ -1,9 +1,8 @@
 module UI.Main where
 
 import Graphics.Vty
-import Flow.State (State, tasks)
+import Flow.State (State, getDone, getToDo)
 import UI.List (list)
-import Data.Taskell.Task (complete, incomplete)
 
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
@@ -22,6 +21,5 @@ title = marginBottom $ string attrTitle "[Taskell]"
 pic :: State -> Picture
 pic state = picForImage $ title <-> todo <|> marginLeft done
     where
-        ts = tasks state
-        todo = list "To Do" $ incomplete ts
-        done = list "Done" $ complete ts
+        todo = list "To Do" $ getToDo state
+        done = list "Done" $ getDone state

@@ -26,3 +26,10 @@ complete = filter completed
 
 incomplete :: Tasks -> Tasks 
 incomplete = filter (not . completed)
+
+-- reduce :: (Tasks, Tasks) -> Task -> (Tasks, Tasks)
+-- reduce a ts = undefined 
+
+split :: Tasks -> (Tasks, Tasks)
+-- split = foldl reduce (empty, empty) 
+split ts = (incomplete ts, complete ts)
