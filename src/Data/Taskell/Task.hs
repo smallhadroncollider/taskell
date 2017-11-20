@@ -5,7 +5,7 @@ module Data.Taskell.Task where
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
 import Prelude hiding (filter)
-import Data.Sequence (Seq, (|>), fromList, filter)
+import Data.Sequence (Seq, (|>), fromList, filter, deleteAt, index)
 
 data Task = Task {
     description :: String,
@@ -15,11 +15,20 @@ data Task = Task {
 instance ToJSON Task
 instance FromJSON Task
 
+swap :: Task -> Task
+swap t = t { completed = (not (completed t)) }
+
+
 -- a list of tasks
 type Tasks = Seq Task
 
 empty :: Tasks
 empty = fromList []
+
+extract :: Int -> Tasks -> (Tasks, Task)
+extract i ts = (a, c)
+    where c = index ts i
+          a = deleteAt i ts
 
 reduce :: (Tasks, Tasks) -> Task -> (Tasks, Tasks)
 reduce (todo, done) t
