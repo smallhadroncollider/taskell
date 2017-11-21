@@ -19,7 +19,6 @@ library
                      , src/Data
   exposed-modules:     Data.Taskell.Task
                      , Flow.Actions
-                     , Flow.Keyboard
                      , Flow.State
                      , Persistence.Taskell
                      , Render

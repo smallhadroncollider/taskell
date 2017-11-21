@@ -32,11 +32,8 @@ startInsert s = s { insert = True }
 finishInsert :: State -> State
 finishInsert s = s { insert = False }
 
-newAndStartInsert :: State -> State
-newAndStartInsert = startInsert . addTask
-
-addTask :: State -> State
-addTask s = setToDo indexed (getToDo indexed |> blank)
+newItem :: State -> State
+newItem s = setToDo indexed (getToDo indexed |> blank)
     where listed = setList s ToDo 
           indexed = setIndex listed (count ToDo listed)
 
