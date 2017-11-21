@@ -20,7 +20,7 @@ insertEvent :: Event -> State -> State
 insertEvent e
     | isEnter e || isEsc e = finishInsert
     | isBS e = insertBS
-    | otherwise = (maybe id insertCurrent (char e))
+    | otherwise = maybe id insertCurrent (char e)
 
 event :: Event -> State -> State
 event e s

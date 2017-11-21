@@ -1,8 +1,7 @@
 module UI.List where
 
-import Data.Sequence (mapWithIndex) 
+import Data.Sequence (Seq, mapWithIndex) 
 import Data.Foldable (toList)
-import Data.Sequence (Seq)
 import Graphics.Vty
 
 import UI.Task (present)
@@ -18,7 +17,7 @@ attrNoItems :: Attr
 attrNoItems = defAttr `withStyle` dim 
 
 title :: Bool -> String -> Image
-title current t = string style t 
+title current = string style
     where style = if current then attrCurrent else attrTitle
 
 noItems :: Image
@@ -32,5 +31,5 @@ mapTasks :: Bool -> Int -> Tasks -> Image
 mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
 list :: String -> Bool -> Int -> Tasks -> Image
-list name current index tasks = (title current name) <-> items
-    where items = if length tasks /= 0 then (mapTasks current index tasks) else noItems 
+list name current index tasks = title current name <-> items
+    where items = if not (null tasks) then mapTasks current index tasks else noItems 

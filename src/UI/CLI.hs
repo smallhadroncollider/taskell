@@ -6,7 +6,7 @@ prompt :: String -> IO String
 prompt s = do
     putStr $ s ++ ": "
     hFlush stdout -- prevents buffering 
-    getLine >>= return
+    getLine
 
 promptYN :: String -> IO Bool
-promptYN s = (prompt $ s ++ " (y/n)") >>= return . (==) "y"
+promptYN s = (==) "y" <$> prompt (s ++ " (y/n)")

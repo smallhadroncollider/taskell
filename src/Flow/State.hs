@@ -1,6 +1,7 @@
 module Flow.State where
 
 import Data.Taskell.Task (Tasks, Task, extract, split, empty, swap, update, append, backspace, blank)
+import Data.Maybe (fromMaybe)
 import Data.Sequence ((><), (|>)) 
 
 data CurrentList = ToDo | Done deriving (Show, Eq)
@@ -13,12 +14,12 @@ data State = State {
 } deriving (Show)
 
 initial :: State
-initial = (State {
+initial = State {
         running = True,
         insert = False,
         tasks = (empty, empty),
         current = (ToDo, 0)
-    }) 
+    } 
 
 -- app state
 quit :: State -> State
@@ -92,7 +93,7 @@ switch s = fixIndex $ case getList s of
 
 fixIndex :: State -> State
 fixIndex s = if getIndex s > c then setIndex s c' else s
-    where c = (countCurrent s) - 1
+    where c = countCurrent s - 1
           c' = if c < 0 then 0 else c
 
 -- tasks
@@ -112,13 +113,13 @@ setTasks :: State -> Tasks -> State
 setTasks s ts = s { tasks = split ts }
 
 getTasks :: State -> Tasks
-getTasks s = fst (tasks s) >< snd (tasks s)
+getTasks s = uncurry (><) (tasks s)
 
 -- completed
 toggle :: (State -> Tasks, State -> Tasks) -> (State -> Tasks -> State, State -> Tasks -> State) -> State -> Maybe State
 toggle (fromGet, toGet) (fromSet, toSet) s = do
     (removed, current) <- extract (getIndex s) (fromGet s)
-    let updated = toSet s ((toGet s) |> (swap current))
+    let updated = toSet s (toGet s |> swap current)
     let final = fromSet updated removed
     return $ fixIndex final
 
@@ -128,4 +129,4 @@ toggleCompleted' s = case getList s of
     Done -> toggle (getDone, getToDo) (setDone, setToDo) s
 
 toggleCompleted :: State -> State
-toggleCompleted s = maybe s id (toggleCompleted' s)
+toggleCompleted s = fromMaybe s (toggleCompleted' s)
