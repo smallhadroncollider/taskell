@@ -1,22 +1,78 @@
 [
     {
-        "completed": true,
-        "description": "Do this"
+        "completed": false,
+        "description": "Cursor support"
+    },
+    {
+        "completed": false,
+        "description": "Better layout"
+    },
+    {
+        "completed": false,
+        "description": "Scrolling long lists"
+    },
+    {
+        "completed": false,
+        "description": "Add tags/labels"
+    },
+    {
+        "completed": false,
+        "description": "Filter by tag/label"
+    },
+    {
+        "completed": false,
+        "description": "Delete with `dd`"
+    },
+    {
+        "completed": false,
+        "description": "Multiple lists"
+    },
+    {
+        "completed": false,
+        "description": "Undo with `u`"
+    },
+    {
+        "completed": false,
+        "description": "Run with any correctly formatted json file"
+    },
+    {
+        "completed": false,
+        "description": "`o` to open a file"
+    },
+    {
+        "completed": false,
+        "description": "Wrap lines"
+    },
+    {
+        "completed": false,
+        "description": "Move items up/down"
     },
     {
         "completed": true,
-        "description": "Do that"
+        "description": "`a` to add"
     },
     {
         "completed": true,
-        "description": "Do other thing"
+        "description": "`e` to edit"
     },
     {
         "completed": true,
-        "description": "Do that other thing"
+        "description": "`Space` to mark complete"
     },
     {
         "completed": true,
-        "description": "Do this other thing"
+        "description": "`j`/`k`/`up`/`down` to move up/down list"
+    },
+    {
+        "completed": true,
+        "description": "`h`/`l`/`Left`/`Right` to move between lists"
+    },
+    {
+        "completed": true,
+        "description": "`q` to quit"
+    },
+    {
+        "completed": true,
+        "description": "Create taskell.json if doesn't exist"
     }
 ]
