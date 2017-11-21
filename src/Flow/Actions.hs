@@ -10,7 +10,7 @@ event' :: Event -> State -> State
 event' (EvKey (KChar 'q') _) = quit
 
 -- add/edit
-event' (EvKey (KChar 'a') _) = newItem . startInsert
+event' (EvKey (KChar 'a') _) = startInsert . newItem
 event' (EvKey (KChar 'e') _) = startInsert
 
 -- navigation
