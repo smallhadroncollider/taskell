@@ -9,13 +9,14 @@ A CLI task manager, written in Haskell
 
 - `a` add a task (`Enter`/`Esc` to stop)
 - `e` edit a task (`Enter`/`Esc` to stop)
-- `Space`: mark as complete
 - `j`: move down
 - `k`: move up
 - `h`: move left 
 - `l`: move right
 - `J`: shift task down
 - `K`: shift task up
+- `H`: shift task left 
+- `L`: shift task right
 - `D`: delete task
 - `q`: quit
 
@@ -24,34 +25,23 @@ A CLI task manager, written in Haskell
 Stores in a local `taskell.json` file:
 
 ```json
-[
-    {
-        "completed": true,
-        "description": "Do this"
-    },
-    {
-        "completed": false,
-        "description": "Do that"
-    }
-]
+{
+    "To Do": [
+        {
+            "description": "Do this"
+        }
+    ],
+
+    "Done": [
+        {
+            "description": "Do that"
+        }
+    ]
+}
 ```
 
 ---
 
 ## Roadmap
 
-### 0.2
-
-- cursor support
-- better layout
-- scrolling long lists
-- add tags/labels to tasks
-- filter by tag/label
-- ~delete with `D`~
-
-### 0.3
-
-- multiple lists?
-- undo with `u`
-- run with a filename to open any file
-- 'o' open file
+See [taskell.json](https://github.com/smallhadroncollider/taskell/blob/develop/taskell.json) for planned features
