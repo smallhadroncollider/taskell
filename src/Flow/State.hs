@@ -1,6 +1,6 @@
 module Flow.State where
 
-import Data.Taskell.Task (Tasks, Task, extract, split, empty, swap, update, append, backspace, blank)
+import Data.Taskell.Task
 import Data.Maybe (fromMaybe)
 import Data.Sequence ((><), (|>)) 
 
@@ -48,6 +48,19 @@ insertBS = change backspace
 insertCurrent :: Char -> State -> State
 insertCurrent = change . append
 
+-- moving
+up :: State -> State
+up s = previous $ case getList s of
+    ToDo -> setToDo s (m (getToDo s))
+    Done -> setDone s (m (getDone s))
+    where m = move (getIndex s) (-1)
+
+down :: State -> State
+down s = next $ case getList s of
+    ToDo -> setToDo s (m (getToDo s))
+    Done -> setDone s (m (getDone s))
+    where m = move (getIndex s) 1
+
 -- list and index
 count :: CurrentList -> State -> Int
 count ToDo = length . getToDo
@@ -68,19 +81,18 @@ getIndex = snd . current
 getList :: State -> CurrentList
 getList = fst . current
 
-shiftIndex :: (Int -> Int) -> State -> State
-shiftIndex fn s = setIndex s x 
+next :: State -> State
+next s = setIndex s i'
     where
         list = getList s
-        inc = fn $ getIndex s
+        i = getIndex s
         c = count list s
-        x = if c /= 0 then inc `mod` c else 0 
-
-next :: State -> State
-next = shiftIndex succ
+        i' = if i < (c - 1) then succ i else i
 
 previous :: State -> State
-previous = shiftIndex pred
+previous s = setIndex s i'
+    where i = getIndex s
+          i' = if i > 0 then pred i else 0
 
 switch :: State -> State
 switch s = fixIndex $ case getList s of

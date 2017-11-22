@@ -6,7 +6,7 @@ import GHC.Generics (Generic)
 import Data.Maybe (fromMaybe)
 import Data.Aeson (FromJSON, ToJSON)
 import Prelude hiding (splitAt, drop)
-import Data.Sequence (Seq, (><), (|>), (!?), fromList, deleteAt, splitAt, drop)
+import Data.Sequence (Seq, (><), (|>), (!?), fromList, insertAt, deleteAt, splitAt, drop)
 
 data Task = Task {
     description :: String,
@@ -51,6 +51,15 @@ update' i fn ts = do
 
 update :: Int -> (Task -> Task) -> Tasks -> Tasks
 update i fn ts = fromMaybe ts (update' i fn ts)
+
+move' :: Int -> Int -> Tasks  -> Maybe Tasks
+move' from dir ts = do
+    current <- ts !? from
+    let r = deleteAt from ts
+    return (insertAt (from + dir) current r)
+
+move :: Int -> Int -> Tasks -> Tasks
+move from dir ts = fromMaybe ts (move' from dir ts)
 
 reduce :: (Tasks, Tasks) -> Task -> (Tasks, Tasks)
 reduce (todo, done) t

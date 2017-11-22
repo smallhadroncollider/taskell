@@ -10,10 +10,12 @@ A CLI task manager, written in Haskell
 - `a` add a task (`Enter`/`Esc` to stop)
 - `e` edit a task (`Enter`/`Esc` to stop)
 - `Space`: mark as complete
-- `j`/`Down`: move down
-- `k`/`Up`: move up
-- `h`/`Left`: switch list 
-- `l`/`Right`: switch list 
+- `j`: move down
+- `k`: move up
+- `h`: move left 
+- `l`: move right
+- `J`: shift task down
+- `K`: shift task up
 - `q`: quit
 
 ## Storage

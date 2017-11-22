@@ -15,13 +15,13 @@ event' (EvKey (KChar 'e') _) = startInsert
 
 -- navigation
 event' (EvKey (KChar 'k') _) = previous
-event' (EvKey KUp _) = previous
 event' (EvKey (KChar 'j') _) = next
-event' (EvKey KDown _) = next
 event' (EvKey (KChar 'h') _) = switch
-event' (EvKey KLeft _) = switch
 event' (EvKey (KChar 'l') _) = switch
-event' (EvKey KRight _) = switch
+
+-- moving items
+event' (EvKey (KChar 'K') _) = up
+event' (EvKey (KChar 'J') _) = down
 
 -- toggle
 event' (EvKey (KChar ' ') _) = toggleCompleted

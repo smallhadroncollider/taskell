@@ -1,10 +1,6 @@
 [
     {
         "completed": false,
-        "description": "Move items up/down"
-    },
-    {
-        "completed": false,
         "description": "Delete with `dd`"
     },
     {
@@ -82,5 +78,9 @@
     {
         "completed": true,
         "description": "Create taskell.json if doesn't exist"
+    },
+    {
+        "completed": true,
+        "description": "Move items up/down"
     }
 ]
