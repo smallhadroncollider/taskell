@@ -5,32 +5,31 @@ import Data.Maybe (fromMaybe)
 import Data.Sequence ((><), (|>)) 
 
 data CurrentList = ToDo | Done deriving (Show, Eq)
+data Mode = Command | Insert | Shutdown deriving (Show);
 
 data State = State {
-    running :: Bool, -- whether the app is running
-    insert :: Bool,
+    mode :: Mode,
     tasks :: (Tasks, Tasks), -- the todo and done tasks 
     current :: (CurrentList, Int) -- the list and index
 } deriving (Show)
 
 initial :: State
 initial = State {
-        running = True,
-        insert = False,
+        mode = Command,
         tasks = (empty, empty),
         current = (ToDo, 0)
     } 
 
 -- app state
 quit :: State -> State
-quit s = s { running = False }
+quit s = s { mode = Shutdown }
 
 -- insert
 startInsert :: State -> State
-startInsert s = s { insert = True }
+startInsert s = s { mode = Insert }
 
 finishInsert :: State -> State
-finishInsert s = s { insert = False }
+finishInsert s = s { mode = Command }
 
 newItem :: State -> State
 newItem s = setToDo indexed (getToDo indexed |> blank)

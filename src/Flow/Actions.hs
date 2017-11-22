@@ -41,6 +41,6 @@ insertEvent _ = id
 
 -- detect if insert mode
 event :: Event -> State -> State
-event e s
-    | insert s = insertEvent e s 
-    | otherwise = event' e s
+event e s = case mode s of
+    Insert -> insertEvent e s
+    _ -> event' e s
