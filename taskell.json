@@ -26,6 +26,9 @@
         },
         {
             "description": "Delete with `D`"
+        },
+        {
+            "description": "No padding on lists"
         }
     ],
     "Bugs": [
@@ -34,9 +37,6 @@
         },
         {
             "description": "Can't switch lists"
-        },
-        {
-            "description": "No padding on lists"
         }
     ],
     "To Do": [

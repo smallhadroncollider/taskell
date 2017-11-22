@@ -11,8 +11,8 @@ attrTitle = defAttr `withForeColor` green
 marginBottom :: Image -> Image
 marginBottom = pad 0 0 0 1
 
-marginLeft :: Image -> Image
-marginLeft = pad 15 0 0 0
+marginRight :: Image -> Image
+marginRight = pad 0 0 10 0
 
 -- creates the title element
 title :: Image
@@ -24,4 +24,4 @@ pic s = picForImage $ title <-> foldr1 (<|>) (elems lists)
     where ts = tasks s
           i = getIndex s
           l = getCurrentList s
-          lists = mapWithKey (\k t -> list k (l == k) i t) ts
+          lists = mapWithKey (\k t -> marginRight $ list k (l == k) i t) ts
