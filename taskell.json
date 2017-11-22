@@ -37,6 +37,9 @@
         },
         {
             "description": "Can't switch lists"
+        },
+        {
+            "description": "foldr1 in UI/Main will break if no lists"
         }
     ],
     "To Do": [
