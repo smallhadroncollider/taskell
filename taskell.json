@@ -3,7 +3,7 @@
         "title": "Bugs",
         "tasks": [
             {
-                "description": "foldr1 in UI/Main will break if no lists"
+                "description": "If not lists crashes on up/down - using index in AllTasks"
             }
         ]
     },
@@ -89,6 +89,9 @@
             },
             {
                 "description": "Add doesn't go to bottom of list"
+            },
+            {
+                "description": "foldr1 in UI/Main will break if no lists"
             }
         ]
     }
