@@ -1,7 +1,11 @@
 module Data.Taskell.Seq where
 
 import Data.Maybe (fromMaybe)
-import Data.Sequence (Seq, (!?), insertAt, deleteAt)
+import Prelude hiding (splitAt, drop)
+import Data.Sequence (Seq, (!?), (|>), (><), insertAt, deleteAt, splitAt, drop, fromList)
+
+empty :: Seq a
+empty = fromList []
 
 extract :: Int -> Seq a -> Maybe (Seq a, a)
 extract i xs = do
@@ -11,6 +15,16 @@ extract i xs = do
 
 update :: Int -> Seq a -> a -> Seq a
 update i xs x = insertAt i x $ deleteAt i xs
+
+updateFn' :: Int -> (a -> a) -> Seq a -> Maybe (Seq a)
+updateFn' i fn xs = do 
+    let (a, b) = splitAt i xs
+    current <- b !? 0
+    let b' = drop 1 b
+    return ((a |> fn current) >< b') 
+
+updateFn :: Int -> (a -> a) -> Seq a -> Seq a
+updateFn i fn xs = fromMaybe xs (updateFn' i fn xs)
 
 shiftBy' :: Int -> Int -> Seq a  -> Maybe (Seq a)
 shiftBy' from dir xs = do
