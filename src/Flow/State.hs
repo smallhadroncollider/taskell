@@ -35,7 +35,7 @@ finishInsert :: State -> State
 finishInsert s = s { mode = Command }
 
 newItem :: State -> State
-newItem s = setList s $ Tasks title (ts |> blank)
+newItem s = selectLast $ setList s $ Tasks title (ts |> blank)
     where (Tasks title ts) = getList s
 
 insertBS :: State -> State
@@ -46,6 +46,9 @@ insertCurrent = change . append
 
 change :: (Task -> Task) -> State -> State
 change fn s = setList s $ update (getIndex s) fn $ getList s
+
+selectLast :: State -> State
+selectLast s = setIndex s (countCurrent s - 1)
 
 -- moving
 up :: State -> State

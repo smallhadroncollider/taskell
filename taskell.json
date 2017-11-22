@@ -4,9 +4,6 @@
         "tasks": [
             {
                 "description": "foldr1 in UI/Main will break if no lists"
-            },
-            {
-                "description": "Add doesn't go to bottom of list"
             }
         ]
     },
@@ -89,6 +86,9 @@
             },
             {
                 "description": "Can't switch lists"
+            },
+            {
+                "description": "Add doesn't go to bottom of list"
             }
         ]
     }
