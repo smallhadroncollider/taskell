@@ -2,7 +2,7 @@ module Flow.State where
 
 import Data.Taskell.Task
 import Data.Maybe (fromMaybe)
-import Data.Sequence ((><), (|>)) 
+import Data.Sequence ((><), (|>), deleteAt) 
 
 data CurrentList = ToDo | Done deriving (Show, Eq)
 data Mode = Command | Insert | Shutdown deriving (Show);
@@ -60,6 +60,12 @@ down s = next $ case getList s of
     ToDo -> setToDo s (m (getToDo s))
     Done -> setDone s (m (getDone s))
     where m = move (getIndex s) 1
+
+-- removing
+delete :: State -> State
+delete s = case getList s of
+    ToDo -> setToDo s (deleteAt (getIndex s) (getToDo s))
+    Done -> setDone s (deleteAt (getIndex s) (getDone s))
 
 -- list and index
 count :: CurrentList -> State -> Int

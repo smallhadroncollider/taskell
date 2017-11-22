@@ -1,10 +1,6 @@
 [
     {
         "completed": false,
-        "description": "Delete with `dd`"
-    },
-    {
-        "completed": false,
         "description": "Create new list with `l`"
     },
     {
@@ -82,5 +78,9 @@
     {
         "completed": true,
         "description": "Move items up/down"
+    },
+    {
+        "completed": true,
+        "description": "Delete with `D`"
     }
 ]

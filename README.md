@@ -16,6 +16,7 @@ A CLI task manager, written in Haskell
 - `l`: move right
 - `J`: shift task down
 - `K`: shift task up
+- `D`: delete task
 - `q`: quit
 
 ## Storage
@@ -46,7 +47,7 @@ Stores in a local `taskell.json` file:
 - scrolling long lists
 - add tags/labels to tasks
 - filter by tag/label
-- delete with `dd`
+- ~delete with `D`~
 
 ### 0.3
 

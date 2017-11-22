@@ -23,6 +23,9 @@ event' (EvKey (KChar 'l') _) = switch
 event' (EvKey (KChar 'K') _) = up
 event' (EvKey (KChar 'J') _) = down
 
+-- removing items
+event' (EvKey (KChar 'D') _) = delete
+
 -- toggle
 event' (EvKey (KChar ' ') _) = toggleCompleted
 
