@@ -1,7 +1,8 @@
 module UI.Main where
 
 import Graphics.Vty
-import Flow.State
+import Flow.State (State, tasks, getIndex, getCurrentList)
+import Data.Map.Strict (mapWithKey, elems)
 import UI.List (list)
 
 attrTitle :: Attr
@@ -19,8 +20,8 @@ title = marginBottom $ string attrTitle "[Taskell]"
 
 -- draws the screen
 pic :: State -> Picture
-pic s = picForImage $ title <-> todo <|> marginLeft done
-    where
-        i = getIndex s
-        todo = list "To Do" (getList s == ToDo) i (getToDo s)
-        done = list "Done" (getList s == Done) i (getDone s)
+pic s = picForImage $ title <-> foldr1 (<|>) (elems lists)
+    where ts = tasks s
+          i = getIndex s
+          l = getCurrentList s
+          lists = mapWithKey (\k t -> list k (l == k) i t) ts

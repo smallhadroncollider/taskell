@@ -1,7 +1,7 @@
 module Main where
 
 import Render (render)
-import Flow.State (initial, setTasks)
+import Flow.State (create, setTasks)
 import Persistence.Taskell (exists, readJSON)
 
 import Data.Bool
@@ -11,7 +11,7 @@ quitIfFalseOtherwise = bool $ return ()
 
 -- read JSON then render
 start :: IO ()
-start = readJSON >>= render . setTasks initial
+start = readJSON >>= render . create 
 
 -- if taskell.json exists/created then start
 main :: IO ()

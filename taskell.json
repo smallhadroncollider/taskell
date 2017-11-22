@@ -1,4 +1,44 @@
 {
+    "Done": [
+        {
+            "description": "`a` to add"
+        },
+        {
+            "description": "`e` to edit"
+        },
+        {
+            "description": "`Space` to mark complete"
+        },
+        {
+            "description": "`j`/`k`/`up`/`down` to move up/down list"
+        },
+        {
+            "description": "`h`/`l`/`Left`/`Right` to move between lists"
+        },
+        {
+            "description": "`q` to quit"
+        },
+        {
+            "description": "Create taskell.json if doesn't exist"
+        },
+        {
+            "description": "Move items up/down"
+        },
+        {
+            "description": "Delete with `D`"
+        }
+    ],
+    "Bugs": [
+        {
+            "description": "Order of lists is wrong"
+        },
+        {
+            "description": "Can't switch lists"
+        },
+        {
+            "description": "No padding on lists"
+        }
+    ],
     "To Do": [
         {
             "description": "Create new list with `l`"
@@ -35,36 +75,6 @@
         },
         {
             "description": "Wrap lines"
-        }
-    ],
-
-    "Done": [
-        {
-            "description": "`a` to add"
-        },
-        {
-            "description": "`e` to edit"
-        },
-        {
-            "description": "`Space` to mark complete"
-        },
-        {
-            "description": "`j`/`k`/`up`/`down` to move up/down list"
-        },
-        {
-            "description": "`h`/`l`/`Left`/`Right` to move between lists"
-        },
-        {
-            "description": "`q` to quit"
-        },
-        {
-            "description": "Create taskell.json if doesn't exist"
-        },
-        {
-            "description": "Move items up/down"
-        },
-        {
-            "description": "Delete with `D`"
         }
     ]
 }

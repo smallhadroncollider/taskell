@@ -1,24 +1,28 @@
 module Flow.State where
 
-import Data.Taskell.Task
 import Data.Maybe (fromMaybe)
 import Data.Sequence ((><), (|>), deleteAt) 
+import Data.Map.Strict ((!), (!?), insert, keys)
 
-data CurrentList = ToDo | Done deriving (Show, Eq)
-data Mode = Command | Insert | Shutdown deriving (Show);
+import Data.Taskell.Task
+import Data.Taskell.Tasks
+import Data.Taskell.AllTasks
+
+data Mode = Command | Insert | Shutdown deriving (Show)
 
 data State = State {
     mode :: Mode,
-    tasks :: (Tasks, Tasks), -- the todo and done tasks 
-    current :: (CurrentList, Int) -- the list and index
+    tasks :: AllTasks, 
+    current :: (String, Int)
 } deriving (Show)
 
-initial :: State
-initial = State {
+create :: AllTasks -> State
+create ts = State {
         mode = Command,
-        tasks = (empty, empty),
-        current = (ToDo, 0)
+        tasks = ts,
+        current = (k, 0)
     } 
+    where k = head $ keys ts 
 
 -- app state
 quit :: State -> State
@@ -32,15 +36,7 @@ finishInsert :: State -> State
 finishInsert s = s { mode = Command }
 
 newItem :: State -> State
-newItem s = setToDo indexed (getToDo indexed |> blank)
-    where listed = setList s ToDo 
-          indexed = setIndex listed (count ToDo listed)
-
-change :: (Task -> Task) -> State -> State
-change fn s = case getList s of
-    ToDo -> setToDo s $ update' $ getToDo s
-    Done -> setDone s $ update' $ getDone s
-    where update' = update (getIndex s) fn
+newItem s = setList s (getList s |> blank)
 
 insertBS :: State -> State
 insertBS = change backspace
@@ -48,49 +44,44 @@ insertBS = change backspace
 insertCurrent :: Char -> State -> State
 insertCurrent = change . append
 
+change :: (Task -> Task) -> State -> State
+change fn s = setList s $ update (getIndex s) fn $ getList s
+
 -- moving
 up :: State -> State
-up s = previous $ case getList s of
-    ToDo -> setToDo s (m (getToDo s))
-    Done -> setDone s (m (getDone s))
+up s = previous $ setList s (m (getList s))
     where m = move (getIndex s) (-1)
 
 down :: State -> State
-down s = next $ case getList s of
-    ToDo -> setToDo s (m (getToDo s))
-    Done -> setDone s (m (getDone s))
+down s = next $ setList s (m (getList s))
     where m = move (getIndex s) 1
 
 -- removing
 delete :: State -> State
-delete s = case getList s of
-    ToDo -> setToDo s (deleteAt (getIndex s) (getToDo s))
-    Done -> setDone s (deleteAt (getIndex s) (getDone s))
+delete s = setList s (deleteAt (getIndex s) (getList s))
 
 -- list and index
-count :: CurrentList -> State -> Int
-count ToDo = length . getToDo
-count Done = length . getDone
+count :: String -> State -> Int
+count k s = case getTasks s !? k of
+    Just ts -> length ts
+    Nothing -> 0
 
 countCurrent :: State -> Int
-countCurrent s = count (getList s) s
+countCurrent s = count (getCurrentList s) s
 
 setIndex :: State -> Int -> State
-setIndex s i = s { current = (getList s, i) }
+setIndex s i = s { current = (getCurrentList s, i) }
 
-setList :: State -> CurrentList -> State
-setList s l = s { current = (l, getIndex s) }
+setCurrentList :: State -> String -> State
+setCurrentList s l = s { current = (l, getIndex s) }
 
 getIndex :: State -> Int
 getIndex = snd . current
 
-getList :: State -> CurrentList
-getList = fst . current
-
 next :: State -> State
 next s = setIndex s i'
     where
-        list = getList s
+        list = getCurrentList s
         i = getIndex s
         c = count list s
         i' = if i < (c - 1) then succ i else i
@@ -101,9 +92,7 @@ previous s = setIndex s i'
           i' = if i > 0 then pred i else 0
 
 switch :: State -> State
-switch s = fixIndex $ case getList s of
-    ToDo -> setList s Done
-    Done -> setList s ToDo
+switch = id
 
 fixIndex :: State -> State
 fixIndex s = if getIndex s > c then setIndex s c' else s
@@ -111,36 +100,17 @@ fixIndex s = if getIndex s > c then setIndex s c' else s
           c' = if c < 0 then 0 else c
 
 -- tasks
-getDone :: State -> Tasks
-getDone = snd . tasks
+getCurrentList :: State -> String
+getCurrentList = fst . current
 
-getToDo :: State -> Tasks
-getToDo = fst . tasks
+getList :: State -> Tasks
+getList s = tasks s ! getCurrentList s -- not safe
 
-setDone :: State -> Tasks -> State
-setDone s ts = s { tasks = (getToDo s, ts) }
+setList :: State -> Tasks -> State
+setList s ts = setTasks s $ insert (getCurrentList s) ts (tasks s)
 
-setToDo :: State -> Tasks -> State
-setToDo s ts = s { tasks = (ts, getDone s) }
+setTasks :: State -> AllTasks -> State
+setTasks s ts = s { tasks = ts }
 
-setTasks :: State -> Tasks -> State
-setTasks s ts = s { tasks = split ts }
-
-getTasks :: State -> Tasks
-getTasks s = uncurry (><) (tasks s)
-
--- completed
-toggle :: (State -> Tasks, State -> Tasks) -> (State -> Tasks -> State, State -> Tasks -> State) -> State -> Maybe State
-toggle (fromGet, toGet) (fromSet, toSet) s = do
-    (removed, current) <- extract (getIndex s) (fromGet s)
-    let updated = toSet s (toGet s |> swap current)
-    let final = fromSet updated removed
-    return $ fixIndex final
-
-toggleCompleted' :: State -> Maybe State
-toggleCompleted' s = case getList s of
-    ToDo -> toggle (getToDo, getDone) (setToDo, setDone) s
-    Done -> toggle (getDone, getToDo) (setDone, setToDo) s
-
-toggleCompleted :: State -> State
-toggleCompleted s = fromMaybe s (toggleCompleted' s)
+getTasks :: State -> AllTasks
+getTasks = tasks

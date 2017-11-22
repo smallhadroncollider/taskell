@@ -15,9 +15,9 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-                     , src/UI
-                     , src/Data
   exposed-modules:     Data.Taskell.Task
+                     , Data.Taskell.Tasks
+                     , Data.Taskell.AllTasks
                      , Flow.Actions
                      , Flow.State
                      , Persistence.Taskell

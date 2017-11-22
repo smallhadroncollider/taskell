@@ -5,7 +5,7 @@ import Data.Foldable (toList)
 import Graphics.Vty
 
 import UI.Task (present)
-import Data.Taskell.Task (Tasks)
+import Data.Taskell.Tasks (Tasks)
 
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
