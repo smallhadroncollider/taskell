@@ -16,8 +16,8 @@ event' (EvKey (KChar 'e') _) = startInsert
 -- navigation
 event' (EvKey (KChar 'k') _) = previous
 event' (EvKey (KChar 'j') _) = next
-event' (EvKey (KChar 'h') _) = switch
-event' (EvKey (KChar 'l') _) = switch
+event' (EvKey (KChar 'h') _) = left
+event' (EvKey (KChar 'l') _) = right
 
 -- moving items
 event' (EvKey (KChar 'K') _) = up

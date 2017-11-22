@@ -92,8 +92,14 @@ previous s = setIndex s i'
     where i = getIndex s
           i' = if i > 0 then pred i else 0
 
-switch :: State -> State
-switch = id
+left :: State -> State
+left s = fixIndex $ setCurrentList s $ if l > 0 then pred l else 0
+    where l = getCurrentList s
+
+right :: State -> State
+right s = fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
+    where l = getCurrentList s
+          c = length (getTasks s)
 
 fixIndex :: State -> State
 fixIndex s = if getIndex s > c then setIndex s c' else s
