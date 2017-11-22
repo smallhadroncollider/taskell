@@ -31,6 +31,6 @@ tasksToImage = vertCat . toList
 mapTasks :: Bool -> Int -> Seq Task -> Image
 mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
-list :: Tasks -> Bool -> Int -> Image
-list (Tasks name tasks) current index = title current name <-> items
+list :: Tasks -> Bool -> Int -> Int -> Image
+list (Tasks name tasks) current index num = title current (show (num + 1) ++ ". " ++ name) <-> items
     where items = if not (null tasks) then mapTasks current index tasks else noItems 

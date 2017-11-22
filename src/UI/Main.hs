@@ -30,4 +30,4 @@ pic s = picForImage $ title <-> if null lists then nothing else foldr1 (<|>) lis
     where ts = tasks s
           i = getIndex s
           l = getCurrentList s
-          lists = mapWithIndex (\index task -> marginRight $ list task (index == l) i) ts
+          lists = mapWithIndex (\index task -> marginRight $ list task (index == l) i index) ts
