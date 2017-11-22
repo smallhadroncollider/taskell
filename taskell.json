@@ -1,6 +1,26 @@
 [
     {
         "completed": false,
+        "description": "Move items up/down"
+    },
+    {
+        "completed": false,
+        "description": "Delete with `dd`"
+    },
+    {
+        "completed": false,
+        "description": "Create new list with `l`"
+    },
+    {
+        "completed": false,
+        "description": "Move between lists with `0-9`"
+    },
+    {
+        "completed": false,
+        "description": "Move between lists with `m`"
+    },
+    {
+        "completed": false,
         "description": "Cursor support"
     },
     {
@@ -21,14 +41,6 @@
     },
     {
         "completed": false,
-        "description": "Delete with `dd`"
-    },
-    {
-        "completed": false,
-        "description": "Multiple lists"
-    },
-    {
-        "completed": false,
         "description": "Undo with `u`"
     },
     {
@@ -42,10 +54,6 @@
     {
         "completed": false,
         "description": "Wrap lines"
-    },
-    {
-        "completed": false,
-        "description": "Move items up/down"
     },
     {
         "completed": true,
