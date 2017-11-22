@@ -25,19 +25,25 @@ A CLI task manager, written in Haskell
 Stores in a local `taskell.json` file:
 
 ```json
-{
-    "To Do": [
-        {
-            "description": "Do this"
-        }
-    ],
+[
+    {
+        "title": "To Do",
+        "tasks": [
+            {
+                "description": "Do this"
+            }
+        ],
+    },
 
-    "Done": [
-        {
-            "description": "Do that"
-        }
-    ]
-}
+    {
+        "title": "Done",
+        "tasks": [
+            {
+                "description": "Do that"
+            }
+        ]
+    }
+]
 ```
 
 ---

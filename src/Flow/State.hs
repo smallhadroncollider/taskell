@@ -1,8 +1,8 @@
 module Flow.State where
 
 import Data.Maybe (fromMaybe)
-import Data.Sequence ((><), (|>), deleteAt) 
-import Data.Map.Strict ((!), (!?), insert, keys)
+import qualified Data.Taskell.Seq as Seq
+import Data.Sequence ((|>), (!?), deleteAt, index)
 
 import Data.Taskell.Task
 import Data.Taskell.Tasks
@@ -13,16 +13,15 @@ data Mode = Command | Insert | Shutdown deriving (Show)
 data State = State {
     mode :: Mode,
     tasks :: AllTasks, 
-    current :: (String, Int)
+    current :: (Int, Int)
 } deriving (Show)
 
 create :: AllTasks -> State
 create ts = State {
         mode = Command,
         tasks = ts,
-        current = (k, 0)
+        current = (0, 0)
     } 
-    where k = head $ keys ts 
 
 -- app state
 quit :: State -> State
@@ -36,7 +35,8 @@ finishInsert :: State -> State
 finishInsert s = s { mode = Command }
 
 newItem :: State -> State
-newItem s = setList s (getList s |> blank)
+newItem s = setList s $ Tasks title (ts |> blank)
+    where (Tasks title ts) = getList s
 
 insertBS :: State -> State
 insertBS = change backspace
@@ -58,12 +58,13 @@ down s = next $ setList s (m (getList s))
 
 -- removing
 delete :: State -> State
-delete s = setList s (deleteAt (getIndex s) (getList s))
+delete s = setList s $ Tasks title (deleteAt (getIndex s) ts)
+    where (Tasks title ts) = getList s
 
 -- list and index
-count :: String -> State -> Int
-count k s = case getTasks s !? k of
-    Just ts -> length ts
+count :: Int -> State -> Int
+count i s = case getTasks s !? i of
+    Just (Tasks _ ts) -> length ts
     Nothing -> 0
 
 countCurrent :: State -> Int
@@ -72,8 +73,8 @@ countCurrent s = count (getCurrentList s) s
 setIndex :: State -> Int -> State
 setIndex s i = s { current = (getCurrentList s, i) }
 
-setCurrentList :: State -> String -> State
-setCurrentList s l = s { current = (l, getIndex s) }
+setCurrentList :: State -> Int -> State
+setCurrentList s i = s { current = (i, getIndex s) }
 
 getIndex :: State -> Int
 getIndex = snd . current
@@ -100,14 +101,14 @@ fixIndex s = if getIndex s > c then setIndex s c' else s
           c' = if c < 0 then 0 else c
 
 -- tasks
-getCurrentList :: State -> String
+getCurrentList :: State -> Int
 getCurrentList = fst . current
 
 getList :: State -> Tasks
-getList s = tasks s ! getCurrentList s -- not safe
+getList s = index (tasks s) (getCurrentList s) -- not safe
 
 setList :: State -> Tasks -> State
-setList s ts = setTasks s $ insert (getCurrentList s) ts (tasks s)
+setList s ts = setTasks s (Seq.update (getCurrentList s) (tasks s) ts)
 
 setTasks :: State -> AllTasks -> State
 setTasks s ts = s { tasks = ts }

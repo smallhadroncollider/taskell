@@ -2,8 +2,8 @@ module UI.Main where
 
 import Graphics.Vty
 import Flow.State (State, tasks, getIndex, getCurrentList)
-import Data.Map.Strict (mapWithKey, elems)
 import UI.List (list)
+import Data.Sequence (mapWithIndex)
 
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
@@ -20,8 +20,8 @@ title = marginBottom $ string attrTitle "[Taskell]"
 
 -- draws the screen
 pic :: State -> Picture
-pic s = picForImage $ title <-> foldr1 (<|>) (elems lists)
+pic s = picForImage $ title <-> foldr1 (<|>) lists
     where ts = tasks s
           i = getIndex s
           l = getCurrentList s
-          lists = mapWithKey (\k t -> marginRight $ list k (l == k) i t) ts
+          lists = mapWithIndex (\index task -> marginRight $ list task (index == l) i) ts

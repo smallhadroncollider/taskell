@@ -18,6 +18,7 @@ library
   exposed-modules:     Data.Taskell.Task
                      , Data.Taskell.Tasks
                      , Data.Taskell.AllTasks
+                     , Data.Taskell.Seq
                      , Flow.Actions
                      , Flow.State
                      , Persistence.Taskell

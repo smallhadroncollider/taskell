@@ -5,7 +5,8 @@ import Data.Foldable (toList)
 import Graphics.Vty
 
 import UI.Task (present)
-import Data.Taskell.Tasks (Tasks)
+import Data.Taskell.Task (Task)
+import Data.Taskell.Tasks
 
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
@@ -27,9 +28,9 @@ tasksToImage :: Seq Image -> Image
 tasksToImage = vertCat . toList 
 
 -- passing current and index feels inelegant...
-mapTasks :: Bool -> Int -> Tasks -> Image
+mapTasks :: Bool -> Int -> Seq Task -> Image
 mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
-list :: String -> Bool -> Int -> Tasks -> Image
-list name current index tasks = title current name <-> items
+list :: Tasks -> Bool -> Int -> Image
+list (Tasks name tasks) current index = title current name <-> items
     where items = if not (null tasks) then mapTasks current index tasks else noItems 

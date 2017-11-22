@@ -1,21 +1,21 @@
 [
     {
         "title": "Bugs",
-        "items": [
-            {
-                "description": "Order of lists is wrong"
-            },
+        "tasks": [
             {
                 "description": "Can't switch lists"
             },
             {
                 "description": "foldr1 in UI/Main will break if no lists"
+            },
+            {
+                "description": "Add doesn't go to bottom of list"
             }
         ]
     },
     {
         "title": "To Do",
-        "items": [
+        "tasks": [
             {
                 "description": "Create new list with `l`"
             },
@@ -56,7 +56,7 @@
     },
     {
         "title": "Done",
-        "items": [
+        "tasks": [
             {
                 "description": "`a` to add"
             },
@@ -79,13 +79,16 @@
                 "description": "Create taskell.json if doesn't exist"
             },
             {
-                "description": "Move items up/down"
+                "description": "Move tasks up/down"
             },
             {
                 "description": "Delete with `D`"
             },
             {
                 "description": "No padding on lists"
+            },
+            {
+                "description": "Order of lists is wrong"
             }
         ]
     }
