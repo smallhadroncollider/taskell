@@ -1,83 +1,92 @@
-{
-    "Done": [
-        {
-            "description": "`a` to add"
-        },
-        {
-            "description": "`e` to edit"
-        },
-        {
-            "description": "`Space` to mark complete"
-        },
-        {
-            "description": "`j`/`k`/`up`/`down` to move up/down list"
-        },
-        {
-            "description": "`h`/`l`/`Left`/`Right` to move between lists"
-        },
-        {
-            "description": "`q` to quit"
-        },
-        {
-            "description": "Create taskell.json if doesn't exist"
-        },
-        {
-            "description": "Move items up/down"
-        },
-        {
-            "description": "Delete with `D`"
-        },
-        {
-            "description": "No padding on lists"
-        }
-    ],
-    "Bugs": [
-        {
-            "description": "Order of lists is wrong"
-        },
-        {
-            "description": "Can't switch lists"
-        },
-        {
-            "description": "foldr1 in UI/Main will break if no lists"
-        }
-    ],
-    "To Do": [
-        {
-            "description": "Create new list with `l`"
-        },
-        {
-            "description": "Move between lists with `0-9`"
-        },
-        {
-            "description": "Move between lists with `m`"
-        },
-        {
-            "description": "Cursor support"
-        },
-        {
-            "description": "Better layout (maybe use brick?)"
-        },
-        {
-            "description": "Scrolling long lists"
-        },
-        {
-            "description": "Add tags/labels"
-        },
-        {
-            "description": "Filter by tag/label"
-        },
-        {
-            "description": "Undo with `u`"
-        },
-        {
-            "description": "Run with any correctly formatted json file"
-        },
-        {
-            "description": "`o` to open a file"
-        },
-        {
-            "description": "Wrap lines"
-        }
-    ]
-}
+[
+    {
+        "title": "Bugs",
+        "items": [
+            {
+                "description": "Order of lists is wrong"
+            },
+            {
+                "description": "Can't switch lists"
+            },
+            {
+                "description": "foldr1 in UI/Main will break if no lists"
+            }
+        ]
+    },
+    {
+        "title": "To Do",
+        "items": [
+            {
+                "description": "Create new list with `l`"
+            },
+            {
+                "description": "Move between lists with `0-9`"
+            },
+            {
+                "description": "Move between lists with `m`"
+            },
+            {
+                "description": "Cursor support"
+            },
+            {
+                "description": "Better layout (maybe use brick?)"
+            },
+            {
+                "description": "Scrolling long lists"
+            },
+            {
+                "description": "Add tags/labels"
+            },
+            {
+                "description": "Filter by tag/label"
+            },
+            {
+                "description": "Undo with `u`"
+            },
+            {
+                "description": "Run with any correctly formatted json file"
+            },
+            {
+                "description": "`o` to open a file"
+            },
+            {
+                "description": "Wrap lines"
+            }
+        ]
+    },
+    {
+        "title": "Done",
+        "items": [
+            {
+                "description": "`a` to add"
+            },
+            {
+                "description": "`e` to edit"
+            },
+            {
+                "description": "`Space` to mark complete"
+            },
+            {
+                "description": "`j`/`k`/`up`/`down` to move up/down list"
+            },
+            {
+                "description": "`h`/`l`/`Left`/`Right` to move between lists"
+            },
+            {
+                "description": "`q` to quit"
+            },
+            {
+                "description": "Create taskell.json if doesn't exist"
+            },
+            {
+                "description": "Move items up/down"
+            },
+            {
+                "description": "Delete with `D`"
+            },
+            {
+                "description": "No padding on lists"
+            }
+        ]
+    }
+]
