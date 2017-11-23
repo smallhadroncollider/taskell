@@ -2,7 +2,7 @@ module Flow.State where
 
 import Data.Taskell.Task (Task, backspace, append, characters)
 import Data.Taskell.Tasks (Tasks(Tasks), update, move, new, deleteTask, getTask)
-import qualified Data.Taskell.AllTasks as All (AllTasks, update, count, get)
+import qualified Data.Taskell.AllTasks as All (AllTasks, update, count, get, changeList)
 
 data Mode = Command | Insert | Shutdown deriving (Show)
 
@@ -53,6 +53,15 @@ up s = previous $ setList s (m (getList s))
 down :: State -> State
 down s = next $ setList s (m (getList s))
     where m = move (getIndex s) 1
+
+move' :: Int -> State -> State
+move' i s = fixIndex $ setTasks s $ All.changeList (current s) (getTasks s) i 
+
+moveLeft :: State -> State
+moveLeft = move' (-1) 
+
+moveRight :: State -> State
+moveRight = move' 1
 
 -- removing
 delete :: State -> State

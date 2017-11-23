@@ -22,6 +22,8 @@ event' (EvKey (KChar 'l') _) = right
 -- moving items
 event' (EvKey (KChar 'K') _) = up
 event' (EvKey (KChar 'J') _) = down
+event' (EvKey (KChar 'H') _) = moveLeft
+event' (EvKey (KChar 'L') _) = moveRight
 
 -- removing items
 event' (EvKey (KChar 'D') _) = delete

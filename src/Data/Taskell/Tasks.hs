@@ -25,7 +25,10 @@ empty :: String -> Tasks
 empty t = Tasks t S.empty 
 
 new :: Tasks -> Tasks
-new (Tasks title ts) = Tasks title (ts |> blank)
+new = append blank
+
+append :: Task -> Tasks -> Tasks
+append t (Tasks title ts) = Tasks title (ts |> t)
 
 extract :: Int -> Tasks -> Maybe (Tasks, Task)
 extract i (Tasks title ts) = do

@@ -16,12 +16,6 @@
                 "description": "Select lists with `1-9`"
             },
             {
-                "description": "Move between lists with `m` - shows possible lists"
-            },
-            {
-                "description": "Move tasks between lists with `H`/`K`"
-            },
-            {
                 "description": "Move to next list with `Space`"
             },
             {
@@ -43,10 +37,13 @@
                 "description": "Run with any correctly formatted json file"
             },
             {
-                "description": "`o` to open a file"
+                "description": "Wrap lines"
             },
             {
-                "description": "Wrap lines"
+                "description": "Move between lists with `m` - shows possible lists"
+            },
+            {
+                "description": "`o` to open a file"
             },
             {
                 "description": "Add due dates to tasks"
@@ -100,6 +97,9 @@
             },
             {
                 "description": "Cursor support"
+            },
+            {
+                "description": "Move tasks between lists with `H`/`K`"
             }
         ],
         "title": "Done"
