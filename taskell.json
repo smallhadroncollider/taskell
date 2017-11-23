@@ -16,9 +16,6 @@
                 "description": "Select lists with `1-9`"
             },
             {
-                "description": "Move to next list with `Space`"
-            },
-            {
                 "description": "Better layout (maybe use brick?)"
             },
             {
@@ -100,6 +97,9 @@
             },
             {
                 "description": "Move tasks between lists with `H`/`K`"
+            },
+            {
+                "description": "Move to next list with `Space`"
             }
         ],
         "title": "Done"
