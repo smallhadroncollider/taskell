@@ -1,7 +1,7 @@
 module Flow.State where
 
-import Data.Taskell.Task (Task, backspace, append)
-import Data.Taskell.Tasks (Tasks(Tasks), update, move, new, deleteTask)
+import Data.Taskell.Task (Task, backspace, append, characters)
+import Data.Taskell.Tasks (Tasks(Tasks), update, move, new, deleteTask, getTask)
 import qualified Data.Taskell.AllTasks as All (AllTasks, update, count, get)
 
 data Mode = Command | Insert | Shutdown deriving (Show)
@@ -113,3 +113,18 @@ setTasks s ts = s { tasks = ts }
 
 getTasks :: State -> All.AllTasks
 getTasks = tasks
+
+getCurrentTask :: State -> Maybe Task
+getCurrentTask s = getTask i l
+    where l = getList s
+          i = getIndex s
+
+-- view
+getCursor :: State -> Maybe (Int, Int, Int)
+getCursor s = do
+    t <- getCurrentTask s
+    let l = characters t
+
+    case mode s of
+        Insert -> return (getCurrentList s, getIndex s, l)
+        _ -> Nothing

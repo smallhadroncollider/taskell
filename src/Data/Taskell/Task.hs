@@ -22,3 +22,6 @@ backspace :: Task -> Task
 backspace t = t { description = d' }
     where d = description t
           d' = if not (null d) then init d else d
+
+characters :: Task -> Int
+characters = length . description

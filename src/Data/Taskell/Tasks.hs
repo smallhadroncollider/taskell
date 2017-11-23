@@ -4,7 +4,7 @@ module Data.Taskell.Tasks where
 
 import Data.Aeson (FromJSON, ToJSON, parseJSON, toJSON, withObject, object, (.:), (.=))
 
-import Data.Sequence (Seq, (|>), deleteAt)
+import Data.Sequence (Seq, (|>), (!?), deleteAt)
 import qualified Data.Taskell.Seq as S
 
 import Data.Taskell.Task (Task, blank)
@@ -40,3 +40,6 @@ move from dir (Tasks title ts) = Tasks title $ S.shiftBy from dir ts
 
 deleteTask :: Int -> Tasks -> Tasks
 deleteTask i (Tasks title ts) = Tasks title (deleteAt i ts)
+
+getTask :: Int -> Tasks -> Maybe Task
+getTask i (Tasks _ ts) = ts !? i
