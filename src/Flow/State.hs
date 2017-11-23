@@ -9,19 +9,24 @@ data Mode = Command | Insert | Shutdown deriving (Show)
 data State = State {
     mode :: Mode,
     tasks :: All.AllTasks, 
-    current :: (Int, Int)
+    current :: (Int, Int),
+    size :: (Int, Int)
 } deriving (Show)
 
-create :: All.AllTasks -> State
-create ts = State {
+create :: (Int, Int) -> All.AllTasks -> State
+create size ts = State {
         mode = Command,
         tasks = ts,
-        current = (0, 0)
+        current = (0, 0),
+        size = size
     } 
 
 -- app state
 quit :: State -> State
 quit s = s { mode = Shutdown }
+
+setSize :: Int -> Int -> State -> State
+setSize w h s = s { size = (w, h) }
 
 -- insert
 startInsert :: State -> State

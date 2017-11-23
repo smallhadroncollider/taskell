@@ -29,6 +29,8 @@ event' (EvKey (KChar ' ') _) = moveRight
 -- removing items
 event' (EvKey (KChar 'D') _) = delete
 
+event' (EvResize w h) = setSize w h
+
 -- fallback
 event' _ = id
 
