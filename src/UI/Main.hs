@@ -17,7 +17,7 @@ marginBottom :: Image -> Image
 marginBottom = pad 0 0 0 1
 
 marginRight :: Image -> Image
-marginRight = pad 0 0 10 0
+marginRight = pad 0 0 5 0
 
 nothing :: Image
 nothing = string attrNothing "No items"
