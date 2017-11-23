@@ -1,23 +1,28 @@
 [
     {
-        "title": "Bugs",
         "tasks": [
             {
-                "description": "If not lists crashes on up/down - using index in AllTasks"
+                "description": "If no lists crashes on up/down - using index in AllTasks"
             }
-        ]
+        ],
+        "title": "Bugs"
     },
     {
-        "title": "To Do",
         "tasks": [
             {
                 "description": "Create new list with `l`"
             },
             {
-                "description": "Move between lists with `0-9`"
+                "description": "Select lists with `1-9`"
             },
             {
-                "description": "Move between lists with `m`"
+                "description": "Move between lists with `m` - shows possible lists"
+            },
+            {
+                "description": "Move tasks between lists with `H`/`K`"
+            },
+            {
+                "description": "Move to next list with `Space`"
             },
             {
                 "description": "Cursor support"
@@ -45,11 +50,14 @@
             },
             {
                 "description": "Wrap lines"
+            },
+            {
+                "description": "Add due dates to tasks"
             }
-        ]
+        ],
+        "title": "To Do"
     },
     {
-        "title": "Done",
         "tasks": [
             {
                 "description": "`a` to add"
@@ -93,6 +101,7 @@
             {
                 "description": "foldr1 in UI/Main will break if no lists"
             }
-        ]
+        ],
+        "title": "Done"
     }
 ]
