@@ -56,7 +56,7 @@ down s = next $ setList s (m (getList s))
 
 -- removing
 delete :: State -> State
-delete s = setList s $ deleteTask (getIndex s) ts
+delete s = fixIndex $ setList s $ deleteTask (getIndex s) ts
     where ts = getList s
 
 -- list and index
