@@ -5,6 +5,8 @@ A CLI task manager, written in Haskell
 - Tasks stored in a `json` file in the current working directory - for easy version control
 - Uses `vim` style key-bindings
 
+![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
+
 ## Controls
 
 - `a` add a task (`Enter`/`Esc` to stop)
