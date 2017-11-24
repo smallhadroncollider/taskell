@@ -53,7 +53,7 @@ pic :: State -> Picture
 pic s = Picture (calculateCursor offset' lists t s) [image] ClearBackground
     where ts = tasks s
           current' = current s
-          lists = map marginRight . toList $ mapWithIndex (list s) ts
+          lists = map marginRight . toList $ mapWithIndex (list s $ imageHeight t) ts
           t = title s
           all = horizCat lists
           (w, h) = size s

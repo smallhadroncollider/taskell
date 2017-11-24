@@ -33,11 +33,11 @@ tasksToImage = vertCat . toList
 mapTasks :: Bool -> Int -> Seq Task -> Image
 mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
-list :: State -> Int -> List -> Image
-list s n (List title ts) = translateY offset $ t <-> tasks
+list :: State -> Int -> Int -> List -> Image
+list s titleOffset n (List title ts) = translateY offset $ t <-> tasks
     where (l, i) = current s
           (w, h) = size s
-          mid = (h `div` 2) - 3
+          mid = (h `div` 2) - titleOffset
           current' = l == n
           offset = if current' && i > mid then mid - i else 0
           t = titleImage current' (show (n + 1) ++ ". " ++ title)
