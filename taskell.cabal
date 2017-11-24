@@ -20,6 +20,8 @@ library
                      , Data.Taskell.AllTasks
                      , Data.Taskell.Seq
                      , Flow.Actions
+                     , Flow.Actions.Normal
+                     , Flow.Actions.Insert
                      , Flow.State
                      , Persistence.Taskell
                      , Render
