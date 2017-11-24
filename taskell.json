@@ -1,86 +1,110 @@
 [
     {
-        "completed": false,
-        "description": "Create new list with `l`"
+        "tasks": [
+            {
+                "description": "If no lists crashes on up/down - using index in AllTasks"
+            }
+        ],
+        "title": "Bugs"
     },
     {
-        "completed": false,
-        "description": "Move between lists with `0-9`"
+        "tasks": [
+            {
+                "description": "Select lists with `1-9`"
+            },
+            {
+                "description": "Better layout (maybe use brick?)"
+            },
+            {
+                "description": "Scrolling long lists"
+            },
+            {
+                "description": "Add tags/labels"
+            },
+            {
+                "description": "Filter by tag/label"
+            },
+            {
+                "description": "Undo with `u`"
+            },
+            {
+                "description": "Run with any correctly formatted json file"
+            },
+            {
+                "description": "Wrap lines"
+            },
+            {
+                "description": "Move between lists with `m` - shows possible lists"
+            },
+            {
+                "description": "`o` to open a file"
+            },
+            {
+                "description": "Add due dates to tasks"
+            }
+        ],
+        "title": "To Do"
     },
     {
-        "completed": false,
-        "description": "Move between lists with `m`"
-    },
-    {
-        "completed": false,
-        "description": "Cursor support"
-    },
-    {
-        "completed": false,
-        "description": "Better layout (maybe use brick?)"
-    },
-    {
-        "completed": false,
-        "description": "Scrolling long lists"
-    },
-    {
-        "completed": false,
-        "description": "Add tags/labels"
-    },
-    {
-        "completed": false,
-        "description": "Filter by tag/label"
-    },
-    {
-        "completed": false,
-        "description": "Undo with `u`"
-    },
-    {
-        "completed": false,
-        "description": "Run with any correctly formatted json file"
-    },
-    {
-        "completed": false,
-        "description": "`o` to open a file"
-    },
-    {
-        "completed": false,
-        "description": "Wrap lines"
-    },
-    {
-        "completed": true,
-        "description": "`a` to add"
-    },
-    {
-        "completed": true,
-        "description": "`e` to edit"
-    },
-    {
-        "completed": true,
-        "description": "`Space` to mark complete"
-    },
-    {
-        "completed": true,
-        "description": "`j`/`k`/`up`/`down` to move up/down list"
-    },
-    {
-        "completed": true,
-        "description": "`h`/`l`/`Left`/`Right` to move between lists"
-    },
-    {
-        "completed": true,
-        "description": "`q` to quit"
-    },
-    {
-        "completed": true,
-        "description": "Create taskell.json if doesn't exist"
-    },
-    {
-        "completed": true,
-        "description": "Move items up/down"
-    },
-    {
-        "completed": true,
-        "description": "Delete with `D`"
+        "tasks": [
+            {
+                "description": "`a` to add"
+            },
+            {
+                "description": "`e` to edit"
+            },
+            {
+                "description": "`Space` to mark complete"
+            },
+            {
+                "description": "`j`/`k`/`up`/`down` to move up/down list"
+            },
+            {
+                "description": "`h`/`l`/`Left`/`Right` to move between lists"
+            },
+            {
+                "description": "`q` to quit"
+            },
+            {
+                "description": "Create taskell.json if doesn't exist"
+            },
+            {
+                "description": "Move tasks up/down"
+            },
+            {
+                "description": "Delete with `D`"
+            },
+            {
+                "description": "No padding on lists"
+            },
+            {
+                "description": "Order of lists is wrong"
+            },
+            {
+                "description": "Can't switch lists"
+            },
+            {
+                "description": "Add doesn't go to bottom of list"
+            },
+            {
+                "description": "foldr1 in UI/Main will break if no lists"
+            },
+            {
+                "description": "Cursor support"
+            },
+            {
+                "description": "Move tasks between lists with `H`/`K`"
+            },
+            {
+                "description": "Move to next list with `Space`"
+            },
+            {
+                "description": "Create new list with `N`"
+            },
+            {
+                "description": "Delete lists with `X`"
+            }
+        ],
+        "title": "Done"
     }
 ]

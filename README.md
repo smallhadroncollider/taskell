@@ -5,18 +5,23 @@ A CLI task manager, written in Haskell
 - Tasks stored in a `json` file in the current working directory - for easy version control
 - Uses `vim` style key-bindings
 
+![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
+
 ## Controls
 
 - `a` add a task (`Enter`/`Esc` to stop)
 - `e` edit a task (`Enter`/`Esc` to stop)
-- `Space`: mark as complete
 - `j`: move down
 - `k`: move up
 - `h`: move left 
 - `l`: move right
 - `J`: shift task down
 - `K`: shift task up
+- `H`: shift task left 
+- `L`/`Space`: shift task right
 - `D`: delete task
+- `N`: new list
+- `X`: delete list
 - `q`: quit
 
 ## Storage
@@ -26,12 +31,21 @@ Stores in a local `taskell.json` file:
 ```json
 [
     {
-        "completed": true,
-        "description": "Do this"
+        "title": "To Do",
+        "tasks": [
+            {
+                "description": "Do this"
+            }
+        ],
     },
+
     {
-        "completed": false,
-        "description": "Do that"
+        "title": "Done",
+        "tasks": [
+            {
+                "description": "Do that"
+            }
+        ]
     }
 ]
 ```
@@ -40,18 +54,4 @@ Stores in a local `taskell.json` file:
 
 ## Roadmap
 
-### 0.2
-
-- cursor support
-- better layout
-- scrolling long lists
-- add tags/labels to tasks
-- filter by tag/label
-- ~delete with `D`~
-
-### 0.3
-
-- multiple lists?
-- undo with `u`
-- run with a filename to open any file
-- 'o' open file
+See [taskell.json](https://github.com/smallhadroncollider/taskell/blob/develop/taskell.json) for planned features
