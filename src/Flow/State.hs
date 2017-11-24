@@ -4,7 +4,7 @@ import Data.Taskell.Task (Task, backspace, append, characters)
 import Data.Taskell.Tasks (Tasks(Tasks), update, move, new, deleteTask, getTask)
 import qualified Data.Taskell.AllTasks as All (AllTasks, update, count, get, changeList)
 
-data Mode = Command | Insert | Shutdown deriving (Show)
+data Mode = Normal | Insert | Shutdown deriving (Show)
 
 data State = State {
     mode :: Mode,
@@ -15,61 +15,63 @@ data State = State {
 
 create :: (Int, Int) -> All.AllTasks -> State
 create size ts = State {
-        mode = Command,
+        mode = Normal,
         tasks = ts,
         current = (0, 0),
         size = size
     } 
 
+type Stateful = State -> State
+
 -- app state
-quit :: State -> State
+quit :: Stateful
 quit s = s { mode = Shutdown }
 
-setSize :: Int -> Int -> State -> State
+setSize :: Int -> Int -> Stateful
 setSize w h s = s { size = (w, h) }
 
 -- insert
-startInsert :: State -> State
+startInsert :: Stateful
 startInsert s = s { mode = Insert }
 
-finishInsert :: State -> State
-finishInsert s = s { mode = Command }
+finishInsert :: Stateful
+finishInsert s = s { mode = Normal }
 
-newItem :: State -> State
+newItem :: Stateful
 newItem s = selectLast $ setList s $ new (getList s)
 
-insertBS :: State -> State
+insertBS :: Stateful
 insertBS = change backspace
 
-insertCurrent :: Char -> State -> State
+insertCurrent :: Char -> Stateful
 insertCurrent = change . append
 
-change :: (Task -> Task) -> State -> State
+change :: (Task -> Task) -> Stateful
 change fn s = setList s $ update (getIndex s) fn $ getList s
 
-selectLast :: State -> State
+selectLast :: Stateful
 selectLast s = setIndex s (countCurrent s - 1)
 
 -- moving
-up :: State -> State
+up :: Stateful
 up s = previous $ setList s (m (getList s))
     where m = move (getIndex s) (-1)
 
-down :: State -> State
+down :: Stateful
 down s = next $ setList s (m (getList s))
     where m = move (getIndex s) 1
 
-move' :: Int -> State -> State
+move' :: Int -> Stateful
 move' i s = fixIndex $ setTasks s $ All.changeList (current s) (getTasks s) i 
 
-moveLeft :: State -> State
+moveLeft :: Stateful
 moveLeft = move' (-1) 
 
-moveRight :: State -> State
+moveRight :: Stateful
 moveRight = move' 1
 
 -- removing
-delete :: State -> State
+delete :: Stateful
 delete s = fixIndex $ setList s $ deleteTask (getIndex s) ts
     where ts = getList s
 
@@ -86,28 +88,28 @@ setCurrentList s i = s { current = (i, getIndex s) }
 getIndex :: State -> Int
 getIndex = snd . current
 
-next :: State -> State
+next :: Stateful
 next s = setIndex s i'
     where
         i = getIndex s
         c = countCurrent s
         i' = if i < (c - 1) then succ i else i
 
-previous :: State -> State
+previous :: Stateful
 previous s = setIndex s i'
     where i = getIndex s
           i' = if i > 0 then pred i else 0
 
-left :: State -> State
+left :: Stateful
 left s = fixIndex $ setCurrentList s $ if l > 0 then pred l else 0
     where l = getCurrentList s
 
-right :: State -> State
+right :: Stateful
 right s = fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
     where l = getCurrentList s
           c = length (getTasks s)
 
-fixIndex :: State -> State
+fixIndex :: Stateful
 fixIndex s = if getIndex s > c then setIndex s c' else s
     where c = countCurrent s - 1
           c' = if c < 0 then 0 else c

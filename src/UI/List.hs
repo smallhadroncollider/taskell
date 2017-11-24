@@ -17,8 +17,8 @@ attrCurrent = defAttr `withForeColor` blue
 attrNoItems :: Attr
 attrNoItems = defAttr `withStyle` dim 
 
-title :: Bool -> String -> Image
-title current = string style
+titleImage :: Bool -> String -> Image
+titleImage current = string style
     where style = if current then attrCurrent else attrTitle
 
 noItems :: Image
@@ -31,6 +31,9 @@ tasksToImage = vertCat . toList
 mapTasks :: Bool -> Int -> Seq Task -> Image
 mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
-list :: Tasks -> Bool -> Int -> Int -> Image
-list (Tasks name tasks) current index num = title current (show (num + 1) ++ ". " ++ name) <-> items
-    where items = if not (null tasks) then mapTasks current index tasks else noItems 
+list :: (Int, Int) -> Int -> Tasks -> Image
+list (l, i) n (Tasks title ts) = t <-> tasks
+    where current' = l == n
+          t = titleImage current' (show (n + 1) ++ ". " ++ title)
+          tasks = if not (null ts) then mapTasks current' i ts else noItems 
+          
