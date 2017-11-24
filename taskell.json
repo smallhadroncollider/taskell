@@ -33,9 +33,6 @@
                 "description": "Scrolling long lists"
             },
             {
-                "description": "Horizontal scrolling"
-            },
-            {
                 "description": "Add tags/labels"
             },
             {
@@ -132,6 +129,9 @@
             },
             {
                 "description": "Rename AllTasks to Lists"
+            },
+            {
+                "description": "Horizontal scrolling"
             }
         ],
         "title": "Done"

@@ -7,6 +7,7 @@ import Graphics.Vty
 import UI.Task (present)
 import Data.Taskell.Task (Task)
 import Data.Taskell.List
+import Config (width)
 
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
@@ -22,7 +23,7 @@ titleImage current = string style
     where style = if current then attrCurrent else attrTitle
 
 noItems :: Image
-noItems = string attrNoItems "No items"
+noItems = resizeWidth width $ string attrNoItems "No items"
 
 tasksToImage :: Seq Image -> Image
 tasksToImage = vertCat . toList 

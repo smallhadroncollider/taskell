@@ -15,7 +15,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Data.Taskell.Task
+  exposed-modules:     Config 
+                     , Data.Taskell.Task
                      , Data.Taskell.List
                      , Data.Taskell.Lists
                      , Data.Taskell.Seq
