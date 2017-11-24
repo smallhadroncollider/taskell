@@ -23,6 +23,9 @@
             },
             {
                 "description": "Cursor doens't show in CreateList mode"
+            },
+            {
+                "description": "Pressing enter on Edit creates new task"
             }
         ],
         "title": "Bugs"
@@ -37,9 +40,6 @@
             },
             {
                 "description": "Horizontal scrolling"
-            },
-            {
-                "description": "Enter while in add mode creates new/Esc leaves add mode"
             },
             {
                 "description": "Add tags/labels"
@@ -129,6 +129,9 @@
             },
             {
                 "description": "Delete lists with `X`"
+            },
+            {
+                "description": "Enter while in add mode creates new/Esc leaves add mode"
             }
         ],
         "title": "Done"
