@@ -2,7 +2,27 @@
     {
         "tasks": [
             {
+                "description": "Rename AllTasks to All"
+            },
+            {
+                "description": "Rename Tasks to List"
+            },
+            {
+                "description": "State should return Maybe?"
+            },
+            {
+                "description": "Break up State module"
+            }
+        ],
+        "title": "Refactoring"
+    },
+    {
+        "tasks": [
+            {
                 "description": "If no lists crashes on up/down - using index in AllTasks"
+            },
+            {
+                "description": "Cursor doens't show in CreateList mode"
             }
         ],
         "title": "Bugs"
@@ -13,10 +33,13 @@
                 "description": "Select lists with `1-9`"
             },
             {
-                "description": "Better layout (maybe use brick?)"
+                "description": "Scrolling long lists"
             },
             {
-                "description": "Scrolling long lists"
+                "description": "Horizontal scrolling"
+            },
+            {
+                "description": "Enter while in add mode creates new/Esc leaves add mode"
             },
             {
                 "description": "Add tags/labels"
@@ -41,6 +64,9 @@
             },
             {
                 "description": "Add due dates to tasks"
+            },
+            {
+                "description": "Reordering lists"
             }
         ],
         "title": "To Do"
