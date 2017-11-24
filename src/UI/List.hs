@@ -1,12 +1,12 @@
 module UI.List where
 
-import Data.Sequence (mapWithIndex) 
+import Data.Sequence (Seq, mapWithIndex) 
 import Data.Foldable (toList)
-import Data.Sequence (Seq)
 import Graphics.Vty
 
 import UI.Task (present)
-import Data.Taskell.Task (Tasks)
+import Data.Taskell.Task (Task)
+import Data.Taskell.Tasks
 
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
@@ -17,8 +17,8 @@ attrCurrent = defAttr `withForeColor` blue
 attrNoItems :: Attr
 attrNoItems = defAttr `withStyle` dim 
 
-title :: Bool -> String -> Image
-title current t = string style t 
+titleImage :: Bool -> String -> Image
+titleImage current = string style
     where style = if current then attrCurrent else attrTitle
 
 noItems :: Image
@@ -28,9 +28,12 @@ tasksToImage :: Seq Image -> Image
 tasksToImage = vertCat . toList 
 
 -- passing current and index feels inelegant...
-mapTasks :: Bool -> Int -> Tasks -> Image
+mapTasks :: Bool -> Int -> Seq Task -> Image
 mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
-list :: String -> Bool -> Int -> Tasks -> Image
-list name current index tasks = (title current name) <-> items
-    where items = if length tasks /= 0 then (mapTasks current index tasks) else noItems 
+list :: (Int, Int) -> Int -> Tasks -> Image
+list (l, i) n (Tasks title ts) = t <-> tasks
+    where current' = l == n
+          t = titleImage current' (show (n + 1) ++ ". " ++ title)
+          tasks = if not (null ts) then mapTasks current' i ts else noItems 
+          

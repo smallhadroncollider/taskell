@@ -1,28 +1,15 @@
 module Flow.Actions (event) where
 
-import Graphics.Vty.Input.Events
-import Flow.State
-import Flow.Keyboard
+import Graphics.Vty.Input.Events (Event)
+import Flow.State (State, Mode(..), mode)
 
-event' :: Event -> State -> State
-event' e
-    | isChar 'q' e = quit
-    | isChar 'a' e = newAndStartInsert
-    | isChar 'e' e = startInsert
-    | isUp e || isChar 'k' e = previous
-    | isDown e || isChar 'j' e =  next
-    | isLeft e || isChar 'h' e = switch 
-    | isRight e || isChar 'l' e = switch 
-    | isChar ' ' e = toggleCompleted
-    | otherwise = id
-
-insertEvent :: Event -> State -> State
-insertEvent e
-    | isEnter e || isEsc e = finishInsert
-    | isBS e = insertBS
-    | otherwise = (maybe id insertCurrent (char e))
+import Flow.Actions.Normal
+import Flow.Actions.Insert
+import Flow.Actions.CreateList
 
 event :: Event -> State -> State
-event e s
-    | insert s = insertEvent e s 
-    | otherwise = event' e s
+event e s = case mode s of
+    Insert -> insert e s
+    Normal -> normal e s
+    CreateList -> createList e s
+    _ -> s
