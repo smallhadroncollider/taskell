@@ -7,6 +7,7 @@ import Graphics.Vty
 import UI.Task (present)
 import Data.Taskell.Task (Task)
 import Data.Taskell.List
+import Flow.State (State, current, size)
 import Config (width)
 
 attrTitle :: Attr
@@ -32,9 +33,13 @@ tasksToImage = vertCat . toList
 mapTasks :: Bool -> Int -> Seq Task -> Image
 mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
-list :: (Int, Int) -> Int -> List -> Image
-list (l, i) n (List title ts) = t <-> tasks
-    where current' = l == n
+list :: State -> Int -> List -> Image
+list s n (List title ts) = translateY offset $ t <-> tasks
+    where (l, i) = current s
+          (w, h) = size s
+          mid = (h `div` 2) - 3
+          current' = l == n
+          offset = if current' && i > mid then mid - i else 0
           t = titleImage current' (show (n + 1) ++ ". " ++ title)
           tasks = if not (null ts) then mapTasks current' i ts else noItems 
           

@@ -30,9 +30,6 @@
                 "description": "Select lists with `1-9`"
             },
             {
-                "description": "Scrolling long lists"
-            },
-            {
                 "description": "Add tags/labels"
             },
             {
@@ -132,6 +129,9 @@
             },
             {
                 "description": "Horizontal scrolling"
+            },
+            {
+                "description": "Scrolling long lists"
             }
         ],
         "title": "Done"
