@@ -6,6 +6,9 @@
             },
             {
                 "description": "Break up State module"
+            },
+            {
+                "description": "UI modules need refactoring"
             }
         ],
         "title": "Refactoring"
