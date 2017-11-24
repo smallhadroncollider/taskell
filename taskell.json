@@ -2,9 +2,6 @@
     {
         "tasks": [
             {
-                "description": "Rename AllTasks to Lists"
-            },
-            {
                 "description": "State should return Maybe?"
             },
             {
@@ -23,9 +20,6 @@
             },
             {
                 "description": "Pressing enter on Edit creates new task"
-            },
-            {
-                "description": "Rename Tasks to List"
             }
         ],
         "title": "Bugs"
@@ -132,6 +126,12 @@
             },
             {
                 "description": "Enter while in add mode creates new/Esc leaves add mode"
+            },
+            {
+                "description": "Rename Tasks to List"
+            },
+            {
+                "description": "Rename AllTasks to Lists"
             }
         ],
         "title": "Done"

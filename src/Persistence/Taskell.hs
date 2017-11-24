@@ -8,7 +8,7 @@ import Data.Map.Strict (empty)
 import qualified Data.ByteString.Lazy as BS
 
 import UI.CLI (promptYN)
-import Data.Taskell.AllTasks (AllTasks, initial)
+import Data.Taskell.Lists (Lists, initial)
 
 path :: FilePath
 path = "taskell.json"
@@ -29,13 +29,13 @@ createPath :: IO ()
 createPath = writeJSON initial 
 
 -- writes Tasks to json file
-writeJSON :: AllTasks -> IO ()
+writeJSON :: Lists -> IO ()
 writeJSON tasks = BS.writeFile "taskell.json" $ encodePretty tasks
 
 -- reads json file
-readJSON :: IO AllTasks
+readJSON :: IO Lists
 readJSON = jsonToTasks <$> BS.readFile path
 
 -- returns tasks or an empty list
-jsonToTasks :: BS.ByteString -> AllTasks
-jsonToTasks s = fromMaybe initial (decode s :: Maybe AllTasks)
+jsonToTasks :: BS.ByteString -> Lists
+jsonToTasks s = fromMaybe initial (decode s :: Maybe Lists)

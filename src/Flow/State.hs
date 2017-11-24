@@ -2,20 +2,20 @@ module Flow.State where
 
 import Data.Taskell.Task (Task, backspace, append, characters)
 import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask)
-import qualified Data.Taskell.AllTasks as All
+import qualified Data.Taskell.Lists as All
 import qualified Data.Taskell.String as S
 
 data Mode = Normal | Insert | CreateList | Shutdown deriving (Show)
 
 data State = State {
     mode :: Mode,
-    tasks :: All.AllTasks, 
+    tasks :: All.Lists, 
     current :: (Int, Int),
     size :: (Int, Int),
     newList :: String
 } deriving (Show)
 
-create :: (Int, Int) -> All.AllTasks -> State
+create :: (Int, Int) -> All.Lists -> State
 create size ts = State {
         mode = Normal,
         tasks = ts,
@@ -160,10 +160,10 @@ getList s = All.get (tasks s) (getCurrentList s)
 setList :: State -> List -> State
 setList s ts = setTasks s (All.update (getCurrentList s) (tasks s) ts)
 
-setTasks :: State -> All.AllTasks -> State
+setTasks :: State -> All.Lists -> State
 setTasks s ts = s { tasks = ts }
 
-getTasks :: State -> All.AllTasks
+getTasks :: State -> All.Lists
 getTasks = tasks
 
 getCurrentTask :: State -> Maybe Task

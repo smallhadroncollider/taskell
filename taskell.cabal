@@ -17,7 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Data.Taskell.Task
                      , Data.Taskell.List
-                     , Data.Taskell.AllTasks
+                     , Data.Taskell.Lists
                      , Data.Taskell.Seq
                      , Data.Taskell.String
                      , Flow.Actions
