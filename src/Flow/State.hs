@@ -2,7 +2,7 @@ module Flow.State where
 
 import Data.Taskell.Task (Task, backspace, append, characters)
 import Data.Taskell.Tasks (Tasks(Tasks), update, move, new, deleteTask, getTask)
-import qualified Data.Taskell.AllTasks as All (AllTasks, update, count, get, changeList, newList)
+import qualified Data.Taskell.AllTasks as All
 import qualified Data.Taskell.String as S
 
 data Mode = Normal | Insert | CreateList | Shutdown deriving (Show)
@@ -60,6 +60,9 @@ createListBS s = s { newList = S.backspace (newList s) }
 
 createListChar :: Char -> Stateful 
 createListChar c s = s { newList = newList s ++ [c] }
+
+deleteCurrentList :: Stateful
+deleteCurrentList s = fixIndex $ setTasks s $ All.delete (getCurrentList s) (getTasks s)
 
 -- insert
 startInsert :: Stateful
@@ -141,8 +144,10 @@ right s = fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
           c = length (getTasks s)
 
 fixIndex :: Stateful
-fixIndex s = if getIndex s > c then setIndex s c' else s
-    where c = countCurrent s - 1
+fixIndex s = if getIndex s' > c then setIndex s' c' else s'
+    where i = All.exists (getCurrentList s) (getTasks s)
+          s' = if i then s else setCurrentList s (length (getTasks s) - 1)
+          c = countCurrent s' - 1
           c' = if c < 0 then 0 else c
 
 -- tasks

@@ -21,6 +21,7 @@ A CLI task manager, written in Haskell
 - `L`/`Space`: shift task right
 - `D`: delete task
 - `N`: new list
+- `X`: delete list
 - `q`: quit
 
 ## Storage

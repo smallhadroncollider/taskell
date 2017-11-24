@@ -15,6 +15,7 @@ normal (EvKey (KChar 'e') _) = startInsert
 
 -- add list
 normal (EvKey (KChar 'N') _) = createListStart 
+normal (EvKey (KChar 'X') _) = deleteCurrentList
 
 -- navigation
 normal (EvKey (KChar 'k') _) = previous

@@ -1,7 +1,7 @@
 module Data.Taskell.AllTasks where
 
 import Data.Maybe (fromMaybe)
-import Data.Sequence (Seq, fromList, (!?), (|>), index)
+import Data.Sequence (Seq, fromList, (!?), (|>), index, deleteAt)
 import qualified Data.Taskell.Seq as S
 import Data.Taskell.Tasks (Tasks(..), empty, extract, append)
 
@@ -36,3 +36,11 @@ changeList cur ts dir = fromMaybe ts (changeList' cur ts dir)
 
 newList :: String -> AllTasks -> AllTasks
 newList s ts = ts |> empty s 
+
+delete :: Int -> AllTasks -> AllTasks
+delete = deleteAt
+
+exists :: Int -> AllTasks -> Bool
+exists i ts = case ts !? i of
+    Just _ -> True
+    Nothing -> False
