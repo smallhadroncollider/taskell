@@ -13,6 +13,9 @@ normal (EvKey (KChar 'q') _) = quit
 normal (EvKey (KChar 'a') _) = startInsert . newItem
 normal (EvKey (KChar 'e') _) = startInsert
 
+-- add list
+normal (EvKey (KChar 'N') _) = createListStart 
+
 -- navigation
 normal (EvKey (KChar 'k') _) = previous
 normal (EvKey (KChar 'j') _) = next

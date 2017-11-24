@@ -19,9 +19,11 @@ library
                      , Data.Taskell.Tasks
                      , Data.Taskell.AllTasks
                      , Data.Taskell.Seq
+                     , Data.Taskell.String
                      , Flow.Actions
                      , Flow.Actions.Normal
                      , Flow.Actions.Insert
+                     , Flow.Actions.CreateList
                      , Flow.State
                      , Persistence.Taskell
                      , Render

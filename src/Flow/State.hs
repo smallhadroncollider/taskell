@@ -2,15 +2,17 @@ module Flow.State where
 
 import Data.Taskell.Task (Task, backspace, append, characters)
 import Data.Taskell.Tasks (Tasks(Tasks), update, move, new, deleteTask, getTask)
-import qualified Data.Taskell.AllTasks as All (AllTasks, update, count, get, changeList)
+import qualified Data.Taskell.AllTasks as All (AllTasks, update, count, get, changeList, newList)
+import qualified Data.Taskell.String as S
 
-data Mode = Normal | Insert | Shutdown deriving (Show)
+data Mode = Normal | Insert | CreateList | Shutdown deriving (Show)
 
 data State = State {
     mode :: Mode,
     tasks :: All.AllTasks, 
     current :: (Int, Int),
-    size :: (Int, Int)
+    size :: (Int, Int),
+    newList :: String
 } deriving (Show)
 
 create :: (Int, Int) -> All.AllTasks -> State
@@ -18,7 +20,8 @@ create size ts = State {
         mode = Normal,
         tasks = ts,
         current = (0, 0),
-        size = size
+        size = size,
+        newList = ""
     } 
 
 type Stateful = State -> State
@@ -29,6 +32,34 @@ quit s = s { mode = Shutdown }
 
 setSize :: Int -> Int -> Stateful
 setSize w h s = s { size = (w, h) }
+
+-- createList
+getNewList :: State -> Maybe String
+getNewList s = case mode s of
+    CreateList -> Just $ newList s
+    _ -> Nothing
+
+createList :: Stateful
+createList s = setTasks s'' ts
+    where listName = newList s
+          s' = s { newList = "" }
+          ts = All.newList listName $ getTasks s'
+          s'' = setCurrentList s' (length ts - 1)
+
+createListStart :: Stateful
+createListStart s = s { mode = CreateList }
+
+createListFinish :: Stateful
+createListFinish = finishInsert . createList
+
+createListCancel :: Stateful 
+createListCancel = finishInsert 
+
+createListBS :: Stateful 
+createListBS s = s { newList = S.backspace (newList s) }
+
+createListChar :: Char -> Stateful 
+createListChar c s = s { newList = newList s ++ [c] }
 
 -- insert
 startInsert :: Stateful

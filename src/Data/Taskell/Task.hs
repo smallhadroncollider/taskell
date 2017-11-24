@@ -4,6 +4,7 @@ module Data.Taskell.Task where
 
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
+import qualified Data.Taskell.String as S
 
 newtype Task = Task {
     description :: String
@@ -19,9 +20,7 @@ append :: Char -> Task  -> Task
 append c t = t { description = description t ++ [c] }
 
 backspace :: Task -> Task
-backspace t = t { description = d' }
-    where d = description t
-          d' = if not (null d) then init d else d
+backspace t = t { description = S.backspace (description t) }
 
 characters :: Task -> Int
 characters = length . description

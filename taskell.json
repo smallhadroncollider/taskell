@@ -10,7 +10,7 @@
     {
         "tasks": [
             {
-                "description": "Create new list with `l`"
+                "description": "Delete lists with `X`"
             },
             {
                 "description": "Select lists with `1-9`"
@@ -100,8 +100,23 @@
             },
             {
                 "description": "Move to next list with `Space`"
+            },
+            {
+                "description": "Create new list with `N`"
             }
         ],
         "title": "Done"
+    },
+    {
+        "tasks": [],
+        "title": "Hello"
+    },
+    {
+        "tasks": [],
+        "title": "Fish CakXX"
+    },
+    {
+        "tasks": [],
+        "title": "Hello Mum"
     }
 ]
