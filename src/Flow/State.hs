@@ -1,7 +1,7 @@
 module Flow.State where
 
 import Data.Taskell.Task (Task, backspace, append, characters)
-import Data.Taskell.Tasks (Tasks(Tasks), update, move, new, deleteTask, getTask)
+import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask)
 import qualified Data.Taskell.AllTasks as All
 import qualified Data.Taskell.String as S
 
@@ -154,10 +154,10 @@ fixIndex s = if getIndex s' > c then setIndex s' c' else s'
 getCurrentList :: State -> Int
 getCurrentList = fst . current
 
-getList :: State -> Tasks
+getList :: State -> List
 getList s = All.get (tasks s) (getCurrentList s)
 
-setList :: State -> Tasks -> State
+setList :: State -> List -> State
 setList s ts = setTasks s (All.update (getCurrentList s) (tasks s) ts)
 
 setTasks :: State -> All.AllTasks -> State

@@ -6,7 +6,7 @@ import Graphics.Vty
 
 import UI.Task (present)
 import Data.Taskell.Task (Task)
-import Data.Taskell.Tasks
+import Data.Taskell.List
 
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
@@ -31,8 +31,8 @@ tasksToImage = vertCat . toList
 mapTasks :: Bool -> Int -> Seq Task -> Image
 mapTasks current index = tasksToImage . mapWithIndex (present current index)
 
-list :: (Int, Int) -> Int -> Tasks -> Image
-list (l, i) n (Tasks title ts) = t <-> tasks
+list :: (Int, Int) -> Int -> List -> Image
+list (l, i) n (List title ts) = t <-> tasks
     where current' = l == n
           t = titleImage current' (show (n + 1) ++ ". " ++ title)
           tasks = if not (null ts) then mapTasks current' i ts else noItems 

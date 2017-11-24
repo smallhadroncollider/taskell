@@ -3,22 +3,22 @@ module Data.Taskell.AllTasks where
 import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq, fromList, (!?), (|>), index, deleteAt)
 import qualified Data.Taskell.Seq as S
-import Data.Taskell.Tasks (Tasks(..), empty, extract, append)
+import Data.Taskell.List (List(..), empty, extract, append)
 
-type AllTasks = Seq Tasks 
+type AllTasks = Seq List 
 
 initial :: AllTasks
 initial = fromList [empty "To Do", empty "Done"]
 
-update :: Int -> AllTasks -> Tasks -> AllTasks
+update :: Int -> AllTasks -> List -> AllTasks
 update = S.update 
 
 count :: Int -> AllTasks -> Int
 count i ts = case ts !? i of
-    Just (Tasks _ ts) -> length ts
+    Just (List _ ts) -> length ts
     Nothing -> 0
 
-get :: AllTasks -> Int -> Tasks
+get :: AllTasks -> Int -> List
 get = index -- not safe
 
 changeList' :: (Int, Int) -> AllTasks -> Int -> Maybe AllTasks
