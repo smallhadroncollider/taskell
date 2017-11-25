@@ -1,7 +1,7 @@
 name:                taskell
-version:             0.2.0.0
--- synopsis:
--- description:
+version:             0.3.0.0
+-- synopsis: A CLI task manager, written in Haskell
+-- description: Allows you to create version controlled task lists
 homepage:            https://github.com/smallhadroncollider/taskell#readme
 license:             BSD3
 license-file:        LICENSE
