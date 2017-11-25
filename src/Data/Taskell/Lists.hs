@@ -18,8 +18,8 @@ count i ts = case ts !? i of
     Just (List _ ts) -> length ts
     Nothing -> 0
 
-get :: Lists -> Int -> List
-get = index -- not safe
+get :: Lists -> Int -> Maybe List
+get = (!?)
 
 changeList' :: (Int, Int) -> Lists -> Int -> Maybe Lists
 changeList' (list, index) ts dir = do

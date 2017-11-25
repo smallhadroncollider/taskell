@@ -16,9 +16,6 @@
     {
         "tasks": [
             {
-                "description": "If no lists crashes on up/down - using index in AllTasks"
-            },
-            {
                 "description": "Cursor doens't show in CreateList mode"
             },
             {
@@ -135,6 +132,9 @@
             },
             {
                 "description": "Scrolling long lists"
+            },
+            {
+                "description": "If no lists crashes on up/down - using index in AllTasks"
             }
         ],
         "title": "Done"

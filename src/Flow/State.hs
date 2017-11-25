@@ -119,27 +119,35 @@ finishInsert :: Stateful
 finishInsert s = return $ s { mode = Normal }
 
 newItem :: Stateful
-newItem s = return $ selectLast $ setList s $ new (getList s)
+newItem s = do
+    l <- getList s
+    return $ selectLast $ setList s (new l)
 
 insertBS :: Stateful
-insertBS = return . change backspace
+insertBS = change backspace
 
 insertCurrent :: Char -> Stateful
-insertCurrent char = return . change (append char)
+insertCurrent char = change (append char)
 
-change :: (Task -> Task) -> InternalStateful
-change fn s = setList s $ update (getIndex s) fn $ getList s
+change :: (Task -> Task) -> State -> Maybe State 
+change fn s = do
+    l <- getList s
+    return $ setList s $ update (getIndex s) fn l
 
 selectLast :: InternalStateful
 selectLast s = setIndex s (countCurrent s - 1)
 
 -- moving
 up :: Stateful
-up s = previous $ setList s (m (getList s))
+up s = do
+    l <- getList s
+    previous $ setList s (m l)
     where m = move (getIndex s) (-1)
 
 down :: Stateful
-down s = next $ setList s (m (getList s))
+down s = do
+    l <- getList s
+    next $ setList s (m l)
     where m = move (getIndex s) 1
 
 move' :: Int -> InternalStateful
@@ -153,8 +161,9 @@ moveRight = return . move' 1
 
 -- removing
 delete :: Stateful
-delete s = return $ fixIndex $ setList s $ deleteTask (getIndex s) ts
-    where ts = getList s
+delete s = do
+    ts <- getList s
+    return $ fixIndex $ setList s $ deleteTask (getIndex s) ts
 
 -- list and index
 countCurrent :: State -> Int
@@ -201,7 +210,7 @@ fixIndex s = if getIndex s' > c then setIndex s' c' else s'
 getCurrentList :: State -> Int
 getCurrentList = fst . current
 
-getList :: State -> List
+getList :: State -> Maybe List
 getList s = Lists.get (tasks s) (getCurrentList s)
 
 setList :: State -> List -> State
@@ -214,9 +223,10 @@ getTasks :: State -> Lists.Lists
 getTasks = tasks
 
 getCurrentTask :: State -> Maybe Task
-getCurrentTask s = getTask i l
-    where l = getList s
-          i = getIndex s
+getCurrentTask s = do
+    l <- getList s
+    let i = getIndex s
+    getTask i l
 
 -- view
 getCursor :: State -> Maybe (Int, Int, Int)
