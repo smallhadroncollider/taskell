@@ -55,6 +55,9 @@
             },
             {
                 "description": "Reordering lists"
+            },
+            {
+                "description": "Show current mode in title"
             }
         ],
         "title": "To Do"
