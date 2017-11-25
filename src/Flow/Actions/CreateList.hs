@@ -1,11 +1,11 @@
-module Flow.Actions.CreateList (createList) where
+module Flow.Actions.CreateList (event) where
 
 import Graphics.Vty.Input.Events
 import qualified Flow.State as S
 
-createList :: Event -> S.Stateful
-createList (EvKey KEnter _) = S.createListFinish
-createList (EvKey KEsc _) = S.createListCancel
-createList (EvKey KBS _) = S.createListBS
-createList (EvKey (KChar char) _) = S.createListChar char
-createList _ = id
+event :: Event -> S.Stateful
+event (EvKey KEnter _) = S.createListFinish
+event (EvKey KEsc _) = S.createListCancel
+event (EvKey KBS _) = S.createListBS
+event (EvKey (KChar char) _) = S.createListChar char
+event _ = return

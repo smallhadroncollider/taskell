@@ -1,7 +1,7 @@
 module Main where
 
 import Render (render)
-import Flow.State (create, setTasks)
+import Flow.State (create)
 import Persistence.Taskell (exists, readJSON)
 import System.Console.Terminal.Size (Window(..), size)
 

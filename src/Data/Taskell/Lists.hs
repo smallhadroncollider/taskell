@@ -18,11 +18,11 @@ count i ts = case ts !? i of
     Just (List _ ts) -> length ts
     Nothing -> 0
 
-get :: Lists -> Int -> List
-get = index -- not safe
+get :: Lists -> Int -> Maybe List
+get = (!?)
 
-changeList' :: (Int, Int) -> Lists -> Int -> Maybe Lists
-changeList' (list, index) ts dir = do
+changeList :: (Int, Int) -> Lists -> Int -> Maybe Lists
+changeList (list, index) ts dir = do
     let next = list + dir
     a <- ts !? list -- get current list
     b <- ts !? next -- get next list
@@ -30,9 +30,6 @@ changeList' (list, index) ts dir = do
     let b' = append task b -- add selected task to next list
     let all = update list ts a' -- update extracted list
     return $ update next all b' -- update next list
-
-changeList :: (Int, Int) -> Lists -> Int -> Lists
-changeList cur ts dir = fromMaybe ts (changeList' cur ts dir)
 
 newList :: String -> Lists -> Lists
 newList s ts = ts |> empty s 

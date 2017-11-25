@@ -2,9 +2,6 @@
     {
         "tasks": [
             {
-                "description": "State should return Maybe?"
-            },
-            {
                 "description": "Break up State module"
             },
             {
@@ -16,10 +13,7 @@
     {
         "tasks": [
             {
-                "description": "If no lists crashes on up/down - using index in AllTasks"
-            },
-            {
-                "description": "Cursor doens't show in CreateList mode"
+                "description": "Cursor doesn't show on CreateList mode"
             },
             {
                 "description": "Pressing enter on Edit creates new task"
@@ -58,6 +52,12 @@
             },
             {
                 "description": "Reordering lists"
+            },
+            {
+                "description": "Show current mode in title"
+            },
+            {
+                "description": "Space moves to next and stays in list / H & L move but keep current"
             }
         ],
         "title": "To Do"
@@ -135,6 +135,12 @@
             },
             {
                 "description": "Scrolling long lists"
+            },
+            {
+                "description": "If no lists crashes on up/down - using index in AllTasks"
+            },
+            {
+                "description": "State should return Maybe?"
             }
         ],
         "title": "Done"
