@@ -1,21 +1,67 @@
-module Flow.State where
+module Flow.State (
+    -- types
+    State,
+    Stateful,
+    Mode(..),
+    
+    -- record accesors
+    mode,
+    size,
+    current,
+    tasks,
+
+    -- UI.Main
+    getCursor,
+    getNewList,
+    
+    -- Main
+    create,
+    
+    -- Flow.Actions.Normal 
+    quit,
+    startInsert,
+    createListStart,
+    deleteCurrentList,
+    previous,
+    next,
+    left,
+    right,
+    up,
+    down,
+    moveLeft,
+    moveRight,
+    delete,
+    setSize,
+
+    -- Flow.Actions.CreateList
+    createListFinish,
+    createListCancel,
+    createListBS,
+    createListChar,
+
+    -- Flow.Actions.Insert
+    newItem,
+    finishInsert,
+    insertBS,
+    insertCurrent
+) where
 
 import Data.Taskell.Task (Task, backspace, append, characters)
 import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask)
-import qualified Data.Taskell.Lists as All
+import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 
 data Mode = Normal | Insert | CreateList | Shutdown deriving (Show)
 
 data State = State {
     mode :: Mode,
-    tasks :: All.Lists, 
+    tasks :: Lists.Lists, 
     current :: (Int, Int),
     size :: (Int, Int),
     newList :: String
 } deriving (Show)
 
-create :: (Int, Int) -> All.Lists -> State
+create :: (Int, Int) -> Lists.Lists -> State
 create size ts = State {
         mode = Normal,
         tasks = ts,
@@ -25,6 +71,7 @@ create size ts = State {
     } 
 
 type Stateful = State -> Maybe State
+type InternalStateful = State -> State 
 
 -- app state
 quit :: Stateful
@@ -39,11 +86,11 @@ getNewList s = case mode s of
     CreateList -> Just $ newList s
     _ -> Nothing
 
-createList :: State -> State
+createList :: InternalStateful
 createList s = setTasks s'' ts
     where listName = newList s
           s' = s { newList = "" }
-          ts = All.newList listName $ getTasks s'
+          ts = Lists.newList listName $ getTasks s'
           s'' = setCurrentList s' (length ts - 1)
 
 createListStart :: Stateful
@@ -62,7 +109,7 @@ createListChar :: Char -> Stateful
 createListChar c s = return $ s { newList = newList s ++ [c] }
 
 deleteCurrentList :: Stateful
-deleteCurrentList s = fixIndex $ setTasks s $ All.delete (getCurrentList s) (getTasks s)
+deleteCurrentList s = return $ fixIndex $ setTasks s $ Lists.delete (getCurrentList s) (getTasks s)
 
 -- insert
 startInsert :: Stateful
@@ -72,19 +119,19 @@ finishInsert :: Stateful
 finishInsert s = return $ s { mode = Normal }
 
 newItem :: Stateful
-newItem s = selectLast $ setList s $ new (getList s)
+newItem s = return $ selectLast $ setList s $ new (getList s)
 
 insertBS :: Stateful
-insertBS = change backspace
+insertBS = return . change backspace
 
 insertCurrent :: Char -> Stateful
-insertCurrent = change . append
+insertCurrent char = return . change (append char)
 
-change :: (Task -> Task) -> Stateful
-change fn s = return $ setList s $ update (getIndex s) fn $ getList s
+change :: (Task -> Task) -> InternalStateful
+change fn s = setList s $ update (getIndex s) fn $ getList s
 
-selectLast :: Stateful
-selectLast s = return $ setIndex s (countCurrent s - 1)
+selectLast :: InternalStateful
+selectLast s = setIndex s (countCurrent s - 1)
 
 -- moving
 up :: Stateful
@@ -95,23 +142,23 @@ down :: Stateful
 down s = next $ setList s (m (getList s))
     where m = move (getIndex s) 1
 
-move' :: Int -> Stateful
-move' i s = fixIndex $ setTasks s $ All.changeList (current s) (getTasks s) i 
+move' :: Int -> InternalStateful
+move' i s = fixIndex $ setTasks s $ Lists.changeList (current s) (getTasks s) i 
 
 moveLeft :: Stateful
-moveLeft = move' (-1) 
+moveLeft = return . move' (-1)
 
 moveRight :: Stateful
-moveRight = move' 1
+moveRight = return . move' 1
 
 -- removing
 delete :: Stateful
-delete s = fixIndex $ setList s $ deleteTask (getIndex s) ts
+delete s = return $ fixIndex $ setList s $ deleteTask (getIndex s) ts
     where ts = getList s
 
 -- list and index
 countCurrent :: State -> Int
-countCurrent s = All.count (getCurrentList s) (getTasks s)
+countCurrent s = Lists.count (getCurrentList s) (getTasks s)
 
 setIndex :: State -> Int -> State
 setIndex s i = s { current = (getCurrentList s, i) }
@@ -135,17 +182,17 @@ previous s = return $ setIndex s i'
           i' = if i > 0 then pred i else 0
 
 left :: Stateful
-left s = fixIndex $ setCurrentList s $ if l > 0 then pred l else 0
+left s = return $ fixIndex $ setCurrentList s $ if l > 0 then pred l else 0
     where l = getCurrentList s
 
 right :: Stateful
-right s = fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
+right s = return $ fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
     where l = getCurrentList s
           c = length (getTasks s)
 
-fixIndex :: Stateful
-fixIndex s = return $ if getIndex s' > c then setIndex s' c' else s'
-    where i = All.exists (getCurrentList s) (getTasks s)
+fixIndex :: InternalStateful
+fixIndex s = if getIndex s' > c then setIndex s' c' else s'
+    where i = Lists.exists (getCurrentList s) (getTasks s)
           s' = if i then s else setCurrentList s (length (getTasks s) - 1)
           c = countCurrent s' - 1
           c' = if c < 0 then 0 else c
@@ -155,15 +202,15 @@ getCurrentList :: State -> Int
 getCurrentList = fst . current
 
 getList :: State -> List
-getList s = All.get (tasks s) (getCurrentList s)
+getList s = Lists.get (tasks s) (getCurrentList s)
 
 setList :: State -> List -> State
-setList s ts = setTasks s (All.update (getCurrentList s) (tasks s) ts)
+setList s ts = setTasks s (Lists.update (getCurrentList s) (tasks s) ts)
 
-setTasks :: State -> All.Lists -> State
+setTasks :: State -> Lists.Lists -> State
 setTasks s ts = s { tasks = ts }
 
-getTasks :: State -> All.Lists
+getTasks :: State -> Lists.Lists
 getTasks = tasks
 
 getCurrentTask :: State -> Maybe Task
