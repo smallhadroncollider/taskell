@@ -1,8 +1,9 @@
 module Main where
 
 import Render (render)
+import Control.Monad (when)
 import Flow.State (create)
-import Persistence.Taskell (exists, readJSON)
+import Persistence.Taskell (exists, readJSON, writeJSON)
 import System.Console.Terminal.Size (Window(..), size)
 
 import Data.Bool
@@ -18,12 +19,14 @@ getSize = do
         Nothing -> return (80, 30)
 
 -- read JSON then render
-start :: IO ()
-start = do
-    json <- readJSON
+start :: FilePath -> IO ()
+start path = do
+    json <- readJSON path
     size <- getSize
-    render $ create size json
+    render path $ create size json
 
 -- if taskell.json exists/created then start
 main :: IO ()
-main = exists >>= quitIfFalseOtherwise start 
+main = do
+    (ex, path) <- exists
+    when ex $ start path

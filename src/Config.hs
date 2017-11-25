@@ -1,5 +1,8 @@
 module Config where
 
+defaultPath :: FilePath
+defaultPath = "taskell.json"
+
 width :: Int
 width = 25
 

@@ -33,9 +33,6 @@
                 "description": "Undo with `u`"
             },
             {
-                "description": "Run with any correctly formatted json file"
-            },
-            {
                 "description": "Wrap lines"
             },
             {
@@ -141,6 +138,9 @@
             },
             {
                 "description": "Select lists with `1-9`"
+            },
+            {
+                "description": "Run with any correctly formatted json file"
             }
         ],
         "title": "Done"
