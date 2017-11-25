@@ -1,11 +1,11 @@
-module Flow.Actions.Insert (insert) where
+module Flow.Actions.Insert (event) where
 
 import Graphics.Vty.Input.Events
 import Flow.State
 
-insert :: Event -> Stateful
-insert (EvKey KEnter _) = newItem
-insert (EvKey KEsc _) = finishInsert
-insert (EvKey KBS _) = insertBS
-insert (EvKey (KChar char) _) = insertCurrent char
-insert _ = id
+event :: Event -> Stateful
+event (EvKey KEnter _) = newItem
+event (EvKey KEsc _) = finishInsert
+event (EvKey KBS _) = insertBS
+event (EvKey (KChar char) _) = insertCurrent char
+event _ = return 

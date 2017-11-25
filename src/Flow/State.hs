@@ -24,14 +24,14 @@ create size ts = State {
         newList = ""
     } 
 
-type Stateful = State -> State
+type Stateful = State -> Maybe State
 
 -- app state
 quit :: Stateful
-quit s = s { mode = Shutdown }
+quit s = return $ s { mode = Shutdown }
 
 setSize :: Int -> Int -> Stateful
-setSize w h s = s { size = (w, h) }
+setSize w h s = return $ s { size = (w, h) }
 
 -- createList
 getNewList :: State -> Maybe String
@@ -39,7 +39,7 @@ getNewList s = case mode s of
     CreateList -> Just $ newList s
     _ -> Nothing
 
-createList :: Stateful
+createList :: State -> State
 createList s = setTasks s'' ts
     where listName = newList s
           s' = s { newList = "" }
@@ -47,7 +47,7 @@ createList s = setTasks s'' ts
           s'' = setCurrentList s' (length ts - 1)
 
 createListStart :: Stateful
-createListStart s = s { mode = CreateList }
+createListStart s = return $ s { mode = CreateList }
 
 createListFinish :: Stateful
 createListFinish = finishInsert . createList
@@ -56,20 +56,20 @@ createListCancel :: Stateful
 createListCancel = finishInsert 
 
 createListBS :: Stateful 
-createListBS s = s { newList = S.backspace (newList s) }
+createListBS s = return $ s { newList = S.backspace (newList s) }
 
 createListChar :: Char -> Stateful 
-createListChar c s = s { newList = newList s ++ [c] }
+createListChar c s = return $ s { newList = newList s ++ [c] }
 
 deleteCurrentList :: Stateful
 deleteCurrentList s = fixIndex $ setTasks s $ All.delete (getCurrentList s) (getTasks s)
 
 -- insert
 startInsert :: Stateful
-startInsert s = s { mode = Insert }
+startInsert s = return $ s { mode = Insert }
 
 finishInsert :: Stateful
-finishInsert s = s { mode = Normal }
+finishInsert s = return $ s { mode = Normal }
 
 newItem :: Stateful
 newItem s = selectLast $ setList s $ new (getList s)
@@ -81,10 +81,10 @@ insertCurrent :: Char -> Stateful
 insertCurrent = change . append
 
 change :: (Task -> Task) -> Stateful
-change fn s = setList s $ update (getIndex s) fn $ getList s
+change fn s = return $ setList s $ update (getIndex s) fn $ getList s
 
 selectLast :: Stateful
-selectLast s = setIndex s (countCurrent s - 1)
+selectLast s = return $ setIndex s (countCurrent s - 1)
 
 -- moving
 up :: Stateful
@@ -123,14 +123,14 @@ getIndex :: State -> Int
 getIndex = snd . current
 
 next :: Stateful
-next s = setIndex s i'
+next s = return $ setIndex s i'
     where
         i = getIndex s
         c = countCurrent s
         i' = if i < (c - 1) then succ i else i
 
 previous :: Stateful
-previous s = setIndex s i'
+previous s = return $ setIndex s i'
     where i = getIndex s
           i' = if i > 0 then pred i else 0
 
@@ -144,7 +144,7 @@ right s = fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
           c = length (getTasks s)
 
 fixIndex :: Stateful
-fixIndex s = if getIndex s' > c then setIndex s' c' else s'
+fixIndex s = return $ if getIndex s' > c then setIndex s' c' else s'
     where i = All.exists (getCurrentList s) (getTasks s)
           s' = if i then s else setCurrentList s (length (getTasks s) - 1)
           c = countCurrent s' - 1
