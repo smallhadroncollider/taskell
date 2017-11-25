@@ -20,11 +20,11 @@ attrNoItems :: Attr
 attrNoItems = defAttr `withStyle` dim 
 
 titleImage :: Bool -> String -> Image
-titleImage current = string style
+titleImage current s = string style ("  " ++ s)
     where style = if current then attrCurrent else attrTitle
 
 noItems :: Image
-noItems = resizeWidth width $ string attrNoItems "No items"
+noItems = resizeWidth width $ string attrNoItems "  No items"
 
 tasksToImage :: Seq Image -> Image
 tasksToImage = vertCat . toList 
