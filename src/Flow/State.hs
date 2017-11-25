@@ -90,7 +90,7 @@ createList :: InternalStateful
 createList s = setTasks s'' ts
     where listName = newList s
           s' = s { newList = "" }
-          ts = Lists.newList listName $ getTasks s'
+          ts = Lists.newList listName $ tasks s'
           s'' = setCurrentList s' (length ts - 1)
 
 createListStart :: Stateful
@@ -109,7 +109,7 @@ createListChar :: Char -> Stateful
 createListChar c s = return $ s { newList = newList s ++ [c] }
 
 deleteCurrentList :: Stateful
-deleteCurrentList s = return $ fixIndex $ setTasks s $ Lists.delete (getCurrentList s) (getTasks s)
+deleteCurrentList s = return $ fixIndex $ setTasks s $ Lists.delete (getCurrentList s) (tasks s)
 
 -- insert
 startInsert :: Stateful
@@ -155,7 +155,7 @@ down s = do
 
 move' :: Int -> State -> Maybe State 
 move' i s = do
-    l <- Lists.changeList (current s) (getTasks s) i 
+    l <- Lists.changeList (current s) (tasks s) i 
     return $ fixIndex $ setTasks s l
 
 moveLeft :: Stateful
@@ -172,7 +172,7 @@ delete s = do
 
 -- list and index
 countCurrent :: State -> Int
-countCurrent s = Lists.count (getCurrentList s) (getTasks s)
+countCurrent s = Lists.count (getCurrentList s) (tasks s)
 
 setIndex :: State -> Int -> State
 setIndex s i = s { current = (getCurrentList s, i) }
@@ -202,12 +202,12 @@ left s = return $ fixIndex $ setCurrentList s $ if l > 0 then pred l else 0
 right :: Stateful
 right s = return $ fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
     where l = getCurrentList s
-          c = length (getTasks s)
+          c = length (tasks s)
 
 fixIndex :: InternalStateful
 fixIndex s = if getIndex s' > c then setIndex s' c' else s'
-    where i = Lists.exists (getCurrentList s) (getTasks s)
-          s' = if i then s else setCurrentList s (length (getTasks s) - 1)
+    where i = Lists.exists (getCurrentList s) (tasks s)
+          s' = if i then s else setCurrentList s (length (tasks s) - 1)
           c = countCurrent s' - 1
           c' = if c < 0 then 0 else c
 
@@ -223,9 +223,6 @@ setList s ts = setTasks s (Lists.update (getCurrentList s) (tasks s) ts)
 
 setTasks :: State -> Lists.Lists -> State
 setTasks s ts = s { tasks = ts }
-
-getTasks :: State -> Lists.Lists
-getTasks = tasks
 
 getCurrentTask :: State -> Maybe Task
 getCurrentTask s = do
