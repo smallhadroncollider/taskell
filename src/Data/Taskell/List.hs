@@ -35,11 +35,15 @@ extract i (List title ts) = do
     (xs, x) <- S.extract i ts
     return (List title xs, x)
 
-update :: Int -> (Task -> Task) -> List -> List
-update i fn (List title ts) = List title $ S.updateFn i fn ts
+update :: Int -> (Task -> Task) -> List -> Maybe List
+update i fn (List title ts) = do
+    ts' <- S.updateFn i fn ts
+    return $ List title ts'
 
-move :: Int -> Int -> List -> List
-move from dir (List title ts) = List title $ S.shiftBy from dir ts
+move :: Int -> Int -> List -> Maybe List
+move from dir (List title ts) = do
+    ts' <- S.shiftBy from dir ts
+    return $ List title ts'
 
 deleteTask :: Int -> List -> List
 deleteTask i (List title ts) = List title (deleteAt i ts)

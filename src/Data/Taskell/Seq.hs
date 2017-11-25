@@ -16,21 +16,15 @@ extract i xs = do
 update :: Int -> Seq a -> a -> Seq a
 update i xs x = insertAt i x $ deleteAt i xs
 
-updateFn' :: Int -> (a -> a) -> Seq a -> Maybe (Seq a)
-updateFn' i fn xs = do 
+updateFn :: Int -> (a -> a) -> Seq a -> Maybe (Seq a)
+updateFn i fn xs = do 
     let (a, b) = splitAt i xs
     current <- b !? 0
     let b' = drop 1 b
     return ((a |> fn current) >< b') 
 
-updateFn :: Int -> (a -> a) -> Seq a -> Seq a
-updateFn i fn xs = fromMaybe xs (updateFn' i fn xs)
-
-shiftBy' :: Int -> Int -> Seq a  -> Maybe (Seq a)
-shiftBy' from dir xs = do
+shiftBy :: Int -> Int -> Seq a  -> Maybe (Seq a)
+shiftBy from dir xs = do
     current <- xs !? from
     let r = deleteAt from xs
     return $ insertAt (from + dir) current r
-
-shiftBy :: Int -> Int -> Seq a -> Seq a
-shiftBy from dir xs = fromMaybe xs (shiftBy' from dir xs)

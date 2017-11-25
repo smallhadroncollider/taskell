@@ -132,7 +132,8 @@ insertCurrent char = change (append char)
 change :: (Task -> Task) -> State -> Maybe State 
 change fn s = do
     l <- getList s
-    return $ setList s $ update (getIndex s) fn l
+    l' <- update (getIndex s) fn l
+    return $ setList s l'
 
 selectLast :: InternalStateful
 selectLast s = setIndex s (countCurrent s - 1)
@@ -141,23 +142,27 @@ selectLast s = setIndex s (countCurrent s - 1)
 up :: Stateful
 up s = do
     l <- getList s
-    previous $ setList s (m l)
+    l' <- m l
+    previous $ setList s l' 
     where m = move (getIndex s) (-1)
 
 down :: Stateful
 down s = do
     l <- getList s
-    next $ setList s (m l)
+    l' <- m l
+    next $ setList s l' 
     where m = move (getIndex s) 1
 
-move' :: Int -> InternalStateful
-move' i s = fixIndex $ setTasks s $ Lists.changeList (current s) (getTasks s) i 
+move' :: Int -> State -> Maybe State 
+move' i s = do
+    l <- Lists.changeList (current s) (getTasks s) i 
+    return $ fixIndex $ setTasks s l
 
 moveLeft :: Stateful
-moveLeft = return . move' (-1)
+moveLeft = move' (-1)
 
 moveRight :: Stateful
-moveRight = return . move' 1
+moveRight = move' 1
 
 -- removing
 delete :: Stateful
