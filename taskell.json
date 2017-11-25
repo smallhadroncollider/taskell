@@ -24,9 +24,6 @@
     {
         "tasks": [
             {
-                "description": "Select lists with `1-9`"
-            },
-            {
                 "description": "Add tags/labels"
             },
             {
@@ -141,6 +138,9 @@
             },
             {
                 "description": "State should return Maybe?"
+            },
+            {
+                "description": "Select lists with `1-9`"
             }
         ],
         "title": "Done"

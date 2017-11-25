@@ -1,6 +1,7 @@
 module Flow.Actions.Normal (event) where
 
 import Graphics.Vty.Input.Events
+import Data.Char (isDigit)
 import Control.Monad
 import Flow.State
 
@@ -33,6 +34,11 @@ event (EvKey (KChar ' ') _) = moveRight
 
 -- removing items
 event (EvKey (KChar 'D') _) = delete
+
+-- selecting lists
+event (EvKey (KChar n) _)
+    | isDigit n = selectList n
+    | otherwise = return
 
 event (EvResize w h) = setSize w h 
 

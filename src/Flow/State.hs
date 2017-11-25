@@ -31,6 +31,7 @@ module Flow.State (
     moveLeft,
     moveRight,
     delete,
+    selectList,
     setSize,
 
     -- Flow.Actions.CreateList
@@ -50,6 +51,7 @@ import Data.Taskell.Task (Task, backspace, append, characters)
 import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
+import Data.Char (digitToInt)
 
 data Mode = Normal | Insert | CreateList String | Shutdown deriving (Show)
 
@@ -169,6 +171,11 @@ moveLeft = move' (-1)
 
 moveRight :: Stateful
 moveRight = move' 1
+
+selectList :: Char -> Stateful
+selectList i s = return $ if e then s { current = (list, 0) } else s
+    where list = digitToInt i - 1
+          e = Lists.exists list (tasks s)
 
 -- removing
 delete :: Stateful

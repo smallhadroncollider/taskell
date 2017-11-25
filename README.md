@@ -15,6 +15,7 @@ A CLI task manager, written in Haskell
 - `k`: move up
 - `h`: move left 
 - `l`: move right
+- `1`-`9`: select list
 - `J`: shift task down
 - `K`: shift task up
 - `H`: shift task left 
