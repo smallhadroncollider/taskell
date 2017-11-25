@@ -1,52 +1,53 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Data.Taskell.List where
 
-import Data.Aeson (FromJSON, ToJSON, parseJSON, toJSON, withObject, object, (.:), (.=))
+import GHC.Generics (Generic)
+import Data.Aeson (FromJSON, ToJSON)
 
 import Data.Sequence (Seq, (|>), (!?), deleteAt)
 import qualified Data.Taskell.Seq as S
 
 import Data.Taskell.Task (Task, blank)
 
-data List = List String (Seq Task) deriving (Show, Eq)
+data List = List {
+    title :: String,
+    tasks :: Seq Task
+} deriving (Generic, Show, Eq)
 
-instance FromJSON List where
-    parseJSON = withObject "List" $ \obj -> do
-        title <- obj .: "title" 
-        tasks <- obj .: "tasks" 
-        return (List title tasks)
-
-instance ToJSON List where
-    toJSON (List title ts) = object ["title" .= title, "tasks" .= ts]
+instance FromJSON List
+instance ToJSON List
 
 -- useful functions
 empty :: String -> List
-empty t = List t S.empty 
+empty t = List {
+    title = t,
+    tasks = S.empty 
+}
 
 new :: List -> List
 new = append blank
 
 append :: Task -> List -> List
-append t (List title ts) = List title (ts |> t)
+append t l = l { tasks = tasks l |> t }
 
 extract :: Int -> List -> Maybe (List, Task)
-extract i (List title ts) = do
-    (xs, x) <- S.extract i ts
-    return (List title xs, x)
+extract i l = do
+    (xs, x) <- S.extract i (tasks l) 
+    return (l { tasks = xs }, x)
 
 update :: Int -> (Task -> Task) -> List -> Maybe List
-update i fn (List title ts) = do
-    ts' <- S.updateFn i fn ts
-    return $ List title ts'
+update i fn l = do
+    ts' <- S.updateFn i fn (tasks l)
+    return $ l { tasks = ts' }
 
 move :: Int -> Int -> List -> Maybe List
-move from dir (List title ts) = do
-    ts' <- S.shiftBy from dir ts
-    return $ List title ts'
+move from dir l = do
+    ts' <- S.shiftBy from dir (tasks l)
+    return $ l { tasks = ts' } 
 
 deleteTask :: Int -> List -> List
-deleteTask i (List title ts) = List title (deleteAt i ts)
+deleteTask i l = l { tasks = deleteAt i (tasks l) }
 
 getTask :: Int -> List -> Maybe Task
-getTask i (List _ ts) = ts !? i
+getTask i l = tasks l !? i
