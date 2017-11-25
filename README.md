@@ -7,6 +7,11 @@ A CLI task manager, written in Haskell
 
 ![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
 
+## Running
+
+- `taskell`: will use `taskell.json` in the cwd - offers to create if not found
+- `taskell filename.json`: will use `filename.json` in the cwd - offers to create if not found
+
 ## Controls
 
 - `a` add a task (`Enter`/`Esc` to stop)
@@ -15,6 +20,7 @@ A CLI task manager, written in Haskell
 - `k`: move up
 - `h`: move left 
 - `l`: move right
+- `1`-`9`: select list
 - `J`: shift task down
 - `K`: shift task up
 - `H`: shift task left 

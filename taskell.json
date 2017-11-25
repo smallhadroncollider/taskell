@@ -2,22 +2,27 @@
     {
         "tasks": [
             {
-                "description": "If no lists crashes on up/down - using index in AllTasks"
+                "description": "Break up State module"
+            },
+            {
+                "description": "UI modules need refactoring"
+            }
+        ],
+        "title": "Refactoring"
+    },
+    {
+        "tasks": [
+            {
+                "description": "Cursor doesn't show on CreateList mode"
+            },
+            {
+                "description": "Pressing enter on Edit creates new task"
             }
         ],
         "title": "Bugs"
     },
     {
         "tasks": [
-            {
-                "description": "Select lists with `1-9`"
-            },
-            {
-                "description": "Better layout (maybe use brick?)"
-            },
-            {
-                "description": "Scrolling long lists"
-            },
             {
                 "description": "Add tags/labels"
             },
@@ -26,9 +31,6 @@
             },
             {
                 "description": "Undo with `u`"
-            },
-            {
-                "description": "Run with any correctly formatted json file"
             },
             {
                 "description": "Wrap lines"
@@ -41,6 +43,15 @@
             },
             {
                 "description": "Add due dates to tasks"
+            },
+            {
+                "description": "Reordering lists"
+            },
+            {
+                "description": "Show current mode in title"
+            },
+            {
+                "description": "Space moves to next and stays in list / H & L move but keep current"
             }
         ],
         "title": "To Do"
@@ -103,6 +114,33 @@
             },
             {
                 "description": "Delete lists with `X`"
+            },
+            {
+                "description": "Enter while in add mode creates new/Esc leaves add mode"
+            },
+            {
+                "description": "Rename Tasks to List"
+            },
+            {
+                "description": "Rename AllTasks to Lists"
+            },
+            {
+                "description": "Horizontal scrolling"
+            },
+            {
+                "description": "Scrolling long lists"
+            },
+            {
+                "description": "If no lists crashes on up/down - using index in AllTasks"
+            },
+            {
+                "description": "State should return Maybe?"
+            },
+            {
+                "description": "Select lists with `1-9`"
+            },
+            {
+                "description": "Run with any correctly formatted json file"
             }
         ],
         "title": "Done"

@@ -1,28 +1,28 @@
-module Data.Taskell.AllTasks where
+module Data.Taskell.Lists where
 
 import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq, fromList, (!?), (|>), index, deleteAt)
 import qualified Data.Taskell.Seq as S
-import Data.Taskell.Tasks (Tasks(..), empty, extract, append)
+import Data.Taskell.List (List(..), empty, extract, append)
 
-type AllTasks = Seq Tasks 
+type Lists = Seq List 
 
-initial :: AllTasks
+initial :: Lists
 initial = fromList [empty "To Do", empty "Done"]
 
-update :: Int -> AllTasks -> Tasks -> AllTasks
+update :: Int -> Lists -> List -> Lists
 update = S.update 
 
-count :: Int -> AllTasks -> Int
+count :: Int -> Lists -> Int
 count i ts = case ts !? i of
-    Just (Tasks _ ts) -> length ts
+    Just (List _ ts) -> length ts
     Nothing -> 0
 
-get :: AllTasks -> Int -> Tasks
-get = index -- not safe
+get :: Lists -> Int -> Maybe List
+get = (!?)
 
-changeList' :: (Int, Int) -> AllTasks -> Int -> Maybe AllTasks
-changeList' (list, index) ts dir = do
+changeList :: (Int, Int) -> Lists -> Int -> Maybe Lists
+changeList (list, index) ts dir = do
     let next = list + dir
     a <- ts !? list -- get current list
     b <- ts !? next -- get next list
@@ -31,16 +31,13 @@ changeList' (list, index) ts dir = do
     let all = update list ts a' -- update extracted list
     return $ update next all b' -- update next list
 
-changeList :: (Int, Int) -> AllTasks -> Int -> AllTasks
-changeList cur ts dir = fromMaybe ts (changeList' cur ts dir)
-
-newList :: String -> AllTasks -> AllTasks
+newList :: String -> Lists -> Lists
 newList s ts = ts |> empty s 
 
-delete :: Int -> AllTasks -> AllTasks
+delete :: Int -> Lists -> Lists
 delete = deleteAt
 
-exists :: Int -> AllTasks -> Bool
+exists :: Int -> Lists -> Bool
 exists i ts = case ts !? i of
     Just _ -> True
     Nothing -> False

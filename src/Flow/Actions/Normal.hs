@@ -1,39 +1,46 @@
-module Flow.Actions.Normal (normal) where
+module Flow.Actions.Normal (event) where
 
 import Graphics.Vty.Input.Events
+import Data.Char (isDigit)
+import Control.Monad
 import Flow.State
 
 -- Normal 
-normal :: Event -> Stateful
+event :: Event -> Stateful
 
 -- quit
-normal (EvKey (KChar 'q') _) = quit
+event (EvKey (KChar 'q') _) = quit
 
 -- add/edit
-normal (EvKey (KChar 'a') _) = startInsert . newItem
-normal (EvKey (KChar 'e') _) = startInsert
+event (EvKey (KChar 'a') _) = (startInsert =<<) . newItem
+event (EvKey (KChar 'e') _) = startInsert
 
 -- add list
-normal (EvKey (KChar 'N') _) = createListStart 
-normal (EvKey (KChar 'X') _) = deleteCurrentList
+event (EvKey (KChar 'N') _) = createListStart
+event (EvKey (KChar 'X') _) = deleteCurrentList
 
 -- navigation
-normal (EvKey (KChar 'k') _) = previous
-normal (EvKey (KChar 'j') _) = next
-normal (EvKey (KChar 'h') _) = left
-normal (EvKey (KChar 'l') _) = right
+event (EvKey (KChar 'k') _) = previous
+event (EvKey (KChar 'j') _) = next
+event (EvKey (KChar 'h') _) = left
+event (EvKey (KChar 'l') _) = right
 
 -- moving items
-normal (EvKey (KChar 'K') _) = up
-normal (EvKey (KChar 'J') _) = down
-normal (EvKey (KChar 'H') _) = moveLeft
-normal (EvKey (KChar 'L') _) = moveRight
-normal (EvKey (KChar ' ') _) = moveRight
+event (EvKey (KChar 'K') _) = up
+event (EvKey (KChar 'J') _) = down
+event (EvKey (KChar 'H') _) = moveLeft
+event (EvKey (KChar 'L') _) = moveRight
+event (EvKey (KChar ' ') _) = moveRight
 
 -- removing items
-normal (EvKey (KChar 'D') _) = delete
+event (EvKey (KChar 'D') _) = delete
 
-normal (EvResize w h) = setSize w h
+-- selecting lists
+event (EvKey (KChar n) _)
+    | isDigit n = selectList n
+    | otherwise = return
+
+event (EvResize w h) = setSize w h 
 
 -- fallback
-normal _ = id
+event _ = return

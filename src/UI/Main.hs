@@ -1,11 +1,12 @@
 module UI.Main where
 
 import Graphics.Vty
-import Flow.State (State, tasks, current, getCursor, getNewList)
+import Flow.State (State, tasks, current, getCursor, getNewList, size)
 import UI.List (list)
 import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq, mapWithIndex)
 import Data.Foldable (toList)
+import qualified Config as C
 
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
@@ -20,7 +21,7 @@ marginTop :: Image -> Image
 marginTop = pad 0 1 0 0
 
 marginRight :: Image -> Image
-marginRight = pad 0 0 5 0
+marginRight = pad 0 0 C.padding 0
 
 nothing :: Image
 nothing = string attrNothing "No items"
@@ -38,19 +39,25 @@ title s = marginBottom $ string attrTitle "[Taskell]" <-> newList s
 width :: Int -> [Image] -> Int
 width i = sum . map imageWidth . take i
 
-makeCursor :: [Image] -> Image -> (Int, Int, Int) -> Cursor
-makeCursor im t (l, i, len) = Cursor (col + len + bulletLen) (i + imageHeight t + listHeadHeight)
+makeCursor :: Int -> [Image] -> Image -> (Int, Int, Int) -> Cursor
+makeCursor o im t (l, i, len) = Cursor (col + len + bulletLen + o) (i + imageHeight t + listHeadHeight)
     where bulletLen = 2
           listHeadHeight = 1
           col = width l im
 
-calculateCursor :: [Image] -> Image -> State -> Cursor
-calculateCursor im t = maybe NoCursor (makeCursor im t) . getCursor
+calculateCursor :: Int -> [Image] -> Image -> State -> Cursor
+calculateCursor o im t = maybe NoCursor (makeCursor o im t) . getCursor
 
 -- draws the screen
 pic :: State -> Picture
-pic s = Picture (calculateCursor lists t s) [image] ClearBackground
+pic s = Picture (calculateCursor offset' lists t s) [image] ClearBackground
     where ts = tasks s
-          lists = map marginRight . toList $ mapWithIndex (list $ current s) ts
+          current' = current s
+          lists = map marginRight . toList $ mapWithIndex (list s $ imageHeight t) ts
           t = title s
-          image = t <-> if null lists then nothing else horizCat lists
+          all = horizCat lists
+          (w, h) = size s
+          col = C.width + C.padding
+          offset = (negate col * fst current') + (w `div` 2) - (col `div` 2)
+          offset' = if offset > 0 then 0 else offset
+          image = t <-> if null lists then nothing else translateX offset' all
