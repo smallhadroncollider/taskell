@@ -51,23 +51,24 @@ import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 
-data Mode = Normal | Insert | CreateList | Shutdown deriving (Show)
+data Mode = Normal | Insert | CreateList String | Shutdown deriving (Show)
+
+type Size = (Int, Int)
+type Pointer = (Int, Int)
 
 data State = State {
     mode :: Mode,
     tasks :: Lists.Lists, 
-    current :: (Int, Int),
-    size :: (Int, Int),
-    newList :: String
+    current :: Pointer,
+    size :: Size
 } deriving (Show)
 
-create :: (Int, Int) -> Lists.Lists -> State
+create :: Size -> Lists.Lists -> State
 create size ts = State {
         mode = Normal,
         tasks = ts,
         current = (0, 0),
-        size = size,
-        newList = ""
+        size = size
     } 
 
 type Stateful = State -> Maybe State
@@ -83,18 +84,19 @@ setSize w h s = return $ s { size = (w, h) }
 -- createList
 getNewList :: State -> Maybe String
 getNewList s = case mode s of
-    CreateList -> Just $ newList s
+    CreateList n -> Just n 
     _ -> Nothing
 
 createList :: InternalStateful
-createList s = setTasks s'' ts
-    where listName = newList s
-          s' = s { newList = "" }
-          ts = Lists.newList listName $ tasks s'
-          s'' = setCurrentList s' (length ts - 1)
+createList s =  case mode s of
+    CreateList n -> updateListToLast . setTasks s $ Lists.newList n $ tasks s
+    _ -> s 
+
+updateListToLast :: InternalStateful
+updateListToLast s = setCurrentList s (length (tasks s) - 1)
 
 createListStart :: Stateful
-createListStart s = return $ s { mode = CreateList }
+createListStart s = return $ s { mode = CreateList "" }
 
 createListFinish :: Stateful
 createListFinish = finishInsert . createList
@@ -103,10 +105,14 @@ createListCancel :: Stateful
 createListCancel = finishInsert 
 
 createListBS :: Stateful 
-createListBS s = return $ s { newList = S.backspace (newList s) }
+createListBS s = case mode s of
+    CreateList n -> return $ s { mode = CreateList (S.backspace n) }
+    _ -> Nothing 
 
 createListChar :: Char -> Stateful 
-createListChar c s = return $ s { newList = newList s ++ [c] }
+createListChar c s = case mode s of
+    CreateList n -> return $ s { mode = CreateList (n ++ [c]) }
+    _ -> Nothing
 
 deleteCurrentList :: Stateful
 deleteCurrentList s = return $ fixIndex $ setTasks s $ Lists.delete (getCurrentList s) (tasks s)

@@ -13,7 +13,7 @@ event' :: Event -> Stateful
 event' e s = case mode s of
     Insert -> Insert.event e s
     Normal -> Normal.event e s
-    CreateList -> CreateList.event e s
+    CreateList _ -> CreateList.event e s
     _ -> return s
 
 event :: Event -> State -> State
