@@ -54,13 +54,16 @@ offset :: Size -> Int -> Int
 offset (w, _) = calcOffset (w `div` 3)
 
 -- draws the screen
+pic' :: State -> Maybe Picture
+pic' s = do
+    let ls = present <$> lists s
+    let sz = size s
+    (img, w, x, y) <- cur (current s) sz ls
+    let o = offset sz w
+    return $ Picture (Cursor (w + x + o + padding) (y + 1)) [translateX o $ marginTop img] ClearBackground
+
 pic :: State -> Picture
-pic s = Picture (Cursor (w + x + o + padding) (y + 1)) [translateX o $ marginTop img] ClearBackground
-    where ls = present <$> lists s
-          sz = size s
-          fail = (emptyImage, 0, 0, 0) 
-          (img, w, x, y) = fromMaybe fail (cur (current s) sz ls)
-          o = offset sz w
+pic s = fromMaybe (picForImage emptyImage) (pic' s)
 
 -- styling
 task :: TaskUI -> Image
