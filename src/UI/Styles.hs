@@ -1,13 +1,13 @@
 module UI.Styles where
 
 import Graphics.Vty
-import Config
+import Config (padding)
 
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
 
-attrTitleSelected :: Attr
-attrTitleSelected = defAttr `withForeColor` blue
+attrCurrentTitle :: Attr
+attrCurrentTitle = defAttr `withForeColor` blue
 
 attrCurrent :: Attr
 attrCurrent = defAttr `withForeColor` magenta

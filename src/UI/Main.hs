@@ -23,32 +23,29 @@ present :: List -> ListUI
 present l = (wrap width (title l), wrap width . description <$> tasks l)
 
 rList :: ListUI -> Image
-rList (t, ts) = margin $ renderTitle False t <-> (vCat . fmap (marginTop . task)) ts
+rList (t, ts) = margin $ img attrTitle t <-> (vCat . fmap (marginTop . task)) ts
 
-rCurList' :: Size -> Int -> ListUI -> Maybe Image
-rCurList' (w, h) i (t, ts) = do
+rCurList :: Size -> Int -> ListUI -> Maybe (Image, Int, Int)
+rCurList (w, h) i (t, ts) = do
     (a, c, b) <- splitOn i ts
-    let title = renderTitle True t
+    let title = img attrCurrentTitle t
     let r = vCat . fmap (marginTop . task)
     let pre = r a
     let cur = marginTop (currentTask c)
-    let o = calcOffset (h `div` 2) (imageHeight pre + imageHeight cur) 
+    let y = imageHeight pre + imageHeight cur
+    let x = if not (null c) then length (last c) else 0
+    let o = calcOffset (h `div` 2) y
     let img = margin $ title <-> pre <-> cur <-> r b
-    return $ translateY o img
+    return (translateY o img, x, y + o)
 
-rCurList :: Size -> Int -> ListUI -> Image
-rCurList s i l = fromMaybe emptyImage (rCurList' s i l)
-
-cur' :: Pointer -> Size -> Seq ListUI -> Maybe (Image, Int)
-cur' (l, i) s ls = do
+cur :: Pointer -> Size -> Seq ListUI -> Maybe (Image, Int, Int, Int)
+cur (l, i) s ls = do
     (a, c, b) <- splitOn l ls
     let r = hCat . fmap rList
     let pre = r a
-    let img = pre <|> rCurList s i c <|> r b
-    return (img, imageWidth pre)
-    
-cur :: Pointer -> Size -> Seq ListUI -> (Image, Int)
-cur c s ls = fromMaybe (emptyImage, 0) (cur' c s ls)
+    (cur, x, y) <- rCurList s i c
+    let img = pre <|> cur <|> r b
+    return (img, imageWidth pre, x, y)
 
 calcOffset :: Int -> Int -> Int
 calcOffset pivot n = if n > pivot then pivot - n else 0
@@ -58,10 +55,11 @@ offset (w, _) = calcOffset (w `div` 3)
 
 -- draws the screen
 pic :: State -> Picture
-pic s = Picture (Cursor 0 0) [translateX o img] ClearBackground
+pic s = Picture (Cursor (w + x + o + padding) (y + 1)) [translateX o $ marginTop img] ClearBackground
     where ls = present <$> lists s
           sz = size s
-          (img, w) = cur (current s) sz ls
+          fail = (emptyImage, 0, 0, 0) 
+          (img, w, x, y) = fromMaybe fail (cur (current s) sz ls)
           o = offset sz w
 
 -- styling
@@ -70,9 +68,6 @@ task = img attrNormal
 
 currentTask :: TaskUI -> Image
 currentTask = img attrCurrent
-
-renderTitle :: Bool -> TaskUI -> Image
-renderTitle current = marginTop . img (if current then attrTitleSelected else attrTitle)
 
 -- vty helpers
 img :: Attr -> TaskUI -> Image
