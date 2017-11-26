@@ -2,26 +2,13 @@ module UI.Main where
 
 import Graphics.Vty
 import Flow.State (State, tasks, current, getCursor, getNewList, size)
-import UI.List (list)
 import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq, mapWithIndex)
 import Data.Foldable (toList)
 import qualified Config as C
 
-attrTitle :: Attr
-attrTitle = defAttr `withForeColor` green
-
-attrNothing :: Attr
-attrNothing = defAttr `withStyle` dim 
-
-marginBottom :: Image -> Image
-marginBottom = pad 0 0 0 1
-
-marginTop :: Image -> Image
-marginTop = pad 0 1 0 0
-
-marginRight :: Image -> Image
-marginRight = pad 0 0 C.padding 0
+import UI.List (list)
+import UI.Styles
 
 nothing :: Image
 nothing = string attrNothing "No items"

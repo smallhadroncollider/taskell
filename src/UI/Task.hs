@@ -4,12 +4,7 @@ import Graphics.Vty
 import Data.Taskell.Task
 import Config (width)
 
--- styles
-attrTask :: Attr
-attrTask = defAttr `withForeColor` magenta
-
-attrCurrent :: Attr
-attrCurrent = defAttr `withForeColor` blue
+import UI.Styles
 
 trunc :: String -> String
 trunc s = if length s > width then take (width - 3) s ++ "..." else s

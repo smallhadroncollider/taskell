@@ -4,20 +4,13 @@ import Data.Sequence (Seq, mapWithIndex)
 import Data.Foldable (toList)
 import Graphics.Vty
 
-import UI.Task (present)
 import Data.Taskell.Task (Task)
 import Data.Taskell.List
 import Flow.State (State, current, size)
 import Config (width)
 
-attrTitle :: Attr
-attrTitle = defAttr `withForeColor` green
-
-attrCurrent :: Attr
-attrCurrent = defAttr `withForeColor` blue
-
-attrNoItems :: Attr
-attrNoItems = defAttr `withStyle` dim 
+import UI.Task (present)
+import UI.Styles
 
 titleImage :: Bool -> String -> Image
 titleImage current s = string style ("  " ++ s)
