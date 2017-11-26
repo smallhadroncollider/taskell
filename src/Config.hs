@@ -4,7 +4,7 @@ defaultPath :: FilePath
 defaultPath = "taskell.json"
 
 width :: Int
-width = 25
+width = 30
 
 padding :: Int
 padding = 5
