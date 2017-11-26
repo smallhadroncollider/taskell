@@ -29,9 +29,7 @@ library
                      , Persistence.Taskell
                      , Render
                      , UI.CLI
-                     , UI.List
                      , UI.Main
-                     , UI.Task
                      , UI.Styles
   build-depends:       base >= 4.7 && < 5
                      , vty

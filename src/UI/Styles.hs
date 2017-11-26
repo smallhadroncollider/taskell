@@ -9,8 +9,8 @@ attrTitle = defAttr `withForeColor` green
 attrCurrent :: Attr
 attrCurrent = defAttr `withForeColor` magenta
 
-attrNothing :: Attr
-attrNothing = defAttr `withStyle` dim 
+attrNormal :: Attr
+attrNormal = defAttr `withStyle` dim 
 
 marginBottom :: Image -> Image
 marginBottom = pad 0 0 0 1
