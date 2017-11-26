@@ -24,6 +24,9 @@
     {
         "tasks": [
             {
+                "description": "Wrap lines"
+            },
+            {
                 "description": "Add tags/labels"
             },
             {
@@ -33,13 +36,7 @@
                 "description": "Undo with `u`"
             },
             {
-                "description": "Wrap lines"
-            },
-            {
                 "description": "Move between lists with `m` - shows possible lists"
-            },
-            {
-                "description": "`o` to open a file"
             },
             {
                 "description": "Add due dates to tasks"
@@ -52,6 +49,18 @@
             },
             {
                 "description": "Space moves to next and stays in list / H & L move but keep current"
+            },
+            {
+                "description": "`.taskell` config file in home directory"
+            },
+            {
+                "description": "Left/Right arrow keys in insert mode"
+            },
+            {
+                "description": "`o` to add on line below"
+            },
+            {
+                "description": "`Shift+o` to add on line above"
             }
         ],
         "title": "To Do"
