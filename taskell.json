@@ -3,9 +3,6 @@
         "tasks": [
             {
                 "description": "Break up State module"
-            },
-            {
-                "description": "UI modules need refactoring"
             }
         ],
         "title": "Refactoring"
@@ -13,16 +10,16 @@
     {
         "tasks": [
             {
-                "description": "Horizontal scrolling stops working if a word longer than the column width is entered"
-            },
-            {
-                "description": "Cursor no longer in the right place"
+                "description": "CreateList mode doesn't display anything"
             },
             {
                 "description": "Cursor doesn't show on CreateList mode"
             },
             {
                 "description": "Pressing enter on Edit creates new task"
+            },
+            {
+                "description": "Space in edit/add mode doesn't move cursor along - bit disconcerting"
             }
         ],
         "title": "Bugs"
@@ -156,6 +153,15 @@
             },
             {
                 "description": "Wrap lines"
+            },
+            {
+                "description": "UI modules need refactoring"
+            },
+            {
+                "description": "Horizontal scrolling stops working if a word longer than the column width is entered"
+            },
+            {
+                "description": "Cursor no longer in the right place"
             }
         ],
         "title": "Done"
