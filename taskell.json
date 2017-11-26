@@ -13,6 +13,12 @@
     {
         "tasks": [
             {
+                "description": "Horizontal scrolling stops working if a word longer than the column width is entered"
+            },
+            {
+                "description": "Cursor no longer in the right place"
+            },
+            {
                 "description": "Cursor doesn't show on CreateList mode"
             },
             {
@@ -23,9 +29,6 @@
     },
     {
         "tasks": [
-            {
-                "description": "Wrap lines"
-            },
             {
                 "description": "Add tags/labels"
             },
@@ -150,6 +153,9 @@
             },
             {
                 "description": "Run with any correctly formatted json file"
+            },
+            {
+                "description": "Wrap lines"
             }
         ],
         "title": "Done"

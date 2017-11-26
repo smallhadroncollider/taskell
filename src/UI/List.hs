@@ -13,7 +13,7 @@ import UI.Task (present)
 import UI.Styles
 
 titleImage :: Bool -> String -> Image
-titleImage current s = string style ("  " ++ s)
+titleImage current = string style
     where style = if current then attrCurrent else attrTitle
 
 noItems :: Image
