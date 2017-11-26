@@ -2,6 +2,8 @@ module Flow.State (
     -- types
     State,
     Stateful,
+    Pointer,
+    Size,
     Mode(..),
     
     -- record accesors

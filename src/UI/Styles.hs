@@ -6,6 +6,9 @@ import Config
 attrTitle :: Attr
 attrTitle = defAttr `withForeColor` green
 
+attrTitleSelected :: Attr
+attrTitleSelected = defAttr `withForeColor` blue
+
 attrCurrent :: Attr
 attrCurrent = defAttr `withForeColor` magenta
 
