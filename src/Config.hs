@@ -7,4 +7,4 @@ width :: Int
 width = 30
 
 padding :: Int
-padding = 5
+padding = 4
