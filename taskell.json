@@ -17,6 +17,9 @@
             },
             {
                 "description": "Pressing enter on Edit creates new task"
+            },
+            {
+                "description": "If no items in current list, returns a Nothing, so everything dissappears"
             }
         ],
         "title": "Bugs"
