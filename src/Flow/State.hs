@@ -14,7 +14,6 @@ module Flow.State (
 
     -- UI.Main
     getCursor,
-    getNewList,
     
     -- Main
     create,
@@ -86,11 +85,6 @@ setSize :: Int -> Int -> Stateful
 setSize w h s = return $ s { size = (w, h) }
 
 -- createList
-getNewList :: State -> Maybe String
-getNewList s = case mode s of
-    CreateList n -> Just n 
-    _ -> Nothing
-
 createList :: InternalStateful
 createList s =  case mode s of
     CreateList n -> updateListToLast . setLists s $ Lists.newList n $ lists s
