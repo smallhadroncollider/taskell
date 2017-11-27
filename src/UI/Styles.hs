@@ -12,6 +12,9 @@ attrCurrentTitle = defAttr `withForeColor` blue
 attrCurrent :: Attr
 attrCurrent = defAttr `withForeColor` magenta
 
+attrError :: Attr
+attrError = defAttr `withForeColor` red
+
 attrNormal :: Attr
 attrNormal = defAttr `withStyle` dim 
 

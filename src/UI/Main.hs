@@ -63,7 +63,7 @@ pic' s = do
     return $ Picture (Cursor (w + x + o + padding) (y + 1)) [translateX o $ marginTop img] ClearBackground
 
 pic :: State -> Picture
-pic s = fromMaybe (picForImage emptyImage) (pic' s)
+pic s = fromMaybe (picForImage $ string attrError "Something's gone wrong...") (pic' s)
 
 -- styling
 task :: TaskUI -> Image
