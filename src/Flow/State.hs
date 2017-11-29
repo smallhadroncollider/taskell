@@ -14,6 +14,7 @@ module Flow.State (
 
     -- UI.Main
     getCursor,
+    newList,
     
     -- Main
     create,
@@ -248,3 +249,9 @@ getCursor s = do
     case mode s of
         Insert -> return (getCurrentList s, getIndex s, l)
         _ -> Nothing
+
+newList :: State -> State 
+newList s = case mode s of
+    CreateList t -> fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
+    _ -> s 
+    where ls = lists s

@@ -10,12 +10,6 @@
     {
         "tasks": [
             {
-                "description": "CreateList mode doesn't display anything"
-            },
-            {
-                "description": "Cursor doesn't show on CreateList mode"
-            },
-            {
                 "description": "Pressing enter on Edit creates new task"
             }
         ],
@@ -168,6 +162,12 @@
             },
             {
                 "description": "If no items in current list, returns a Nothing, so everything dissappears"
+            },
+            {
+                "description": "CreateList mode doesn't display anything"
+            },
+            {
+                "description": "Cursor doesn't show on CreateList mode"
             }
         ],
         "title": "Done"

@@ -6,7 +6,7 @@ import Data.Maybe (fromMaybe)
 
 import Data.Sequence (Seq, mapWithIndex, (><))
 
-import Flow.State (State, Pointer, Size, lists, current, size)
+import Flow.State (State, Pointer, Size, lists, current, size, newList)
 
 import UI.Styles
 
@@ -69,9 +69,10 @@ offset (w, _) = calcOffset (w `div` 3)
 -- draws the screen
 pic :: State -> Picture
 pic s = Picture (Cursor (w + x + o + padding) (y + 1)) [translateX o $ marginTop img] ClearBackground
-    where ls = present <$> lists s
-          sz = size s
-          (img, w, x, y) = cur (current s) sz ls
+    where s' = newList s
+          ls = present <$> lists s' 
+          sz = size s'
+          (img, w, x, y) = cur (current s') sz ls
           o = offset sz w
 
 -- styling
