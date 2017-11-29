@@ -2,17 +2,19 @@ module Flow.State (
     -- types
     State,
     Stateful,
+    Pointer,
+    Size,
     Mode(..),
     
     -- record accesors
     mode,
     size,
     current,
-    tasks,
+    lists,
 
     -- UI.Main
     getCursor,
-    getNewList,
+    newList,
     
     -- Main
     create,
@@ -60,15 +62,15 @@ type Pointer = (Int, Int)
 
 data State = State {
     mode :: Mode,
-    tasks :: Lists.Lists, 
+    lists :: Lists.Lists, 
     current :: Pointer,
     size :: Size
 } deriving (Show)
 
 create :: Size -> Lists.Lists -> State
-create size ts = State {
+create size ls = State {
         mode = Normal,
-        tasks = ts,
+        lists = ls,
         current = (0, 0),
         size = size
     } 
@@ -84,18 +86,13 @@ setSize :: Int -> Int -> Stateful
 setSize w h s = return $ s { size = (w, h) }
 
 -- createList
-getNewList :: State -> Maybe String
-getNewList s = case mode s of
-    CreateList n -> Just n 
-    _ -> Nothing
-
 createList :: InternalStateful
 createList s =  case mode s of
-    CreateList n -> updateListToLast . setTasks s $ Lists.newList n $ tasks s
+    CreateList n -> updateListToLast . setLists s $ Lists.newList n $ lists s
     _ -> s 
 
 updateListToLast :: InternalStateful
-updateListToLast s = setCurrentList s (length (tasks s) - 1)
+updateListToLast s = setCurrentList s (length (lists s) - 1)
 
 createListStart :: Stateful
 createListStart s = return $ s { mode = CreateList "" }
@@ -117,7 +114,7 @@ createListChar c s = case mode s of
     _ -> Nothing
 
 deleteCurrentList :: Stateful
-deleteCurrentList s = return $ fixIndex $ setTasks s $ Lists.delete (getCurrentList s) (tasks s)
+deleteCurrentList s = return $ fixIndex $ setLists s $ Lists.delete (getCurrentList s) (lists s)
 
 -- insert
 startInsert :: Stateful
@@ -163,8 +160,8 @@ down s = do
 
 move' :: Int -> State -> Maybe State 
 move' i s = do
-    l <- Lists.changeList (current s) (tasks s) i 
-    return $ fixIndex $ setTasks s l
+    l <- Lists.changeList (current s) (lists s) i 
+    return $ fixIndex $ setLists s l
 
 moveLeft :: Stateful
 moveLeft = move' (-1)
@@ -175,7 +172,7 @@ moveRight = move' 1
 selectList :: Char -> Stateful
 selectList i s = return $ if e then s { current = (list, 0) } else s
     where list = digitToInt i - 1
-          e = Lists.exists list (tasks s)
+          e = Lists.exists list (lists s)
 
 -- removing
 delete :: Stateful
@@ -185,7 +182,7 @@ delete s = do
 
 -- list and index
 countCurrent :: State -> Int
-countCurrent s = Lists.count (getCurrentList s) (tasks s)
+countCurrent s = Lists.count (getCurrentList s) (lists s)
 
 setIndex :: State -> Int -> State
 setIndex s i = s { current = (getCurrentList s, i) }
@@ -215,12 +212,12 @@ left s = return $ fixIndex $ setCurrentList s $ if l > 0 then pred l else 0
 right :: Stateful
 right s = return $ fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
     where l = getCurrentList s
-          c = length (tasks s)
+          c = length (lists s)
 
 fixIndex :: InternalStateful
 fixIndex s = if getIndex s' > c then setIndex s' c' else s'
-    where i = Lists.exists (getCurrentList s) (tasks s)
-          s' = if i then s else setCurrentList s (length (tasks s) - 1)
+    where i = Lists.exists (getCurrentList s) (lists s)
+          s' = if i then s else setCurrentList s (length (lists s) - 1)
           c = countCurrent s' - 1
           c' = if c < 0 then 0 else c
 
@@ -229,13 +226,13 @@ getCurrentList :: State -> Int
 getCurrentList = fst . current
 
 getList :: State -> Maybe List
-getList s = Lists.get (tasks s) (getCurrentList s)
+getList s = Lists.get (lists s) (getCurrentList s)
 
 setList :: State -> List -> State
-setList s ts = setTasks s (Lists.update (getCurrentList s) (tasks s) ts)
+setList s ts = setLists s (Lists.update (getCurrentList s) (lists s) ts)
 
-setTasks :: State -> Lists.Lists -> State
-setTasks s ts = s { tasks = ts }
+setLists :: State -> Lists.Lists -> State
+setLists s ts = s { lists = ts }
 
 getCurrentTask :: State -> Maybe Task
 getCurrentTask s = do
@@ -252,3 +249,9 @@ getCursor s = do
     case mode s of
         Insert -> return (getCurrentList s, getIndex s, l)
         _ -> Nothing
+
+newList :: State -> State 
+newList s = case mode s of
+    CreateList t -> fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
+    _ -> s 
+    where ls = lists s
