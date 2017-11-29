@@ -10,6 +10,9 @@
     {
         "tasks": [
             {
+                "description": "If no items in current list, returns a Nothing, so everything dissappears"
+            },
+            {
                 "description": "CreateList mode doesn't display anything"
             },
             {
@@ -19,7 +22,7 @@
                 "description": "Pressing enter on Edit creates new task"
             },
             {
-                "description": "If no items in current list, returns a Nothing, so everything dissappears"
+                "description": "On very small screens columns have too much padding"
             }
         ],
         "title": "Bugs"
