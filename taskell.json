@@ -10,9 +10,6 @@
     {
         "tasks": [
             {
-                "description": "If no items in current list, returns a Nothing, so everything dissappears"
-            },
-            {
                 "description": "CreateList mode doesn't display anything"
             },
             {
@@ -20,9 +17,6 @@
             },
             {
                 "description": "Pressing enter on Edit creates new task"
-            },
-            {
-                "description": "On very small screens columns have too much padding"
             }
         ],
         "title": "Bugs"
@@ -64,6 +58,9 @@
             },
             {
                 "description": "`Shift+o` to add on line above"
+            },
+            {
+                "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
             }
         ],
         "title": "To Do"
@@ -168,6 +165,9 @@
             },
             {
                 "description": "Space in edit/add mode doesn't move cursor along - bit disconcerting"
+            },
+            {
+                "description": "If no items in current list, returns a Nothing, so everything dissappears"
             }
         ],
         "title": "Done"
