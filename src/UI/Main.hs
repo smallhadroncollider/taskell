@@ -45,7 +45,7 @@ curList (w, h) i t (a, c, b) = (translateY o img, x, y + o)
 rCurList :: Size -> Int -> ListUI -> (Image, Int, Int)
 rCurList s i (t, ts) = case splitOn i ts of
     Just l -> curList s i t l
-    Nothing -> (justTitle t, len t, 0)
+    Nothing -> (margin (justTitle t), len t, 0)
 
 cur' :: Pointer -> Size -> Seq ListUI -> Maybe (Image, Int, Int, Int)
 cur' (l, i) s ls = do
