@@ -3,18 +3,12 @@
         "tasks": [
             {
                 "description": "Break up State module"
-            },
-            {
-                "description": "UI modules need refactoring"
             }
         ],
         "title": "Refactoring"
     },
     {
         "tasks": [
-            {
-                "description": "Cursor doesn't show on CreateList mode"
-            },
             {
                 "description": "Pressing enter on Edit creates new task"
             }
@@ -23,9 +17,6 @@
     },
     {
         "tasks": [
-            {
-                "description": "Wrap lines"
-            },
             {
                 "description": "Add tags/labels"
             },
@@ -61,6 +52,9 @@
             },
             {
                 "description": "`Shift+o` to add on line above"
+            },
+            {
+                "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
             }
         ],
         "title": "To Do"
@@ -150,6 +144,30 @@
             },
             {
                 "description": "Run with any correctly formatted json file"
+            },
+            {
+                "description": "Wrap lines"
+            },
+            {
+                "description": "UI modules need refactoring"
+            },
+            {
+                "description": "Horizontal scrolling stops working if a word longer than the column width is entered"
+            },
+            {
+                "description": "Cursor no longer in the right place"
+            },
+            {
+                "description": "Space in edit/add mode doesn't move cursor along - bit disconcerting"
+            },
+            {
+                "description": "If no items in current list, returns a Nothing, so everything dissappears"
+            },
+            {
+                "description": "CreateList mode doesn't display anything"
+            },
+            {
+                "description": "Cursor doesn't show on CreateList mode"
             }
         ],
         "title": "Done"

@@ -1,63 +1,93 @@
 module UI.Main where
 
 import Graphics.Vty
-import Flow.State (State, tasks, current, getCursor, getNewList, size)
-import UI.List (list)
-import Data.Maybe (fromMaybe)
-import Data.Sequence (Seq, mapWithIndex)
 import Data.Foldable (toList)
-import qualified Config as C
+import Data.Maybe (fromMaybe)
 
-attrTitle :: Attr
-attrTitle = defAttr `withForeColor` green
+import Data.Sequence (Seq, mapWithIndex, (><))
 
-attrNothing :: Attr
-attrNothing = defAttr `withStyle` dim 
+import Flow.State (State, Pointer, Size, lists, current, size, newList)
 
-marginBottom :: Image -> Image
-marginBottom = pad 0 0 0 1
+import UI.Styles
 
-marginTop :: Image -> Image
-marginTop = pad 0 1 0 0
+import Config (width, padding)
+import Data.Taskell.String (wrap)
+import Data.Taskell.Seq (splitOn)
+import Data.Taskell.Task (description)
+import Data.Taskell.List (List, tasks, title)
 
-marginRight :: Image -> Image
-marginRight = pad 0 0 C.padding 0
+type TaskUI = [String]
+type ListUI = (TaskUI, Seq TaskUI)
 
-nothing :: Image
-nothing = string attrNothing "No items"
+present :: List -> ListUI
+present l = (wrap width (title l), wrap width . description <$> tasks l)
 
-newList :: State -> Image
-newList s = maybe emptyImage img n 
-    where n = getNewList s
-          img s = marginTop $ string attrNothing ("New List: " ++ s)
+rList :: ListUI -> Image
+rList (t, ts) = margin $ img attrTitle t <-> (vCat . fmap (marginTop . task)) ts
 
--- creates the title element
-title :: State -> Image
-title s = marginBottom $ string attrTitle "[Taskell]" <-> newList s
+justTitle :: TaskUI -> Image
+justTitle = img attrCurrentTitle
 
--- cursor code
-width :: Int -> [Image] -> Int
-width i = sum . map imageWidth . take i
+len :: TaskUI -> Int
+len = sum . fmap length
 
-makeCursor :: Int -> [Image] -> Image -> (Int, Int, Int) -> Cursor
-makeCursor o im t (l, i, len) = Cursor (col + len + bulletLen + o) (i + imageHeight t + listHeadHeight)
-    where bulletLen = 2
-          listHeadHeight = 1
-          col = width l im
+curList :: Size -> Int -> TaskUI -> (Seq TaskUI, TaskUI, Seq TaskUI) -> (Image, Int, Int)
+curList (w, h) i t (a, c, b) = (translateY o img, x, y + o)
+    where title = justTitle t 
+          r = vCat . fmap (marginTop . task)
+          pre = r a
+          cur = marginTop (currentTask c)
+          y = imageHeight pre + imageHeight cur
+          x = if not (null c) then length (last c) else 0
+          o = calcOffset (h `div` 2) y
+          img = margin $ title <-> pre <-> cur <-> r b
 
-calculateCursor :: Int -> [Image] -> Image -> State -> Cursor
-calculateCursor o im t = maybe NoCursor (makeCursor o im t) . getCursor
+rCurList :: Size -> Int -> ListUI -> (Image, Int, Int)
+rCurList s i (t, ts) = case splitOn i ts of
+    Just l -> curList s i t l
+    Nothing -> (margin (justTitle t), len t, 0)
+
+cur' :: Pointer -> Size -> Seq ListUI -> Maybe (Image, Int, Int, Int)
+cur' (l, i) s ls = do
+    (a, c, b) <- splitOn l ls
+    let r = hCat . fmap rList
+    let pre = r a
+    let (cur, x, y) = rCurList s i c
+    let img = pre <|> cur <|> r b
+    return (img, imageWidth pre, x, y)
+
+cur :: Pointer -> Size -> Seq ListUI -> (Image, Int, Int, Int)
+cur p s ls = fromMaybe (string attrNormal "No lists", 0, 0, 0) c
+    where c = cur' p s ls
+
+calcOffset :: Int -> Int -> Int
+calcOffset pivot n = if n > pivot then pivot - n else 0
+
+offset :: Size -> Int -> Int
+offset (w, _) = calcOffset (w `div` 3)
 
 -- draws the screen
 pic :: State -> Picture
-pic s = Picture (calculateCursor offset' lists t s) [image] ClearBackground
-    where ts = tasks s
-          current' = current s
-          lists = map marginRight . toList $ mapWithIndex (list s $ imageHeight t) ts
-          t = title s
-          all = horizCat lists
-          (w, h) = size s
-          col = C.width + C.padding
-          offset = (negate col * fst current') + (w `div` 2) - (col `div` 2)
-          offset' = if offset > 0 then 0 else offset
-          image = t <-> if null lists then nothing else translateX offset' all
+pic s = Picture (Cursor (w + x + o + padding) (y + 1)) [translateX o $ marginTop img] ClearBackground
+    where s' = newList s
+          ls = present <$> lists s' 
+          sz = size s'
+          (img, w, x, y) = cur (current s') sz ls
+          o = offset sz w
+
+-- styling
+task :: TaskUI -> Image
+task = img attrNormal 
+
+currentTask :: TaskUI -> Image
+currentTask = img attrCurrent
+
+-- vty helpers
+img :: Attr -> TaskUI -> Image
+img a s = vertCat $ string a <$> s
+
+hCat :: Seq Image -> Image
+hCat = foldl (<|>) emptyImage
+
+vCat :: Seq Image -> Image
+vCat = foldl (<->) emptyImage
