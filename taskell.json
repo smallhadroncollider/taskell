@@ -11,6 +11,9 @@
         "tasks": [
             {
                 "description": "Pressing enter on Edit creates new task"
+            },
+            {
+                "description": "Empty tasks aren't obviously selectable"
             }
         ],
         "title": "Bugs"
