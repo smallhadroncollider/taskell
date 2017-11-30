@@ -21,10 +21,10 @@
     {
         "tasks": [
             {
-                "description": "Add tags/labels"
+                "description": "Add tags/labels with `t`"
             },
             {
-                "description": "Filter by tag/label"
+                "description": "Filter by tag/label with `/`"
             },
             {
                 "description": "Undo with `u`"
@@ -33,10 +33,10 @@
                 "description": "Move between lists with `m` - shows possible lists"
             },
             {
-                "description": "Add due dates to tasks"
+                "description": "Add due dates to tasks with `d`"
             },
             {
-                "description": "Reordering lists"
+                "description": "Reordering lists with `>` and `<`"
             },
             {
                 "description": "Space moves to next and stays in list / H & L move but keep current"
