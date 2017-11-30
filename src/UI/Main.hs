@@ -26,41 +26,41 @@ columnNumber i s = if col >= 1 && col <= 9 then show col ++ ". " ++ s else s
 present :: Int -> List -> ListUI
 present i l = (wrap width (columnNumber i $ title l), wrap width . description <$> tasks l)
 
-titleImage :: TaskUI -> Image
-titleImage = img attrCurrentTitle
+currentTitleImage :: TaskUI -> Image
+currentTitleImage = img attrCurrentTitle
 
 taskLength:: TaskUI -> Int
-taskLength= sum . fmap length
+taskLength = sum . fmap length
 
 tasksImage :: Seq TaskUI -> Image
 tasksImage = vCat . fmap (marginTop . task)
 
-renderCurrentList' :: Size -> Int -> TaskUI -> Split TaskUI -> (Image, Int, Int)
-renderCurrentList' (w, h) i t (before, current, after) = (translateY yOffset img, x, y + yOffset)
-    where title = titleImage t 
+renderCurrentList' :: Size -> TaskUI -> Split TaskUI -> (Image, Int, Int)
+renderCurrentList' (_, height) task (before, current, after) = (translateY yOffset img, x, y + yOffset)
+    where title = currentTitleImage task
           [before', after'] = tasksImage <$> [before, after] 
           current' = marginTop (currentTask current)
           y = sum $ imageHeight <$> [before', current']
           x = if not (null current) then length (last current) else 0
-          yOffset = calcOffset (h `div` 2) y
+          yOffset = calcOffset (height `div` 2) y
           img = margin $ vertCat [title, before', current', after']
 
 renderCurrentList :: Size -> Int -> ListUI -> (Image, Int, Int)
-renderCurrentList s i (t, ts) = case splitOn i ts of
-    Just l -> renderCurrentList' s i t l
-    Nothing -> (margin (titleImage t), taskLength t, 0)
+renderCurrentList size index (title, tasks) = case splitOn index tasks of
+    Just list -> renderCurrentList' size title list
+    Nothing -> (margin (currentTitleImage title), taskLength title, 0)
 
 listImage :: ListUI -> Image
-listImage (t, ts) = margin $ img attrTitle t <-> tasksImage ts
+listImage (title, tasks) = margin $ img attrTitle title <-> tasksImage tasks
 
 listsImage :: Seq ListUI -> Image
 listsImage = hCat . fmap listImage
 
 renderLists' :: Pointer -> Size -> Seq ListUI -> Maybe (Image, Int, Int, Int)
-renderLists' (l, i) s ls = do
-    (before, current, after) <- splitOn l ls
+renderLists' (list, index) size lists = do
+    (before, current, after) <- splitOn list lists
     let [before', after'] = listsImage <$> [before, after]
-    let (current', x, y) = renderCurrentList s i current
+    let (current', x, y) = renderCurrentList size index current
     let img = horizCat [before', current', after']
     return (img, imageWidth before', x, y)
 
@@ -71,18 +71,15 @@ renderLists p s ls = fromMaybe (string attrNormal "No lists", 0, 0, 0) c
 calcOffset :: Int -> Int -> Int
 calcOffset pivot n = if n > pivot then pivot - n else 0
 
-offset :: Size -> Int -> Int
-offset (w, _) = calcOffset (w `div` 3)
-
 -- draws the screen
 pic :: State -> Picture
-pic s = Picture cursor [translateX o $ marginTop img] ClearBackground
-    where s' = newList s
-          ls = mapWithIndex present $ lists s' 
-          sz = size s'
-          (img, w, x, y) = renderLists (current s') sz ls
-          o = offset sz w
-          cursor = if showCursor s then Cursor (w + x + o + padding) (y + 1) else NoCursor
+pic state = Picture cursor [translateX o $ marginTop img] ClearBackground
+    where state' = newList state
+          sz = size state'
+          ls = mapWithIndex present $ lists state' 
+          (img, w, x, y) = renderLists (current state') sz ls
+          o = calcOffset (fst sz `div` 3) w
+          cursor = if showCursor state' then Cursor (w + x + o + padding) (y + 1) else NoCursor
 
 -- styling
 task :: TaskUI -> Image
