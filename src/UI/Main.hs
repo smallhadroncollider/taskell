@@ -1,12 +1,12 @@
 module UI.Main where
 
-import Graphics.Vty
+import Graphics.Vty hiding (showCursor)
 import Data.Foldable (toList)
 import Data.Maybe (fromMaybe)
 
 import Data.Sequence (Seq, mapWithIndex, (><))
 
-import Flow.State (State, Pointer, Size, lists, current, size, newList)
+import Flow.State (State, Pointer, Size, lists, current, size, newList, showCursor)
 
 import UI.Styles
 
@@ -68,12 +68,13 @@ offset (w, _) = calcOffset (w `div` 3)
 
 -- draws the screen
 pic :: State -> Picture
-pic s = Picture (Cursor (w + x + o + padding) (y + 1)) [translateX o $ marginTop img] ClearBackground
+pic s = Picture cursor [translateX o $ marginTop img] ClearBackground
     where s' = newList s
           ls = present <$> lists s' 
           sz = size s'
           (img, w, x, y) = cur (current s') sz ls
           o = offset sz w
+          cursor = if showCursor s then Cursor (w + x + o + padding) (y + 1) else NoCursor
 
 -- styling
 task :: TaskUI -> Image

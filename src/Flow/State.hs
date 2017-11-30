@@ -13,7 +13,7 @@ module Flow.State (
     lists,
 
     -- UI.Main
-    getCursor,
+    showCursor,
     newList,
     
     -- Main
@@ -241,14 +241,11 @@ getCurrentTask s = do
     getTask i l
 
 -- view
-getCursor :: State -> Maybe (Int, Int, Int)
-getCursor s = do
-    t <- getCurrentTask s
-    let l = characters t
-
-    case mode s of
-        Insert -> return (getCurrentList s, getIndex s, l)
-        _ -> Nothing
+showCursor :: State -> Bool 
+showCursor s = case mode s of
+    Insert -> True 
+    CreateList n -> True 
+    _ -> False
 
 newList :: State -> State 
 newList s = case mode s of
