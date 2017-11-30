@@ -39,9 +39,6 @@
                 "description": "Reordering lists"
             },
             {
-                "description": "Show current mode in title"
-            },
-            {
                 "description": "Space moves to next and stays in list / H & L move but keep current"
             },
             {
