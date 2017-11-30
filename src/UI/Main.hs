@@ -19,8 +19,12 @@ import Data.Taskell.List (List, tasks, title)
 type TaskUI = [String]
 type ListUI = (TaskUI, Seq TaskUI)
 
-present :: List -> ListUI
-present l = (wrap width (title l), wrap width . description <$> tasks l)
+columnNumber :: Int -> String -> String
+columnNumber i s = if col >= 1 && col <= 9 then show col ++ ". " ++ s else s
+    where col = i + 1
+
+present :: Int -> List -> ListUI
+present i l = (wrap width (columnNumber i $ title l), wrap width . description <$> tasks l)
 
 titleImage :: TaskUI -> Image
 titleImage = img attrCurrentTitle
@@ -74,7 +78,7 @@ offset (w, _) = calcOffset (w `div` 3)
 pic :: State -> Picture
 pic s = Picture cursor [translateX o $ marginTop img] ClearBackground
     where s' = newList s
-          ls = present <$> lists s' 
+          ls = mapWithIndex present $ lists s' 
           sz = size s'
           (img, w, x, y) = renderLists (current s') sz ls
           o = offset sz w
