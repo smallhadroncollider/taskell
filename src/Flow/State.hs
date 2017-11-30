@@ -35,6 +35,8 @@ module Flow.State (
     delete,
     selectList,
     setSize,
+    listLeft,
+    listRight,
 
     -- Flow.Actions.CreateList
     createListFinish,
@@ -239,6 +241,21 @@ getCurrentTask s = do
     l <- getList s
     let i = getIndex s
     getTask i l
+
+-- move lists
+listMove :: Int -> Stateful
+listMove dir s = do
+    let ls = lists s
+    let c = getCurrentList s
+    ls' <- Lists.shiftBy c dir ls
+    let s' = fixIndex $ setCurrentList s (c + dir)
+    return $ setLists s' ls'
+
+listLeft :: Stateful
+listLeft = listMove (-1)
+
+listRight :: Stateful
+listRight = listMove 1
 
 -- view
 showCursor :: State -> Bool 

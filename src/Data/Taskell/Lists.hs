@@ -41,3 +41,6 @@ exists :: Int -> Lists -> Bool
 exists i ts = case ts !? i of
     Just _ -> True
     Nothing -> False
+
+shiftBy :: Int -> Int -> Lists -> Maybe Lists
+shiftBy = S.shiftBy

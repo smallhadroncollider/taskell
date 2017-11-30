@@ -35,6 +35,10 @@ event (EvKey (KChar ' ') _) = moveRight
 -- removing items
 event (EvKey (KChar 'D') _) = delete
 
+-- moving lists
+event (EvKey (KChar '>') _) = listRight
+event (EvKey (KChar '<') _) = listLeft
+
 -- selecting lists
 event (EvKey (KChar n) _)
     | isDigit n = selectList n
