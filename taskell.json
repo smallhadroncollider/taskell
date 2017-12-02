@@ -55,6 +55,9 @@
             },
             {
                 "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
+            },
+            {
+                "description": "Add Trello import"
             }
         ],
         "title": "To Do"
