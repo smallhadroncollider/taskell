@@ -44,7 +44,5 @@ event (EvKey (KChar n) _)
     | isDigit n = selectList n
     | otherwise = return
 
-event (EvResize w h) = setSize w h 
-
 -- fallback
 event _ = return
