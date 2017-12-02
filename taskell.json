@@ -24,6 +24,18 @@
     {
         "tasks": [
             {
+                "description": "`o` to add on line below"
+            },
+            {
+                "description": "`O` to add on line above"
+            },
+            {
+                "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
+            },
+            {
+                "description": "Space moves to next and stays in list / H & L move but keep current"
+            },
+            {
                 "description": "Add tags/labels with `t`"
             },
             {
@@ -39,25 +51,16 @@
                 "description": "Add due dates to tasks with `d`"
             },
             {
-                "description": "Space moves to next and stays in list / H & L move but keep current"
-            },
-            {
                 "description": "`.taskell` config file in home directory"
             },
             {
                 "description": "Left/Right arrow keys in insert mode"
             },
             {
-                "description": "`o` to add on line below"
-            },
-            {
-                "description": "`Shift+o` to add on line above"
-            },
-            {
-                "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
-            },
-            {
                 "description": "Add Trello import"
+            },
+            {
+                "description": "URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)"
             }
         ],
         "title": "To Do"
