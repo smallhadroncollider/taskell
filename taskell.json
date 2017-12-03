@@ -64,6 +64,9 @@
             },
             {
                 "description": "On `?` show keyboard commands"
+            },
+            {
+                "description": "`E` edits list title"
             }
         ],
         "title": "To Do"
