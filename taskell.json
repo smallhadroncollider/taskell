@@ -61,6 +61,9 @@
             },
             {
                 "description": "URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)"
+            },
+            {
+                "description": "On `?` show keyboard commands"
             }
         ],
         "title": "To Do"
