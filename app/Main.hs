@@ -8,9 +8,6 @@ import System.Console.Terminal.Size (Window(..), size)
 
 import Data.Bool
 
-quitIfFalseOtherwise :: IO () -> Bool -> IO ()
-quitIfFalseOtherwise = bool $ return ()
-
 getSize :: IO (Int, Int)
 getSize = do
     s <- size
