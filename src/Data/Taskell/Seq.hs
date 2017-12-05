@@ -1,6 +1,5 @@
 module Data.Taskell.Seq where
 
-import Data.Maybe (fromMaybe)
 import Prelude hiding (splitAt, drop)
 import Data.Sequence (Seq, (!?), (|>), (><), insertAt, deleteAt, splitAt, drop, fromList)
 
