@@ -11,8 +11,9 @@ event :: Event -> Stateful
 event (EvKey (KChar 'q') _) = quit
 
 -- add/edit
-event (EvKey (KChar 'a') _) = (startInsert =<<) . newItem
 event (EvKey (KChar 'e') _) = startInsert
+event (EvKey (KChar 'i') _) = startInsert
+event (EvKey (KChar 'a') _) = (startInsert =<<) . newItem
 event (EvKey (KChar 'O') _) = (startInsert =<<) . above 
 event (EvKey (KChar 'o') _) = (startInsert =<<) . below
 

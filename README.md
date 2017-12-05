@@ -17,7 +17,7 @@ A CLI task manager, written in Haskell
 - `a` add a task (`Enter`/`Esc` to stop)
 - `o` add a task below
 - `O` add a task above
-- `e` edit a task (`Enter`/`Esc` to stop)
+- `e`/`i` edit a task (`Enter`/`Esc` to stop)
 - `j`: move down
 - `k`: move up
 - `h`: move left 
