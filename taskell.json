@@ -67,6 +67,9 @@
             },
             {
                 "description": "`E` edits list title"
+            },
+            {
+                "description": "Copy and paste?"
             }
         ],
         "title": "To Do"
