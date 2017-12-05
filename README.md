@@ -15,11 +15,14 @@ A CLI task manager, written in Haskell
 ## Controls
 
 - `a` add a task (`Enter`/`Esc` to stop)
+- `o` add a task below
+- `O` add a task above
 - `e` edit a task (`Enter`/`Esc` to stop)
 - `j`: move down
 - `k`: move up
 - `h`: move left 
 - `l`: move right
+- `G`: go to bottom of list
 - `1`-`9`: select list
 - `J`: shift task down
 - `K`: shift task up
