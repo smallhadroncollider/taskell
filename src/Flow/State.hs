@@ -54,8 +54,8 @@ module Flow.State (
     insertCurrent
 ) where
 
-import Data.Taskell.Task (Task, backspace, append, characters)
-import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask, newAt)
+import Data.Taskell.Task (Task, backspace, append)
+import Data.Taskell.List (List(), update, move, new, deleteTask, newAt)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
@@ -73,11 +73,11 @@ data State = State {
 } deriving (Show)
 
 create :: Size -> Lists.Lists -> State
-create size ls = State {
+create sz ls = State {
         mode = Normal,
         lists = ls,
         current = (0, 0),
-        size = size
+        size = sz
     } 
 
 type Stateful = State -> Maybe State
@@ -255,12 +255,6 @@ setList s ts = setLists s (Lists.update (getCurrentList s) (lists s) ts)
 setLists :: State -> Lists.Lists -> State
 setLists s ts = s { lists = ts }
 
-getCurrentTask :: State -> Maybe Task
-getCurrentTask s = do
-    l <- getList s
-    let i = getIndex s
-    getTask i l
-
 -- move lists
 listMove :: Int -> Stateful
 listMove dir s = do
@@ -280,7 +274,7 @@ listRight = listMove 1
 showCursor :: State -> Bool 
 showCursor s = case mode s of
     Insert -> True 
-    CreateList n -> True 
+    CreateList _ -> True 
     _ -> False
 
 newList :: State -> State 
