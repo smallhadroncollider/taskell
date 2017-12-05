@@ -7,6 +7,13 @@ A CLI task manager, written in Haskell
 
 ![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
 
+## Setup
+
+Built with [Stack](https://docs.haskellstack.org/en/stable/README/)
+
+- `stack install && stack build`
+- `stack exec taskell-exe`
+
 ## Running
 
 - `taskell`: will use `taskell.json` in the cwd - offers to create if not found
