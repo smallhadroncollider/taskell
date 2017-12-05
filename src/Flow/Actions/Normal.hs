@@ -26,6 +26,7 @@ event (EvKey (KChar 'k') _) = previous
 event (EvKey (KChar 'j') _) = next
 event (EvKey (KChar 'h') _) = left
 event (EvKey (KChar 'l') _) = right
+event (EvKey (KChar 'G') _) = bottom
 
 -- moving items
 event (EvKey (KChar 'K') _) = up

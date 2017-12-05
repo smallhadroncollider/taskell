@@ -26,6 +26,7 @@ module Flow.State (
     deleteCurrentList,
     above,
     below,
+    bottom,
     previous,
     next,
     left,
@@ -156,6 +157,9 @@ change fn s = do
     l <- getList s
     l' <- update (getIndex s) fn l
     return $ setList s l'
+
+bottom :: Stateful
+bottom = return . selectLast
 
 selectLast :: InternalStateful
 selectLast s = setIndex s (countCurrent s - 1)
