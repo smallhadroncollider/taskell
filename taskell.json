@@ -17,6 +17,9 @@
             },
             {
                 "description": "Reordering leftmost list left takes you to last list"
+            },
+            {
+                "description": "Should only save after adding a new item or finished editing an item - should save when pressing Enter while adding new items"
             }
         ],
         "title": "Bugs"
@@ -42,7 +45,7 @@
                 "description": "Filter by tag/label with `/`"
             },
             {
-                "description": "Undo with `u`"
+                "description": "Undo with `u` - keep previous state in state, which will have previous state, etc. Recursive! Only store previous between edits, otherwise it'll get massive?"
             },
             {
                 "description": "Move between lists with `m` - shows possible lists"
