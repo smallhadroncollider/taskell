@@ -24,6 +24,8 @@ module Flow.State (
     startInsert,
     createListStart,
     deleteCurrentList,
+    above,
+    below,
     previous,
     next,
     left,
@@ -52,7 +54,7 @@ module Flow.State (
 ) where
 
 import Data.Taskell.Task (Task, backspace, append, characters)
-import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask)
+import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask, newAt)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
@@ -124,6 +126,19 @@ startInsert s = return $ s { mode = Insert }
 
 finishInsert :: Stateful
 finishInsert s = return $ s { mode = Normal }
+
+addToListAt :: Int -> Stateful
+addToListAt d s = do
+    l <- getList s
+    let i = getIndex s + d
+    let ls = newAt i l
+    return $ setList (setIndex s i) ls
+
+above :: Stateful
+above = addToListAt 0 
+
+below :: Stateful
+below = addToListAt 1 
 
 newItem :: Stateful
 newItem s = do

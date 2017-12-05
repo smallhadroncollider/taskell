@@ -27,10 +27,7 @@
     {
         "tasks": [
             {
-                "description": "`o` to add on line below"
-            },
-            {
-                "description": "`O` to add on line above"
+                "description": "`G` take to bottom of file"
             },
             {
                 "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
@@ -189,6 +186,12 @@
             },
             {
                 "description": "Reordering lists with `>` and `<`"
+            },
+            {
+                "description": "`o` to add on line below"
+            },
+            {
+                "description": "`O` to add on line above"
             }
         ],
         "title": "Done"

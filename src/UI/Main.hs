@@ -1,10 +1,9 @@
 module UI.Main where
 
 import Graphics.Vty hiding (showCursor)
-import Data.Foldable (toList)
 import Data.Maybe (fromMaybe)
 
-import Data.Sequence (Seq, mapWithIndex, (><))
+import Data.Sequence (Seq, mapWithIndex)
 
 import Flow.State (State, Pointer, Size, lists, current, size, newList, showCursor)
 
@@ -33,17 +32,17 @@ taskLength:: TaskUI -> Int
 taskLength = sum . fmap length
 
 tasksImage :: Seq TaskUI -> Image
-tasksImage = vCat . fmap (marginTop . task)
+tasksImage = vCat . fmap (marginTop . taskImage)
 
 renderCurrentList' :: Size -> TaskUI -> Split TaskUI -> (Image, Int, Int)
-renderCurrentList' (_, height) task (before, current, after) = (translateY yOffset img, x, y + yOffset)
+renderCurrentList' (_, height) task (before, cur, after) = (translateY yOffset img, x, y + yOffset)
     where title = currentTitleImage task
           [before', after'] = tasksImage <$> [before, after] 
-          current' = marginTop (currentTask current)
-          y = sum $ imageHeight <$> [before', current']
-          x = if not (null current) then length (last current) else 0
+          cur' = marginTop (currentTaskImage cur)
+          y = sum $ imageHeight <$> [before', cur']
+          x = if not (null cur) then length (last cur) else 0
           yOffset = calcOffset (height `div` 2) y
-          img = margin $ vertCat [title, before', current', after']
+          img = margin $ vertCat [title, before', cur', after']
 
 renderCurrentList :: Size -> Int -> ListUI -> (Image, Int, Int)
 renderCurrentList size index (title, tasks) = case splitOn index tasks of
@@ -82,11 +81,11 @@ pic state = Picture cursor [translateX o $ marginTop img] ClearBackground
           cursor = if showCursor state' then Cursor (w + x + o + padding) (y + 1) else NoCursor
 
 -- styling
-task :: TaskUI -> Image
-task = img attrNormal 
+taskImage :: TaskUI -> Image
+taskImage = img attrNormal 
 
-currentTask :: TaskUI -> Image
-currentTask = img attrCurrent
+currentTaskImage :: TaskUI -> Image
+currentTaskImage = img attrCurrent
 
 -- vty helpers
 img :: Attr -> TaskUI -> Image
