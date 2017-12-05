@@ -11,6 +11,15 @@
         "tasks": [
             {
                 "description": "Pressing enter on Edit creates new task"
+            },
+            {
+                "description": "Empty tasks aren't obviously selectable"
+            },
+            {
+                "description": "Reordering leftmost list left takes you to last list"
+            },
+            {
+                "description": "Should only save after adding a new item or finished editing an item - should save when pressing Enter while adding new items"
             }
         ],
         "title": "Bugs"
@@ -18,28 +27,25 @@
     {
         "tasks": [
             {
-                "description": "Add tags/labels"
+                "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
             },
             {
-                "description": "Filter by tag/label"
+                "description": "Space moves to next and stays in list / H & L move but keep current"
             },
             {
-                "description": "Undo with `u`"
+                "description": "Add tags/labels with `t`"
+            },
+            {
+                "description": "Filter by tag/label with `/`"
+            },
+            {
+                "description": "Undo with `u` - keep previous state in state, which will have previous state, etc. Recursive! Only store previous between edits, otherwise it'll get massive?"
             },
             {
                 "description": "Move between lists with `m` - shows possible lists"
             },
             {
-                "description": "Add due dates to tasks"
-            },
-            {
-                "description": "Reordering lists"
-            },
-            {
-                "description": "Show current mode in title"
-            },
-            {
-                "description": "Space moves to next and stays in list / H & L move but keep current"
+                "description": "Add due dates to tasks with `d`"
             },
             {
                 "description": "`.taskell` config file in home directory"
@@ -48,13 +54,19 @@
                 "description": "Left/Right arrow keys in insert mode"
             },
             {
-                "description": "`o` to add on line below"
+                "description": "Add Trello import"
             },
             {
-                "description": "`Shift+o` to add on line above"
+                "description": "URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)"
             },
             {
-                "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
+                "description": "On `?` show keyboard commands"
+            },
+            {
+                "description": "`E` edits list title"
+            },
+            {
+                "description": "Copy and paste?"
             }
         ],
         "title": "To Do"
@@ -168,6 +180,18 @@
             },
             {
                 "description": "Cursor doesn't show on CreateList mode"
+            },
+            {
+                "description": "Reordering lists with `>` and `<`"
+            },
+            {
+                "description": "`o` to add on line below"
+            },
+            {
+                "description": "`O` to add on line above"
+            },
+            {
+                "description": "`G` take to bottom of file"
             }
         ],
         "title": "Done"

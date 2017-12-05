@@ -3,13 +3,8 @@ module Main where
 import Render (render)
 import Control.Monad (when)
 import Flow.State (create)
-import Persistence.Taskell (exists, readJSON, writeJSON)
+import Persistence.Taskell (exists, readJSON)
 import System.Console.Terminal.Size (Window(..), size)
-
-import Data.Bool
-
-quitIfFalseOtherwise :: IO () -> Bool -> IO ()
-quitIfFalseOtherwise = bool $ return ()
 
 getSize :: IO (Int, Int)
 getSize = do
@@ -22,8 +17,8 @@ getSize = do
 start :: FilePath -> IO ()
 start path = do
     json <- readJSON path
-    size <- getSize
-    render path $ create size json
+    s <- getSize
+    render path $ create s json
 
 -- if taskell.json exists/created then start
 main :: IO ()

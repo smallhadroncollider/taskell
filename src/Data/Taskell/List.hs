@@ -5,7 +5,8 @@ module Data.Taskell.List where
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
 
-import Data.Sequence (Seq, (|>), (!?), deleteAt)
+import Prelude hiding (splitAt)
+import Data.Sequence (Seq, (|>), (!?), (><), deleteAt, splitAt)
 import qualified Data.Taskell.Seq as S
 
 import Data.Taskell.Task (Task, blank)
@@ -27,6 +28,11 @@ empty t = List {
 
 new :: List -> List
 new = append blank
+
+newAt :: Int -> List -> List
+newAt i l = l { tasks = (a |> blank) >< b }
+    where (a, b) = splitAt i $ tasks l
+
 
 append :: Task -> List -> List
 append t l = l { tasks = tasks l |> t }

@@ -1,8 +1,9 @@
 module Data.Taskell.Seq where
 
-import Data.Maybe (fromMaybe)
 import Prelude hiding (splitAt, drop)
 import Data.Sequence (Seq, (!?), (|>), (><), insertAt, deleteAt, splitAt, drop, fromList)
+
+type Split a = (Seq a, a, Seq a)
 
 empty :: Seq a
 empty = fromList []
@@ -13,7 +14,7 @@ extract i xs = do
     let a = deleteAt i xs
     return (a, c)
 
-splitOn :: Int -> Seq a -> Maybe (Seq a, a, Seq a)
+splitOn :: Int -> Seq a -> Maybe (Split a) 
 splitOn i xs = do
     let (a, b) = splitAt i xs
     current <- b !? 0

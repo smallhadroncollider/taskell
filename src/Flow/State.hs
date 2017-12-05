@@ -13,7 +13,7 @@ module Flow.State (
     lists,
 
     -- UI.Main
-    getCursor,
+    showCursor,
     newList,
     
     -- Main
@@ -24,6 +24,9 @@ module Flow.State (
     startInsert,
     createListStart,
     deleteCurrentList,
+    above,
+    below,
+    bottom,
     previous,
     next,
     left,
@@ -35,6 +38,8 @@ module Flow.State (
     delete,
     selectList,
     setSize,
+    listLeft,
+    listRight,
 
     -- Flow.Actions.CreateList
     createListFinish,
@@ -50,7 +55,7 @@ module Flow.State (
 ) where
 
 import Data.Taskell.Task (Task, backspace, append, characters)
-import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask)
+import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask, newAt)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
@@ -123,6 +128,19 @@ startInsert s = return $ s { mode = Insert }
 finishInsert :: Stateful
 finishInsert s = return $ s { mode = Normal }
 
+addToListAt :: Int -> Stateful
+addToListAt d s = do
+    l <- getList s
+    let i = getIndex s + d
+    let ls = newAt i l
+    return $ setList (setIndex s i) ls
+
+above :: Stateful
+above = addToListAt 0 
+
+below :: Stateful
+below = addToListAt 1 
+
 newItem :: Stateful
 newItem s = do
     l <- getList s
@@ -139,6 +157,9 @@ change fn s = do
     l <- getList s
     l' <- update (getIndex s) fn l
     return $ setList s l'
+
+bottom :: Stateful
+bottom = return . selectLast
 
 selectLast :: InternalStateful
 selectLast s = setIndex s (countCurrent s - 1)
@@ -240,15 +261,27 @@ getCurrentTask s = do
     let i = getIndex s
     getTask i l
 
--- view
-getCursor :: State -> Maybe (Int, Int, Int)
-getCursor s = do
-    t <- getCurrentTask s
-    let l = characters t
+-- move lists
+listMove :: Int -> Stateful
+listMove dir s = do
+    let ls = lists s
+    let c = getCurrentList s
+    ls' <- Lists.shiftBy c dir ls
+    let s' = fixIndex $ setCurrentList s (c + dir)
+    return $ setLists s' ls'
 
-    case mode s of
-        Insert -> return (getCurrentList s, getIndex s, l)
-        _ -> Nothing
+listLeft :: Stateful
+listLeft = listMove (-1)
+
+listRight :: Stateful
+listRight = listMove 1
+
+-- view
+showCursor :: State -> Bool 
+showCursor s = case mode s of
+    Insert -> True 
+    CreateList n -> True 
+    _ -> False
 
 newList :: State -> State 
 newList s = case mode s of
