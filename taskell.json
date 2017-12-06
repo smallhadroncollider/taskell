@@ -67,6 +67,9 @@
             },
             {
                 "description": "Copy and paste?"
+            },
+            {
+                "description": "`C` to change to do - i.e. start from scratch"
             }
         ],
         "title": "To Do"
