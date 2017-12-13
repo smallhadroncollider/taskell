@@ -5,6 +5,10 @@ module Flow.State (
     Pointer,
     Size,
     Mode(..),
+
+    -- Render
+    continue,
+    write,
     
     -- record accesors
     mode,
@@ -60,7 +64,7 @@ import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
 
-data Mode = Normal | Insert | CreateList String | Shutdown deriving (Show)
+data Mode = Normal | Insert | CreateList String | Write Mode | Shutdown deriving (Show)
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
@@ -73,12 +77,7 @@ data State = State {
 } deriving (Show)
 
 create :: Size -> Lists.Lists -> State
-create sz ls = State {
-        mode = Normal,
-        lists = ls,
-        current = (0, 0),
-        size = sz
-    } 
+create sz ls = State Normal ls (0, 0) sz
 
 type Stateful = State -> Maybe State
 type InternalStateful = State -> State 
@@ -89,6 +88,14 @@ quit s = return $ s { mode = Shutdown }
 
 setSize :: Int -> Int -> Stateful
 setSize w h s = return $ s { size = (w, h) }
+
+continue :: State -> State 
+continue s = case mode s of
+    Write m -> s { mode = m }
+    _ -> s
+
+write :: Stateful
+write s = return $ s { mode = Write (mode s) }
 
 -- createList
 createList :: InternalStateful
