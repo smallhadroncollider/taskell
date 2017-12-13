@@ -11,15 +11,15 @@ event :: Event -> Stateful
 event (EvKey (KChar 'q') _) = quit
 
 -- add/edit
-event (EvKey (KChar 'e') _) = startInsert
-event (EvKey (KChar 'i') _) = startInsert
-event (EvKey (KChar 'a') _) = (startInsert =<<) . newItem
-event (EvKey (KChar 'O') _) = (startInsert =<<) . above 
-event (EvKey (KChar 'o') _) = (startInsert =<<) . below
+event (EvKey (KChar 'e') _) = (startInsert =<<) . store
+event (EvKey (KChar 'i') _) = (startInsert =<<) . store
+event (EvKey (KChar 'a') _) = (startInsert =<<) . (newItem =<<) . store
+event (EvKey (KChar 'O') _) = (startInsert =<<) . (above  =<<) . store
+event (EvKey (KChar 'o') _) = (startInsert =<<) . (below =<<) . store
 
 -- add list
-event (EvKey (KChar 'N') _) = createListStart
-event (EvKey (KChar 'X') _) = (write =<<) . deleteCurrentList
+event (EvKey (KChar 'N') _) = (createListStart =<<) . store
+event (EvKey (KChar 'X') _) = (write =<<) . (deleteCurrentList =<<) . store
 
 -- navigation
 event (EvKey (KChar 'k') _) = previous
@@ -29,18 +29,21 @@ event (EvKey (KChar 'l') _) = right
 event (EvKey (KChar 'G') _) = bottom
 
 -- moving items
-event (EvKey (KChar 'K') _) = (write =<<) . up
-event (EvKey (KChar 'J') _) = (write =<<) . down
-event (EvKey (KChar 'H') _) = (write =<<) . moveLeft
-event (EvKey (KChar 'L') _) = (write =<<) . moveRight
-event (EvKey (KChar ' ') _) = (write =<<) . moveRight
+event (EvKey (KChar 'K') _) = (write =<<) . (up =<<) . store
+event (EvKey (KChar 'J') _) = (write =<<) . (down =<<) . store
+event (EvKey (KChar 'H') _) = (write =<<) . (moveLeft =<<) . store
+event (EvKey (KChar 'L') _) = (write =<<) . (moveRight =<<) . store
+event (EvKey (KChar ' ') _) = (write =<<) . (moveRight =<<) . store
 
 -- removing items
-event (EvKey (KChar 'D') _) = (write =<<) . delete
+event (EvKey (KChar 'D') _) = (write =<<) . (delete =<<) . store
+
+-- undo
+event (EvKey (KChar 'u') _) = (write =<<) . undo
 
 -- moving lists
-event (EvKey (KChar '>') _) = (write =<<) . listRight
-event (EvKey (KChar '<') _) = (write =<<) . listLeft
+event (EvKey (KChar '>') _) = (write =<<) . (listRight =<<) . store
+event (EvKey (KChar '<') _) = (write =<<) . (listLeft =<<) . store
 
 -- selecting lists
 event (EvKey (KChar n) _)

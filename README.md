@@ -36,6 +36,7 @@ Built with [Stack](https://docs.haskellstack.org/en/stable/README/)
 - `H`: shift task left 
 - `L`/`Space`: shift task right
 - `D`: delete task
+- `u`: undo
 - `N`: new list
 - `X`: delete list
 - `<`/`>`: move list left/right

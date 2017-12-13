@@ -44,6 +44,8 @@ module Flow.State (
     setSize,
     listLeft,
     listRight,
+    undo,
+    store,
 
     -- Flow.Actions.CreateList
     createListFinish,
@@ -72,12 +74,19 @@ type Pointer = (Int, Int)
 data State = State {
     mode :: Mode,
     lists :: Lists.Lists, 
+    history :: [(Pointer, Lists.Lists)],
     current :: Pointer,
     size :: Size
 } deriving (Show)
 
 create :: Size -> Lists.Lists -> State
-create sz ls = State Normal ls (0, 0) sz
+create sz ls = State {
+    mode = Normal,
+    lists = ls,
+    history = [],
+    current = (0, 0),
+    size = sz 
+}
 
 type Stateful = State -> Maybe State
 type InternalStateful = State -> State 
@@ -96,6 +105,18 @@ continue s = case mode s of
 
 write :: Stateful
 write s = return $ s { mode = Write (mode s) }
+
+store :: Stateful
+store s = return $ s { history = (current s, lists s) : history s }
+
+undo :: Stateful
+undo s = return $ case history s of 
+    [] -> s
+    ((c, l):xs) -> s {
+        current = c,
+        lists = l,
+        history = xs
+    }
 
 -- createList
 createList :: InternalStateful

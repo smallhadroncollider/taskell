@@ -39,9 +39,6 @@
                 "description": "Filter by tag/label with `/`"
             },
             {
-                "description": "Undo with `u` - keep previous state in state, which will have previous state, etc. Recursive! Only store previous between edits, otherwise it'll get massive?"
-            },
-            {
                 "description": "Move between lists with `m` - shows possible lists"
             },
             {
@@ -195,6 +192,9 @@
             },
             {
                 "description": "`G` take to bottom of file"
+            },
+            {
+                "description": "Undo with `u`"
             }
         ],
         "title": "Done"
