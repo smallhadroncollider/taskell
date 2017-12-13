@@ -11,8 +11,8 @@ A CLI task manager, written in Haskell
 
 Built with [Stack](https://docs.haskellstack.org/en/stable/README/)
 
-- `stack install && stack build`
-- `stack exec taskell-exe`
+- `stack build`
+- `stack exec taskell`
 
 ## Running
 
