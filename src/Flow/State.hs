@@ -5,6 +5,10 @@ module Flow.State (
     Pointer,
     Size,
     Mode(..),
+
+    -- Render
+    continue,
+    write,
     
     -- record accesors
     mode,
@@ -40,6 +44,8 @@ module Flow.State (
     setSize,
     listLeft,
     listRight,
+    undo,
+    store,
 
     -- Flow.Actions.CreateList
     createListFinish,
@@ -54,13 +60,13 @@ module Flow.State (
     insertCurrent
 ) where
 
-import Data.Taskell.Task (Task, backspace, append, characters)
-import Data.Taskell.List (List(List), update, move, new, deleteTask, getTask, newAt)
+import Data.Taskell.Task (Task, backspace, append)
+import Data.Taskell.List (List(), update, move, new, deleteTask, newAt)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
 
-data Mode = Normal | Insert | CreateList String | Shutdown deriving (Show)
+data Mode = Normal | Insert | CreateList String | Write Mode | Shutdown deriving (Show)
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
@@ -68,17 +74,19 @@ type Pointer = (Int, Int)
 data State = State {
     mode :: Mode,
     lists :: Lists.Lists, 
+    history :: [(Pointer, Lists.Lists)],
     current :: Pointer,
     size :: Size
 } deriving (Show)
 
 create :: Size -> Lists.Lists -> State
-create size ls = State {
-        mode = Normal,
-        lists = ls,
-        current = (0, 0),
-        size = size
-    } 
+create sz ls = State {
+    mode = Normal,
+    lists = ls,
+    history = [],
+    current = (0, 0),
+    size = sz 
+}
 
 type Stateful = State -> Maybe State
 type InternalStateful = State -> State 
@@ -89,6 +97,26 @@ quit s = return $ s { mode = Shutdown }
 
 setSize :: Int -> Int -> Stateful
 setSize w h s = return $ s { size = (w, h) }
+
+continue :: State -> State 
+continue s = case mode s of
+    Write m -> s { mode = m }
+    _ -> s
+
+write :: Stateful
+write s = return $ s { mode = Write (mode s) }
+
+store :: Stateful
+store s = return $ s { history = (current s, lists s) : history s }
+
+undo :: Stateful
+undo s = return $ case history s of 
+    [] -> s
+    ((c, l):xs) -> s {
+        current = c,
+        lists = l,
+        history = xs
+    }
 
 -- createList
 createList :: InternalStateful
@@ -255,12 +283,6 @@ setList s ts = setLists s (Lists.update (getCurrentList s) (lists s) ts)
 setLists :: State -> Lists.Lists -> State
 setLists s ts = s { lists = ts }
 
-getCurrentTask :: State -> Maybe Task
-getCurrentTask s = do
-    l <- getList s
-    let i = getIndex s
-    getTask i l
-
 -- move lists
 listMove :: Int -> Stateful
 listMove dir s = do
@@ -280,7 +302,7 @@ listRight = listMove 1
 showCursor :: State -> Bool 
 showCursor s = case mode s of
     Insert -> True 
-    CreateList n -> True 
+    CreateList _ -> True 
     _ -> False
 
 newList :: State -> State 

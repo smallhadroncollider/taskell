@@ -7,6 +7,13 @@ A CLI task manager, written in Haskell
 
 ![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
 
+## Setup
+
+Built with [Stack](https://docs.haskellstack.org/en/stable/README/)
+
+- `stack install && stack build`
+- `stack exec taskell-exe`
+
 ## Running
 
 - `taskell`: will use `taskell.json` in the cwd - offers to create if not found
@@ -17,7 +24,7 @@ A CLI task manager, written in Haskell
 - `a` add a task (`Enter`/`Esc` to stop)
 - `o` add a task below
 - `O` add a task above
-- `e` edit a task (`Enter`/`Esc` to stop)
+- `e`/`i` edit a task (`Enter`/`Esc` to stop)
 - `j`: move down
 - `k`: move up
 - `h`: move left 
@@ -29,6 +36,7 @@ A CLI task manager, written in Haskell
 - `H`: shift task left 
 - `L`/`Space`: shift task right
 - `D`: delete task
+- `u`: undo
 - `N`: new list
 - `X`: delete list
 - `<`/`>`: move list left/right

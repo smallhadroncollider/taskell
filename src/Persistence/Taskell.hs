@@ -5,7 +5,6 @@ import System.Environment (getArgs)
 import Data.Aeson
 import Data.Aeson.Encode.Pretty
 import Data.Maybe (fromMaybe)
-import Data.Map.Strict (empty)
 import qualified Data.ByteString.Lazy as BS
 
 import UI.CLI (promptYN)
@@ -22,8 +21,8 @@ exists :: IO (Bool, FilePath)
 exists = do
     path <- getPath
     e <- doesFileExist path
-    succ <- promptCreate e path
-    return (succ, path)
+    success <- promptCreate e path
+    return (success, path)
 
 -- prompt whether to create taskell.json
 promptCreate :: Bool -> String -> IO Bool
@@ -44,8 +43,8 @@ writeJSON tasks path = BS.writeFile path $ encodePretty tasks
 -- reads json file
 readJSON :: FilePath -> IO Lists
 readJSON path = do
-    json <- BS.readFile path
-    return $ jsonToTasks json
+    content <- BS.readFile path
+    return $ jsonToTasks content
 
 -- returns tasks or an empty list
 jsonToTasks :: BS.ByteString -> Lists
