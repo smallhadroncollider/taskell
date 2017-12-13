@@ -7,12 +7,15 @@ A CLI task manager, written in Haskell
 
 ![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
 
-## Setup
+## Installation
 
-Built with [Stack](https://docs.haskellstack.org/en/stable/README/)
+### Mac
 
-- `stack build`
-- `stack exec taskell`
+A [binary](https://github.com/smallhadroncollider/taskell/releases/download/0.6.1/taskell-mac-64.zip) is available for Mac. Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`). Then run `taskell` to get started.
+
+### Linux
+
+To run on Linux you'll need to install [Stack](https://docs.haskellstack.org/en/stable/README/) first. Then download the project and run `stack install`, this should compile the project and install it in an appropriate directory.
 
 ## Running
 
