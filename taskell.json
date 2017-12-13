@@ -17,9 +17,6 @@
             },
             {
                 "description": "Reordering leftmost list left takes you to last list"
-            },
-            {
-                "description": "Should only save after adding a new item or finished editing an item - should save when pressing Enter while adding new items"
             }
         ],
         "title": "Bugs"
@@ -27,10 +24,16 @@
     {
         "tasks": [
             {
-                "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
+                "description": "`C` to change to do - i.e. start from scratch"
+            },
+            {
+                "description": "`E` edits list title"
             },
             {
                 "description": "Space moves to next and stays in list / H & L move but keep current"
+            },
+            {
+                "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
             },
             {
                 "description": "Add tags/labels with `t`"
@@ -51,22 +54,16 @@
                 "description": "Left/Right arrow keys in insert mode"
             },
             {
-                "description": "Add Trello import"
-            },
-            {
                 "description": "URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)"
             },
             {
                 "description": "On `?` show keyboard commands"
             },
             {
-                "description": "`E` edits list title"
-            },
-            {
                 "description": "Copy and paste?"
             },
             {
-                "description": "`C` to change to do - i.e. start from scratch"
+                "description": "Add Trello import"
             }
         ],
         "title": "To Do"
@@ -195,6 +192,9 @@
             },
             {
                 "description": "Undo with `u`"
+            },
+            {
+                "description": "Should only save after adding a new item or finished editing an item - should save when pressing Enter while adding new items"
             }
         ],
         "title": "Done"
