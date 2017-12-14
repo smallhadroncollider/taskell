@@ -3,6 +3,9 @@
         "tasks": [
             {
                 "description": "Break up State module"
+            },
+            {
+                "description": "Use a map in Actions to tidy things up/add custom key support"
             }
         ],
         "title": "Refactoring"
@@ -51,6 +54,9 @@
                 "description": "`.taskell` config file in home directory"
             },
             {
+                "description": "Add custom key support"
+            },
+            {
                 "description": "Left/Right arrow keys in insert mode"
             },
             {
@@ -64,6 +70,12 @@
             },
             {
                 "description": "Add Trello import"
+            },
+            {
+                "description": "Add support for Markdown?"
+            },
+            {
+                "description": "Add support for YAML? (Cleaner diffs)"
             }
         ],
         "title": "To Do"
