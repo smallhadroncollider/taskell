@@ -43,6 +43,7 @@ To run on Linux you'll need to install [Stack](https://docs.haskellstack.org/en/
 - `D`: delete task
 - `u`: undo
 - `N`: new list
+- `E`: edit list title (`Enter`/`Esc` to stop)
 - `X`: delete list
 - `<`/`>`: move list left/right
 - `q`: quit

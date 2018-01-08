@@ -20,6 +20,7 @@ event (EvKey (KChar 'C') _) = (startInsert =<<) . (clearItem =<<) . store
 
 -- add list
 event (EvKey (KChar 'N') _) = (createListStart =<<) . store
+event (EvKey (KChar 'E') _) = (editListStart =<<) . store
 event (EvKey (KChar 'X') _) = (write =<<) . (deleteCurrentList =<<) . store
 
 -- navigation

@@ -17,7 +17,6 @@ module Flow.State (
     lists,
 
     -- UI.Main
-    showCursor,
     newList,
 
     -- Main
@@ -27,6 +26,7 @@ module Flow.State (
     quit,
     startInsert,
     createListStart,
+    editListStart,
     deleteCurrentList,
     clearItem,
     above,
@@ -50,9 +50,12 @@ module Flow.State (
 
     -- Flow.Actions.CreateList
     createListFinish,
-    createListCancel,
     createListBS,
     createListChar,
+
+    -- Flow.Actions.EditList
+    editListBS,
+    editListChar,
 
     -- Flow.Actions.Insert
     newItem,
@@ -62,19 +65,19 @@ module Flow.State (
 ) where
 
 import Data.Taskell.Task (Task, backspace, append, clear)
-import Data.Taskell.List (List(), update, move, new, deleteTask, newAt)
+import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
 
-data Mode = Normal | Insert | CreateList String | Write Mode | Shutdown deriving (Show)
+data Mode = Normal | Insert | EditList | CreateList String | Write Mode | Shutdown deriving (Show)
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
 
 data State = State {
     mode :: Mode,
-    lists :: Lists.Lists, 
+    lists :: Lists.Lists,
     history :: [(Pointer, Lists.Lists)],
     current :: Pointer,
     size :: Size
@@ -86,11 +89,11 @@ create sz ls = State {
     lists = ls,
     history = [],
     current = (0, 0),
-    size = sz 
+    size = sz
 }
 
 type Stateful = State -> Maybe State
-type InternalStateful = State -> State 
+type InternalStateful = State -> State
 
 -- app state
 quit :: Stateful
@@ -99,7 +102,7 @@ quit s = return $ s { mode = Shutdown }
 setSize :: Int -> Int -> Stateful
 setSize w h s = return $ s { size = (w, h) }
 
-continue :: State -> State 
+continue :: State -> State
 continue s = case mode s of
     Write m -> s { mode = m }
     _ -> s
@@ -111,7 +114,7 @@ store :: Stateful
 store s = return $ s { history = (current s, lists s) : history s }
 
 undo :: Stateful
-undo s = return $ case history s of 
+undo s = return $ case history s of
     [] -> s
     ((c, l):xs) -> s {
         current = c,
@@ -123,7 +126,7 @@ undo s = return $ case history s of
 createList :: InternalStateful
 createList s =  case mode s of
     CreateList n -> updateListToLast . setLists s $ Lists.newList n $ lists s
-    _ -> s 
+    _ -> s
 
 updateListToLast :: InternalStateful
 updateListToLast s = setCurrentList s (length (lists s) - 1)
@@ -134,17 +137,34 @@ createListStart s = return $ s { mode = CreateList "" }
 createListFinish :: Stateful
 createListFinish = finishInsert . createList
 
-createListCancel :: Stateful 
-createListCancel = finishInsert 
-
-createListBS :: Stateful 
+createListBS :: Stateful
 createListBS s = case mode s of
     CreateList n -> return $ s { mode = CreateList (S.backspace n) }
-    _ -> Nothing 
+    _ -> Nothing
 
-createListChar :: Char -> Stateful 
+createListChar :: Char -> Stateful
 createListChar c s = case mode s of
     CreateList n -> return $ s { mode = CreateList (n ++ [c]) }
+    _ -> Nothing
+
+-- editList
+editListStart :: Stateful
+editListStart s = return $ s { mode = EditList }
+
+editListBS :: Stateful
+editListBS s = case mode s of
+    EditList -> do
+        l <- getList s
+        let t = S.backspace (title l)
+        return $ setList s $ updateTitle l t
+    _ -> Nothing
+
+editListChar :: Char -> Stateful
+editListChar c s = case mode s of
+    EditList -> do
+        l <- getList s
+        let t = title l ++ [c]
+        return $ setList s $ updateTitle l t
     _ -> Nothing
 
 deleteCurrentList :: Stateful
@@ -165,10 +185,10 @@ addToListAt d s = do
     return $ setList (setIndex s i) ls
 
 above :: Stateful
-above = addToListAt 0 
+above = addToListAt 0
 
 below :: Stateful
-below = addToListAt 1 
+below = addToListAt 1
 
 newItem :: Stateful
 newItem s = do
@@ -181,7 +201,7 @@ insertBS = change backspace
 insertCurrent :: Char -> Stateful
 insertCurrent char = change (append char)
 
-change :: (Task -> Task) -> State -> Maybe State 
+change :: (Task -> Task) -> State -> Maybe State
 change fn s = do
     l <- getList s
     l' <- update (getIndex s) fn l
@@ -201,19 +221,19 @@ up :: Stateful
 up s = do
     l <- getList s
     l' <- m l
-    previous $ setList s l' 
+    previous $ setList s l'
     where m = move (getIndex s) (-1)
 
 down :: Stateful
 down s = do
     l <- getList s
     l' <- m l
-    next $ setList s l' 
+    next $ setList s l'
     where m = move (getIndex s) 1
 
-move' :: Int -> State -> Maybe State 
+move' :: Int -> State -> Maybe State
 move' i s = do
-    l <- Lists.changeList (current s) (lists s) i 
+    l <- Lists.changeList (current s) (lists s) i
     return $ fixIndex $ setLists s l
 
 moveLeft :: Stateful
@@ -302,15 +322,9 @@ listLeft = listMove (-1)
 listRight :: Stateful
 listRight = listMove 1
 
--- view
-showCursor :: State -> Bool 
-showCursor s = case mode s of
-    Insert -> True 
-    CreateList _ -> True 
-    _ -> False
-
-newList :: State -> State 
+-- view - maybe shouldn't be in here...
+newList :: State -> State
 newList s = case mode s of
     CreateList t -> fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
-    _ -> s 
+    _ -> s
     where ls = lists s

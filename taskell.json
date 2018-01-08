@@ -41,9 +41,6 @@
     {
         "tasks": [
             {
-                "description": "`E` edits list title"
-            },
-            {
                 "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
             },
             {
@@ -221,6 +218,12 @@
             },
             {
                 "description": "Space moves to next and stays in list / H & L move but keep current"
+            },
+            {
+                "description": "Cursor position assumes single line list title"
+            },
+            {
+                "description": "`E` edits list title"
             }
         ],
         "title": "Done"

@@ -5,7 +5,7 @@ import qualified Flow.State as S
 
 event :: Event -> S.Stateful
 event (EvKey KEnter _) = (S.write =<<) . S.createListFinish
-event (EvKey KEsc _) = S.createListCancel
+event (EvKey KEsc _) = S.finishInsert
 event (EvKey KBS _) = S.createListBS
 event (EvKey (KChar char) _) = S.createListChar char
 event _ = return
