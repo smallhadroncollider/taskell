@@ -19,6 +19,12 @@
                 "description": "Break up State module"
             },
             {
+                "description": "Simplify state by composing Actions"
+            },
+            {
+                "description": "Refactor UI code - passing around too many variables"
+            },
+            {
                 "description": "Use a map in Actions to tidy things up/add custom key support"
             }
         ],
@@ -38,16 +44,22 @@
     {
         "tasks": [
             {
+                "description": "Left/Right arrow keys in insert mode"
+            },
+            {
+                "description": "Search using `/`"
+            },
+            {
                 "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
             },
             {
                 "description": "Add tags/labels with `t`"
             },
             {
-                "description": "Filter by tag/label with `/`"
+                "description": "Move between lists with `m` - shows possible lists"
             },
             {
-                "description": "Move between lists with `m` - shows possible lists"
+                "description": "On `?` show keyboard commands"
             },
             {
                 "description": "Add due dates to tasks with `d`"
@@ -56,28 +68,22 @@
                 "description": "`.taskell` config file in home directory"
             },
             {
-                "description": "Add custom key support"
-            },
-            {
-                "description": "Left/Right arrow keys in insert mode"
-            },
-            {
                 "description": "URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)"
-            },
-            {
-                "description": "On `?` show keyboard commands"
             },
             {
                 "description": "Copy and paste?"
             },
             {
-                "description": "Add Trello import"
+                "description": "Add custom key support"
             },
             {
                 "description": "Add support for Markdown?"
             },
             {
                 "description": "Add support for YAML? (Cleaner diffs)"
+            },
+            {
+                "description": "Add Trello import"
             }
         ],
         "title": "To Do"
