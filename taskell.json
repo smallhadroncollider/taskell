@@ -2,6 +2,20 @@
     {
         "tasks": [
             {
+                "description": "Linux binary"
+            },
+            {
+                "description": "Homebrew support"
+            },
+            {
+                "description": "Nix support?"
+            }
+        ],
+        "title": "Goals"
+    },
+    {
+        "tasks": [
+            {
                 "description": "Break up State module"
             },
             {
@@ -27,7 +41,7 @@
     {
         "tasks": [
             {
-                "description": "`C` to change to do - i.e. start from scratch"
+                "description": "`C` to change task - i.e. deletes text and goes into edit mode"
             },
             {
                 "description": "`E` edits list title"
