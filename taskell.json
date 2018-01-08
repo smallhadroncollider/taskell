@@ -27,9 +27,6 @@
     {
         "tasks": [
             {
-                "description": "Pressing enter on Edit creates new task"
-            },
-            {
                 "description": "Empty tasks aren't obviously selectable"
             },
             {
@@ -224,6 +221,9 @@
             },
             {
                 "description": "`E` edits list title"
+            },
+            {
+                "description": "Pressing enter on Edit creates new task"
             }
         ],
         "title": "Done"

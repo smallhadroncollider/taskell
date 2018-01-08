@@ -1,11 +1,11 @@
 module Flow.Actions.CreateList (event) where
 
 import Graphics.Vty.Input.Events
-import qualified Flow.State as S
+import Flow.State (Stateful, write, createListFinish, normalMode, createListBS, createListChar)
 
-event :: Event -> S.Stateful
-event (EvKey KEnter _) = (S.write =<<) . S.createListFinish
-event (EvKey KEsc _) = S.finishInsert
-event (EvKey KBS _) = S.createListBS
-event (EvKey (KChar char) _) = S.createListChar char
+event :: Event -> Stateful
+event (EvKey KEnter _) = (write =<<) . createListFinish
+event (EvKey KEsc _) = normalMode
+event (EvKey KBS _) = createListBS
+event (EvKey (KChar char) _) = createListChar char
 event _ = return

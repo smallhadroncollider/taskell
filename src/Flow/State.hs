@@ -24,7 +24,8 @@ module Flow.State (
 
     -- Flow.Actions.Normal
     quit,
-    startInsert,
+    startEdit,
+    startCreate,
     createListStart,
     editListStart,
     deleteCurrentList,
@@ -57,9 +58,9 @@ module Flow.State (
     editListBS,
     editListChar,
 
-    -- Flow.Actions.Insert
+    -- Flow.Actions.Create/Edit
     newItem,
-    finishInsert,
+    normalMode,
     insertBS,
     insertCurrent
 ) where
@@ -70,7 +71,7 @@ import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
 
-data Mode = Normal | Insert | EditList | CreateList String | Write Mode | Shutdown deriving (Show)
+data Mode = Normal | Edit | Create | EditList | CreateList String | Write Mode | Shutdown deriving (Show)
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
@@ -135,7 +136,7 @@ createListStart :: Stateful
 createListStart s = return $ s { mode = CreateList "" }
 
 createListFinish :: Stateful
-createListFinish = finishInsert . createList
+createListFinish = normalMode . createList
 
 createListBS :: Stateful
 createListBS s = case mode s of
@@ -171,11 +172,14 @@ deleteCurrentList :: Stateful
 deleteCurrentList s = return $ fixIndex $ setLists s $ Lists.delete (getCurrentList s) (lists s)
 
 -- insert
-startInsert :: Stateful
-startInsert s = return $ s { mode = Insert }
+startCreate :: Stateful
+startCreate s = return $ s { mode = Create }
 
-finishInsert :: Stateful
-finishInsert s = return $ s { mode = Normal }
+startEdit :: Stateful
+startEdit s = return $ s { mode = Edit }
+
+normalMode :: Stateful
+normalMode s = return $ s { mode = Normal }
 
 addToListAt :: Int -> Stateful
 addToListAt d s = do

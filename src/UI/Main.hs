@@ -88,7 +88,8 @@ pic state = Picture cursor [translateX o $ marginTop image] ClearBackground
 
 showCursor :: State -> Bool
 showCursor s = case mode s of
-    Insert -> True
+    Create -> True
+    Edit -> True
     EditList -> True
     CreateList _ -> True
     _ -> False

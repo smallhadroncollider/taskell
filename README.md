@@ -24,10 +24,10 @@ To run on Linux you'll need to install [Stack](https://docs.haskellstack.org/en/
 
 ## Controls
 
-- `a`: add a task (`Enter`/`Esc` to stop)
+- `a`: add a task to bottom (`Enter`/`Esc` to stop)
 - `o`: add a task below
 - `O`: add a task above
-- `e`/`i`: edit a task (`Enter`/`Esc` to stop)
+- `e`/`i`/`A`: edit a task (`Enter`/`Esc` to stop)
 - `C`: change task
 - `j`: move down
 - `k`: move up

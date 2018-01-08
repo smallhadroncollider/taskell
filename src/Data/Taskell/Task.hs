@@ -17,7 +17,7 @@ blank :: Task
 blank = Task { description = "" }
 
 clear :: Task -> Task
-clear t = blank
+clear _ = blank
 
 append :: Char -> Task  -> Task
 append c t = t { description = description t ++ [c] }

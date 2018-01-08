@@ -23,7 +23,8 @@ library
                      , Data.Taskell.String
                      , Flow.Actions
                      , Flow.Actions.Normal
-                     , Flow.Actions.Insert
+                     , Flow.Actions.Create
+                     , Flow.Actions.Edit
                      , Flow.Actions.CreateList
                      , Flow.Actions.EditList
                      , Flow.State
