@@ -2,9 +2,6 @@
     {
         "tasks": [
             {
-                "description": "Linux binary"
-            },
-            {
                 "description": "Homebrew support"
             },
             {
@@ -233,6 +230,9 @@
             },
             {
                 "description": "Reordering leftmost list left takes you to last list"
+            },
+            {
+                "description": "Linux binary"
             }
         ],
         "title": "Done"
