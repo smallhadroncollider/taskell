@@ -1,3 +1,8 @@
+if [ ! -d ".stack-work" ]; then
+    echo "\033[0;31mMust be run in project root\033[0m"
+    exit
+fi
+
 if [ -z "$1" ]; then
     echo "\033[0;31mVersion number required\033[0m"
     exit
@@ -7,7 +12,8 @@ stack build
 stack build --docker
 
 mkdir -p "releases/$1"
+LINUX_DIR=$(ls .stack-work/install | grep linux)
 
-tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" .stack-work/install/x86_64-linux-dkda49f7ca9b244180d3cfb1987cbc9743/lts-9.13/8.0.2/bin/taskell
+tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell"
 
-tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" .stack-work/install/x86_64-osx/lts-9.13/8.0.2/bin/taskell
+tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" ".stack-work/install/x86_64-osx/lts-9.13/8.0.2/bin/taskell"
