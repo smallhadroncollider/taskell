@@ -4,21 +4,24 @@ import Graphics.Vty.Input.Events
 import Data.Char (isDigit)
 import Flow.State
 
--- Normal 
+-- Normal
 event :: Event -> Stateful
 
 -- quit
 event (EvKey (KChar 'q') _) = quit
 
 -- add/edit
-event (EvKey (KChar 'e') _) = (startInsert =<<) . store
-event (EvKey (KChar 'i') _) = (startInsert =<<) . store
-event (EvKey (KChar 'a') _) = (startInsert =<<) . (newItem =<<) . store
-event (EvKey (KChar 'O') _) = (startInsert =<<) . (above  =<<) . store
-event (EvKey (KChar 'o') _) = (startInsert =<<) . (below =<<) . store
+event (EvKey (KChar 'e') _) = (startEdit =<<) . store
+event (EvKey (KChar 'A') _) = (startEdit =<<) . store
+event (EvKey (KChar 'i') _) = (startEdit =<<) . store
+event (EvKey (KChar 'C') _) = (startEdit =<<) . (clearItem =<<) . store
+event (EvKey (KChar 'a') _) = (startCreate =<<) . (newItem =<<) . store
+event (EvKey (KChar 'O') _) = (startCreate =<<) . (above  =<<) . store
+event (EvKey (KChar 'o') _) = (startCreate =<<) . (below =<<) . store
 
 -- add list
 event (EvKey (KChar 'N') _) = (createListStart =<<) . store
+event (EvKey (KChar 'E') _) = (editListStart =<<) . store
 event (EvKey (KChar 'X') _) = (write =<<) . (deleteCurrentList =<<) . store
 
 -- navigation
@@ -31,8 +34,8 @@ event (EvKey (KChar 'G') _) = bottom
 -- moving items
 event (EvKey (KChar 'K') _) = (write =<<) . (up =<<) . store
 event (EvKey (KChar 'J') _) = (write =<<) . (down =<<) . store
-event (EvKey (KChar 'H') _) = (write =<<) . (moveLeft =<<) . store
-event (EvKey (KChar 'L') _) = (write =<<) . (moveRight =<<) . store
+event (EvKey (KChar 'H') _) = (write =<<) . (bottom =<<) . (left =<<) . (moveLeft =<<) . store
+event (EvKey (KChar 'L') _) = (write =<<) . (bottom =<<) . (right =<<) . (moveRight =<<) . store
 event (EvKey (KChar ' ') _) = (write =<<) . (moveRight =<<) . store
 
 -- removing items

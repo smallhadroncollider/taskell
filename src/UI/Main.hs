@@ -5,7 +5,7 @@ import Data.Maybe (fromMaybe)
 
 import Data.Sequence (Seq, mapWithIndex)
 
-import Flow.State (State, Pointer, Size, lists, current, size, newList, showCursor)
+import Flow.State (State, Pointer, Size, Mode(..), EditMode(..), mode, lists, current, size, newList)
 
 import UI.Styles
 
@@ -34,19 +34,25 @@ taskLength = sum . fmap length
 tasksImage :: Seq TaskUI -> Image
 tasksImage = vCat . fmap (marginTop . taskImage)
 
-renderCurrentList' :: Size -> TaskUI -> Split TaskUI -> (Image, Int, Int)
-renderCurrentList' (_, height) task (before, cur, after) = (translateY yOffset image, x, y + yOffset)
-    where title = currentTitleImage task
-          [before', after'] = tasksImage <$> [before, after] 
+renderCurrentList' :: Size -> TaskUI -> Split TaskUI -> Bool -> (Image, Int, Int)
+renderCurrentList' (_, height) listTitle (before, cur, after) tc = (translateY yOffset image, x, y + yOffset)
+    where title = currentTitleImage listTitle
+          [before', after'] = tasksImage <$> [before, after]
           cur' = marginTop (currentTaskImage cur)
-          y = sum $ imageHeight <$> [before', cur']
-          x = if not (null cur) then length (last cur) else 0
+
+          y | tc = imageHeight title
+            | otherwise = imageHeight title + sum (imageHeight <$> [before', cur'])
+
+          x | tc = length (last listTitle)
+            | not (null cur) = length (last cur)
+            | otherwise = 0
+
           yOffset = calcOffset (height `div` 2) y
           image = margin $ vertCat [title, before', cur', after']
 
-renderCurrentList :: Size -> Int -> ListUI -> (Image, Int, Int)
-renderCurrentList sz index (title, tasks) = case splitOn index tasks of
-    Just list -> renderCurrentList' sz title list
+renderCurrentList :: Size -> Int -> ListUI -> Bool -> (Image, Int, Int)
+renderCurrentList sz index (title, tasks) tc = case splitOn index tasks of
+    Just list -> renderCurrentList' sz title list tc
     Nothing -> (margin (currentTitleImage title), taskLength title, 0)
 
 listImage :: ListUI -> Image
@@ -55,17 +61,17 @@ listImage (title, tasks) = margin $ img attrTitle title <-> tasksImage tasks
 listsImage :: Seq ListUI -> Image
 listsImage = hCat . fmap listImage
 
-renderLists' :: Pointer -> Size -> Seq ListUI -> Maybe (Image, Int, Int, Int)
-renderLists' (list, index) sz ls = do
+renderLists' :: Pointer -> Size -> Seq ListUI -> Bool -> Maybe (Image, Int, Int, Int)
+renderLists' (list, index) sz ls tc = do
     (before, cur, after) <- splitOn list ls
     let [before', after'] = listsImage <$> [before, after]
-    let (current', x, y) = renderCurrentList sz index cur
+    let (current', x, y) = renderCurrentList sz index cur tc
     let image = horizCat [before', current', after']
     return (image, imageWidth before', x, y)
 
-renderLists :: Pointer -> Size -> Seq ListUI -> (Image, Int, Int, Int)
-renderLists p s ls = fromMaybe (string attrNormal "No lists", 0, 0, 0) c
-    where c = renderLists' p s ls
+renderLists :: Pointer -> Size -> Seq ListUI -> Bool -> (Image, Int, Int, Int)
+renderLists p s ls tc = fromMaybe (string attrNormal "No lists", 0, 0, 0) c
+    where c = renderLists' p s ls tc
 
 calcOffset :: Int -> Int -> Int
 calcOffset pivot n = if n > pivot then pivot - n else 0
@@ -75,14 +81,24 @@ pic :: State -> Picture
 pic state = Picture cursor [translateX o $ marginTop image] ClearBackground
     where state' = newList state
           sz = size state'
-          ls = mapWithIndex present $ lists state' 
-          (image, w, x, y) = renderLists (current state') sz ls
+          ls = mapWithIndex present $ lists state'
+          (image, w, x, y) = renderLists (current state') sz ls (titleCursor state')
           o = calcOffset (fst sz `div` 3) w
-          cursor = if showCursor state' then Cursor (w + x + o + padding) (y + 1) else NoCursor
+          cursor = if showCursor state' then Cursor (w + x + o + padding) y else NoCursor
+
+showCursor :: State -> Bool
+showCursor s = case mode s of
+    Edit _ -> True
+    _ -> False
+
+titleCursor :: State -> Bool
+titleCursor s = case mode s of
+    Edit EditList -> True
+    _ -> False
 
 -- styling
 taskImage :: TaskUI -> Image
-taskImage = img attrNormal 
+taskImage = img attrNormal
 
 currentTaskImage :: TaskUI -> Image
 currentTaskImage = img attrCurrent

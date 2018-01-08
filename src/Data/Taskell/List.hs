@@ -23,11 +23,14 @@ instance ToJSON List
 empty :: String -> List
 empty t = List {
     title = t,
-    tasks = S.empty 
+    tasks = S.empty
 }
 
 new :: List -> List
 new = append blank
+
+updateTitle :: List -> String -> List
+updateTitle ls s = ls { title = s }
 
 newAt :: Int -> List -> List
 newAt i l = l { tasks = (a |> blank) >< b }
@@ -39,7 +42,7 @@ append t l = l { tasks = tasks l |> t }
 
 extract :: Int -> List -> Maybe (List, Task)
 extract i l = do
-    (xs, x) <- S.extract i (tasks l) 
+    (xs, x) <- S.extract i (tasks l)
     return (l { tasks = xs }, x)
 
 update :: Int -> (Task -> Task) -> List -> Maybe List
@@ -50,7 +53,7 @@ update i fn l = do
 move :: Int -> Int -> List -> Maybe List
 move from dir l = do
     ts' <- S.shiftBy from dir (tasks l)
-    return $ l { tasks = ts' } 
+    return $ l { tasks = ts' }
 
 deleteTask :: Int -> List -> List
 deleteTask i l = l { tasks = deleteAt i (tasks l) }

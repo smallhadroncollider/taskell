@@ -2,7 +2,30 @@
     {
         "tasks": [
             {
+                "description": "Linux binary"
+            },
+            {
+                "description": "Homebrew support"
+            },
+            {
+                "description": "Nix support?"
+            }
+        ],
+        "title": "Goals"
+    },
+    {
+        "tasks": [
+            {
                 "description": "Break up State module"
+            },
+            {
+                "description": "Simplify state by composing Actions"
+            },
+            {
+                "description": "Refactor UI code - passing around too many variables"
+            },
+            {
+                "description": "Use a map in Actions to tidy things up/add custom key support"
             }
         ],
         "title": "Refactoring"
@@ -10,13 +33,7 @@
     {
         "tasks": [
             {
-                "description": "Pressing enter on Edit creates new task"
-            },
-            {
                 "description": "Empty tasks aren't obviously selectable"
-            },
-            {
-                "description": "Reordering leftmost list left takes you to last list"
             }
         ],
         "title": "Bugs"
@@ -24,13 +41,10 @@
     {
         "tasks": [
             {
-                "description": "`C` to change to do - i.e. start from scratch"
+                "description": "Left/Right arrow keys in insert mode"
             },
             {
-                "description": "`E` edits list title"
-            },
-            {
-                "description": "Space moves to next and stays in list / H & L move but keep current"
+                "description": "Search using `/`"
             },
             {
                 "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
@@ -39,10 +53,10 @@
                 "description": "Add tags/labels with `t`"
             },
             {
-                "description": "Filter by tag/label with `/`"
+                "description": "Move between lists with `m` - shows possible lists"
             },
             {
-                "description": "Move between lists with `m` - shows possible lists"
+                "description": "On `?` show keyboard commands"
             },
             {
                 "description": "Add due dates to tasks with `d`"
@@ -51,16 +65,19 @@
                 "description": "`.taskell` config file in home directory"
             },
             {
-                "description": "Left/Right arrow keys in insert mode"
-            },
-            {
                 "description": "URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)"
             },
             {
-                "description": "On `?` show keyboard commands"
+                "description": "Copy and paste?"
             },
             {
-                "description": "Copy and paste?"
+                "description": "Add custom key support"
+            },
+            {
+                "description": "Add support for Markdown?"
+            },
+            {
+                "description": "Add support for YAML? (Cleaner diffs)"
             },
             {
                 "description": "Add Trello import"
@@ -195,6 +212,24 @@
             },
             {
                 "description": "Should only save after adding a new item or finished editing an item - should save when pressing Enter while adding new items"
+            },
+            {
+                "description": "`C` to change task - i.e. deletes text and goes into edit mode"
+            },
+            {
+                "description": "Space moves to next and stays in list / H & L move but keep current"
+            },
+            {
+                "description": "Cursor position assumes single line list title"
+            },
+            {
+                "description": "`E` edits list title"
+            },
+            {
+                "description": "Pressing enter on Edit creates new task"
+            },
+            {
+                "description": "Reordering leftmost list left takes you to last list"
             }
         ],
         "title": "Done"
