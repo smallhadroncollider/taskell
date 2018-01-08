@@ -2,7 +2,7 @@ module Flow.Actions (event) where
 
 import Graphics.Vty.Input.Events (Event(..))
 
-import Flow.State (State, Stateful, Mode(..), mode, setSize)
+import Flow.State (State, Stateful, Mode(..), EditMode(..), mode, setSize)
 import Data.Maybe (fromMaybe)
 
 import qualified Flow.Actions.Normal as Normal
@@ -20,10 +20,10 @@ event' (EvResize w h) s = setSize w h s
 -- for other events pass through to relevant modules
 event' e s = case mode s of
     Normal -> Normal.event e s
-    Create -> Create.event e s
-    Edit -> Edit.event e s
-    EditList -> EditList.event e s
-    CreateList _ -> CreateList.event e s
+    Edit CreateTask -> Create.event e s
+    Edit EditTask -> Edit.event e s
+    Edit EditList -> EditList.event e s
+    Edit (CreateList _) -> CreateList.event e s
     _ -> return s
 
 -- returns new state if successful

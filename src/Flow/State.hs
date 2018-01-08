@@ -4,6 +4,7 @@ module Flow.State (
     Stateful,
     Pointer,
     Size,
+    EditMode(..),
     Mode(..),
 
     -- Render
@@ -71,7 +72,8 @@ import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
 
-data Mode = Normal | Edit | Create | EditList | CreateList String | Write Mode | Shutdown deriving (Show)
+data EditMode = EditTask | CreateTask | EditList | CreateList String
+data Mode = Normal | Edit EditMode | Write Mode | Shutdown
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
@@ -82,7 +84,7 @@ data State = State {
     history :: [(Pointer, Lists.Lists)],
     current :: Pointer,
     size :: Size
-} deriving (Show)
+}
 
 create :: Size -> Lists.Lists -> State
 create sz ls = State {
@@ -126,35 +128,35 @@ undo s = return $ case history s of
 -- createList
 createList :: InternalStateful
 createList s =  case mode s of
-    CreateList n -> updateListToLast . setLists s $ Lists.newList n $ lists s
+    Edit (CreateList n) -> updateListToLast . setLists s $ Lists.newList n $ lists s
     _ -> s
 
 updateListToLast :: InternalStateful
 updateListToLast s = setCurrentList s (length (lists s) - 1)
 
 createListStart :: Stateful
-createListStart s = return $ s { mode = CreateList "" }
+createListStart s = return $ s { mode = Edit (CreateList "") }
 
 createListFinish :: Stateful
 createListFinish = normalMode . createList
 
 createListBS :: Stateful
 createListBS s = case mode s of
-    CreateList n -> return $ s { mode = CreateList (S.backspace n) }
+    Edit (CreateList n) -> return $ s { mode = Edit (CreateList (S.backspace n)) }
     _ -> Nothing
 
 createListChar :: Char -> Stateful
 createListChar c s = case mode s of
-    CreateList n -> return $ s { mode = CreateList (n ++ [c]) }
+    Edit (CreateList n) -> return $ s { mode = Edit (CreateList (n ++ [c])) }
     _ -> Nothing
 
 -- editList
 editListStart :: Stateful
-editListStart s = return $ s { mode = EditList }
+editListStart s = return $ s { mode = Edit EditList }
 
 editListBS :: Stateful
 editListBS s = case mode s of
-    EditList -> do
+    Edit EditList -> do
         l <- getList s
         let t = S.backspace (title l)
         return $ setList s $ updateTitle l t
@@ -162,7 +164,7 @@ editListBS s = case mode s of
 
 editListChar :: Char -> Stateful
 editListChar c s = case mode s of
-    EditList -> do
+    Edit EditList -> do
         l <- getList s
         let t = title l ++ [c]
         return $ setList s $ updateTitle l t
@@ -173,10 +175,10 @@ deleteCurrentList s = return $ fixIndex $ setLists s $ Lists.delete (getCurrentL
 
 -- insert
 startCreate :: Stateful
-startCreate s = return $ s { mode = Create }
+startCreate s = return $ s { mode = Edit CreateTask }
 
 startEdit :: Stateful
-startEdit s = return $ s { mode = Edit }
+startEdit s = return $ s { mode = Edit EditTask }
 
 normalMode :: Stateful
 normalMode s = return $ s { mode = Normal }
@@ -329,6 +331,6 @@ listRight = listMove 1
 -- view - maybe shouldn't be in here...
 newList :: State -> State
 newList s = case mode s of
-    CreateList t -> fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
+    Edit (CreateList t) -> fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
     _ -> s
     where ls = lists s

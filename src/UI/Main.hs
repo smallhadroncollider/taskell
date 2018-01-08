@@ -5,7 +5,7 @@ import Data.Maybe (fromMaybe)
 
 import Data.Sequence (Seq, mapWithIndex)
 
-import Flow.State (State, Pointer, Size, Mode(..), mode, lists, current, size, newList)
+import Flow.State (State, Pointer, Size, Mode(..), EditMode(..), mode, lists, current, size, newList)
 
 import UI.Styles
 
@@ -88,15 +88,12 @@ pic state = Picture cursor [translateX o $ marginTop image] ClearBackground
 
 showCursor :: State -> Bool
 showCursor s = case mode s of
-    Create -> True
-    Edit -> True
-    EditList -> True
-    CreateList _ -> True
+    Edit _ -> True
     _ -> False
 
 titleCursor :: State -> Bool
 titleCursor s = case mode s of
-    EditList -> True
+    Edit EditList -> True
     _ -> False
 
 -- styling
