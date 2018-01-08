@@ -9,7 +9,7 @@ module Flow.State (
     -- Render
     continue,
     write,
-    
+
     -- record accesors
     mode,
     size,
@@ -19,15 +19,16 @@ module Flow.State (
     -- UI.Main
     showCursor,
     newList,
-    
+
     -- Main
     create,
-    
-    -- Flow.Actions.Normal 
+
+    -- Flow.Actions.Normal
     quit,
     startInsert,
     createListStart,
     deleteCurrentList,
+    clearItem,
     above,
     below,
     bottom,
@@ -60,7 +61,7 @@ module Flow.State (
     insertCurrent
 ) where
 
-import Data.Taskell.Task (Task, backspace, append)
+import Data.Taskell.Task (Task, backspace, append, clear)
 import Data.Taskell.List (List(), update, move, new, deleteTask, newAt)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
@@ -185,6 +186,9 @@ change fn s = do
     l <- getList s
     l' <- update (getIndex s) fn l
     return $ setList s l'
+
+clearItem :: Stateful
+clearItem = change clear
 
 bottom :: Stateful
 bottom = return . selectLast

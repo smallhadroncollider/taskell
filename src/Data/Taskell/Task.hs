@@ -16,6 +16,9 @@ instance FromJSON Task
 blank :: Task
 blank = Task { description = "" }
 
+clear :: Task -> Task
+clear t = blank
+
 append :: Char -> Task  -> Task
 append c t = t { description = description t ++ [c] }
 

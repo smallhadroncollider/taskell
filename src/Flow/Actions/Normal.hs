@@ -4,7 +4,7 @@ import Graphics.Vty.Input.Events
 import Data.Char (isDigit)
 import Flow.State
 
--- Normal 
+-- Normal
 event :: Event -> Stateful
 
 -- quit
@@ -16,6 +16,7 @@ event (EvKey (KChar 'i') _) = (startInsert =<<) . store
 event (EvKey (KChar 'a') _) = (startInsert =<<) . (newItem =<<) . store
 event (EvKey (KChar 'O') _) = (startInsert =<<) . (above  =<<) . store
 event (EvKey (KChar 'o') _) = (startInsert =<<) . (below =<<) . store
+event (EvKey (KChar 'C') _) = (startInsert =<<) . (clearItem =<<) . store
 
 -- add list
 event (EvKey (KChar 'N') _) = (createListStart =<<) . store
