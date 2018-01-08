@@ -34,6 +34,9 @@
         "tasks": [
             {
                 "description": "Empty tasks aren't obviously selectable"
+            },
+            {
+                "description": "Tabs in tasks throw off cursor and wrapping"
             }
         ],
         "title": "Bugs"
