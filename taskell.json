@@ -34,9 +34,6 @@
         "tasks": [
             {
                 "description": "Empty tasks aren't obviously selectable"
-            },
-            {
-                "description": "Reordering leftmost list left takes you to last list"
             }
         ],
         "title": "Bugs"
@@ -230,6 +227,9 @@
             },
             {
                 "description": "Pressing enter on Edit creates new task"
+            },
+            {
+                "description": "Reordering leftmost list left takes you to last list"
             }
         ],
         "title": "Done"
