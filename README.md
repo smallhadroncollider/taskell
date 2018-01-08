@@ -9,6 +9,18 @@ A CLI task manager, written in Haskell
 
 ## Installation
 
+### Homebrew (Mac)
+
+You can install Taskell on your Mac using [Homebrew](https://brew.sh):
+
+```bash
+brew install smallhadroncollider/taskell/taskell
+```
+
+This will build Taskell from scratch using [Stack](https://docs.haskellstack.org/) - so it can take a while, particularly on older machines.
+
+### Binaries
+
 [A binary is available for Mac and Linux](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`). Then run `taskell` in a project directory to get started.
 
 ## Running
