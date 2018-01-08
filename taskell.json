@@ -44,9 +44,6 @@
                 "description": "`E` edits list title"
             },
             {
-                "description": "Space moves to next and stays in list / H & L move but keep current"
-            },
-            {
                 "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
             },
             {
@@ -221,6 +218,9 @@
             },
             {
                 "description": "`C` to change task - i.e. deletes text and goes into edit mode"
+            },
+            {
+                "description": "Space moves to next and stays in list / H & L move but keep current"
             }
         ],
         "title": "Done"

@@ -31,20 +31,25 @@ To run on Linux you'll need to install [Stack](https://docs.haskellstack.org/en/
 - `C`: change task
 - `j`: move down
 - `k`: move up
-- `h`: move left 
+- `h`: move left
 - `l`: move right
 - `G`: go to bottom of list
 - `1`-`9`: select list
 - `J`: shift task down
 - `K`: shift task up
-- `H`: shift task left 
-- `L`/`Space`: shift task right
+- `H`: shift task left (current selection follows task)
+- `L`: shift task right (current selection follows task)
+- `Space`: shift task right (current selection stays put)
 - `D`: delete task
 - `u`: undo
 - `N`: new list
 - `X`: delete list
 - `<`/`>`: move list left/right
 - `q`: quit
+
+### Tips
+
+- If you're using a simple two-column "Todo" and "Done" then use the space bar to mark an item as complete while staying in the "Todo" list. If you're using a more complicated column setup then you will want to use `H`/`L` to move tasks between columns.
 
 ## Storage
 
