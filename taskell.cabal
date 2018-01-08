@@ -23,10 +23,11 @@ library
                      , Data.Taskell.String
                      , Flow.Actions
                      , Flow.Actions.Normal
-                     , Flow.Actions.Create
                      , Flow.Actions.Edit
-                     , Flow.Actions.CreateList
-                     , Flow.Actions.EditList
+                     , Flow.Actions.Edit.CreateTask
+                     , Flow.Actions.Edit.EditTask
+                     , Flow.Actions.Edit.CreateList
+                     , Flow.Actions.Edit.EditList
                      , Flow.State
                      , Persistence.Taskell
                      , Render
