@@ -52,6 +52,7 @@ There are bottles (binaries) available for High Sierra and Sierra. If these are 
 - `E`: edit list title (`Enter`/`Esc` to stop)
 - `X`: delete list
 - `<`/`>`: move list left/right
+- `/`: search (`Enter` to navigate, then `Esc` to leave)
 - `q`: quit
 
 ### Tips
