@@ -2,9 +2,6 @@
     {
         "tasks": [
             {
-                "description": "Homebrew support"
-            },
-            {
                 "description": "Nix support?"
             }
         ],
@@ -233,6 +230,9 @@
             },
             {
                 "description": "Linux binary"
+            },
+            {
+                "description": "Homebrew support"
             }
         ],
         "title": "Done"
