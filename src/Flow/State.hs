@@ -362,7 +362,7 @@ searchChar c s = case mode s of
 -- view - maybe shouldn't be in here...
 search :: State -> State
 search s = case mode s of
-    Search _ term -> setLists s $ Lists.search term (lists s)
+    Search _ term -> fixIndex $ setLists s $ Lists.search term (lists s)
     _ -> s
 
 newList :: State -> State
