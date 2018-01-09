@@ -14,6 +14,8 @@ stack build --docker
 mkdir -p "releases/$1"
 LINUX_DIR=$(ls .stack-work/install | grep linux)
 
-tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell"
+tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell" > /dev/null
 
-tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" ".stack-work/install/x86_64-osx/lts-9.13/8.0.2/bin/taskell"
+tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" ".stack-work/install/x86_64-osx/lts-9.13/8.0.2/bin/taskell" > /dev/null
+
+printf "\n\nbrew install --build-bottle smallhadroncollider/taskell/taskell && brew bottle taskell\n"
