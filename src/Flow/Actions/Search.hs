@@ -1,7 +1,6 @@
 module Flow.Actions.Search (event) where
 
 import Graphics.Vty.Input.Events
-import Data.Char (isDigit)
 import Flow.State
 
 import qualified Flow.Actions.Normal as Normal
