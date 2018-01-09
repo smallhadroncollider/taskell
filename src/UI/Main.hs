@@ -5,7 +5,7 @@ import Data.Maybe (fromMaybe)
 
 import Data.Sequence (Seq, mapWithIndex)
 
-import Flow.State (State, Pointer, Size, Mode(..), EditMode(..), mode, lists, current, size, newList)
+import Flow.State (State, Pointer, Size, Mode(..), EditMode(..), mode, lists, current, size, newList, search)
 
 import UI.Styles
 
@@ -79,7 +79,7 @@ calcOffset pivot n = if n > pivot then pivot - n else 0
 -- draws the screen
 pic :: State -> Picture
 pic state = Picture cursor [translateX o $ marginTop image] ClearBackground
-    where state' = newList state
+    where state' = search $ newList state
           sz = size state'
           ls = mapWithIndex present $ lists state'
           (image, w, x, y) = renderLists (current state') sz ls (titleCursor state')
