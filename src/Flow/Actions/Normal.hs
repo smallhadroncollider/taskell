@@ -48,6 +48,9 @@ event (EvKey (KChar 'u') _) = (write =<<) . undo
 event (EvKey (KChar '>') _) = (write =<<) . (listRight =<<) . store
 event (EvKey (KChar '<') _) = (write =<<) . (listLeft =<<) . store
 
+-- search
+event (EvKey (KChar '/') _) = searchMode
+
 -- selecting lists
 event (EvKey (KChar n) _)
     | isDigit n = selectList n

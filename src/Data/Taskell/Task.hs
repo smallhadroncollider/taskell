@@ -4,6 +4,7 @@ module Data.Taskell.Task where
 
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
+import Data.List (isInfixOf)
 import qualified Data.Taskell.String as S
 
 newtype Task = Task {
@@ -27,3 +28,6 @@ backspace t = t { description = S.backspace (description t) }
 
 characters :: Task -> Int
 characters = length . description
+
+contains :: String -> Task -> Bool
+contains s t = s `isInfixOf` description t

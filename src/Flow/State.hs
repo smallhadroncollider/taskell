@@ -19,6 +19,7 @@ module Flow.State (
 
     -- UI.Main
     newList,
+    search,
 
     -- Main
     create,
@@ -49,6 +50,12 @@ module Flow.State (
     listRight,
     undo,
     store,
+    searchMode,
+
+    -- Flow.Actions.Search
+    searchBS,
+    searchChar,
+    searchEntered,
 
     -- Flow.Actions.CreateList
     createListFinish,
@@ -73,7 +80,7 @@ import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
 
 data EditMode = EditTask | CreateTask | EditList | CreateList String
-data Mode = Normal | Edit EditMode | Write Mode | Shutdown
+data Mode = Normal | Edit EditMode | Write Mode | Search Bool String | Shutdown
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
@@ -328,9 +335,36 @@ listLeft = listMove (-1)
 listRight :: Stateful
 listRight = listMove 1
 
+-- search
+searchMode :: Stateful
+searchMode s = return s { mode = Search True "" }
+
+searchEntered :: Stateful
+searchEntered s = case mode s of
+    Search _ term -> return $ s { mode = Search False term }
+    _ -> Nothing
+
+searchBS :: Stateful
+searchBS s = case mode s of
+    Search ent term -> return $
+        if null term
+            then s { mode = Normal }
+            else s { mode = Search ent (S.backspace term) }
+    _ -> Nothing
+
+searchChar :: Char -> Stateful
+searchChar c s = case mode s of
+    Search ent term -> return $ s { mode = Search ent (term ++ [c]) }
+    _ -> Nothing
+
 -- view - maybe shouldn't be in here...
+search :: State -> State
+search s = case mode s of
+    Search _ term -> setLists s $ Lists.search term (lists s)
+    _ -> s
+
 newList :: State -> State
 newList s = case mode s of
-    Edit (CreateList t) -> fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
+    Edit (CreateList t) -> let ls = lists s in
+                               fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
     _ -> s
-    where ls = lists s

@@ -23,6 +23,7 @@ library
                      , Data.Taskell.String
                      , Flow.Actions
                      , Flow.Actions.Normal
+                     , Flow.Actions.Search
                      , Flow.Actions.Edit
                      , Flow.Actions.Edit.CreateTask
                      , Flow.Actions.Edit.EditTask
