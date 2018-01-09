@@ -5,7 +5,7 @@ import Data.Maybe (fromMaybe)
 
 import Data.Sequence (Seq, mapWithIndex)
 
-import Flow.State (State, Pointer, Size, Mode(..), EditMode(..), mode, lists, current, size, newList)
+import Flow.State (State, Pointer, Size, Mode(..), EditMode(..), mode, lists, current, size, newList, search)
 
 import UI.Styles
 
@@ -53,7 +53,7 @@ renderCurrentList' (_, height) listTitle (before, cur, after) tc = (translateY y
 renderCurrentList :: Size -> Int -> ListUI -> Bool -> (Image, Int, Int)
 renderCurrentList sz index (title, tasks) tc = case splitOn index tasks of
     Just list -> renderCurrentList' sz title list tc
-    Nothing -> (margin (currentTitleImage title), taskLength title, 0)
+    Nothing -> let t = margin (currentTitleImage title) in (t, length (last title), imageHeight t)
 
 listImage :: ListUI -> Image
 listImage (title, tasks) = margin $ img attrTitle title <-> tasksImage tasks
@@ -78,12 +78,13 @@ calcOffset pivot n = if n > pivot then pivot - n else 0
 
 -- draws the screen
 pic :: State -> Picture
-pic state = Picture cursor [translateX o $ marginTop image] ClearBackground
-    where state' = newList state
+pic state = Picture cursor [searchImage state (snd sz) image'] ClearBackground
+    where state' = search $ newList state
           sz = size state'
           ls = mapWithIndex present $ lists state'
           (image, w, x, y) = renderLists (current state') sz ls (titleCursor state')
           o = calcOffset (fst sz `div` 3) w
+          image' = translateX o $ marginTop image
           cursor = if showCursor state' then Cursor (w + x + o + padding) y else NoCursor
 
 showCursor :: State -> Bool
@@ -95,6 +96,17 @@ titleCursor :: State -> Bool
 titleCursor s = case mode s of
     Edit EditList -> True
     _ -> False
+
+searchImage :: State -> Int -> Image -> Image
+searchImage s h i = case mode s of
+    Search ent term ->
+        let style = if ent then attrCurrent else attrNormal
+            offset = imageHeight i + 3
+            top = if h > offset then h - offset else 0
+            p = pad padding top 0 padding
+        in
+            marginBottom (cropBottom (h - 3) i) <-> p (string style ("/" ++ term))
+    _ -> i
 
 -- styling
 taskImage :: TaskUI -> Image

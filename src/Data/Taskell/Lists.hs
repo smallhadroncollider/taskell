@@ -2,15 +2,15 @@ module Data.Taskell.Lists where
 
 import Data.Sequence (Seq, fromList, (!?), (|>), deleteAt)
 import qualified Data.Taskell.Seq as S
-import Data.Taskell.List (List(..), empty, extract, append)
+import Data.Taskell.List (List(..), empty, extract, append, searchFor)
 
-type Lists = Seq List 
+type Lists = Seq List
 
 initial :: Lists
 initial = fromList [empty "To Do", empty "Done"]
 
 update :: Int -> Lists -> List -> Lists
-update = S.update 
+update = S.update
 
 count :: Int -> Lists -> Int
 count i ts = case ts !? i of
@@ -31,7 +31,7 @@ changeList (list, i) ts dir = do
     return $ update next list' b' -- update next list
 
 newList :: String -> Lists -> Lists
-newList s ts = ts |> empty s 
+newList s ts = ts |> empty s
 
 delete :: Int -> Lists -> Lists
 delete = deleteAt
@@ -43,3 +43,6 @@ exists i ts = case ts !? i of
 
 shiftBy :: Int -> Int -> Lists -> Maybe Lists
 shiftBy = S.shiftBy
+
+search :: String -> Lists -> Lists
+search s ls = searchFor s <$> ls

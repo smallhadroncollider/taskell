@@ -5,11 +5,11 @@ module Data.Taskell.List where
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
 
-import Prelude hiding (splitAt)
-import Data.Sequence (Seq, (|>), (!?), (><), deleteAt, splitAt)
+import Prelude hiding (splitAt, filter)
+import Data.Sequence (Seq, (|>), (!?), (><), deleteAt, splitAt, filter)
 import qualified Data.Taskell.Seq as S
 
-import Data.Taskell.Task (Task, blank)
+import Data.Taskell.Task (Task, blank, contains)
 
 data List = List {
     title :: String,
@@ -60,3 +60,6 @@ deleteTask i l = l { tasks = deleteAt i (tasks l) }
 
 getTask :: Int -> List -> Maybe Task
 getTask i l = tasks l !? i
+
+searchFor :: String -> List -> List
+searchFor s l = l { tasks = filter (contains s) (tasks l)}

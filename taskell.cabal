@@ -1,5 +1,5 @@
 name:                taskell
-version:             0.7.0.0
+version:             0.8.0.0
 -- synopsis: A CLI task manager, written in Haskell
 -- description: Allows you to create version controlled task lists
 homepage:            https://github.com/smallhadroncollider/taskell#readme
@@ -23,6 +23,7 @@ library
                      , Data.Taskell.String
                      , Flow.Actions
                      , Flow.Actions.Normal
+                     , Flow.Actions.Search
                      , Flow.Actions.Edit
                      , Flow.Actions.Edit.CreateTask
                      , Flow.Actions.Edit.EditTask

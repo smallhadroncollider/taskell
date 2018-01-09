@@ -17,7 +17,11 @@ You can install Taskell on your Mac using [Homebrew](https://brew.sh):
 brew install smallhadroncollider/taskell/taskell
 ```
 
+<<<<<<< HEAD
 This will build Taskell from scratch using [Stack](https://docs.haskellstack.org/) -  so it can take a while, particularly on older machines.
+=======
+There are bottles (binaries) available for High Sierra and Sierra. If these are not available for your computer, homebrew will build Taskell from scratch using [Stack](https://docs.haskellstack.org/), which can take a while, particularly on older machines.
+>>>>>>> release/0.8.0
 
 ### Binaries
 
@@ -52,6 +56,7 @@ This will build Taskell from scratch using [Stack](https://docs.haskellstack.org
 - `E`: edit list title (`Enter`/`Esc` to stop)
 - `X`: delete list
 - `<`/`>`: move list left/right
+- `/`: search (`Enter` to navigate, `Esc` to leave)
 - `q`: quit
 
 ### Tips

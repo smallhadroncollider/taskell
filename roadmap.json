@@ -2,12 +2,6 @@
     {
         "tasks": [
             {
-                "description": "Linux binary"
-            },
-            {
-                "description": "Homebrew support"
-            },
-            {
                 "description": "Nix support?"
             }
         ],
@@ -42,9 +36,6 @@
         "tasks": [
             {
                 "description": "Left/Right arrow keys in insert mode"
-            },
-            {
-                "description": "Search using `/`"
             },
             {
                 "description": "If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)"
@@ -230,6 +221,21 @@
             },
             {
                 "description": "Reordering leftmost list left takes you to last list"
+            },
+            {
+                "description": "Linux binary"
+            },
+            {
+                "description": "Homebrew support"
+            },
+            {
+                "description": "Tabs in tasks throw off cursor and wrapping"
+            },
+            {
+                "description": "Cursor vertical offset is wrong when adding a new list"
+            },
+            {
+                "description": "Search using `/`"
             }
         ],
         "title": "Done"
