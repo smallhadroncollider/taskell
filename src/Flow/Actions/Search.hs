@@ -6,18 +6,14 @@ import Flow.State
 
 import qualified Flow.Actions.Normal as Normal
 
-entered :: Event -> Stateful
-entered (EvKey KEsc _) = normalMode
-entered e = Normal.event e
-entered _ = return
-
-entry :: Event -> Stateful
-entry (EvKey KEnter _) = searchEntered
-entry (EvKey KBS _) = searchBS
-entry (EvKey (KChar char) _) = searchChar char
-entry _ = return
+event' :: Event -> Stateful
+event' (EvKey KEnter _) = searchEntered
+event' (EvKey KBS _) = searchBS
+event' (EvKey (KChar char) _) = searchChar char
+event' _ = return
 
 event :: Event -> Stateful
+event (EvKey KEsc _) s = normalMode s
 event e s = case mode s of
-    Search ent _ -> (if ent then entry else entered) e s
+    Search ent _ -> (if ent then event' else Normal.event) e s
     _ -> return s
