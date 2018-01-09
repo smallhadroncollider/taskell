@@ -99,7 +99,13 @@ titleCursor s = case mode s of
 
 searchImage :: State -> Int -> Image -> Image
 searchImage s h i = case mode s of
-    Search ent term -> marginBottom (cropBottom (h - 3) i) <-> margin (string (if ent then attrCurrent else attrNormal) ("/" ++ term))
+    Search ent term ->
+        let style = if ent then attrCurrent else attrNormal
+            offset = imageHeight i + 3
+            top = if h > offset then h - offset else 0
+            p = pad padding top 0 padding
+        in
+            marginBottom (cropBottom (h - 3) i) <-> p (string style ("/" ++ term))
     _ -> i
 
 -- styling
