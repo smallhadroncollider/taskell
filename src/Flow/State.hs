@@ -346,7 +346,10 @@ searchEntered s = case mode s of
 
 searchBS :: Stateful
 searchBS s = case mode s of
-    Search ent term -> return $ s { mode = Search ent (S.backspace term) }
+    Search ent term -> return $
+        if null term
+            then s { mode = Normal }
+            else s { mode = Search ent (S.backspace term) }
     _ -> Nothing
 
 searchChar :: Char -> Stateful
