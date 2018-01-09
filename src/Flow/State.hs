@@ -337,7 +337,9 @@ listRight = listMove 1
 
 -- search
 searchMode :: Stateful
-searchMode s = return s { mode = Search True "" }
+searchMode s = return $ case mode s of
+    Search _ term -> s { mode = Search True term }
+    _ -> s { mode = Search True "" }
 
 searchEntered :: Stateful
 searchEntered s = case mode s of
