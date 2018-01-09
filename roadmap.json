@@ -28,9 +28,6 @@
         "tasks": [
             {
                 "description": "Empty tasks aren't obviously selectable"
-            },
-            {
-                "description": "Cursor vertical offset is wrong when adding a new list"
             }
         ],
         "title": "Bugs"
@@ -236,6 +233,9 @@
             },
             {
                 "description": "Tabs in tasks throw off cursor and wrapping"
+            },
+            {
+                "description": "Cursor vertical offset is wrong when adding a new list"
             }
         ],
         "title": "Done"

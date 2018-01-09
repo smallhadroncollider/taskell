@@ -53,7 +53,7 @@ renderCurrentList' (_, height) listTitle (before, cur, after) tc = (translateY y
 renderCurrentList :: Size -> Int -> ListUI -> Bool -> (Image, Int, Int)
 renderCurrentList sz index (title, tasks) tc = case splitOn index tasks of
     Just list -> renderCurrentList' sz title list tc
-    Nothing -> (margin (currentTitleImage title), taskLength title, 0)
+    Nothing -> let t = margin (currentTitleImage title) in (t, length (last title), imageHeight t)
 
 listImage :: ListUI -> Image
 listImage (title, tasks) = margin $ img attrTitle title <-> tasksImage tasks
