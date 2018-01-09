@@ -78,12 +78,13 @@ calcOffset pivot n = if n > pivot then pivot - n else 0
 
 -- draws the screen
 pic :: State -> Picture
-pic state = Picture cursor [translateX o $ marginTop image] ClearBackground
+pic state = Picture cursor [searchImage state (snd sz) image'] ClearBackground
     where state' = search $ newList state
           sz = size state'
           ls = mapWithIndex present $ lists state'
           (image, w, x, y) = renderLists (current state') sz ls (titleCursor state')
           o = calcOffset (fst sz `div` 3) w
+          image' = translateX o $ marginTop image
           cursor = if showCursor state' then Cursor (w + x + o + padding) y else NoCursor
 
 showCursor :: State -> Bool
@@ -95,6 +96,11 @@ titleCursor :: State -> Bool
 titleCursor s = case mode s of
     Edit EditList -> True
     _ -> False
+
+searchImage :: State -> Int -> Image -> Image
+searchImage s h i = case mode s of
+    Search ent term -> marginBottom (cropBottom (h - 3) i) <-> margin (string (if ent then attrCurrent else attrNormal) ("/" ++ term))
+    _ -> i
 
 -- styling
 taskImage :: TaskUI -> Image
