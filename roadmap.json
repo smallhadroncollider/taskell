@@ -30,7 +30,7 @@
                 "description": "Empty tasks aren't obviously selectable"
             },
             {
-                "description": "Tabs in tasks throw off cursor and wrapping"
+                "description": "Cursor vertical offset is wrong when adding a new list"
             }
         ],
         "title": "Bugs"
@@ -233,6 +233,9 @@
             },
             {
                 "description": "Homebrew support"
+            },
+            {
+                "description": "Tabs in tasks throw off cursor and wrapping"
             }
         ],
         "title": "Done"
