@@ -1,7 +1,8 @@
 module Data.Taskell.String (
     backspace,
     trunc,
-    wrap
+    wrap,
+    trim
 ) where
 
 import Data.List (foldl')

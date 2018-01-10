@@ -5,6 +5,8 @@ import System.Environment (getArgs)
 import Data.Aeson
 import Data.Aeson.Encode.Pretty
 import Data.Maybe (fromMaybe)
+import Data.List (isSuffixOf)
+import Persistence.Markdown (stringify, parse)
 import qualified Data.ByteString.Lazy as BS
 
 import UI.CLI (promptYN)
@@ -34,17 +36,20 @@ promptCreate False path = do
 
 -- creates taskell file
 createPath :: FilePath -> IO ()
-createPath = writeJSON initial 
+createPath = writeJSON initial
 
 -- writes Tasks to json file
 writeJSON :: Lists -> FilePath -> IO ()
-writeJSON tasks path = BS.writeFile path $ encodePretty tasks
+writeJSON tasks path | ".json" `isSuffixOf` path = BS.writeFile path $ encodePretty tasks
+                     | otherwise = BS.writeFile path $ stringify tasks
 
 -- reads json file
 readJSON :: FilePath -> IO Lists
 readJSON path = do
     content <- BS.readFile path
-    return $ jsonToTasks content
+    let ls | ".json" `isSuffixOf` path = jsonToTasks content
+           | otherwise = parse content
+    return ls
 
 -- returns tasks or an empty list
 jsonToTasks :: BS.ByteString -> Lists

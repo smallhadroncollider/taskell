@@ -20,6 +20,9 @@ blank = Task { description = "" }
 clear :: Task -> Task
 clear _ = blank
 
+new :: String -> Task
+new s = Task { description = s }
+
 append :: Char -> Task  -> Task
 append c t = t { description = description t ++ [c] }
 
