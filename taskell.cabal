@@ -37,6 +37,8 @@ library
                      , Flow.State
 
                      , Persistence.Taskell
+                     , Persistence.Markdown
+
                      , Render
 
                      , UI.CLI
@@ -67,6 +69,7 @@ test-suite taskell-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
+                     , bytestring
                      , taskell
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
