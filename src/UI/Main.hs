@@ -3,6 +3,7 @@ module UI.Main where
 import Graphics.Vty hiding (showCursor)
 import Data.Maybe (fromMaybe)
 
+import Data.List (foldl')
 import Data.Sequence (Seq, mapWithIndex)
 
 import Flow.State (State, Pointer, Size, Mode(..), EditMode(..), mode, lists, current, size, newList, search)
@@ -120,7 +121,7 @@ img :: Attr -> TaskUI -> Image
 img a s = vertCat $ string a <$> s
 
 hCat :: Seq Image -> Image
-hCat = foldl (<|>) emptyImage
+hCat = foldl' (<|>) emptyImage
 
 vCat :: Seq Image -> Image
-vCat = foldl (<->) emptyImage
+vCat = foldl' (<->) emptyImage
