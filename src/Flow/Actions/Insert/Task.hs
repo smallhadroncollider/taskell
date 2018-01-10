@@ -7,7 +7,7 @@ import qualified Flow.Actions.Insert.Task.Create as Create
 import qualified Flow.Actions.Insert.Task.Edit as Edit
 
 event :: Event -> Stateful
-event (EvKey KEsc _) s = write =<< normalMode s
+event (EvKey KEsc _) s = write =<< removeBlank =<< normalMode s
 event (EvKey KBS _) s = insertBS s
 event (EvKey (KChar char) _) s = insertCurrent char s
 

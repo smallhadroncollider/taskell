@@ -4,5 +4,5 @@ import Graphics.Vty.Input.Events
 import Flow.State
 
 event :: Event -> Stateful
-event (EvKey KEnter _) = (write =<<) . (below =<<) . store
+event (EvKey KEnter _) = (write =<<) . (below =<<) . (removeBlank =<<) . store
 event _ = return

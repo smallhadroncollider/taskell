@@ -28,11 +28,7 @@
         "title": "Refactoring"
     },
     {
-        "tasks": [
-            {
-                "description": "Empty tasks aren't obviously selectable"
-            }
-        ],
+        "tasks": [],
         "title": "Bugs"
     },
     {
@@ -245,6 +241,9 @@
             },
             {
                 "description": "Debian package"
+            },
+            {
+                "description": "Empty tasks aren't obviously selectable"
             }
         ],
         "title": "Done"

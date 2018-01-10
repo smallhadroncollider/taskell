@@ -67,14 +67,15 @@ module Flow.State (
     editListChar,
 
     -- Flow.Actions.Create/Edit
+    removeBlank,
     newItem,
     normalMode,
     insertBS,
     insertCurrent
 ) where
 
-import Data.Taskell.Task (Task, backspace, append, clear)
-import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle)
+import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
+import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
@@ -228,6 +229,14 @@ bottom = return . selectLast
 
 selectLast :: InternalStateful
 selectLast s = setIndex s (countCurrent s - 1)
+
+removeBlank :: Stateful
+removeBlank s = do
+    l <- getList s
+    c <- getTask (getIndex s) l
+    if isBlank c
+        then delete s
+        else return s
 
 -- moving
 up :: Stateful

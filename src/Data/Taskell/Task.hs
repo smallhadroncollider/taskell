@@ -31,3 +31,6 @@ characters = length . description
 
 contains :: String -> Task -> Bool
 contains s t = s `isInfixOf` description t
+
+isBlank :: Task -> Bool
+isBlank t = null $ description t
