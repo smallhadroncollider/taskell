@@ -8,29 +8,29 @@ if [ -z "$1" ]; then
     exit
 fi
 
-# stack build
-# stack build --docker
-#
-# mkdir -p "releases/$1/taskell/DEBIAN"
-# mkdir -p "releases/$1/taskell/usr/local/bin"
-# LINUX_DIR=$(ls .stack-work/install | grep linux)
-#
-# tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell" > /dev/null
-#
-# tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" ".stack-work/install/x86_64-osx/lts-9.13/8.0.2/bin/taskell" > /dev/null
-#
-# cp ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell" "releases/$1/taskell/usr/local/bin"
-#
-# echo "Package: taskell
-# Version: $1
-# Maintainer: Mark Wales
-# Architecture: all
-# Description: A command line task manager written in Haskell" > "releases/$1/taskell/DEBIAN/control"
-#
-# docker run -v "$PWD/releases/$1":/usr/src/app -w /usr/src/app debian dpkg-deb --build taskell
-#
-# mv "releases/$1/taskell.deb" "releases/$1/taskell-$1_x86-64-linux.deb"
-# rm -rf "releases/$1/taskell"
+stack build
+stack build --docker
+
+mkdir -p "releases/$1/taskell/DEBIAN"
+mkdir -p "releases/$1/taskell/usr/local/bin"
+LINUX_DIR=$(ls .stack-work/install | grep linux)
+
+tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell" > /dev/null
+
+tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" ".stack-work/install/x86_64-osx/lts-9.13/8.0.2/bin/taskell" > /dev/null
+
+cp ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell" "releases/$1/taskell/usr/local/bin"
+
+echo "Package: taskell
+Version: $1
+Maintainer: Mark Wales
+Architecture: amd64
+Description: A command line task manager written in Haskell" > "releases/$1/taskell/DEBIAN/control"
+
+docker run -v "$PWD/releases/$1":/usr/src/app -w /usr/src/app debian dpkg-deb --build taskell
+
+mv "releases/$1/taskell.deb" "releases/$1/taskell-$1_x86-64-linux.deb"
+rm -rf "releases/$1/taskell"
 
 printf "
 Release Template
