@@ -28,7 +28,11 @@
         "title": "Refactoring"
     },
     {
-        "tasks": [],
+        "tasks": [
+            {
+                "description": "Pressing `e` on a blank list breaks things"
+            }
+        ],
         "title": "Bugs"
     },
     {
