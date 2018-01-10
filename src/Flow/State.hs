@@ -182,11 +182,20 @@ deleteCurrentList :: Stateful
 deleteCurrentList s = return $ fixIndex $ setLists s $ Lists.delete (getCurrentList s) (lists s)
 
 -- insert
+getCurrentTask :: State -> Maybe Task
+getCurrentTask s = do
+    l <- getList s
+    getTask (getIndex s) l
+
 startCreate :: Stateful
 startCreate s = return $ s { mode = Insert CreateTask }
 
 startEdit :: Stateful
-startEdit s = return $ s { mode = Insert EditTask }
+startEdit s = do
+    c <- getCurrentTask s
+    return $ if isBlank c
+        then s
+        else s { mode = Insert EditTask }
 
 normalMode :: Stateful
 normalMode s = return $ s { mode = Normal }
@@ -232,11 +241,8 @@ selectLast s = setIndex s (countCurrent s - 1)
 
 removeBlank :: Stateful
 removeBlank s = do
-    l <- getList s
-    c <- getTask (getIndex s) l
-    if isBlank c
-        then delete s
-        else return s
+    c <- getCurrentTask s
+    (if isBlank c then delete else return) s
 
 -- moving
 up :: Stateful
