@@ -3,6 +3,12 @@
         "tasks": [
             {
                 "description": "Nix support?"
+            },
+            {
+                "description": "Debian package"
+            },
+            {
+                "description": "apt-get repository"
             }
         ],
         "title": "Goals"
@@ -20,6 +26,9 @@
             },
             {
                 "description": "Use a map in Actions to tidy things up/add custom key support"
+            },
+            {
+                "description": "Change foldl to foldl`"
             }
         ],
         "title": "Refactoring"
