@@ -7,7 +7,7 @@ import Data.Maybe (fromMaybe)
 
 import qualified Flow.Actions.Normal as Normal
 import qualified Flow.Actions.Search as Search
-import qualified Flow.Actions.Edit as Edit
+import qualified Flow.Actions.Insert as Insert
 
 -- takes an event and returns a Maybe State
 event' :: Event -> Stateful
@@ -19,7 +19,7 @@ event' (EvResize w h) s = setSize w h s
 event' e s = case mode s of
     Normal -> Normal.event e s
     Search _ _ -> Search.event e s
-    Edit _ -> Edit.event e s
+    Insert _ -> Insert.event e s
     _ -> return s
 
 -- returns new state if successful

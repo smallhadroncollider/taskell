@@ -6,7 +6,7 @@ import Data.Maybe (fromMaybe)
 import Data.List (foldl')
 import Data.Sequence (Seq, mapWithIndex)
 
-import Flow.State (State, Pointer, Size, Mode(..), EditMode(..), mode, lists, current, size, newList, search)
+import Flow.State (State, Pointer, Size, Mode(..), InsertMode(..), mode, lists, current, size, newList, search)
 
 import UI.Styles
 
@@ -90,12 +90,12 @@ pic state = Picture cursor [searchImage state (snd sz) image'] ClearBackground
 
 showCursor :: State -> Bool
 showCursor s = case mode s of
-    Edit _ -> True
+    Insert _ -> True
     _ -> False
 
 titleCursor :: State -> Bool
 titleCursor s = case mode s of
-    Edit EditList -> True
+    Insert EditList -> True
     _ -> False
 
 searchImage :: State -> Int -> Image -> Image

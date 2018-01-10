@@ -16,25 +16,33 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Config
+
                      , Data.Taskell.Task
                      , Data.Taskell.List
                      , Data.Taskell.Lists
                      , Data.Taskell.Seq
                      , Data.Taskell.String
+
                      , Flow.Actions
                      , Flow.Actions.Normal
                      , Flow.Actions.Search
-                     , Flow.Actions.Edit
-                     , Flow.Actions.Edit.CreateTask
-                     , Flow.Actions.Edit.EditTask
-                     , Flow.Actions.Edit.CreateList
-                     , Flow.Actions.Edit.EditList
+                     , Flow.Actions.Insert
+                     , Flow.Actions.Insert.Task
+                     , Flow.Actions.Insert.Task.Create
+                     , Flow.Actions.Insert.Task.Edit
+                     , Flow.Actions.Insert.List
+                     , Flow.Actions.Insert.List.Create
+                     , Flow.Actions.Insert.List.Edit
+
                      , Flow.State
+
                      , Persistence.Taskell
                      , Render
+
                      , UI.CLI
                      , UI.Main
                      , UI.Styles
+
   build-depends:       base >= 4.7 && < 5
                      , vty
                      , bytestring
