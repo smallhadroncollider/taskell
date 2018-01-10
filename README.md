@@ -19,6 +19,10 @@ brew install smallhadroncollider/taskell/taskell
 
 There are bottles (binaries) available for High Sierra and Sierra. If these are not available for your computer, homebrew will build Taskell from scratch using [Stack](https://docs.haskellstack.org/), which can take a while, particularly on older machines.
 
+### Debian/Ubuntu
+
+[A `.deb` package is available for Debian/Ubuntu](https://github.com/smallhadroncollider/taskell/releases). Download it and install with `dpkg -i <package-name>`.
+
 ### Binaries
 
 [A binary is available for Mac and Linux](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`). Then run `taskell` in a project directory to get started.
