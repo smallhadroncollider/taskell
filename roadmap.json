@@ -5,9 +5,6 @@
                 "description": "Nix support?"
             },
             {
-                "description": "Debian package"
-            },
-            {
                 "description": "apt-get repository"
             }
         ],
@@ -245,6 +242,9 @@
             },
             {
                 "description": "Change foldl to foldl`"
+            },
+            {
+                "description": "Debian package"
             }
         ],
         "title": "Done"
