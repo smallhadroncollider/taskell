@@ -93,4 +93,4 @@ Stores in a local `taskell.json` file:
 
 ## Roadmap
 
-See [taskell.json](https://github.com/smallhadroncollider/taskell/blob/develop/taskell.json) for planned features
+See [roadmap.json](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.json) for planned features
