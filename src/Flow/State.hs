@@ -4,7 +4,7 @@ module Flow.State (
     Stateful,
     Pointer,
     Size,
-    EditMode(..),
+    InsertMode(..),
     Mode(..),
 
     -- Render
@@ -67,20 +67,21 @@ module Flow.State (
     editListChar,
 
     -- Flow.Actions.Create/Edit
+    removeBlank,
     newItem,
     normalMode,
     insertBS,
     insertCurrent
 ) where
 
-import Data.Taskell.Task (Task, backspace, append, clear)
-import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle)
+import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
+import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
 
-data EditMode = EditTask | CreateTask | EditList | CreateList String
-data Mode = Normal | Edit EditMode | Write Mode | Search Bool String | Shutdown
+data InsertMode = EditTask | CreateTask | EditList | CreateList String
+data Mode = Normal | Insert InsertMode | Write Mode | Search Bool String | Shutdown
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
@@ -135,35 +136,35 @@ undo s = return $ case history s of
 -- createList
 createList :: InternalStateful
 createList s =  case mode s of
-    Edit (CreateList n) -> updateListToLast . setLists s $ Lists.newList n $ lists s
+    Insert (CreateList n) -> updateListToLast . setLists s $ Lists.newList n $ lists s
     _ -> s
 
 updateListToLast :: InternalStateful
 updateListToLast s = setCurrentList s (length (lists s) - 1)
 
 createListStart :: Stateful
-createListStart s = return $ s { mode = Edit (CreateList "") }
+createListStart s = return $ s { mode = Insert (CreateList "") }
 
 createListFinish :: Stateful
 createListFinish = normalMode . createList
 
 createListBS :: Stateful
 createListBS s = case mode s of
-    Edit (CreateList n) -> return $ s { mode = Edit (CreateList (S.backspace n)) }
+    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (S.backspace n)) }
     _ -> Nothing
 
 createListChar :: Char -> Stateful
 createListChar c s = case mode s of
-    Edit (CreateList n) -> return $ s { mode = Edit (CreateList (n ++ [c])) }
+    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (n ++ [c])) }
     _ -> Nothing
 
 -- editList
 editListStart :: Stateful
-editListStart s = return $ s { mode = Edit EditList }
+editListStart s = return $ s { mode = Insert EditList }
 
 editListBS :: Stateful
 editListBS s = case mode s of
-    Edit EditList -> do
+    Insert EditList -> do
         l <- getList s
         let t = S.backspace (title l)
         return $ setList s $ updateTitle l t
@@ -171,7 +172,7 @@ editListBS s = case mode s of
 
 editListChar :: Char -> Stateful
 editListChar c s = case mode s of
-    Edit EditList -> do
+    Insert EditList -> do
         l <- getList s
         let t = title l ++ [c]
         return $ setList s $ updateTitle l t
@@ -181,11 +182,20 @@ deleteCurrentList :: Stateful
 deleteCurrentList s = return $ fixIndex $ setLists s $ Lists.delete (getCurrentList s) (lists s)
 
 -- insert
+getCurrentTask :: State -> Maybe Task
+getCurrentTask s = do
+    l <- getList s
+    getTask (getIndex s) l
+
 startCreate :: Stateful
-startCreate s = return $ s { mode = Edit CreateTask }
+startCreate s = return $ s { mode = Insert CreateTask }
 
 startEdit :: Stateful
-startEdit s = return $ s { mode = Edit EditTask }
+startEdit s = do
+    c <- getCurrentTask s
+    return $ if isBlank c
+        then s
+        else s { mode = Insert EditTask }
 
 normalMode :: Stateful
 normalMode s = return $ s { mode = Normal }
@@ -228,6 +238,11 @@ bottom = return . selectLast
 
 selectLast :: InternalStateful
 selectLast s = setIndex s (countCurrent s - 1)
+
+removeBlank :: Stateful
+removeBlank s = do
+    c <- getCurrentTask s
+    (if isBlank c then delete else return) s
 
 -- moving
 up :: Stateful
@@ -367,6 +382,6 @@ search s = case mode s of
 
 newList :: State -> State
 newList s = case mode s of
-    Edit (CreateList t) -> let ls = lists s in
+    Insert (CreateList t) -> let ls = lists s in
                                fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
     _ -> s

@@ -1,7 +1,10 @@
 module Data.Taskell.Lists where
 
-import Data.Sequence (Seq, fromList, (!?), (|>), deleteAt)
+import Prelude hiding (length)
+import Data.Maybe (fromMaybe)
+import Data.Sequence (Seq, fromList, (!?), (|>), deleteAt, length)
 import qualified Data.Taskell.Seq as S
+import Data.Taskell.Task (Task)
 import Data.Taskell.List (List(..), empty, extract, append, searchFor)
 
 type Lists = Seq List
@@ -46,3 +49,13 @@ shiftBy = S.shiftBy
 
 search :: String -> Lists -> Lists
 search s ls = searchFor s <$> ls
+
+appendToLast' :: Task -> Lists -> Maybe Lists
+appendToLast' t ls = do
+    let i = length ls - 1
+    l <- ls !? i
+    let l' = append t l
+    return $ update i ls l'
+
+appendToLast :: Task -> Lists -> Lists
+appendToLast t ls = fromMaybe ls $ appendToLast' t ls

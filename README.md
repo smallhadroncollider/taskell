@@ -2,7 +2,7 @@
 
 A CLI task manager, written in Haskell
 
-- Tasks stored in a `json` file in the current working directory - for easy version control
+- Tasks stored in a Markdown file in the current working directory - for easy version control
 - Uses `vim` style key-bindings
 
 ![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
@@ -29,8 +29,10 @@ There are bottles (binaries) available for High Sierra and Sierra. If these are 
 
 ## Running
 
-- `taskell`: will use `taskell.json` in the cwd - offers to create if not found
-- `taskell filename.json`: will use `filename.json` in the cwd - offers to create if not found
+- `taskell`: will use `taskell.md` in the cwd - offers to create if not found
+- `taskell filename.md`: will use `filename.md` in the cwd - offers to create if not found
+
+Taskell also supports `.json` files: `taskell filename.json`
 
 ## Controls
 
@@ -65,32 +67,22 @@ There are bottles (binaries) available for High Sierra and Sierra. If these are 
 
 ## Storage
 
-Stores in a local `taskell.json` file:
+Stores in a local `taskell.md` file:
 
-```json
-[
-    {
-        "title": "To Do",
-        "tasks": [
-            {
-                "description": "Do this"
-            }
-        ],
-    },
+```md
+## To Do
 
-    {
-        "title": "Done",
-        "tasks": [
-            {
-                "description": "Do that"
-            }
-        ]
-    }
-]
+- Do this
+
+## Done
+
+- Do That
 ```
+
+Taskell also support `.json` files
 
 ---
 
 ## Roadmap
 
-See [roadmap.json](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.json) for planned features
+See [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) for planned features

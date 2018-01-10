@@ -20,6 +20,9 @@ blank = Task { description = "" }
 clear :: Task -> Task
 clear _ = blank
 
+new :: String -> Task
+new s = Task { description = s }
+
 append :: Char -> Task  -> Task
 append c t = t { description = description t ++ [c] }
 
@@ -31,3 +34,6 @@ characters = length . description
 
 contains :: String -> Task -> Bool
 contains s t = s `isInfixOf` description t
+
+isBlank :: Task -> Bool
+isBlank t = null $ description t

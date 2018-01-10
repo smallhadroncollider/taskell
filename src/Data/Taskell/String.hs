@@ -1,9 +1,11 @@
 module Data.Taskell.String (
     backspace,
     trunc,
-    wrap
+    wrap,
+    trim
 ) where
 
+import Data.List (foldl')
 import Data.List.Split (split, oneOf, keepDelimsL)
 
 backspace :: String -> String
@@ -20,10 +22,10 @@ spl :: String -> [String]
 spl = split (keepDelimsL $ oneOf " ")
 
 wrap :: Int -> String -> [String]
-wrap width = foldl (combine width) [] . spl 
+wrap width = foldl' (combine width) [] . spl
 
 combine :: Int -> [String] -> String -> [String]
-combine width acc s = if nl then acc ++ [trim s] else append (l ++ s) acc 
+combine width acc s = if nl then acc ++ [trim s] else append (l ++ s) acc
     where l = if null acc then "" else last acc
           nl = length l + length s > width
 

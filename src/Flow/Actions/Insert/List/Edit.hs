@@ -1,4 +1,4 @@
-module Flow.Actions.Edit.EditList (event) where
+module Flow.Actions.Insert.List.Edit (event) where
 
 import Graphics.Vty.Input.Events
 import Flow.State (Stateful, write, normalMode, editListBS, editListChar)

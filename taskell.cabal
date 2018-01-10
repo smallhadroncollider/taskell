@@ -1,5 +1,5 @@
 name:                taskell
-version:             0.8.0.0
+version:             0.9.0.0
 -- synopsis: A CLI task manager, written in Haskell
 -- description: Allows you to create version controlled task lists
 homepage:            https://github.com/smallhadroncollider/taskell#readme
@@ -16,25 +16,35 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Config
+
                      , Data.Taskell.Task
                      , Data.Taskell.List
                      , Data.Taskell.Lists
                      , Data.Taskell.Seq
                      , Data.Taskell.String
+
                      , Flow.Actions
                      , Flow.Actions.Normal
                      , Flow.Actions.Search
-                     , Flow.Actions.Edit
-                     , Flow.Actions.Edit.CreateTask
-                     , Flow.Actions.Edit.EditTask
-                     , Flow.Actions.Edit.CreateList
-                     , Flow.Actions.Edit.EditList
+                     , Flow.Actions.Insert
+                     , Flow.Actions.Insert.Task
+                     , Flow.Actions.Insert.Task.Create
+                     , Flow.Actions.Insert.Task.Edit
+                     , Flow.Actions.Insert.List
+                     , Flow.Actions.Insert.List.Create
+                     , Flow.Actions.Insert.List.Edit
+
                      , Flow.State
+
                      , Persistence.Taskell
+                     , Persistence.Markdown
+
                      , Render
+
                      , UI.CLI
                      , UI.Main
                      , UI.Styles
+
   build-depends:       base >= 4.7 && < 5
                      , vty
                      , bytestring
@@ -59,6 +69,7 @@ test-suite taskell-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
+                     , bytestring
                      , taskell
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
