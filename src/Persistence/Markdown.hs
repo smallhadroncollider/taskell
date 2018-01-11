@@ -6,11 +6,11 @@ module Persistence.Markdown (
 import Prelude hiding (lines)
 
 import Data.Taskell.Lists (Lists, newList, appendToLast)
-import Data.Taskell.List (List, empty, title, tasks)
+import Data.Taskell.List (List, title, tasks)
 import Data.Taskell.Task (Task, new, description)
 import Data.Taskell.String (trim)
 import Data.Foldable (foldl')
-import Data.Sequence (Seq, fromList)
+import Data.Sequence (fromList)
 import Data.ByteString.Lazy (ByteString)
 import Data.ByteString.Lazy.Char8 (lines, isPrefixOf, pack, unpack)
 
