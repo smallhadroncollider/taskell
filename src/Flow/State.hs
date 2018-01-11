@@ -58,7 +58,7 @@ module Flow.State (
     searchEntered,
 
     -- Flow.Actions.CreateList
-    createListFinish,
+    createList,
     createListBS,
     createListChar,
 
@@ -134,8 +134,8 @@ undo s = return $ case history s of
     }
 
 -- createList
-createList :: InternalStateful
-createList s =  case mode s of
+createList :: Stateful
+createList s = return $ case mode s of
     Insert (CreateList n) -> updateListToLast . setLists s $ Lists.newList n $ lists s
     _ -> s
 
@@ -144,9 +144,6 @@ updateListToLast s = setCurrentList s (length (lists s) - 1)
 
 createListStart :: Stateful
 createListStart s = return $ s { mode = Insert (CreateList "") }
-
-createListFinish :: Stateful
-createListFinish = normalMode . createList
 
 createListBS :: Stateful
 createListBS s = case mode s of

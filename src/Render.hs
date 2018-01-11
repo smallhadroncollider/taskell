@@ -19,12 +19,12 @@ loop :: Vty -> FilePath-> State -> IO ()
 loop vty path state = do
     update vty $ pic state
     e <- nextEvent vty
-    
+
     -- get updated version of state
     state' <- write path $ event e state
-    
+
     -- if event wasn't quit keep going, otherwise shutdown
-    case mode state' of 
+    case mode state' of
         Shutdown -> shutdown vty
         _ -> loop vty path state'
 
