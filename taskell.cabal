@@ -43,6 +43,9 @@ library
                      , Persistence.Markdown
 
                      , UI.CLI
+                     , UI.Draw
+                     , UI.Attr
+                     , UI.Types
 
   build-depends:       base <= 5
                      , vty
