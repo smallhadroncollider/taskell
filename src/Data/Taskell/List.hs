@@ -6,7 +6,7 @@ import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
 
 import Prelude hiding (splitAt, filter)
-import Data.Sequence (Seq, (|>), (!?), (><), deleteAt, splitAt, filter)
+import Data.Sequence (Seq, (|>), (!?), (><), fromList, deleteAt, splitAt, filter)
 import qualified Data.Taskell.Seq as S
 
 import Data.Taskell.Task (Task, blank, contains)
@@ -33,9 +33,8 @@ updateTitle :: List -> String -> List
 updateTitle ls s = ls { title = s }
 
 newAt :: Int -> List -> List
-newAt i l = l { tasks = (a |> blank) >< b }
+newAt i l = l { tasks = a >< fromList [blank] >< b }
     where (a, b) = splitAt i $ tasks l
-
 
 append :: Task -> List -> List
 append t l = l { tasks = tasks l |> t }

@@ -26,6 +26,7 @@
 - Copy and paste?
 - Add custom key support
 - Add Trello import
+- Add `--convert-to-md` and `--convert-to-json` options
 
 ## Done
 
