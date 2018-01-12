@@ -202,7 +202,7 @@ addToListAt d s = do
     l <- getList s
     let i = getIndex s + d
     let ls = newAt i l
-    return $ setList (setIndex s i) ls
+    return $ fixIndex $ setList (setIndex s i) ls
 
 above :: Stateful
 above = addToListAt 0
