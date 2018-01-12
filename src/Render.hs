@@ -2,16 +2,17 @@ module Render (
     render
 ) where
 
+import Prelude hiding (writeFile)
 import Graphics.Vty (Vty, standardIOConfig, mkVty, nextEvent, update, shutdown)
 
 import Flow.State (State, Mode(Write, Shutdown), lists, mode, continue)
 import Flow.Actions (event)
-import Persistence.Taskell (writeJSON)
+import Persistence.Taskell (writeFile)
 import UI.Main (pic)
 
 write :: FilePath -> State -> IO State
 write path s = case mode s of
-    (Write _) -> writeJSON (lists s) path >> return (continue s)
+    (Write _) -> writeFile (lists s) path >> return (continue s)
     _ -> return s
 
 -- the draw loop
