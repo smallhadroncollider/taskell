@@ -42,11 +42,7 @@ library
                      , Persistence.Taskell
                      , Persistence.Markdown
 
-                     , Render
-
                      , UI.CLI
-                     , UI.Main
-                     , UI.Styles
 
   build-depends:       base <= 5
                      , vty

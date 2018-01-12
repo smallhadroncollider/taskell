@@ -7,9 +7,10 @@ module Flow.State (
     InsertMode(..),
     Mode(..),
 
-    -- Render
+    -- App
     continue,
     write,
+    path,
 
     -- record accesors
     mode,
@@ -91,16 +92,18 @@ data State = State {
     lists :: Lists.Lists,
     history :: [(Pointer, Lists.Lists)],
     current :: Pointer,
-    size :: Size
+    size :: Size,
+    path :: FilePath
 }
 
-create :: Size -> Lists.Lists -> State
-create sz ls = State {
+create :: FilePath -> Size -> Lists.Lists -> State
+create p sz ls = State {
     mode = Normal,
     lists = ls,
     history = [],
     current = (0, 0),
-    size = sz
+    size = sz,
+    path = p
 }
 
 type Stateful = State -> Maybe State
