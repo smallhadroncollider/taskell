@@ -1,7 +1,7 @@
 module App (go) where
 
 import Control.Monad (void)
-import Flow.State (State, Pointer, Mode(..), lists, current, mode, continue, path)
+import Flow.State (State, Pointer, Mode(..), InsertMode(..), lists, current, mode, continue, path)
 import Brick
 import Brick.Util (fg)
 import Graphics.Vty (defAttr, green, blue, magenta)
@@ -36,13 +36,14 @@ addCursor li ti d = showCursor (ListLocation (li, ti)) (Location (h, v))
     where v = length d - 1
           h = length $ last d
 
+box :: [String] -> Widget Name
+box d = padBottom (Pad 1) . vBox $ str <$> d
+
 renderTask :: Pointer -> Int -> Int -> Task -> Widget Name
 renderTask p li ti t =
       withAttr attr
     . addCursor li ti d
-    . padBottom (Pad 1)
-    . hLimit width
-    . vBox $ str <$> d
+    $ box d
 
     where d = wrap width $ description t
           attr = if (li, ti) == p then taskCurrentAttr else taskAttr
@@ -54,10 +55,11 @@ columnNumber i s = if col >= 1 && col <= 9 then show col ++ ". " ++ s else s
 renderTitle :: Pointer -> Int -> List -> Widget Name
 renderTitle (p, _) li l =
       withAttr attr
-    . padBottom (Pad 1)
-    $ strWrap (columnNumber li (title l))
+    . addCursor li (-1) d
+    $ box d
 
-    where attr = if p == li then titleCurrentAttr else titleAttr
+    where d = wrap width $ columnNumber li (title l)
+          attr = if p == li then titleCurrentAttr else titleAttr
 
 widget :: Pointer -> Int -> List -> Widget Name
 widget p li l =
@@ -79,7 +81,10 @@ draw s = [
 -- app
 chooseCursor :: State -> [CursorLocation Name] -> Maybe (CursorLocation Name)
 chooseCursor s = case mode s of
-    Insert _ -> showCursorNamed (ListLocation (current s))
+    Insert (CreateList _) -> showCursorNamed (ListLocation (fst (current s), -1))
+    Insert EditList -> showCursorNamed (ListLocation (fst (current s), -1))
+    Insert CreateTask -> showCursorNamed (ListLocation (current s))
+    Insert EditTask -> showCursorNamed (ListLocation (current s))
     _ -> neverShowCursor s
 
 handleEvent :: State -> BrickEvent Name e -> EventM Name (Next State)
