@@ -25,7 +25,7 @@ There are bottles (binaries) available for High Sierra and Sierra. If these are 
 
 ### Binaries
 
-[A binary is available for Mac and Linux](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`). Then run `taskell` in a project directory to get started.
+[A binary is available for Mac and Linux](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`).
 
 ## Running
 
