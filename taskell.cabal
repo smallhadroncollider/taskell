@@ -47,6 +47,7 @@ library
 
   build-depends:       base >= 4.7 && < 5
                      , vty
+                     , brick
                      , bytestring
                      , aeson
                      , containers
@@ -62,6 +63,7 @@ executable taskell
   build-depends:       base
                      , taskell
                      , terminal-size
+                     , brick
   default-language:    Haskell2010
 
 test-suite taskell-test
