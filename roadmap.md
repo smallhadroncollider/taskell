@@ -5,10 +5,11 @@
 
 ## Refactoring
 
+- Use Brick for UI
 - Break up State module
 - Simplify state by composing Actions
-- Refactor UI code - passing around too many variables
 - Use a map in Actions to tidy things up/add custom key support
+- Add some tests
 
 ## Bugs
 
