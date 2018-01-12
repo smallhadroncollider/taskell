@@ -1,3 +1,9 @@
+## Brick Refactor
+
+- Scrolling
+- Search UI
+- Remove size from State?
+
 ## Goals
 
 - Nix support?
