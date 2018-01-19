@@ -21,9 +21,13 @@ colWidth :: Int
 colWidth = width + padding * 2
 
 addCursor :: Int -> Int -> [String] -> Widget ResourceName -> Widget ResourceName
-addCursor li ti d = showCursor (RNTask (li, ti)) (Location (h, v))
+addCursor li ti d =
+      reportExtent name
+    . showCursor name (Location (h, v))
+
     where v = length d - 1
           h = length $ last d
+          name = RNTask (li, ti)
 
 box :: [String] -> Widget ResourceName
 box d = padBottom (Pad 1) . vBox $ str <$> d

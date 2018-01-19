@@ -3,6 +3,7 @@ module App (go) where
 import Control.Monad (void)
 import Flow.State (State, Mode(..), lists, continue, path, mode, current)
 import Brick
+import Brick.Types (Extent(..))
 import Persistence.Taskell (writeFile)
 
 import Flow.Actions (event)
@@ -20,10 +21,22 @@ handleEvent s' (VtyEvent e) = let s = event e s' in
             Persistence.Taskell.writeFile (lists s) (path s)
             return (Flow.State.continue s)
         _ -> do
-            hScrollToBeginning (viewportScroll RNLists)
-            hScrollBy (viewportScroll RNLists) (fst (current s) * colWidth)
+            let cur = current s
+            let list = fst cur
+            let view = viewportScroll RNLists
+            let stop = snd cur - 1
+            setLeft view (list * colWidth)
+            let resources = (\i -> RNTask (list, i)) <$> [0..stop]
+            offset <- fmap sum . sequence $ (getHeight <$>) . lookupExtent <$> resources
+            setTop (viewportScroll (RNList list)) offset
             Brick.continue s
+
 handleEvent s _ = Brick.continue s
+
+getHeight :: Maybe (Extent ResourceName) -> Int
+getHeight extent = case extent of
+    Nothing -> 0
+    Just (Extent _ _ (_, height) _) -> height
 
 startEvent :: State -> EventM ResourceName State
 startEvent = return
