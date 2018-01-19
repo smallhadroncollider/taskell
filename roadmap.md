@@ -2,6 +2,7 @@
 
 - Nix support?
 - apt-get repository
+- Use case examples in README
 
 ## Refactoring
 
@@ -28,6 +29,9 @@
 - Add custom key support
 - Add Trello import
 - Add `--convert-to-md` and `--convert-to-json` options
+- Multi-select mode
+- Sub-lists
+- Spell check?
 
 ## Done
 
