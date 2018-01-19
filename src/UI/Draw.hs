@@ -1,6 +1,7 @@
 module UI.Draw (
     draw,
-    chooseCursor
+    chooseCursor,
+    colWidth
 ) where
 
 import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, search, newList)
@@ -16,7 +17,9 @@ import Config
 import UI.Types (ResourceName(..))
 import UI.Attr
 
--- draw
+colWidth :: Int
+colWidth = width + padding * 2
+
 addCursor :: Int -> Int -> [String] -> Widget ResourceName -> Widget ResourceName
 addCursor li ti d = showCursor (RNTask (li, ti)) (Location (h, v))
     where v = length d - 1
@@ -61,7 +64,7 @@ renderList p li l =
 draw :: State -> [Widget ResourceName]
 draw state = [
           viewport RNLists Horizontal
-        . hLimit (Seq.length ls * (width + padding * 2))
+        . hLimit (Seq.length ls * colWidth)
         . padTop (Pad 1)
         . hBox
         . toList

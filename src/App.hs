@@ -1,13 +1,13 @@
 module App (go) where
 
 import Control.Monad (void)
-import Flow.State (State, Mode(..), lists, continue, path, mode)
+import Flow.State (State, Mode(..), lists, continue, path, mode, current)
 import Brick
 import Persistence.Taskell (writeFile)
 
 import Flow.Actions (event)
 
-import UI.Draw (draw, chooseCursor)
+import UI.Draw (draw, chooseCursor, colWidth)
 import UI.Attr (attrMap')
 import UI.Types (ResourceName(..))
 
@@ -20,6 +20,8 @@ handleEvent s' (VtyEvent e) = let s = event e s' in
             Persistence.Taskell.writeFile (lists s) (path s)
             return (Flow.State.continue s)
         _ -> do
+            hScrollToBeginning (viewportScroll RNLists)
+            hScrollBy (viewportScroll RNLists) (fst (current s) * colWidth)
             Brick.continue s
 handleEvent s _ = Brick.continue s
 
