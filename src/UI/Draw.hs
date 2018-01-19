@@ -3,12 +3,13 @@ module UI.Draw (
     chooseCursor
 ) where
 
-import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, size, mode)
+import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, size, mode, search, newList)
 import Brick
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description)
 import Data.Taskell.String (wrap)
 import Data.Foldable (toList)
+import Data.List (foldl')
 import Data.Sequence (mapWithIndex)
 
 import Config
@@ -57,7 +58,7 @@ widget p li l =
 
 -- draw
 draw :: State -> [Widget ResourceName]
-draw s = [
+draw state = [
           viewport MainView Horizontal
         . hLimit (fst (size s))
         . padTop (Pad 1)
@@ -65,6 +66,7 @@ draw s = [
         . toList
         $ widget (current s)  `mapWithIndex` lists s
     ]
+    where s = foldl' (flip ($)) state [newList, search]
 
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
 chooseCursor s = case mode s of
