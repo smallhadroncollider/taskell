@@ -20,7 +20,6 @@ handleEvent s' (VtyEvent e) = let s = event e s' in
             Persistence.Taskell.writeFile (lists s) (path s)
             return (Flow.State.continue s)
         _ -> do
-            hScrollBy (viewportScroll MainView) 1
             Brick.continue s
 handleEvent s _ = Brick.continue s
 

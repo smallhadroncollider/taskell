@@ -3,14 +3,13 @@ module UI.Draw (
     chooseCursor
 ) where
 
-import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, size, mode, search, newList)
+import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, search, newList)
 import Brick
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description)
 import Data.Taskell.String (wrap)
 import Data.Foldable (toList)
-import Data.List (foldl')
-import Data.Sequence (mapWithIndex)
+import qualified Data.Sequence as Seq (mapWithIndex, length)
 
 import Config
 
@@ -19,7 +18,7 @@ import UI.Attr
 
 -- draw
 addCursor :: Int -> Int -> [String] -> Widget ResourceName -> Widget ResourceName
-addCursor li ti d = showCursor (ListLocation (li, ti)) (Location (h, v))
+addCursor li ti d = showCursor (RNTask (li, ti)) (Location (h, v))
     where v = length d - 1
           h = length $ last d
 
@@ -48,30 +47,38 @@ renderTitle (p, _) li l =
     where d = wrap width $ columnNumber li (title l)
           attr = if p == li then titleCurrentAttr else titleAttr
 
-widget :: Pointer -> Int -> List -> Widget ResourceName
-widget p li l =
+renderList :: Pointer -> Int -> List -> Widget ResourceName
+renderList p li l =
       padLeftRight padding
+    . hLimit width
+    . viewport (RNList li) Vertical
     . vBox
     . (renderTitle p li l :)
     . toList
-    $ renderTask p li `mapWithIndex` tasks l
+    $ renderTask p li `Seq.mapWithIndex` tasks l
 
 -- draw
 draw :: State -> [Widget ResourceName]
 draw state = [
-          viewport MainView Horizontal
-        . hLimit (fst (size s))
+          viewport RNLists Horizontal
+        . hLimit (Seq.length ls * (width + padding * 2))
         . padTop (Pad 1)
         . hBox
         . toList
-        $ widget (current s)  `mapWithIndex` lists s
+        $ renderList (current s)  `Seq.mapWithIndex` ls
     ]
-    where s = foldl' (flip ($)) state [newList, search]
+    where s = normalise state
+          ls = lists s
 
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
-chooseCursor s = case mode s of
-    Insert (CreateList _) -> showCursorNamed (ListLocation (fst (current s), -1))
-    Insert EditList -> showCursorNamed (ListLocation (fst (current s), -1))
-    Insert CreateTask -> showCursorNamed (ListLocation (current s))
-    Insert EditTask -> showCursorNamed (ListLocation (current s))
+chooseCursor state = case mode s of
+    Insert (CreateList _) -> showCursorNamed (RNTask (fst (current s), -1))
+    Insert EditList -> showCursorNamed (RNTask (fst (current s), -1))
+    Insert CreateTask -> showCursorNamed (RNTask (current s))
+    Insert EditTask -> showCursorNamed (RNTask (current s))
     _ -> neverShowCursor s
+
+    where s = normalise state
+
+normalise :: State -> State
+normalise = newList . search
