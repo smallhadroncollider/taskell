@@ -27,7 +27,7 @@ handleEvent s' (VtyEvent e) = let s = event e s' in
                 stop = snd cur - 1
                 resources = (\i -> RNTask (list, i)) <$> [0..stop]
 
-            offset <- fmap sum . sequence $ (getHeight <$>) . lookupExtent <$> resources
+            offset <- fmap sum . sequence $ fmap getHeight . lookupExtent <$> resources
 
             setLeft view (list * colWidth)
             setTop (viewportScroll (RNList list)) offset
