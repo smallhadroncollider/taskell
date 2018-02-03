@@ -32,8 +32,6 @@ There are bottles (binaries) available for High Sierra and Sierra. If these are 
 - `taskell`: will use `taskell.md` in the cwd - offers to create if not found
 - `taskell filename.md`: will use `filename.md` in the cwd - offers to create if not found
 
-Taskell also supports `.json` files: `taskell filename.json`
-
 ## Controls
 
 - `a`: add a task to bottom (`Enter`/`Esc` to stop)
@@ -78,8 +76,6 @@ Stores in a local `taskell.md` file:
 
 - Do That
 ```
-
-Taskell also support `.json` files
 
 ---
 

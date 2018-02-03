@@ -49,13 +49,11 @@ library
 
   build-depends:       base <= 5
                      , vty
+                     , text
                      , brick
                      , bytestring
-                     , aeson
                      , containers
-                     , aeson-pretty
                      , directory
-                     , split
   default-language:    Haskell2010
 
 executable taskell

@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module UI.Draw (
     draw,
     chooseCursor,
@@ -6,6 +8,7 @@ module UI.Draw (
 
 import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, search, newList)
 import Brick
+import Data.Text (Text, length)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description)
 import Data.Taskell.String (wrap)
@@ -20,17 +23,17 @@ import UI.Attr
 colWidth :: Int
 colWidth = width + padding * 2
 
-addCursor :: Int -> Int -> [String] -> Widget ResourceName -> Widget ResourceName
+addCursor :: Int -> Int -> [Text] -> Widget ResourceName -> Widget ResourceName
 addCursor li ti d =
       reportExtent name
     . showCursor name (Location (h, v))
 
-    where v = length d - 1
-          h = length $ last d
+    where v = Prelude.length d - 1
+          h = Data.Text.length $ last d
           name = RNTask (li, ti)
 
-box :: [String] -> Widget ResourceName
-box d = padBottom (Pad 1) . vBox $ str <$> d
+box :: [Text] -> Widget ResourceName
+box d = padBottom (Pad 1) . vBox $ txt <$> d
 
 renderTask :: Pointer -> Int -> Int -> Task -> Widget ResourceName
 renderTask p li ti t =
@@ -41,9 +44,9 @@ renderTask p li ti t =
     where d = wrap width $ description t
           attr = if (li, ti) == p then taskCurrentAttr else taskAttr
 
-columnNumber :: Int -> String -> String
-columnNumber i s = if col >= 1 && col <= 9 then show col ++ ". " ++ s else s
-    where col = i + 1
+-- columnNumber :: Int -> Text -> Text
+-- columnNumber i s = if col >= 1 && col <= 9 then show col `Data.Text.append` ". " `Data.Text.append` s else s
+--     where col = i + 1
 
 renderTitle :: Pointer -> Int -> List -> Widget ResourceName
 renderTitle (p, _) li l =
@@ -51,7 +54,7 @@ renderTitle (p, _) li l =
     . addCursor li (-1) d
     $ box d
 
-    where d = wrap width $ columnNumber li (title l)
+    where d = wrap width $ title l
           attr = if p == li then titleCurrentAttr else titleAttr
 
 renderList :: Pointer -> Int -> List -> Widget ResourceName

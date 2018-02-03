@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Flow.State (
     -- types
     State,
@@ -75,14 +77,15 @@ module Flow.State (
     insertCurrent
 ) where
 
+import Data.Text (Text, snoc, null)
 import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
 import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.String as S
 import Data.Char (digitToInt)
 
-data InsertMode = EditTask | CreateTask | EditList | CreateList String
-data Mode = Normal | Insert InsertMode | Write Mode | Search Bool String | Shutdown
+data InsertMode = EditTask | CreateTask | EditList | CreateList Text
+data Mode = Normal | Insert InsertMode | Write Mode | Search Bool Text | Shutdown
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
@@ -155,7 +158,7 @@ createListBS s = case mode s of
 
 createListChar :: Char -> Stateful
 createListChar c s = case mode s of
-    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (n ++ [c])) }
+    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (Data.Text.snoc n c)) }
     _ -> Nothing
 
 -- editList
@@ -174,7 +177,7 @@ editListChar :: Char -> Stateful
 editListChar c s = case mode s of
     Insert EditList -> do
         l <- getList s
-        let t = title l ++ [c]
+        let t = Data.Text.snoc (title l) c
         return $ setList s $ updateTitle l t
     _ -> Nothing
 
@@ -222,7 +225,7 @@ insertBS :: Stateful
 insertBS = change backspace
 
 insertCurrent :: Char -> Stateful
-insertCurrent char = change (append char)
+insertCurrent char = change (Data.Taskell.Task.append char)
 
 change :: (Task -> Task) -> State -> Maybe State
 change fn s = do
@@ -364,14 +367,14 @@ searchEntered s = case mode s of
 searchBS :: Stateful
 searchBS s = case mode s of
     Search ent term -> return $
-        if null term
+        if Data.Text.null term
             then s { mode = Normal }
             else s { mode = Search ent (S.backspace term) }
     _ -> Nothing
 
 searchChar :: Char -> Stateful
 searchChar c s = case mode s of
-    Search ent term -> return $ s { mode = Search ent (term ++ [c]) }
+    Search ent term -> return $ s { mode = Search ent (Data.Text.snoc term c) }
     _ -> Nothing
 
 -- view - maybe shouldn't be in here...

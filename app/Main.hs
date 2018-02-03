@@ -15,14 +15,14 @@ getSize = do
         Just (Window h w) -> return (w, h)
         Nothing -> return (80, 30)
 
--- read JSON then render
+-- read file then render
 start :: FilePath -> IO ()
 start path = do
     content <- readFile path
     s <- getSize
     go $ create path s content
 
--- if taskell.json exists/created then start
+-- if taskell.md exists/created then start
 main :: IO ()
 main = do
     (ex, path) <- exists

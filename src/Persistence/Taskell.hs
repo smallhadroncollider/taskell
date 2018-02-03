@@ -3,12 +3,8 @@ module Persistence.Taskell where
 import Prelude hiding (writeFile, readFile)
 import System.Directory
 import System.Environment (getArgs)
-import Data.Aeson
-import Data.Aeson.Encode.Pretty
-import Data.Maybe (fromMaybe)
-import Data.List (isSuffixOf)
 import Persistence.Markdown (stringify, parse)
-import qualified Data.ByteString.Lazy as BS
+import qualified Data.ByteString as BS
 
 import UI.CLI (promptYN)
 import Data.Taskell.Lists (Lists, initial)
@@ -41,17 +37,10 @@ createPath = writeFile initial
 
 -- writes Tasks to json file
 writeFile :: Lists -> FilePath -> IO ()
-writeFile tasks path | ".json" `isSuffixOf` path = BS.writeFile path $ encodePretty tasks
-                     | otherwise = BS.writeFile path $ stringify tasks
+writeFile tasks path = BS.writeFile path $ stringify tasks
 
 -- reads json file
 readFile :: FilePath -> IO Lists
 readFile path = do
     content <- BS.readFile path
-    let ls | ".json" `isSuffixOf` path = jsonToTasks content
-           | otherwise = parse content
-    return ls
-
--- returns tasks or an empty list
-jsonToTasks :: BS.ByteString -> Lists
-jsonToTasks s = fromMaybe initial (decode s :: Maybe Lists)
+    return $ parse content
