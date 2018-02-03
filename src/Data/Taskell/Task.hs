@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Data.Taskell.Task where
 
 import Data.Text (Text, snoc, length, null, isInfixOf)

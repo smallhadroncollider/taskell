@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Data.Taskell.Lists where
 
 import Prelude hiding (length)

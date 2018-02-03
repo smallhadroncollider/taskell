@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Persistence.Markdown (
     parse,
     stringify
