@@ -79,13 +79,14 @@ draw state = [
 
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
 chooseCursor state = case mode s of
-    Insert (CreateList _) -> showCursorNamed (RNTask (fst (current s), -1))
-    Insert EditList -> showCursorNamed (RNTask (fst (current s), -1))
-    Insert CreateTask -> showCursorNamed (RNTask (current s))
-    Insert EditTask -> showCursorNamed (RNTask (current s))
+    Insert (CreateList _) -> showCursorNamed (RNTask (fst c, -1))
+    Insert EditList -> showCursorNamed (RNTask (fst c, -1))
+    Insert CreateTask -> showCursorNamed (RNTask c)
+    Insert EditTask -> showCursorNamed (RNTask c)
     _ -> neverShowCursor s
 
     where s = normalise state
+          c = current s
 
 normalise :: State -> State
 normalise = newList . search
