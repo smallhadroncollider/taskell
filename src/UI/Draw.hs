@@ -4,7 +4,7 @@ module UI.Draw (
     colWidth
 ) where
 
-import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, search, newList)
+import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, search, newList, size)
 import Brick
 import Data.Text (Text, length, pack, concat)
 import Data.Taskell.List (List, tasks, title)
@@ -55,11 +55,12 @@ renderTitle (p, _) li l =
     where d = wrap width $ columnNumber li (title l)
           attr = if p == li then titleCurrentAttr else titleAttr
 
-renderList :: Pointer -> Int -> List -> Widget ResourceName
-renderList p li l =
+renderList :: Int -> Pointer -> Int -> List -> Widget ResourceName
+renderList h p li l =
       padLeftRight padding
     . hLimit width
     . viewport (RNList li) Vertical
+    . padBottom (Pad h)
     . vBox
     . (renderTitle p li l :)
     . toList
@@ -69,11 +70,12 @@ renderList p li l =
 draw :: State -> [Widget ResourceName]
 draw state = [
           viewport RNLists Horizontal
+        . padRight (Pad $ fst (size state))
         . hLimit (Seq.length ls * colWidth)
         . padTop (Pad 1)
         . hBox
         . toList
-        $ renderList (current s)  `Seq.mapWithIndex` ls
+        $ renderList (snd (size state)) (current s)  `Seq.mapWithIndex` ls
     ]
     where s = normalise state
           ls = lists s
