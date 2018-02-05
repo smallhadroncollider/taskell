@@ -24,7 +24,7 @@ library
                      , Data.Taskell.List
                      , Data.Taskell.Lists
                      , Data.Taskell.Seq
-                     , Data.Taskell.String
+                     , Data.Taskell.Text
 
                      , Flow.Actions
                      , Flow.Actions.Normal

@@ -79,7 +79,7 @@ import Data.Text (Text, snoc, null)
 import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
 import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
-import qualified Data.Taskell.String as S
+import qualified Data.Taskell.Text as T
 import Data.Char (digitToInt)
 
 data InsertMode = EditTask | CreateTask | EditList | CreateList Text
@@ -151,7 +151,7 @@ createListStart s = return $ s { mode = Insert (CreateList "") }
 
 createListBS :: Stateful
 createListBS s = case mode s of
-    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (S.backspace n)) }
+    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (T.backspace n)) }
     _ -> Nothing
 
 createListChar :: Char -> Stateful
@@ -167,7 +167,7 @@ editListBS :: Stateful
 editListBS s = case mode s of
     Insert EditList -> do
         l <- getList s
-        let t = S.backspace (title l)
+        let t = T.backspace (title l)
         return $ setList s $ updateTitle l t
     _ -> Nothing
 
@@ -367,7 +367,7 @@ searchBS s = case mode s of
     Search ent term -> return $
         if Data.Text.null term
             then s { mode = Normal }
-            else s { mode = Search ent (S.backspace term) }
+            else s { mode = Search ent (T.backspace term) }
     _ -> Nothing
 
 searchChar :: Char -> Stateful

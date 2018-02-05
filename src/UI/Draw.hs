@@ -9,7 +9,7 @@ import Brick
 import Data.Text (Text, length)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description)
-import Data.Taskell.String (wrap)
+import Data.Taskell.Text (wrap)
 import Data.Foldable (toList)
 import qualified Data.Sequence as Seq (mapWithIndex, length)
 

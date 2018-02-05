@@ -1,7 +1,7 @@
 module Data.Taskell.Task where
 
 import Data.Text (Text, snoc, length, null, isInfixOf)
-import qualified Data.Taskell.String as S
+import qualified Data.Taskell.Text as T
 
 newtype Task = Task {
     description :: Text
@@ -20,7 +20,7 @@ append :: Char -> Task  -> Task
 append c t = t { description = Data.Text.snoc (description t) c }
 
 backspace :: Task -> Task
-backspace t = t { description = S.backspace (description t) }
+backspace t = t { description = T.backspace (description t) }
 
 characters :: Task -> Int
 characters = Data.Text.length . description

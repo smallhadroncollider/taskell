@@ -3,13 +3,12 @@ module Persistence.Markdown (
     stringify
 ) where
 
-import Data.Text (Text, drop, append, null, lines, isPrefixOf)
+import Data.Text (Text, drop, append, null, lines, isPrefixOf, strip)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8With)
 
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks)
 import Data.Taskell.Task (Task, new, description)
-import Data.Taskell.String (trim)
 import Data.Foldable (foldl')
 import Data.Sequence (empty)
 import Data.ByteString (ByteString)
@@ -17,10 +16,10 @@ import Data.Word (Word8)
 
 -- parse code
 trimTitle :: Text -> Text
-trimTitle s = trim $ Data.Text.drop 2 s
+trimTitle s = strip $ Data.Text.drop 2 s
 
 trimTask :: Text -> Task
-trimTask = new . trim . Data.Text.drop 1
+trimTask = new . strip . Data.Text.drop 1
 
 start :: Lists -> Text -> Lists
 start ls s | "##" `isPrefixOf` s = newList (trimTitle s) ls
