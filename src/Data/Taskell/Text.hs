@@ -3,7 +3,7 @@ module Data.Taskell.Text (
     wrap
 ) where
 
-import Data.Text (Text, foldl', singleton, snoc, init, null, append, strip)
+import Data.Text (Text, foldl', singleton, snoc, init, null, append, strip, empty)
 import Data.List (foldl')
 import Brick.Widgets.Core (textWidth)
 
@@ -13,12 +13,12 @@ backspace s = if not (Data.Text.null s) then Data.Text.init s else s
 -- wrapping
 spl' :: [Text] -> Char -> [Text]
 spl' ts c
-    | c == ' ' = ts ++ [" "] ++ []
+    | c == ' ' = ts ++ [" "] ++ [empty]
     | Prelude.null ts = [Data.Text.singleton c]
     | otherwise = Prelude.init ts ++ [Data.Text.snoc (Prelude.last ts) c]
 
 spl :: Text -> [Text]
-spl = Data.Text.foldl' spl' []
+spl = Data.Text.foldl' spl' [empty]
 
 wrap :: Int -> Text -> [Text]
 wrap width = Data.List.foldl' (combine width) [] . spl
