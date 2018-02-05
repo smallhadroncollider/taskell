@@ -1,6 +1,5 @@
 module Data.Taskell.String (
     backspace,
-    trunc,
     wrap,
     trim
 ) where
@@ -8,12 +7,10 @@ module Data.Taskell.String (
 import Prelude hiding (words, unwords, length, take)
 import Data.Text (Text, foldl', singleton, snoc, unwords, words, length, take, init, null, append)
 import Data.List (foldl')
+import Brick.Widgets.Core (textWidth)
 
 backspace :: Text -> Text
 backspace s = if not (Data.Text.null s) then Data.Text.init s else s
-
-trunc :: Int -> Text -> Text
-trunc width s = if length s > width then take (width - 3) s `Data.Text.append` "..." else s
 
 trim :: Text -> Text
 trim = unwords . words
@@ -34,7 +31,7 @@ wrap width = Data.List.foldl' (combine width) [] . spl
 combine :: Int -> [Text] -> Text -> [Text]
 combine width acc s = if nl then acc ++ [trim s] else Data.Taskell.String.append (l `Data.Text.append` s) acc
     where l = if Prelude.null acc then "" else last acc
-          nl = length l + length s > width
+          nl = textWidth l + textWidth s > width
 
 append :: Text -> [Text] -> [Text]
 append s l = l' ++ [s]
