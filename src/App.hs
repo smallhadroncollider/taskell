@@ -8,7 +8,7 @@ import Persistence.Taskell (writeFile)
 
 import Flow.Actions (event)
 
-import UI.Draw (draw, chooseCursor, colWidth)
+import UI.Draw (draw, chooseCursor, colWidth, normalise)
 import UI.Attr (attrMap')
 import UI.Types (ResourceName(..))
 
@@ -25,7 +25,7 @@ handleEvent s _ = Brick.continue s
 
 scroll :: State -> EventM ResourceName (Next State)
 scroll s = do
-    let (col, row) = current s
+    let (col, row) = current $ normalise s
         (w, h) = size s
     offset <- fmap sum . sequence $ fmap getHeight . lookupExtent . (\i -> RNTask (col, i)) <$> [0..row]
     setLeft (viewportScroll RNLists) $ (col * colWidth) - (w `div` 2 - colWidth `div` 2)

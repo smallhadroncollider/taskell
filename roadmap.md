@@ -14,10 +14,10 @@
 - Simplify state by composing Actions
 - Use a map in Actions to tidy things up/add custom key support
 - Add some tests
+- Avoid having to normalise the state?
 
 ## Bugs
 
-- New list outside view doesn't scroll
 - New item outside view doesn't scroll
 
 ## To Do
@@ -97,3 +97,4 @@
 - Add support for Markdown
 - Fixed Unicode support
 - Scrolling
+- New list outside view doesn't scroll

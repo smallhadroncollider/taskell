@@ -1,7 +1,8 @@
 module UI.Draw (
     draw,
     chooseCursor,
-    colWidth
+    colWidth,
+    normalise
 ) where
 
 import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, search, newList, size)
