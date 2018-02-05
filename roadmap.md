@@ -1,8 +1,6 @@
 ## Brick Refactor
 
-- Scrolling
 - Search UI
-- Remove size from State?
 
 ## Goals
 
@@ -19,6 +17,8 @@
 
 ## Bugs
 
+- New list outside view doesn't scroll
+- New item outside view doesn't scroll
 
 ## To Do
 
@@ -95,3 +95,5 @@
 - Empty tasks aren't obviously selectable
 - Pressing `e` on a blank list breaks things
 - Add support for Markdown
+- Fixed Unicode support
+- Scrolling
