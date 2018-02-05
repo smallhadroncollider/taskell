@@ -8,7 +8,7 @@ module Data.Taskell.String (
 ) where
 
 import Prelude hiding (words, unwords, length, take)
-import Data.Text (Text, foldl', singleton, snoc, unwords, words, length, take, init, null, append, splitOn)
+import Data.Text (Text, foldl', singleton, snoc, unwords, words, length, take, init, null, append)
 import Data.List (foldl')
 
 backspace :: Text -> Text

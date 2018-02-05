@@ -7,7 +7,7 @@ module Persistence.Markdown (
 
 import Prelude hiding (lines)
 import Data.Text (Text, drop, append, null, lines, isPrefixOf)
-import Data.Text.Encoding (encodeUtf8, decodeUtf8)
+import Data.Text.Encoding (encodeUtf8, decodeUtf8With)
 
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks)
@@ -16,6 +16,7 @@ import Data.Taskell.String (trim)
 import Data.Foldable (foldl')
 import Data.Sequence (empty)
 import Data.ByteString (ByteString)
+import Data.Word (Word8)
 
 -- parse code
 trimTitle :: Text -> Text
@@ -25,12 +26,15 @@ trimTask :: Text -> Task
 trimTask = new . trim . Data.Text.drop 1
 
 start :: Lists -> Text -> Lists
-start ls s | "##" `isPrefixOf` s  = newList (trimTitle s) ls
-           | "-" `isPrefixOf` s  = appendToLast (trimTask s) ls
+start ls s | "##" `isPrefixOf` s = newList (trimTitle s) ls
+           | "-" `isPrefixOf` s = appendToLast (trimTask s) ls
            | otherwise = ls
 
+decodeError :: String -> Maybe Word8 -> Maybe Char
+decodeError _ _ = Just '\65533'
+
 parse :: ByteString -> Lists
-parse s = foldl' start empty $ lines $ decodeUtf8 s
+parse s = foldl' start empty $ lines $ decodeUtf8With decodeError s
 
 -- stringify code
 join :: Text -> [Text] -> Text
