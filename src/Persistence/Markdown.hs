@@ -5,7 +5,6 @@ module Persistence.Markdown (
     stringify
 ) where
 
-import Prelude hiding (lines)
 import Data.Text (Text, drop, append, null, lines, isPrefixOf)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8With)
 
@@ -34,7 +33,7 @@ decodeError :: String -> Maybe Word8 -> Maybe Char
 decodeError _ _ = Just '\65533'
 
 parse :: ByteString -> Lists
-parse s = foldl' start empty $ lines $ decodeUtf8With decodeError s
+parse s = foldl' start empty $ Data.Text.lines $ decodeUtf8With decodeError s
 
 -- stringify code
 join :: Text -> [Text] -> Text

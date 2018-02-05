@@ -1,6 +1,5 @@
 module Main where
 
-import Prelude hiding (readFile)
 import Control.Monad (when)
 import Flow.State (create)
 import Persistence.Taskell (exists, readFile)
@@ -18,7 +17,7 @@ getSize = do
 -- read file then render
 start :: FilePath -> IO ()
 start path = do
-    content <- readFile path
+    content <- Persistence.Taskell.readFile path
     s <- getSize
     go $ create path s content
 
