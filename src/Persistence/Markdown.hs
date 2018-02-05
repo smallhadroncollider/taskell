@@ -16,7 +16,7 @@ import Data.Word (Word8)
 
 -- parse code
 trimTitle :: Text -> Text
-trimTitle s = strip $ Data.Text.drop 2 s
+trimTitle = strip . Data.Text.drop 2
 
 trimTask :: Text -> Task
 trimTask = new . strip . Data.Text.drop 1
