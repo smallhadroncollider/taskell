@@ -1,7 +1,7 @@
 module App (go) where
 
 import Control.Monad (void)
-import Flow.State (State, Mode(..), lists, continue, path, mode, current)
+import Flow.State (State, Mode(..), lists, continue, path, mode, current, size)
 import Brick
 import Brick.Types (Extent(..))
 import Persistence.Taskell (writeFile)
@@ -24,13 +24,15 @@ handleEvent s' (VtyEvent e) = let s = event e s' in
             let cur = current s
                 list = fst cur
                 view = viewportScroll RNLists
-                stop = snd cur - 1
+                (w, h) = size s
+                stop = snd cur
                 resources = (\i -> RNTask (list, i)) <$> [0..stop]
 
             offset <- fmap sum . sequence $ fmap getHeight . lookupExtent <$> resources
 
-            setLeft view (list * colWidth)
-            setTop (viewportScroll (RNList list)) offset
+            setLeft view $ (list * colWidth) - (w `div` 2 - colWidth `div` 2)
+
+            setTop (viewportScroll (RNList list)) $ offset - h `div` 2
 
             Brick.continue s
 
