@@ -33,10 +33,12 @@ box :: [Text] -> Widget ResourceName
 box d = padBottom (Pad 1) . vBox $ txt <$> d
 
 renderTask :: Pointer -> Int -> Int -> Task -> Widget ResourceName
-renderTask p li ti t = (if (li, ti) == p then withAttr taskCurrentAttr . visible else withAttr taskAttr) widget
+renderTask p li ti t =
+      (if (li, ti) == p then withAttr taskCurrentAttr . visible else withAttr taskAttr)
+    . addCursor li ti d
+    $ box d
 
     where d = wrap width $ description t
-          widget = addCursor li ti d $ box d
 
 columnNumber :: Int -> Text -> Text
 columnNumber i s = if col >= 1 && col <= 9 then Data.Text.concat [pack (show col), ". ",  s] else s
