@@ -18,7 +18,7 @@
 
 ## Bugs
 
-- New item outside view doesn't scroll
+- Vertical scrolling falls behind
 
 ## To Do
 
@@ -98,3 +98,4 @@
 - Fixed Unicode support
 - Scrolling
 - New list outside view doesn't scroll
+- New item outside view doesn't scroll
