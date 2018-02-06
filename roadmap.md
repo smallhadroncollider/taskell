@@ -15,6 +15,7 @@
 - Use a map in Actions to tidy things up/add custom key support
 - Add some tests
 - Avoid having to normalise the state?
+- Use concurrency for IO
 
 ## Bugs
 
