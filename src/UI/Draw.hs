@@ -80,12 +80,15 @@ draw state = [
     where s = normalise state
           ls = lists s
 
+cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
+cursor c = showCursorNamed (RNTask c)
+
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
 chooseCursor state = case mode s of
-    Insert (CreateList _) -> showCursorNamed (RNTask (fst c, -1))
-    Insert EditList -> showCursorNamed (RNTask (fst c, -1))
-    Insert CreateTask -> showCursorNamed (RNTask c)
-    Insert EditTask -> showCursorNamed (RNTask c)
+    Insert (CreateList _) -> cursor (fst c, -1)
+    Insert EditList -> cursor (fst c, -1)
+    Insert CreateTask -> cursor c
+    Insert EditTask -> cursor c
     _ -> neverShowCursor s
 
     where s = normalise state
