@@ -1,6 +1,7 @@
 module App (go) where
 
 import Control.Monad (void)
+import Control.Monad.IO.Class (liftIO)
 import Flow.State (State, Mode(..), lists, continue, path, mode, current, size)
 import Brick
 import Brick.Types (Extent(..))
@@ -37,7 +38,7 @@ handleEvent :: State -> BrickEvent ResourceName e -> EventM ResourceName (Next S
 handleEvent s' (VtyEvent e) = let s = event e s' in
     case mode s of
         Shutdown -> Brick.halt s
-        Write _ -> scroll s >> Brick.suspendAndResume (store s)
+        Write _ -> scroll s >> liftIO (store s) >>= Brick.continue
         _ -> scroll s >> Brick.continue s
 handleEvent s _ = Brick.continue s
 
