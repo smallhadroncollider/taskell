@@ -19,8 +19,7 @@ module Flow.State (
     lists,
 
     -- UI.Main
-    newList,
-    search,
+    normalise,
 
     -- Main
     create,
@@ -386,3 +385,6 @@ newList s = case mode s of
     Insert (CreateList t) -> let ls = lists s in
                                fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
     _ -> s
+
+normalise :: State -> State
+normalise = newList . search

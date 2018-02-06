@@ -1,11 +1,10 @@
 module UI.Draw (
     draw,
     chooseCursor,
-    colWidth,
-    normalise
+    colWidth
 ) where
 
-import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, search, newList, size)
+import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, size, normalise)
 import Brick
 import Data.Text (Text, length, pack, concat)
 import Data.Taskell.List (List, tasks, title)
@@ -91,6 +90,3 @@ chooseCursor state = case mode s of
 
     where s = normalise state
           c = current s
-
-normalise :: State -> State
-normalise = newList . search

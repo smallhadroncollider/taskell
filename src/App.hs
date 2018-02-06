@@ -2,14 +2,14 @@ module App (go) where
 
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
-import Flow.State (State, Mode(..), lists, continue, path, mode, current, size)
+import Flow.State (State, Mode(..), lists, continue, path, mode, current, size, normalise)
 import Brick
 import Brick.Types (Extent(..))
 import Persistence.Taskell (writeFile)
 
 import Flow.Actions (event)
 
-import UI.Draw (draw, chooseCursor, colWidth, normalise)
+import UI.Draw (draw, chooseCursor, colWidth)
 import UI.Attr (attrMap')
 import UI.Types (ResourceName(..))
 
