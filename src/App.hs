@@ -2,14 +2,13 @@ module App (go) where
 
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
-import Flow.State (State, Mode(..), lists, continue, path, mode, current, size, normalise)
+import Flow.State (State, Mode(..), lists, continue, path, mode)
 import Brick
-import Brick.Types (Extent(..))
 import Persistence.Taskell (writeFile)
 
 import Flow.Actions (event)
 
-import UI.Draw (draw, chooseCursor, colWidth)
+import UI.Draw (draw, chooseCursor, scroll)
 import UI.Attr (attrMap')
 import UI.Types (ResourceName(..))
 
@@ -18,20 +17,6 @@ store :: State -> IO State
 store s = do
         Persistence.Taskell.writeFile (lists s) (path s)
         return (Flow.State.continue s)
-
--- scroll
-scroll :: State -> EventM ResourceName ()
-scroll s = do
-    let (col, row) = current $ normalise s
-        (w, h) = size s
-    offset <- fmap sum . sequence $ fmap getHeight . lookupExtent . (\i -> RNTask (col, i)) <$> [0..row]
-    setLeft (viewportScroll RNLists) $ (col * colWidth) - (w `div` 2 - colWidth `div` 2)
-    setTop (viewportScroll (RNList col)) $ offset - h `div` 2
-
-getHeight :: Maybe (Extent ResourceName) -> Int
-getHeight extent = case extent of
-    Nothing -> 0
-    Just (Extent _ _ (_, height) _) -> height
 
 -- App code
 handleEvent :: State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)

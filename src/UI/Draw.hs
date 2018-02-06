@@ -1,6 +1,7 @@
 module UI.Draw (
     draw,
     chooseCursor,
+    scroll,
     colWidth
 ) where
 
@@ -80,6 +81,7 @@ draw state = [
     where s = normalise state
           ls = lists s
 
+-- cursors
 cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
 cursor c = showCursorNamed (RNTask c)
 
@@ -93,3 +95,17 @@ chooseCursor state = case mode s of
 
     where s = normalise state
           c = current s
+
+-- scroll
+scroll :: State -> EventM ResourceName ()
+scroll s = do
+    let (col, row) = current $ normalise s
+        (w, h) = size s
+    offset <- fmap sum . sequence $ fmap getHeight . lookupExtent . (\i -> RNTask (col, i)) <$> [0..row]
+    setLeft (viewportScroll RNLists) $ (col * colWidth) - (w `div` 2 - colWidth `div` 2)
+    setTop (viewportScroll (RNList col)) $ offset - h `div` 2
+
+getHeight :: Maybe (Extent ResourceName) -> Int
+getHeight extent = case extent of
+    Nothing -> 0
+    Just (Extent _ _ (_, height) _) -> height
