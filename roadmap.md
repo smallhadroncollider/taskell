@@ -18,7 +18,7 @@
 
 ## Bugs
 
-- Vertical scrolling falls behind
+- Vertical scrolling hides list titles
 
 ## To Do
 
@@ -99,3 +99,4 @@
 - Scrolling
 - New list outside view doesn't scroll
 - New item outside view doesn't scroll
+- Vertical scrolling falls behind
