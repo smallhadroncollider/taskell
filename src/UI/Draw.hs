@@ -23,7 +23,7 @@ colWidth :: Int
 colWidth = width + padding * 2
 
 addCursor :: Int -> Int -> [Text] -> Widget ResourceName -> Widget ResourceName
-addCursor li ti d = showCursor name (Location (h, v))
+addCursor li ti d = reportExtent name . showCursor name (Location (h, v))
 
     where v = Prelude.length d - 1
           h = Data.Text.length $ last d
@@ -53,11 +53,12 @@ renderTitle (p, _) li l =
     where d = wrap width $ columnNumber li (title l)
           attr = if p == li then titleCurrentAttr else titleAttr
 
-renderList :: Pointer -> Int -> List -> Widget ResourceName
-renderList p li l =
+renderList :: Int -> Pointer -> Int -> List -> Widget ResourceName
+renderList h p li l =
       padLeftRight padding
     . hLimit width
     . viewport (RNList li) Vertical
+    . padBottom (Pad h)
     . vBox
     . (renderTitle p li l :)
     . toList
@@ -72,7 +73,7 @@ draw state = [
         . padTop (Pad 1)
         . hBox
         . toList
-        $ renderList (current s)  `Seq.mapWithIndex` ls
+        $ renderList (snd (size state)) (current s)  `Seq.mapWithIndex` ls
     ]
     where s = normalise state
           ls = lists s
@@ -80,10 +81,21 @@ draw state = [
 -- scroll
 scroll :: State -> EventM ResourceName ()
 scroll s = do
-    let (col, _) = current $ normalise s
-        (w, _) = size s
+    let (col, row) = current $ normalise s
+        (w, h) = size s
 
     setLeft (viewportScroll RNLists) $ (col * colWidth) - (w `div` 2 - colWidth `div` 2)
+
+    let list = viewportScroll (RNList col)
+    let half = h `div` 3
+
+    top <- getTop <$> lookupExtent (RNTask (col, row))
+    vScrollBy list (top - half)
+
+getTop :: Maybe (Extent ResourceName) -> Int
+getTop e = case e of
+    Nothing -> 0
+    Just (Extent _ offset _ _) -> snd (loc offset)
 
 -- cursors
 cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
