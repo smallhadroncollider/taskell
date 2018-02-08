@@ -3,7 +3,7 @@
 A CLI kanban board/task manager, written in Haskell
 
 - Per project task lists
-- Stored using Markdown (or JSON)
+- Stored using Markdown
 - Clean diffs for easy version control
 - `vim` style key-bindings
 
