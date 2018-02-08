@@ -16,6 +16,7 @@
 - Items near bottom of the list jump in position
 - List titles sometimes go missing
 - Up and down in search gets a bit lost
+- Editing list title doesn't always have visibility
 
 ## To Do
 
