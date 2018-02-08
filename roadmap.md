@@ -11,6 +11,7 @@
 - Simplify state by composing Actions
 - Use a map in Actions to tidy things up/add custom key support
 - Add some tests
+- Avoid having to normalise the state?
 
 ## Bugs
 
@@ -93,3 +94,11 @@
 - Empty tasks aren't obviously selectable
 - Pressing `e` on a blank list breaks things
 - Add support for Markdown
+- Fixed Unicode support
+- Scrolling
+- New list outside view doesn't scroll
+- New item outside view doesn't scroll
+- Vertical scrolling falls behind
+- Use concurrency for IO
+- Search UI
+- Vertical scrolling hides list titles

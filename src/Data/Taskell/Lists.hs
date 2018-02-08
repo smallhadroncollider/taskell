@@ -1,6 +1,7 @@
 module Data.Taskell.Lists where
 
 import Prelude hiding (length)
+import Data.Text (Text)
 import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq, fromList, (!?), (|>), deleteAt, length)
 import qualified Data.Taskell.Seq as S
@@ -33,7 +34,7 @@ changeList (list, i) ts dir = do
     let list' = update list ts a' -- update extracted list
     return $ update next list' b' -- update next list
 
-newList :: String -> Lists -> Lists
+newList :: Text -> Lists -> Lists
 newList s ts = ts |> empty s
 
 delete :: Int -> Lists -> Lists
@@ -47,7 +48,7 @@ exists i ts = case ts !? i of
 shiftBy :: Int -> Int -> Lists -> Maybe Lists
 shiftBy = S.shiftBy
 
-search :: String -> Lists -> Lists
+search :: Text -> Lists -> Lists
 search s ls = searchFor s <$> ls
 
 appendToLast' :: Task -> Lists -> Maybe Lists

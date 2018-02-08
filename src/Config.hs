@@ -4,7 +4,7 @@ defaultPath :: FilePath
 defaultPath = "taskell.md"
 
 width :: Int
-width = 30
+width = 25
 
 padding :: Int
-padding = 4
+padding = 3

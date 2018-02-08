@@ -1,10 +1,11 @@
 module Main where
 
-import Render (render)
 import Control.Monad (when)
 import Flow.State (create)
-import Persistence.Taskell (exists, readJSON)
+import Persistence.Taskell (exists, readFile)
 import System.Console.Terminal.Size (Window(..), size)
+
+import App (go)
 
 getSize :: IO (Int, Int)
 getSize = do
@@ -13,14 +14,14 @@ getSize = do
         Just (Window h w) -> return (w, h)
         Nothing -> return (80, 30)
 
--- read JSON then render
+-- read file then render
 start :: FilePath -> IO ()
 start path = do
-    json <- readJSON path
+    content <- Persistence.Taskell.readFile path
     s <- getSize
-    render path $ create s json
+    go $ create path s content
 
--- if taskell.json exists/created then start
+-- if taskell.md exists/created then start
 main :: IO ()
 main = do
     (ex, path) <- exists

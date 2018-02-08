@@ -1,1 +1,1 @@
-stack build --pedantic && stack exec taskell $@
+stack build && stack exec taskell $@

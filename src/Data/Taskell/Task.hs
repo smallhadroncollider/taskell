@@ -1,18 +1,11 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Data.Taskell.Task where
 
-import GHC.Generics (Generic)
-import Data.Aeson (FromJSON, ToJSON)
-import Data.List (isInfixOf)
-import qualified Data.Taskell.String as S
+import Data.Text (Text, snoc, length, null, isInfixOf)
+import qualified Data.Taskell.Text as T
 
 newtype Task = Task {
-    description :: String
-} deriving (Generic, Show, Eq)
-
-instance ToJSON Task
-instance FromJSON Task
+    description :: Text
+} deriving (Show, Eq)
 
 blank :: Task
 blank = Task { description = "" }
@@ -20,20 +13,20 @@ blank = Task { description = "" }
 clear :: Task -> Task
 clear _ = blank
 
-new :: String -> Task
+new :: Text -> Task
 new s = Task { description = s }
 
 append :: Char -> Task  -> Task
-append c t = t { description = description t ++ [c] }
+append c t = t { description = Data.Text.snoc (description t) c }
 
 backspace :: Task -> Task
-backspace t = t { description = S.backspace (description t) }
+backspace t = t { description = T.backspace (description t) }
 
 characters :: Task -> Int
-characters = length . description
+characters = Data.Text.length . description
 
-contains :: String -> Task -> Bool
-contains s t = s `isInfixOf` description t
+contains :: Text -> Task -> Bool
+contains s t = s `Data.Text.isInfixOf` description t
 
 isBlank :: Task -> Bool
-isBlank t = null $ description t
+isBlank t = Data.Text.null $ description t
