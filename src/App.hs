@@ -2,6 +2,7 @@ module App (go) where
 
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
+import Control.Concurrent (forkIO)
 import Flow.State (State, Mode(..), lists, continue, path, mode)
 import Brick
 import Persistence.Taskell (writeFile)
@@ -15,7 +16,7 @@ import UI.Types (ResourceName(..))
 -- store
 store :: State -> IO State
 store s = do
-        Persistence.Taskell.writeFile (lists s) (path s)
+        forkIO $ Persistence.Taskell.writeFile (lists s) (path s)
         return (Flow.State.continue s)
 
 -- App code
