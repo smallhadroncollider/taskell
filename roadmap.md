@@ -2,11 +2,9 @@
 
 - Nix support?
 - apt-get repository
-- Use case examples in README
 
 ## Refactoring
 
-- Use Brick for UI
 - Break up State module
 - Simplify state by composing Actions
 - Use a map in Actions to tidy things up/add custom key support
@@ -15,6 +13,10 @@
 
 ## Bugs
 
+- `C` doesn't work properly
+- Items near bottom of the list jump in position
+- List titles sometimes go missing
+- Up and down in search gets a bit lost
 
 ## To Do
 
@@ -30,9 +32,6 @@
 - Add custom key support
 - Add Trello import
 - Add `--convert-to-md` and `--convert-to-json` options
-- Multi-select mode
-- Sub-lists
-- Spell check?
 
 ## Done
 
@@ -102,3 +101,4 @@
 - Use concurrency for IO
 - Search UI
 - Vertical scrolling hides list titles
+- Use Brick for UI
