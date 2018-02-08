@@ -15,10 +15,10 @@ mkdir -p "releases/$1/taskell/DEBIAN"
 mkdir -p "releases/$1/taskell/usr/local/bin"
 LINUX_DIR=$(ls .stack-work/install | grep linux)
 
-tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" --directory=".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin" "taskell"
-tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory=".stack-work/install/x86_64-osx/lts-9.13/8.0.2/bin" "taskell"
+tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" --directory=".stack-work/install/$LINUX_DIR/lts-10.4/8.2.2/bin" "taskell"
+tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory=".stack-work/install/x86_64-osx/lts-10.4/8.2.2/bin" "taskell"
 
-cp ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell" "releases/$1/taskell/usr/local/bin"
+cp ".stack-work/install/$LINUX_DIR/lts-10.4/8.2.2/bin/taskell" "releases/$1/taskell/usr/local/bin"
 
 echo "Package: taskell
 Version: $1
