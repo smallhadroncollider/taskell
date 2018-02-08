@@ -7,7 +7,7 @@ module UI.Draw (
 
 import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, size, normalise)
 import Brick
-import Data.Text (Text, length, pack, concat)
+import Data.Text (Text, length, pack, concat, append)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description)
 import Data.Taskell.Text (wrap)
@@ -64,18 +64,33 @@ renderList h p li l =
     . toList
     $ renderTask p li `Seq.mapWithIndex` tasks l
 
+searchImage :: State -> Int -> Widget ResourceName -> Widget ResourceName
+searchImage s h i = case mode s of
+    Search ent term ->
+        let attr = if ent then taskCurrentAttr else taskAttr
+        in
+            vLimit (h - 3) i <=> (
+                  withAttr attr
+                . padTop (Pad 1)
+                . padLeftRight padding
+                $ txt ("/" `append` term)
+            )
+    _ -> i
+
 -- draw
 draw :: State -> [Widget ResourceName]
 draw state = [
-          viewport RNLists Horizontal
+          searchImage state h
+        . viewport RNLists Horizontal
         . padRight (Pad $ fst (size state))
         . hLimit (Seq.length ls * colWidth)
         . padTop (Pad 1)
         . hBox
         . toList
-        $ renderList (snd (size state)) (current s)  `Seq.mapWithIndex` ls
+        $ renderList h (current s)  `Seq.mapWithIndex` ls
     ]
     where s = normalise state
+          h = snd (size state)
           ls = lists s
 
 -- scroll

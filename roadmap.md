@@ -1,7 +1,3 @@
-## Brick Refactor
-
-- Search UI
-
 ## Goals
 
 - Nix support?
@@ -18,7 +14,6 @@
 
 ## Bugs
 
-- Vertical scrolling hides list titles
 
 ## To Do
 
@@ -101,3 +96,5 @@
 - New item outside view doesn't scroll
 - Vertical scrolling falls behind
 - Use concurrency for IO
+- Search UI
+- Vertical scrolling hides list titles
