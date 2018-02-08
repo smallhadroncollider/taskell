@@ -21,11 +21,11 @@ spl :: Text -> [Text]
 spl = Data.Text.foldl' spl' [empty]
 
 wrap :: Int -> Text -> [Text]
-wrap width = Data.List.foldl' (combine width) [] . spl
+wrap width = Data.List.foldl' (combine width) [empty] . spl
 
 combine :: Int -> [Text] -> Text -> [Text]
 combine width acc s = if nl then acc ++ [strip s] else Data.Taskell.Text.append (l `Data.Text.append` s) acc
-    where l = if Prelude.null acc then "" else last acc
+    where l = if Prelude.null acc then empty else last acc
           nl = textWidth l + textWidth s > width
 
 append :: Text -> [Text] -> [Text]

@@ -191,11 +191,7 @@ startCreate :: Stateful
 startCreate s = return $ s { mode = Insert CreateTask }
 
 startEdit :: Stateful
-startEdit s = do
-    c <- getCurrentTask s
-    return $ if isBlank c
-        then s
-        else s { mode = Insert EditTask }
+startEdit s = return $ s { mode = Insert EditTask }
 
 normalMode :: Stateful
 normalMode s = return $ s { mode = Normal }

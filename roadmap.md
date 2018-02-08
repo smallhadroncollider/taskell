@@ -13,7 +13,6 @@
 
 ## Bugs
 
-- `C` doesn't work properly
 - Items near bottom of the list jump in position
 - List titles sometimes go missing
 - Up and down in search gets a bit lost
@@ -102,3 +101,4 @@
 - Search UI
 - Vertical scrolling hides list titles
 - Use Brick for UI
+- `C` doesn't work properly

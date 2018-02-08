@@ -1,6 +1,6 @@
 module Data.Taskell.Task where
 
-import Data.Text (Text, snoc, length, null, isInfixOf)
+import Data.Text (Text, snoc, length, null, isInfixOf, empty)
 import qualified Data.Taskell.Text as T
 
 newtype Task = Task {
@@ -8,7 +8,7 @@ newtype Task = Task {
 } deriving (Show, Eq)
 
 blank :: Task
-blank = Task { description = "" }
+blank = Task { description = empty }
 
 clear :: Task -> Task
 clear _ = blank
