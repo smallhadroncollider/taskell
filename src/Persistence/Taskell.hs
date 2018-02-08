@@ -1,10 +1,9 @@
 module Persistence.Taskell where
 
-import Prelude hiding (writeFile, readFile)
+import Prelude hiding (writeFile)
 import System.Directory
 import System.Environment (getArgs)
 import Control.Monad (void)
-import Control.Concurrent (forkIO)
 import Persistence.Markdown (stringify, parse)
 import qualified Data.ByteString as BS
 
@@ -39,7 +38,7 @@ createPath = writeFile initial
 
 -- writes Tasks to json file
 writeFile :: Lists -> FilePath -> IO ()
-writeFile tasks path = void (forkIO . BS.writeFile path $ stringify tasks)
+writeFile tasks path = void (BS.writeFile path $ stringify tasks)
 
 -- reads json file
 readFile :: FilePath -> IO Lists

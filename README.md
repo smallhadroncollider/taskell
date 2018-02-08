@@ -25,6 +25,9 @@ There are bottles (binaries) available for High Sierra and Sierra. If these are 
 
 [A `.deb` package is available for Debian/Ubuntu](https://github.com/smallhadroncollider/taskell/releases). Download it and install with `dpkg -i <package-name>`.
 
+### Fedora
+Run `sudo dnf install ncurses-compat-libs` then download and run binary as described below.
+
 ### Binaries
 
 [A binary is available for Mac and Linux](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`).
