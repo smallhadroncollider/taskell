@@ -7,9 +7,10 @@ module Flow.State (
     InsertMode(..),
     Mode(..),
 
-    -- Render
+    -- App
     continue,
     write,
+    path,
 
     -- record accesors
     mode,
@@ -18,8 +19,7 @@ module Flow.State (
     lists,
 
     -- UI.Main
-    newList,
-    search,
+    normalise,
 
     -- Main
     create,
@@ -74,14 +74,15 @@ module Flow.State (
     insertCurrent
 ) where
 
+import Data.Text (Text, snoc, null)
 import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
 import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
-import qualified Data.Taskell.String as S
+import qualified Data.Taskell.Text as T
 import Data.Char (digitToInt)
 
-data InsertMode = EditTask | CreateTask | EditList | CreateList String
-data Mode = Normal | Insert InsertMode | Write Mode | Search Bool String | Shutdown
+data InsertMode = EditTask | CreateTask | EditList | CreateList Text
+data Mode = Normal | Insert InsertMode | Write Mode | Search Bool Text | Shutdown
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
@@ -91,16 +92,18 @@ data State = State {
     lists :: Lists.Lists,
     history :: [(Pointer, Lists.Lists)],
     current :: Pointer,
-    size :: Size
+    size :: Size,
+    path :: FilePath
 }
 
-create :: Size -> Lists.Lists -> State
-create sz ls = State {
+create :: FilePath -> Size -> Lists.Lists -> State
+create p sz ls = State {
     mode = Normal,
     lists = ls,
     history = [],
     current = (0, 0),
-    size = sz
+    size = sz,
+    path = p
 }
 
 type Stateful = State -> Maybe State
@@ -147,12 +150,12 @@ createListStart s = return $ s { mode = Insert (CreateList "") }
 
 createListBS :: Stateful
 createListBS s = case mode s of
-    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (S.backspace n)) }
+    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (T.backspace n)) }
     _ -> Nothing
 
 createListChar :: Char -> Stateful
 createListChar c s = case mode s of
-    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (n ++ [c])) }
+    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (Data.Text.snoc n c)) }
     _ -> Nothing
 
 -- editList
@@ -163,7 +166,7 @@ editListBS :: Stateful
 editListBS s = case mode s of
     Insert EditList -> do
         l <- getList s
-        let t = S.backspace (title l)
+        let t = T.backspace (title l)
         return $ setList s $ updateTitle l t
     _ -> Nothing
 
@@ -171,7 +174,7 @@ editListChar :: Char -> Stateful
 editListChar c s = case mode s of
     Insert EditList -> do
         l <- getList s
-        let t = title l ++ [c]
+        let t = Data.Text.snoc (title l) c
         return $ setList s $ updateTitle l t
     _ -> Nothing
 
@@ -219,7 +222,7 @@ insertBS :: Stateful
 insertBS = change backspace
 
 insertCurrent :: Char -> Stateful
-insertCurrent char = change (append char)
+insertCurrent char = change (Data.Taskell.Task.append char)
 
 change :: (Task -> Task) -> State -> Maybe State
 change fn s = do
@@ -361,14 +364,14 @@ searchEntered s = case mode s of
 searchBS :: Stateful
 searchBS s = case mode s of
     Search ent term -> return $
-        if null term
+        if Data.Text.null term
             then s { mode = Normal }
-            else s { mode = Search ent (S.backspace term) }
+            else s { mode = Search ent (T.backspace term) }
     _ -> Nothing
 
 searchChar :: Char -> Stateful
 searchChar c s = case mode s of
-    Search ent term -> return $ s { mode = Search ent (term ++ [c]) }
+    Search ent term -> return $ s { mode = Search ent (Data.Text.snoc term c) }
     _ -> Nothing
 
 -- view - maybe shouldn't be in here...
@@ -382,3 +385,6 @@ newList s = case mode s of
     Insert (CreateList t) -> let ls = lists s in
                                fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
     _ -> s
+
+normalise :: State -> State
+normalise = newList . search

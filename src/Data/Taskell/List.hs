@@ -1,9 +1,6 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Data.Taskell.List where
 
-import GHC.Generics (Generic)
-import Data.Aeson (FromJSON, ToJSON)
+import Data.Text (Text)
 
 import Prelude hiding (splitAt, filter)
 import Data.Sequence (Seq, (|>), (!?), (><), deleteAt, splitAt, filter)
@@ -12,15 +9,12 @@ import qualified Data.Taskell.Seq as S
 import Data.Taskell.Task (Task, blank, contains)
 
 data List = List {
-    title :: String,
+    title :: Text,
     tasks :: Seq Task
-} deriving (Generic, Show, Eq)
-
-instance FromJSON List
-instance ToJSON List
+} deriving (Show, Eq)
 
 -- useful functions
-empty :: String -> List
+empty :: Text -> List
 empty t = List {
     title = t,
     tasks = S.empty
@@ -29,7 +23,7 @@ empty t = List {
 new :: List -> List
 new = append blank
 
-updateTitle :: List -> String -> List
+updateTitle :: List -> Text -> List
 updateTitle ls s = ls { title = s }
 
 newAt :: Int -> List -> List
@@ -61,5 +55,5 @@ deleteTask i l = l { tasks = deleteAt i (tasks l) }
 getTask :: Int -> List -> Maybe Task
 getTask i l = tasks l !? i
 
-searchFor :: String -> List -> List
+searchFor :: Text -> List -> List
 searchFor s l = l { tasks = filter (contains s) (tasks l)}

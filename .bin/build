@@ -15,11 +15,10 @@ mkdir -p "releases/$1/taskell/DEBIAN"
 mkdir -p "releases/$1/taskell/usr/local/bin"
 LINUX_DIR=$(ls .stack-work/install | grep linux)
 
-tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell" > /dev/null
+tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" --directory=".stack-work/install/$LINUX_DIR/lts-10.4/8.2.2/bin" "taskell"
+tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory=".stack-work/install/x86_64-osx/lts-10.4/8.2.2/bin" "taskell"
 
-tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" ".stack-work/install/x86_64-osx/lts-9.13/8.0.2/bin/taskell" > /dev/null
-
-cp ".stack-work/install/$LINUX_DIR/lts-9.13/8.0.2/bin/taskell" "releases/$1/taskell/usr/local/bin"
+cp ".stack-work/install/$LINUX_DIR/lts-10.4/8.2.2/bin/taskell" "releases/$1/taskell/usr/local/bin"
 
 echo "Package: taskell
 Version: $1
@@ -31,6 +30,8 @@ docker run -v "$PWD/releases/$1":/usr/src/app -w /usr/src/app debian dpkg-deb --
 
 mv "releases/$1/taskell.deb" "releases/$1/taskell-$1_x86-64-linux.deb"
 rm -rf "releases/$1/taskell"
+
+open "releases/$1"
 
 printf "
 Release Template

@@ -1,9 +1,11 @@
 # Taskell
 
-A CLI task manager, written in Haskell
+A CLI kanban board/task manager, written in Haskell
 
-- Tasks stored in a Markdown file in the current working directory - for easy version control
-- Uses `vim` style key-bindings
+- Per project task lists
+- Stored using Markdown
+- Clean diffs for easy version control
+- `vim` style key-bindings
 
 ![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
 
@@ -17,7 +19,7 @@ You can install Taskell on your Mac using [Homebrew](https://brew.sh):
 brew install smallhadroncollider/taskell/taskell
 ```
 
-There are bottles (binaries) available for High Sierra and Sierra. If these are not available for your computer, homebrew will build Taskell from scratch using [Stack](https://docs.haskellstack.org/), which can take a while, particularly on older machines.
+There are bottles (binaries) available for High Sierra and Sierra. If these are not available for your computer, Homebrew will build Taskell from scratch using [Stack](https://docs.haskellstack.org/), which can take a while, particularly on older machines.
 
 ### Debian/Ubuntu
 
@@ -34,8 +36,6 @@ Run `sudo dnf install ncurses-compat-libs` then download and run binary as descr
 
 - `taskell`: will use `taskell.md` in the cwd - offers to create if not found
 - `taskell filename.md`: will use `filename.md` in the cwd - offers to create if not found
-
-Taskell also supports `.json` files: `taskell filename.json`
 
 ## Controls
 
@@ -66,7 +66,7 @@ Taskell also supports `.json` files: `taskell filename.json`
 
 ### Tips
 
-- If you're using a simple two-column "Todo" and "Done" then use the space bar to mark an item as complete while staying in the "Todo" list. If you're using a more complicated column setup then you will want to use `H`/`L` to move tasks between columns.
+- If you're using a simple two-column "To Do" and "Done" then use the space bar to mark an item as complete while staying in the "To Do" list. If you're using a more complicated column setup then you will want to use `H`/`L` to move tasks between columns.
 
 ## Storage
 
@@ -81,8 +81,6 @@ Stores in a local `taskell.md` file:
 
 - Do That
 ```
-
-Taskell also support `.json` files
 
 ---
 
