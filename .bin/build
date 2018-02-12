@@ -31,10 +31,7 @@ docker run -v "$PWD/releases/$1":/usr/src/app -w /usr/src/app debian dpkg-deb --
 mv "releases/$1/taskell.deb" "releases/$1/taskell-$1_x86-64-linux.deb"
 rm -rf "releases/$1/taskell"
 
-
 open "releases/$1"
-
-
 
 printf "
 Release Template
@@ -52,8 +49,5 @@ Release Template
 
 ---------------------------------------------
 "
-
-rm "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/taskell.rb"
-brew create "https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
 
 printf "\n\nbrew install --build-bottle smallhadroncollider/taskell/taskell && brew bottle taskell\n"
