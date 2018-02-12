@@ -1,6 +1,7 @@
 module IO.Markdown (
     parse,
-    stringify
+    stringify,
+    trimListItem
 ) where
 
 import Data.Text (Text, drop, append, null, lines, isPrefixOf, strip)
@@ -15,11 +16,14 @@ import Data.ByteString (ByteString)
 import Data.Word (Word8)
 
 -- parse code
+trimListItem :: Text -> Text
+trimListItem = strip . Data.Text.drop 1
+
 trimTitle :: Text -> Text
 trimTitle = strip . Data.Text.drop 2
 
 trimTask :: Text -> Task
-trimTask = new . strip . Data.Text.drop 1
+trimTask = new . trimListItem
 
 start :: Lists -> Text -> Lists
 start ls s | "##" `isPrefixOf` s = newList (trimTitle s) ls

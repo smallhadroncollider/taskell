@@ -7,4 +7,5 @@ event :: Event -> Stateful
 
 event (EvKey (KChar 'q') _) = quit
 event (EvKey _ _) = normalMode
+
 event _ = return
