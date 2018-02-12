@@ -2,11 +2,9 @@
 
 - Nix support?
 - apt-get repository
-- Use case examples in README
 
 ## Refactoring
 
-- Use Brick for UI
 - Break up State module
 - Simplify state by composing Actions
 - Use a map in Actions to tidy things up/add custom key support
@@ -15,24 +13,26 @@
 
 ## Bugs
 
+- Items near bottom of the list jump in position
+- List titles sometimes go missing
+- Up and down in search gets a bit lost
+- Editing list title doesn't always have visibility
+- Vertical spacing doesn't work if the current item is blank
+- Cursor goes missing on the left hand side at the end of a line
 
 ## To Do
 
+- `.taskell` config file in home directory
 - Left/Right arrow keys in insert mode
 - If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add tags/labels with `t`
 - Move between lists with `m` - shows possible lists
 - On `?` show keyboard commands
 - Add due dates to tasks with `d`
-- `.taskell` config file in home directory
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Copy and paste?
 - Add custom key support
 - Add Trello import
-- Add `--convert-to-md` and `--convert-to-json` options
-- Multi-select mode
-- Sub-lists
-- Spell check?
 
 ## Done
 
@@ -102,3 +102,6 @@
 - Use concurrency for IO
 - Search UI
 - Vertical scrolling hides list titles
+- Use Brick for UI
+- `C` doesn't work properly
+- Custom colours

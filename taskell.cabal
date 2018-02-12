@@ -1,5 +1,5 @@
 name:                taskell
-version:             0.10.1.0
+version:             0.10.2.0
 -- synopsis: A CLI task manager, written in Haskell
 -- description: Allows you to create version controlled task lists
 homepage:            https://github.com/smallhadroncollider/taskell#readme
@@ -41,10 +41,11 @@ library
 
                      , Persistence.Taskell
                      , Persistence.Markdown
+                     , Persistence.Config
 
                      , UI.CLI
                      , UI.Draw
-                     , UI.Attr
+                     , UI.Theme
                      , UI.Types
 
   build-depends:       base <= 5

@@ -70,7 +70,7 @@ Run `sudo dnf install ncurses-compat-libs` then download and run binary as descr
 
 ## Storage
 
-Stores in a local `taskell.md` file:
+By default stores in a `taskell.md` file in the working directory:
 
 ```md
 ## To Do
@@ -81,6 +81,23 @@ Stores in a local `taskell.md` file:
 
 - Do That
 ```
+
+## Theming
+
+You can edit Taskell's colourscheme by editing `~/.taskell/theme.ini`:
+
+```ini
+[default]
+default.bg = brightBlack
+default.fg = white
+
+[other]
+title.fg = green
+titleCurrent.fg = blue
+taskCurrent.fg = magenta
+```
+
+The available colours are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`, `brightBlack`, `brightRed`, `brightGreen`, `brightYellow`, `brightBlue`, `brightMagenta`, `brightCyan`, `brightWhite`, or `default`
 
 ---
 
