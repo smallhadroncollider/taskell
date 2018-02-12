@@ -1,10 +1,9 @@
 module UI.Theme where
 
-import Brick.Themes (Theme, newTheme, themeToAttrMap, loadCustomizations)
-import Brick (AttrName, AttrMap, attrName)
+import Brick.Themes (Theme, newTheme)
+import Brick (AttrName, attrName)
 import Brick.Util (fg, on)
 import Graphics.Vty (white, brightBlack, green, blue, magenta)
-import Persistence.Config (getThemePath)
 
 -- attrs
 titleAttr :: AttrName
@@ -23,16 +22,7 @@ taskAttr = attrName "task"
 defaultTheme :: Theme
 defaultTheme =
     newTheme (white `on` brightBlack) [
-        (attrName "title", fg green),
-        (attrName "titleCurrent", fg blue),
-        (attrName "taskCurrent", fg magenta)
+        (titleAttr, fg green),
+        (titleCurrentAttr, fg blue),
+        (taskCurrentAttr, fg magenta)
     ]
-
--- generate theme
-generateAttrMap :: IO AttrMap
-generateAttrMap = do
-    path <- getThemePath
-    customizedTheme <- loadCustomizations path defaultTheme
-    return . themeToAttrMap $ case customizedTheme of
-        Left _ -> defaultTheme
-        Right theme -> theme

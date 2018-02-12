@@ -3,6 +3,9 @@ module Persistence.Config where
 
 import System.Directory
 import Data.Ini.Config
+import UI.Theme
+import Brick.Themes (themeToAttrMap, loadCustomizations)
+import Brick (AttrMap)
 import qualified Data.Text.IO as T
 
 data GeneralConfig = GeneralConfig {
@@ -41,7 +44,7 @@ getConfigPath = (++ "/config.ini") <$> getDir
 
 setup :: IO Config
 setup = do
-    createDirectoryIfMissing True <$> getDir
+    getDir >>= createDirectoryIfMissing True
     createConfig
     createTheme
     getConfig
@@ -99,3 +102,12 @@ getConfig = do
     return $ case config of
         Right c -> c
         Left _ -> defaultConfig
+
+-- generate theme
+generateAttrMap :: IO AttrMap
+generateAttrMap = do
+    path <- getThemePath
+    customizedTheme <- loadCustomizations path defaultTheme
+    return . themeToAttrMap $ case customizedTheme of
+        Left _ -> defaultTheme
+        Right theme -> theme

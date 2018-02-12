@@ -7,12 +7,11 @@ import Flow.State (State, Mode(..), lists, continue, path, mode)
 import Brick
 
 import Persistence.Taskell (writeFile)
-import Persistence.Config (Config, LayoutConfig, layout)
+import Persistence.Config (Config, LayoutConfig, layout, generateAttrMap)
 
 import Flow.Actions (event)
 
 import UI.Draw (draw, chooseCursor, scroll)
-import UI.Theme (generateAttrMap)
 import UI.Types (ResourceName(..))
 
 -- store
