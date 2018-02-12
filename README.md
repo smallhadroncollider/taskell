@@ -84,17 +84,31 @@ By default stores in a `taskell.md` file in the working directory:
 
 ## Theming
 
-You can edit Taskell's colourscheme by editing `~/.taskell/theme.ini`:
+You can edit Taskell's colour-scheme by editing `~/.taskell/theme.ini`:
+
+```ini
+[other]
+
+; list title
+title.fg = green
+
+; current list title
+titleCurrent.fg = blue
+
+; current task
+taskCurrent.fg = magenta
+```
+
+You can also change the background and default text colour:
 
 ```ini
 [default]
-default.bg = brightBlack
-default.fg = white
 
-[other]
-title.fg = green
-titleCurrent.fg = blue
-taskCurrent.fg = magenta
+; the app background colour
+default.bg = brightBlack
+
+; the app text colour
+default.fg = white
 ```
 
 The available colours are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`, `brightBlack`, `brightRed`, `brightGreen`, `brightYellow`, `brightBlue`, `brightMagenta`, `brightCyan`, `brightWhite`, or `default`
