@@ -1,4 +1,4 @@
-module Persistence.Markdown (
+module IO.Markdown (
     parse,
     stringify
 ) where

@@ -4,7 +4,7 @@ module UI.Draw (
     scroll
 ) where
 
-import Flow.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, size, normalise)
+import Events.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, size, normalise)
 import Brick
 import Data.Text (Text, length, pack, concat, append)
 import Data.Taskell.List (List, tasks, title)
@@ -13,7 +13,7 @@ import Data.Taskell.Text (wrap)
 import Data.Foldable (toList)
 import qualified Data.Sequence as Seq (mapWithIndex, length)
 
-import Persistence.Config (LayoutConfig, columnWidth, columnPadding)
+import IO.Config (LayoutConfig, columnWidth, columnPadding)
 
 import UI.Types (ResourceName(..))
 import UI.Theme

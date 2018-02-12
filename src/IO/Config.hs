@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Persistence.Config where
+module IO.Config where
 
 import System.Directory
 import Data.Ini.Config

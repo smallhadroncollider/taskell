@@ -1,13 +1,13 @@
-module Flow.Actions (event) where
+module Events.Actions (event) where
 
 import Graphics.Vty.Input.Events (Event(..))
 
-import Flow.State (State, Stateful, Mode(..), mode, setSize)
+import Events.State (State, Stateful, Mode(..), mode, setSize)
 import Data.Maybe (fromMaybe)
 
-import qualified Flow.Actions.Normal as Normal
-import qualified Flow.Actions.Search as Search
-import qualified Flow.Actions.Insert as Insert
+import qualified Events.Actions.Normal as Normal
+import qualified Events.Actions.Search as Search
+import qualified Events.Actions.Insert as Insert
 
 -- takes an event and returns a Maybe State
 event' :: Event -> Stateful

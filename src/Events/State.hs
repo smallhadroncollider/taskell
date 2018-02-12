@@ -1,4 +1,4 @@
-module Flow.State (
+module Events.State (
     -- types
     State,
     Stateful,
@@ -24,7 +24,7 @@ module Flow.State (
     -- Main
     create,
 
-    -- Flow.Actions.Normal
+    -- Events.Actions.Normal
     quit,
     startEdit,
     startCreate,
@@ -52,21 +52,21 @@ module Flow.State (
     store,
     searchMode,
 
-    -- Flow.Actions.Search
+    -- Events.Actions.Search
     searchBS,
     searchChar,
     searchEntered,
 
-    -- Flow.Actions.CreateList
+    -- Events.Actions.CreateList
     createList,
     createListBS,
     createListChar,
 
-    -- Flow.Actions.EditList
+    -- Events.Actions.EditList
     editListBS,
     editListChar,
 
-    -- Flow.Actions.Create/Edit
+    -- Events.Actions.Create/Edit
     removeBlank,
     newItem,
     normalMode,

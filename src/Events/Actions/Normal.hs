@@ -1,8 +1,8 @@
-module Flow.Actions.Normal (event) where
+module Events.Actions.Normal (event) where
 
 import Graphics.Vty.Input.Events
 import Data.Char (isDigit)
-import Flow.State
+import Events.State
 
 -- Normal
 event :: Event -> Stateful

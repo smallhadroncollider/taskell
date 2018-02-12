@@ -24,22 +24,22 @@ library
                      , Data.Taskell.Seq
                      , Data.Taskell.Text
 
-                     , Flow.Actions
-                     , Flow.Actions.Normal
-                     , Flow.Actions.Search
-                     , Flow.Actions.Insert
-                     , Flow.Actions.Insert.Task
-                     , Flow.Actions.Insert.Task.Create
-                     , Flow.Actions.Insert.Task.Edit
-                     , Flow.Actions.Insert.List
-                     , Flow.Actions.Insert.List.Create
-                     , Flow.Actions.Insert.List.Edit
+                     , Events.Actions
+                     , Events.Actions.Normal
+                     , Events.Actions.Search
+                     , Events.Actions.Insert
+                     , Events.Actions.Insert.Task
+                     , Events.Actions.Insert.Task.Create
+                     , Events.Actions.Insert.Task.Edit
+                     , Events.Actions.Insert.List
+                     , Events.Actions.Insert.List.Create
+                     , Events.Actions.Insert.List.Edit
 
-                     , Flow.State
+                     , Events.State
 
-                     , Persistence.Taskell
-                     , Persistence.Markdown
-                     , Persistence.Config
+                     , IO.Taskell
+                     , IO.Markdown
+                     , IO.Config
 
                      , UI.CLI
                      , UI.Draw

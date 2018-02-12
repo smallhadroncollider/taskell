@@ -1,11 +1,11 @@
-module Persistence.Taskell where
+module IO.Taskell where
 
 import Prelude hiding (writeFile)
 import System.Directory
 import System.Environment (getArgs)
 import Control.Monad (void)
-import Persistence.Markdown (stringify, parse)
-import Persistence.Config (Config, general, filename)
+import IO.Markdown (stringify, parse)
+import IO.Config (Config, general, filename)
 import qualified Data.ByteString as BS
 
 import UI.CLI (promptYN)

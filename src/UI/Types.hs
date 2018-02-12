@@ -1,6 +1,6 @@
 module UI.Types where
 
-import Flow.State (Pointer)
+import Events.State (Pointer)
 
 data ResourceName =
       RNTask Pointer

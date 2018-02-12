@@ -1,10 +1,10 @@
-module Flow.Actions.Insert.List (event) where
+module Events.Actions.Insert.List (event) where
 
 import Graphics.Vty.Input.Events
-import Flow.State
+import Events.State
 
-import qualified Flow.Actions.Insert.List.Create as Create
-import qualified Flow.Actions.Insert.List.Edit as Edit
+import qualified Events.Actions.Insert.List.Create as Create
+import qualified Events.Actions.Insert.List.Edit as Edit
 
 event :: Event -> Stateful
 event e s = case mode s of

@@ -1,7 +1,7 @@
-module Flow.Actions.Insert.List.Create (event) where
+module Events.Actions.Insert.List.Create (event) where
 
 import Graphics.Vty.Input.Events
-import Flow.State
+import Events.State
 
 event :: Event -> Stateful
 event (EvKey KEnter _) = (write =<<) . (startCreate =<<) . (newItem =<<) . (store =<<) . createList

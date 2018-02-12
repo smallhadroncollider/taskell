@@ -3,13 +3,13 @@ module App (go) where
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Control.Concurrent (forkIO)
-import Flow.State (State, Mode(..), lists, continue, path, mode)
+import Events.State (State, Mode(..), lists, continue, path, mode)
 import Brick
 
-import Persistence.Taskell (writeFile)
-import Persistence.Config (Config, LayoutConfig, layout, generateAttrMap)
+import IO.Taskell (writeFile)
+import IO.Config (Config, LayoutConfig, layout, generateAttrMap)
 
-import Flow.Actions (event)
+import Events.Actions (event)
 
 import UI.Draw (draw, chooseCursor, scroll)
 import UI.Types (ResourceName(..))
@@ -17,8 +17,8 @@ import UI.Types (ResourceName(..))
 -- store
 store :: State -> IO State
 store s = do
-        forkIO $ Persistence.Taskell.writeFile (lists s) (path s)
-        return (Flow.State.continue s)
+        forkIO $ IO.Taskell.writeFile (lists s) (path s)
+        return (Events.State.continue s)
 
 -- App code
 handleEvent :: LayoutConfig -> State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)

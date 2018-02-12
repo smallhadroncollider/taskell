@@ -1,7 +1,7 @@
-module Flow.Actions.Insert.List.Edit (event) where
+module Events.Actions.Insert.List.Edit (event) where
 
 import Graphics.Vty.Input.Events
-import Flow.State (Stateful, write, normalMode, editListBS, editListChar)
+import Events.State (Stateful, write, normalMode, editListBS, editListChar)
 
 event :: Event -> Stateful
 event (EvKey KEnter _) = (write =<<) . normalMode

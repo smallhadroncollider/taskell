@@ -1,9 +1,9 @@
-module Flow.Actions.Search (event) where
+module Events.Actions.Search (event) where
 
 import Graphics.Vty.Input.Events
-import Flow.State
+import Events.State
 
-import qualified Flow.Actions.Normal as Normal
+import qualified Events.Actions.Normal as Normal
 
 event' :: Event -> Stateful
 event' (EvKey KEnter _) = searchEntered
