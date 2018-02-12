@@ -24,7 +24,6 @@
 
 ## To Do
 
-- `.taskell` config file in home directory
 - Left/Right arrow keys in insert mode
 - If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add tags/labels with `t`
@@ -107,3 +106,4 @@
 - Use Brick for UI
 - `C` doesn't work properly
 - Custom colours
+- `.taskell` config file in home directory
