@@ -21,6 +21,7 @@
 - Editing list title doesn't always have visibility
 - Vertical spacing doesn't work if the current item is blank
 - Cursor goes missing on the left hand side at the end of a line
+- One bad config line stops all config from working - needs to merge with defaultConfig
 
 ## To Do
 
