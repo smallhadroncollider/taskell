@@ -17,7 +17,7 @@ import qualified Data.Sequence as Seq (mapWithIndex, length)
 import Config
 
 import UI.Types (ResourceName(..))
-import UI.Attr
+import UI.Theme
 
 colWidth :: Int
 colWidth = width + padding * 2

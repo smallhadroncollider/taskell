@@ -3,6 +3,7 @@ module Main where
 import Control.Monad (when)
 import Flow.State (create)
 import Persistence.Taskell (exists, readFile)
+import Persistence.Config (setup)
 import System.Console.Terminal.Size (Window(..), size)
 
 import App (go)
@@ -24,5 +25,6 @@ start path = do
 -- if taskell.md exists/created then start
 main :: IO ()
 main = do
+    setup
     (ex, path) <- exists
     when ex $ start path

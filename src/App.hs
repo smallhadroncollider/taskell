@@ -10,7 +10,7 @@ import Persistence.Taskell (writeFile)
 import Flow.Actions (event)
 
 import UI.Draw (draw, chooseCursor, scroll)
-import UI.Attr (attrMap')
+import UI.Theme (generateAttrMap)
 import UI.Types (ResourceName(..))
 
 -- store
@@ -28,8 +28,8 @@ handleEvent s' (VtyEvent e) = let s = event e s' in
         _ -> scroll s >> Brick.continue s
 handleEvent s _ = Brick.continue s
 
-app :: App State e ResourceName
-app = App draw chooseCursor handleEvent return attrMap'
-
 go :: State -> IO ()
-go initial = void (defaultMain app initial)
+go initial = do
+    attrMap' <- const <$> generateAttrMap
+    let app = App draw chooseCursor handleEvent return attrMap'
+    void (defaultMain app initial)
