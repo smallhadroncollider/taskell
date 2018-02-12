@@ -23,6 +23,9 @@ empty t = List {
 new :: List -> List
 new = append blank
 
+count :: List -> Int
+count = length . tasks
+
 updateTitle :: List -> Text -> List
 updateTitle ls s = ls { title = s }
 

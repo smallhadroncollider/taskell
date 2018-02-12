@@ -3,18 +3,30 @@ module Data.Taskell.Task where
 import Data.Text (Text, snoc, length, null, isInfixOf, empty)
 import qualified Data.Taskell.Text as T
 
-newtype Task = Task {
-    description :: Text
+data SubTask = SubTask {
+    name :: Text,
+    complete :: Bool
+} deriving (Show, Eq)
+
+data Task = Task {
+    description :: Text,
+    subTasks :: [SubTask]
 } deriving (Show, Eq)
 
 blank :: Task
-blank = Task { description = empty }
+blank = Task { description = empty, subTasks = [] }
 
 clear :: Task -> Task
 clear _ = blank
 
 new :: Text -> Task
-new s = Task { description = s }
+new s = blank { description = s }
+
+subTask :: Text -> SubTask
+subTask t = SubTask { name = t, complete = False }
+
+addSubTask :: SubTask -> Task -> Task
+addSubTask s t = t { subTasks = subTasks t ++ [s] }
 
 append :: Char -> Task  -> Task
 append c t = t { description = Data.Text.snoc (description t) c }
