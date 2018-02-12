@@ -5,7 +5,9 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Concurrent (forkIO)
 import Flow.State (State, Mode(..), lists, continue, path, mode)
 import Brick
+
 import Persistence.Taskell (writeFile)
+import Persistence.Config (Config, LayoutConfig, layout)
 
 import Flow.Actions (event)
 
@@ -20,16 +22,16 @@ store s = do
         return (Flow.State.continue s)
 
 -- App code
-handleEvent :: State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
-handleEvent s' (VtyEvent e) = let s = event e s' in
+handleEvent :: LayoutConfig -> State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
+handleEvent lo s' (VtyEvent e) = let s = event e s' in
     case mode s of
         Shutdown -> Brick.halt s
-        Write _ -> scroll s >> liftIO (store s) >>= Brick.continue
-        _ -> scroll s >> Brick.continue s
-handleEvent s _ = Brick.continue s
+        Write _ -> scroll lo s >> liftIO (store s) >>= Brick.continue
+        _ -> scroll lo s >> Brick.continue s
+handleEvent _ s _ = Brick.continue s
 
-go :: State -> IO ()
-go initial = do
+go :: Config -> State -> IO ()
+go config initial = do
     attrMap' <- const <$> generateAttrMap
-    let app = App draw chooseCursor handleEvent return attrMap'
+    let app = App (draw $ layout config) chooseCursor (handleEvent $ layout config) return attrMap'
     void (defaultMain app initial)

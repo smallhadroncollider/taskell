@@ -10,6 +10,8 @@
 - Use a map in Actions to tidy things up/add custom key support
 - Add some tests
 - Avoid having to normalise the state?
+- Use Reader monad to pass around config
+- Rename Persistence to IO.Taskell
 
 ## Bugs
 

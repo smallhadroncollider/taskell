@@ -18,8 +18,6 @@ library
   hs-source-dirs:      src
   exposed-modules:     App
 
-                     , Config
-
                      , Data.Taskell.Task
                      , Data.Taskell.List
                      , Data.Taskell.Lists
@@ -53,6 +51,7 @@ library
                      , text
                      , brick
                      , bytestring
+                     , config-ini
                      , containers
                      , directory
   default-language:    Haskell2010
