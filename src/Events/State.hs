@@ -3,7 +3,6 @@ module Events.State (
     State,
     Stateful,
     Pointer,
-    Size,
     InsertMode(..),
     Mode(..),
     ModalType(..),
@@ -15,7 +14,6 @@ module Events.State (
 
     -- record accesors
     mode,
-    size,
     current,
     lists,
 
@@ -46,7 +44,6 @@ module Events.State (
     moveRight,
     delete,
     selectList,
-    setSize,
     listLeft,
     listRight,
     undo,
@@ -89,7 +86,6 @@ data ModalType = Help
 data InsertMode = EditTask | CreateTask | EditList | CreateList Text
 data Mode = Normal | Insert InsertMode | Write Mode | Modal ModalType | Search Bool Text | Shutdown
 
-type Size = (Int, Int)
 type Pointer = (Int, Int)
 
 data State = State {
@@ -97,17 +93,15 @@ data State = State {
     lists :: Lists.Lists,
     history :: [(Pointer, Lists.Lists)],
     current :: Pointer,
-    size :: Size,
     path :: FilePath
 }
 
-create :: FilePath -> Size -> Lists.Lists -> State
-create p sz ls = State {
+create :: FilePath -> Lists.Lists -> State
+create p ls = State {
     mode = Normal,
     lists = ls,
     history = [],
     current = (0, 0),
-    size = sz,
     path = p
 }
 
@@ -117,9 +111,6 @@ type InternalStateful = State -> State
 -- app state
 quit :: Stateful
 quit s = return $ s { mode = Shutdown }
-
-setSize :: Int -> Int -> Stateful
-setSize w h s = return $ s { size = (w, h) }
 
 continue :: State -> State
 continue s = case mode s of

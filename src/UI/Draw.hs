@@ -4,7 +4,7 @@ module UI.Draw (
     chooseCursor
 ) where
 
-import Events.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, size, normalise)
+import Events.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, normalise)
 import Brick
 import Data.Text (Text, length, pack, concat, append)
 import Data.Taskell.List (List, tasks, title)
@@ -51,26 +51,25 @@ renderTitle layout (p, i) li l = if p /= li || i == 0 then visible title' else t
           attr = if p == li then titleCurrentAttr else titleAttr
           title' = withAttr attr . addCursor li (-1) d $ box d
 
-renderList :: LayoutConfig -> Int -> Pointer -> Int -> List -> Widget ResourceName
-renderList layout h p li l = if fst p == li then visible list else list
+renderList :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
+renderList layout p li l = if fst p == li then visible list else list
     where list =
               padLeftRight (columnPadding layout)
             . hLimit (columnWidth layout)
             . viewport (RNList li) Vertical
-            . padBottom (Pad h)
             . vBox
             . (renderTitle layout p li l :)
             . toList
             $ renderTask layout p li `Seq.mapWithIndex` tasks l
 
-searchImage :: LayoutConfig -> State -> Int -> Widget ResourceName -> Widget ResourceName
-searchImage layout s h i = case mode s of
+searchImage :: LayoutConfig -> State -> Widget ResourceName -> Widget ResourceName
+searchImage layout s i = case mode s of
     Search ent term ->
         let attr = if ent then taskCurrentAttr else taskAttr
         in
-            vLimit (h - 3) i <=> (
+            i <=> (
                   withAttr attr
-                . padTop (Pad 1)
+                . padTopBottom 1
                 . padLeftRight (columnPadding layout)
                 $ txt ("/" `append` term)
             )
@@ -80,17 +79,15 @@ searchImage layout s h i = case mode s of
 draw :: LayoutConfig -> State -> [Widget ResourceName]
 draw layout state = showModal state [main]
     where s = normalise state
-          h = snd (size state)
           ls = lists s
           main =
-              searchImage layout state h
+              searchImage layout state
             . viewport RNLists Horizontal
-            . padRight (Pad $ fst (size state))
             . hLimit (Seq.length ls * colWidth layout)
             . padTop (Pad 1)
             . hBox
             . toList
-            $ renderList layout h (current s)  `Seq.mapWithIndex` ls
+            $ renderList layout (current s)  `Seq.mapWithIndex` ls
 
 -- cursors
 cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)

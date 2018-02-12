@@ -11,6 +11,7 @@
 - Add some tests
 - Avoid having to normalise the state?
 - Use Reader monad to pass around config
+- Remove duplication of config - currently using ini and hard-coded
 
 ## Bugs
 
@@ -110,3 +111,4 @@
 - List titles sometimes go missing
 - Use Template Haskell to import in config file templates
 - On `?` show keyboard commands
+- Remove size from state
