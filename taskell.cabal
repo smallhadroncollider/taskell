@@ -1,5 +1,5 @@
 name:                taskell
-version:             0.10.2.0
+version:             0.10.3.0
 -- synopsis: A CLI task manager, written in Haskell
 -- description: Allows you to create version controlled task lists
 homepage:            https://github.com/smallhadroncollider/taskell#readme
@@ -18,30 +18,28 @@ library
   hs-source-dirs:      src
   exposed-modules:     App
 
-                     , Config
-
                      , Data.Taskell.Task
                      , Data.Taskell.List
                      , Data.Taskell.Lists
                      , Data.Taskell.Seq
                      , Data.Taskell.Text
 
-                     , Flow.Actions
-                     , Flow.Actions.Normal
-                     , Flow.Actions.Search
-                     , Flow.Actions.Insert
-                     , Flow.Actions.Insert.Task
-                     , Flow.Actions.Insert.Task.Create
-                     , Flow.Actions.Insert.Task.Edit
-                     , Flow.Actions.Insert.List
-                     , Flow.Actions.Insert.List.Create
-                     , Flow.Actions.Insert.List.Edit
+                     , Events.Actions
+                     , Events.Actions.Normal
+                     , Events.Actions.Search
+                     , Events.Actions.Insert
+                     , Events.Actions.Insert.Task
+                     , Events.Actions.Insert.Task.Create
+                     , Events.Actions.Insert.Task.Edit
+                     , Events.Actions.Insert.List
+                     , Events.Actions.Insert.List.Create
+                     , Events.Actions.Insert.List.Edit
 
-                     , Flow.State
+                     , Events.State
 
-                     , Persistence.Taskell
-                     , Persistence.Markdown
-                     , Persistence.Config
+                     , IO.Taskell
+                     , IO.Markdown
+                     , IO.Config
 
                      , UI.CLI
                      , UI.Draw
@@ -53,6 +51,7 @@ library
                      , text
                      , brick
                      , bytestring
+                     , config-ini
                      , containers
                      , directory
   default-language:    Haskell2010

@@ -1,10 +1,10 @@
-module Flow.Actions.Insert.Task (event) where
+module Events.Actions.Insert.Task (event) where
 
 import Graphics.Vty.Input.Events
-import Flow.State
+import Events.State
 
-import qualified Flow.Actions.Insert.Task.Create as Create
-import qualified Flow.Actions.Insert.Task.Edit as Edit
+import qualified Events.Actions.Insert.Task.Create as Create
+import qualified Events.Actions.Insert.Task.Edit as Edit
 
 event :: Event -> Stateful
 event (EvKey KEsc _) s = write =<< removeBlank =<< normalMode s

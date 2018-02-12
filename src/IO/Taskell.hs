@@ -1,25 +1,25 @@
-module Persistence.Taskell where
+module IO.Taskell where
 
 import Prelude hiding (writeFile)
 import System.Directory
 import System.Environment (getArgs)
 import Control.Monad (void)
-import Persistence.Markdown (stringify, parse)
+import IO.Markdown (stringify, parse)
+import IO.Config (Config, general, filename)
 import qualified Data.ByteString as BS
 
 import UI.CLI (promptYN)
 import Data.Taskell.Lists (Lists, initial)
 
-import Config (defaultPath)
-
-getPath :: IO String
-getPath = do
+getPath :: Config -> IO String
+getPath c = do
+    let defaultPath = filename $ general c
     args <- getArgs
     return $ if not (null args) then head args else defaultPath
 
-exists :: IO (Bool, FilePath)
-exists = do
-    path <- getPath
+exists :: Config -> IO (Bool, FilePath)
+exists c = do
+    path <- getPath c
     e <- doesFileExist path
     success <- promptCreate e path
     return (success, path)
