@@ -12,6 +12,7 @@
 - Avoid having to normalise the state?
 - Use Reader monad to pass around config
 - Rename Persistence to IO.Taskell
+- Use Template Haskell to import in config file templates
 
 ## Bugs
 
