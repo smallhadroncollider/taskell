@@ -11,13 +11,11 @@
 - Add some tests
 - Avoid having to normalise the state?
 - Use Reader monad to pass around config
-- Rename Persistence to IO.Taskell
 - Use Template Haskell to import in config file templates
 
 ## Bugs
 
 - Items near bottom of the list jump in position
-- List titles sometimes go missing
 - Up and down in search gets a bit lost
 - Editing list title doesn't always have visibility
 - Vertical spacing doesn't work if the current item is blank
@@ -109,3 +107,5 @@
 - `C` doesn't work properly
 - Custom colours
 - `.taskell` config file in home directory
+- Rename Persistence to IO.Taskell
+- List titles sometimes go missing
