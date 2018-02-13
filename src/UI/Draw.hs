@@ -43,7 +43,7 @@ columnNumber i s = if col >= 1 && col <= 9 then Data.Text.concat [pack (show col
     where col = i + 1
 
 renderTitle :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
-renderTitle layout (p, i) li l = if i == 0 then visible title' else title'
+renderTitle layout (p, i) li l = if p /= li || i == 0 then visible title' else title'
 
     where d = wrap (columnWidth layout) $ columnNumber li (title l)
           attr = if p == li then titleCurrentAttr else titleAttr
