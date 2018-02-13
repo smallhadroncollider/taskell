@@ -1,7 +1,6 @@
 module UI.Draw (
     draw,
-    chooseCursor,
-    scroll
+    chooseCursor
 ) where
 
 import Events.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, size, normalise)
@@ -44,24 +43,23 @@ columnNumber i s = if col >= 1 && col <= 9 then Data.Text.concat [pack (show col
     where col = i + 1
 
 renderTitle :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
-renderTitle layout (p, _) li l =
-      withAttr attr
-    . addCursor li (-1) d
-    $ box d
+renderTitle layout (p, i) li l = if i == 0 then visible title' else title'
 
     where d = wrap (columnWidth layout) $ columnNumber li (title l)
           attr = if p == li then titleCurrentAttr else titleAttr
+          title' = withAttr attr . addCursor li (-1) d $ box d
 
 renderList :: LayoutConfig -> Int -> Pointer -> Int -> List -> Widget ResourceName
-renderList layout h p li l =
-      padLeftRight (columnPadding layout)
-    . hLimit (columnWidth layout)
-    . viewport (RNList li) Vertical
-    . padBottom (Pad h)
-    . vBox
-    . (renderTitle layout p li l :)
-    . toList
-    $ renderTask layout p li `Seq.mapWithIndex` tasks l
+renderList layout h p li l = if fst p == li then visible list else list
+    where list =
+              padLeftRight (columnPadding layout)
+            . hLimit (columnWidth layout)
+            . viewport (RNList li) Vertical
+            . padBottom (Pad h)
+            . vBox
+            . (renderTitle layout p li l :)
+            . toList
+            $ renderTask layout p li `Seq.mapWithIndex` tasks l
 
 searchImage :: LayoutConfig -> State -> Int -> Widget ResourceName -> Widget ResourceName
 searchImage layout s h i = case mode s of
@@ -91,26 +89,6 @@ draw layout state = [
     where s = normalise state
           h = snd (size state)
           ls = lists s
-
--- scroll
-scroll :: LayoutConfig -> State -> EventM ResourceName ()
-scroll layout s = do
-    let (col, row) = current $ normalise s
-        (w, h) = size s
-        colWidth' = colWidth layout
-
-    setLeft (viewportScroll RNLists) $ (col * colWidth') - (w `div` 2 - colWidth' `div` 2)
-
-    let list = viewportScroll (RNList col)
-    let half = h `div` 3
-
-    top <- getTop <$> lookupExtent (RNTask (col, row))
-    vScrollBy list (top - half)
-
-getTop :: Maybe (Extent ResourceName) -> Int
-getTop e = case e of
-    Nothing -> 0
-    Just (Extent _ offset _ _) -> snd (loc offset)
 
 -- cursors
 cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)

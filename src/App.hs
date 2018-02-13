@@ -7,11 +7,11 @@ import Events.State (State, Mode(..), lists, continue, path, mode)
 import Brick
 
 import IO.Taskell (writeFile)
-import IO.Config (Config, LayoutConfig, layout, generateAttrMap)
+import IO.Config (Config, layout, generateAttrMap)
 
 import Events.Actions (event)
 
-import UI.Draw (draw, chooseCursor, scroll)
+import UI.Draw (draw, chooseCursor)
 import UI.Types (ResourceName(..))
 
 -- store
@@ -21,16 +21,16 @@ store s = do
         return (Events.State.continue s)
 
 -- App code
-handleEvent :: LayoutConfig -> State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
-handleEvent lo s' (VtyEvent e) = let s = event e s' in
+handleEvent :: State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
+handleEvent s' (VtyEvent e) = let s = event e s' in
     case mode s of
         Shutdown -> Brick.halt s
-        Write _ -> scroll lo s >> liftIO (store s) >>= Brick.continue
-        _ -> scroll lo s >> Brick.continue s
-handleEvent _ s _ = Brick.continue s
+        Write _ -> liftIO (store s) >>= Brick.continue
+        _ -> Brick.continue s
+handleEvent s _ = Brick.continue s
 
 go :: Config -> State -> IO ()
 go config initial = do
     attrMap' <- const <$> generateAttrMap
-    let app = App (draw $ layout config) chooseCursor (handleEvent $ layout config) return attrMap'
+    let app = App (draw $ layout config) chooseCursor handleEvent return attrMap'
     void (defaultMain app initial)
