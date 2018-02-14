@@ -11,7 +11,6 @@
 - Add some tests
 - Avoid having to normalise the state?
 - Use Reader monad to pass around config
-- Use Template Haskell to import in config file templates
 
 ## Bugs
 
@@ -109,3 +108,4 @@
 - `.taskell` config file in home directory
 - Rename Persistence to IO.Taskell
 - List titles sometimes go missing
+- Use Template Haskell to import in config file templates

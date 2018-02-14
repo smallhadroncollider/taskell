@@ -54,6 +54,7 @@ library
                      , config-ini
                      , containers
                      , directory
+                     , file-embed
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
 

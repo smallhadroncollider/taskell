@@ -1,8 +1,13 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 module IO.Config where
 
 import System.Directory
 import Data.Ini.Config
+
+import Data.FileEmbed (embedFile)
+import qualified Data.ByteString as B (writeFile)
+
 import UI.Theme
 import Brick.Themes (themeToAttrMap, loadCustomizations)
 import Brick (AttrMap)
@@ -50,16 +55,7 @@ setup = do
     getConfig
 
 writeTheme :: FilePath -> IO ()
-writeTheme path = writeFile path $ unlines [
-        "[default]",
-        "default.bg = brightBlack",
-        "default.fg = white",
-        "",
-        "[other]",
-        "title.fg = green",
-        "titleCurrent.fg = blue",
-        "taskCurrent.fg = magenta"
-    ]
+writeTheme path = B.writeFile path $(embedFile "templates/theme.ini")
 
 createTheme :: IO ()
 createTheme = do
@@ -68,14 +64,7 @@ createTheme = do
     if exists then return () else writeTheme path
 
 writeConfig :: FilePath -> IO ()
-writeConfig path = writeFile path $ unlines [
-        "[general]",
-        "filename = " ++ filename (general defaultConfig),
-        "",
-        "[layout]",
-        "column_width = " ++ (show . columnWidth $ layout defaultConfig),
-        "column_padding = " ++ (show . columnPadding $ layout defaultConfig)
-    ]
+writeConfig path = B.writeFile path $(embedFile "templates/config.ini")
 
 createConfig :: IO ()
 createConfig = do
