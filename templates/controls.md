@@ -1,11 +1,12 @@
 - `?`: show this list of controls
-- `a`: add a task to bottom (`Enter`/`Esc` to stop)
-- `O` / `o`: add a task above/below
-- `e`, `i`, `A`: edit a task (`Enter`/`Esc` to stop)
-- `C`: change task
 - `j` / `k` / `h` / `l`: move down/up/left/right
 - `G`: go to bottom of list
 - `1`-`9`: select list
+- `a`: add a task (`Enter`/`Esc` to stop)
+- `O` / `o`: add a task above/below
+- `e`, `i`, `A`: edit a task (`Enter`/`Esc` to stop)
+- `C`: change task
+- `Enter`: show sub-tasks
 - `J` / `K`: shift task down/up
 - `H` / `L`: shift task left/right (current selection follows task)
 - `Space`: shift task right (current selection stays put)
