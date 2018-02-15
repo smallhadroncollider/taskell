@@ -22,8 +22,8 @@ clear _ = blank
 new :: Text -> Task
 new s = blank { description = s }
 
-subTask :: Text -> SubTask
-subTask t = SubTask { name = t, complete = False }
+subTask :: Text -> Bool -> SubTask
+subTask n c = SubTask { name = n, complete = c }
 
 addSubTask :: SubTask -> Task -> Task
 addSubTask s t = t { subTasks = subTasks t ++ [s] }

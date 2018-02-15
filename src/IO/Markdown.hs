@@ -6,12 +6,12 @@ module IO.Markdown (
 ) where
 
 import Data.Maybe (fromMaybe)
-import Data.Text (Text, drop, append, null, lines, isPrefixOf, strip)
+import Data.Text (Text, drop, append, null, lines, isPrefixOf, strip, dropAround)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8With)
 
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks, update, count)
-import Data.Taskell.Task (Task, SubTask, new, description, subTasks, addSubTask, subTask, name)
+import Data.Taskell.Task (Task, SubTask, new, description, subTasks, addSubTask, subTask, name, complete)
 import Data.Taskell.Seq (updateFn)
 import Data.Foldable (foldl')
 import Data.Sequence (empty)
@@ -28,12 +28,16 @@ trimTitle = strip . Data.Text.drop 2
 trimTask :: Text -> Task
 trimTask = new . trimListItem
 
+trimTilde :: Text -> Text
+trimTilde = strip . Data.Text.dropAround (== '~')
+
 addSubItem :: Text -> Lists -> Lists
 addSubItem t ls = fromMaybe ls $ updateFn i updateList ls
     where i = length ls - 1
+          st | "~" `isPrefixOf` t = subTask (trimTilde t) True
+             | otherwise = subTask t False
           updateList l = fromMaybe l $ update j (addSubTask st) l
             where j = count l - 1
-                  st = subTask t
 
 start :: Lists -> Text -> Lists
 start ls s | "##" `isPrefixOf` s = newList (trimTitle s) ls
@@ -52,7 +56,8 @@ join :: Text -> [Text] -> Text
 join = foldl' Data.Text.append
 
 subTaskToString :: Text -> SubTask -> Text
-subTaskToString t st = join t ["    * ", name st, "\n"]
+subTaskToString t st = join t ["    * ", surround, name st, surround, "\n"]
+    where surround = if complete st then "~" else ""
 
 taskToString :: Text -> Task -> Text
 taskToString s t = join s ["- ", description t, "\n", foldl' subTaskToString "" (subTasks t)]
