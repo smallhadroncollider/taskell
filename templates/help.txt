@@ -1,0 +1,18 @@
+a - add a task to bottom (Enter/Esc to stop)
+O / o - add a task above/below
+e/i/A - edit a task (Enter/Esc to stop)
+C - change task
+j/k/h/l - move down/up/left/right
+G - go to bottom of list
+1-9 - select list
+J/K - shift task down/down
+H/L - shift task left/right (current selection follows task)
+Space - shift task right (current selection stays put)
+D - delete task
+u - undo
+N - new list
+E - edit list title (Enter/Esc to stop)
+X - delete list
+< and > - move list left/right
+/ - search (Enter to navigate, Esc to leave)
+q - quit

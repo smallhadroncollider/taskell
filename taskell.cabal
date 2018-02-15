@@ -28,6 +28,7 @@ library
                      , Events.Actions.Normal
                      , Events.Actions.Search
                      , Events.Actions.Insert
+                     , Events.Actions.Modal
                      , Events.Actions.Insert.Task
                      , Events.Actions.Insert.Task.Create
                      , Events.Actions.Insert.Task.Edit
@@ -43,6 +44,7 @@ library
 
                      , UI.CLI
                      , UI.Draw
+                     , UI.Modal
                      , UI.Theme
                      , UI.Types
 

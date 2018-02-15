@@ -20,6 +20,7 @@
 - Vertical spacing doesn't work if the current item is blank
 - Cursor goes missing on the left hand side at the end of a line
 - One bad config line stops all config from working - needs to merge with defaultConfig
+- Help modal needs to scroll on smaller windows
 
 ## To Do
 
@@ -27,7 +28,6 @@
 - If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add tags/labels with `t`
 - Move between lists with `m` - shows possible lists
-- On `?` show keyboard commands
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Copy and paste?
@@ -109,3 +109,4 @@
 - Rename Persistence to IO.Taskell
 - List titles sometimes go missing
 - Use Template Haskell to import in config file templates
+- On `?` show keyboard commands

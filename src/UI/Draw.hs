@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module UI.Draw (
     draw,
     chooseCursor
@@ -14,6 +15,7 @@ import qualified Data.Sequence as Seq (mapWithIndex, length)
 
 import IO.Config (LayoutConfig, columnWidth, columnPadding)
 
+import UI.Modal (showModal)
 import UI.Types (ResourceName(..))
 import UI.Theme
 
@@ -76,19 +78,19 @@ searchImage layout s h i = case mode s of
 
 -- draw
 draw :: LayoutConfig -> State -> [Widget ResourceName]
-draw layout state = [
-          searchImage layout state h
-        . viewport RNLists Horizontal
-        . padRight (Pad $ fst (size state))
-        . hLimit (Seq.length ls * colWidth layout)
-        . padTop (Pad 1)
-        . hBox
-        . toList
-        $ renderList layout h (current s)  `Seq.mapWithIndex` ls
-    ]
+draw layout state = showModal state [main]
     where s = normalise state
           h = snd (size state)
           ls = lists s
+          main =
+              searchImage layout state h
+            . viewport RNLists Horizontal
+            . padRight (Pad $ fst (size state))
+            . hLimit (Seq.length ls * colWidth layout)
+            . padTop (Pad 1)
+            . hBox
+            . toList
+            $ renderList layout h (current s)  `Seq.mapWithIndex` ls
 
 -- cursors
 cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)

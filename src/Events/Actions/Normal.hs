@@ -51,6 +51,9 @@ event (EvKey (KChar '<') _) = (write =<<) . (listLeft =<<) . store
 -- search
 event (EvKey (KChar '/') _) = searchMode
 
+-- help
+event (EvKey (KChar '?') _) = showHelp
+
 -- selecting lists
 event (EvKey (KChar n) _)
     | isDigit n = selectList n

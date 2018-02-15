@@ -6,6 +6,7 @@ module Events.State (
     Size,
     InsertMode(..),
     Mode(..),
+    ModalType(..),
 
     -- App
     continue,
@@ -71,7 +72,10 @@ module Events.State (
     newItem,
     normalMode,
     insertBS,
-    insertCurrent
+    insertCurrent,
+
+    -- help
+    showHelp
 ) where
 
 import Data.Text (Text, snoc, null)
@@ -81,8 +85,9 @@ import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.Text as T
 import Data.Char (digitToInt)
 
+data ModalType = Help
 data InsertMode = EditTask | CreateTask | EditList | CreateList Text
-data Mode = Normal | Insert InsertMode | Write Mode | Search Bool Text | Shutdown
+data Mode = Normal | Insert InsertMode | Write Mode | Modal ModalType | Search Bool Text | Shutdown
 
 type Size = (Int, Int)
 type Pointer = (Int, Int)
@@ -369,6 +374,10 @@ searchChar :: Char -> Stateful
 searchChar c s = case mode s of
     Search ent term -> return $ s { mode = Search ent (Data.Text.snoc term c) }
     _ -> Nothing
+
+-- help
+showHelp :: Stateful
+showHelp s = return $ s { mode = Modal Help }
 
 -- view - maybe shouldn't be in here...
 search :: State -> State
