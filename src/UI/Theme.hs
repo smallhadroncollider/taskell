@@ -2,8 +2,8 @@ module UI.Theme where
 
 import Brick.Themes (Theme, newTheme)
 import Brick (AttrName, attrName)
-import Brick.Util (fg, on)
-import Graphics.Vty (defAttr, white, brightBlack, green, blue, magenta)
+import Brick.Util (fg)
+import Graphics.Vty (defAttr, green, blue, magenta)
 
 -- attrs
 titleAttr :: AttrName
