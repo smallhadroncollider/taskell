@@ -12,6 +12,7 @@
 - Avoid having to normalise the state?
 - Use Reader monad to pass around config
 - Remove duplication of config - currently using ini and hard-coded
+- Move Help modal creation into Template Haskell
 
 ## Bugs
 
@@ -25,14 +26,15 @@
 
 ## To Do
 
-- Left/Right arrow keys in insert mode
-- If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
-- Add tags/labels with `t`
 - Move between lists with `m` - shows possible lists
+- Sub-lists
+- Left/Right arrow keys in insert mode
+- Add tags/labels with `t`
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Copy and paste?
 - Add custom key support
+- If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
 
 ## Done
