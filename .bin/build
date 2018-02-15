@@ -8,8 +8,8 @@ if [ -z "$1" ]; then
     exit
 fi
 
-stack build
-stack build --docker
+stack build --ghc-options -O3
+stack build --docker --ghc-options -O3
 
 mkdir -p "releases/$1/taskell/DEBIAN"
 mkdir -p "releases/$1/taskell/usr/local/bin"

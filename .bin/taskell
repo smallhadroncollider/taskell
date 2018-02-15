@@ -1,1 +1,1 @@
-stack build && stack exec taskell $@
+stack build --fast --trace && stack exec taskell $@
