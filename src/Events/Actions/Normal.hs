@@ -55,7 +55,7 @@ event (EvKey (KChar '/') _) = searchMode
 event (EvKey (KChar '?') _) = showHelp
 
 -- subtasks
-event (EvKey (KChar '+') _) = showSubTasks
+event (EvKey KEnter _) = showSubTasks
 
 -- selecting lists
 event (EvKey (KChar n) _)

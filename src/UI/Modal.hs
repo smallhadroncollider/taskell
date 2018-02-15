@@ -34,10 +34,10 @@ help = modal "Controls" w
 
 st :: State -> Maybe (Widget ResourceName)
 st s = do
-    t <- getCurrentTask s
-    let sts = subTasks t
-    return $ modal (description t) $ vBox $ txt . rndr <$> sts
-    where rndr t = name t `append` (if complete t then " ✓" else "")
+    task <- getCurrentTask s
+    let sts = subTasks task
+        rndr t = name t `append` (if complete t then " ✓" else "")
+    return $ modal (description task) $ vBox $ txt . rndr <$> sts
 
 getModal :: State -> ModalType -> [Widget ResourceName]
 getModal s t = case t of
