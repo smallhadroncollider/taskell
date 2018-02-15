@@ -13,6 +13,7 @@
 - Use Reader monad to pass around config
 - Remove duplication of config - currently using ini and hard-coded
 - Move Help modal creation into Template Haskell
+- Use lenses for nested data?
 
 ## Bugs
 
@@ -26,8 +27,9 @@
 
 ## To Do
 
-- Move between lists with `m` - shows possible lists
 - Sub-lists
+- Customisable "+" symbol for sub-lists
+- Move between lists with `m` - shows possible lists
 - Left/Right arrow keys in insert mode
 - Add tags/labels with `t`
 - Add due dates to tasks with `d`
