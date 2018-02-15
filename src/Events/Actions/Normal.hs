@@ -54,6 +54,9 @@ event (EvKey (KChar '/') _) = searchMode
 -- help
 event (EvKey (KChar '?') _) = showHelp
 
+-- subtasks
+event (EvKey (KChar '+') _) = showSubTasks
+
 -- selecting lists
 event (EvKey (KChar n) _)
     | isDigit n = selectList n

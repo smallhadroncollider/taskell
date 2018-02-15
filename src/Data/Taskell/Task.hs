@@ -28,6 +28,9 @@ subTask n c = SubTask { name = n, complete = c }
 addSubTask :: SubTask -> Task -> Task
 addSubTask s t = t { subTasks = subTasks t ++ [s] }
 
+hasSubTasks :: Task -> Bool
+hasSubTasks t = not (Prelude.null (subTasks t))
+
 append :: Char -> Task  -> Task
 append c t = t { description = Data.Text.snoc (description t) c }
 

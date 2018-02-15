@@ -71,18 +71,20 @@ module Events.State (
     insertBS,
     insertCurrent,
 
-    -- help
-    showHelp
+    -- Events.Actions.Modal
+    showHelp,
+    showSubTasks,
+    getCurrentTask
 ) where
 
 import Data.Text (Text, snoc, null)
-import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
+import Data.Taskell.Task (Task, backspace, append, clear, isBlank, hasSubTasks)
 import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.Text as T
 import Data.Char (digitToInt)
 
-data ModalType = Help
+data ModalType = Help | SubTasks
 data InsertMode = EditTask | CreateTask | EditList | CreateList Text
 data Mode = Normal | Insert InsertMode | Write Mode | Modal ModalType | Search Bool Text | Shutdown
 
@@ -369,6 +371,11 @@ searchChar c s = case mode s of
 -- help
 showHelp :: Stateful
 showHelp s = return $ s { mode = Modal Help }
+
+showSubTasks :: Stateful
+showSubTasks s = do
+    sts <- hasSubTasks <$> getCurrentTask s
+    return $ if sts then s { mode = Modal SubTasks } else s
 
 -- view - maybe shouldn't be in here...
 search :: State -> State

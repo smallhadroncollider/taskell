@@ -6,9 +6,9 @@ module UI.Draw (
 
 import Events.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, normalise)
 import Brick
-import Data.Text (Text, length, pack, concat, append)
+import Data.Text (Text, length, pack, concat, append, empty)
 import Data.Taskell.List (List, tasks, title)
-import Data.Taskell.Task (Task, description)
+import Data.Taskell.Task (Task, description, hasSubTasks)
 import Data.Taskell.Text (wrap)
 import Data.Foldable (toList)
 import qualified Data.Sequence as Seq (mapWithIndex, length)
@@ -38,7 +38,8 @@ renderTask layout p li ti t =
     . addCursor li ti d
     $ box d
 
-    where d = wrap (columnWidth layout) $ description t
+    where text = description t `append` (if hasSubTasks t then " +" else empty)
+          d = wrap (columnWidth layout) text
 
 columnNumber :: Int -> Text -> Text
 columnNumber i s = if col >= 1 && col <= 9 then Data.Text.concat [pack (show col), ". ",  s] else s
