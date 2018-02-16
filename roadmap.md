@@ -27,8 +27,6 @@
 
 ## To Do
 
-- Sub-lists
-- Customisable "+" symbol for sub-lists
 - Move between lists with `m` - shows possible lists
 - Left/Right arrow keys in insert mode
 - Add tags/labels with `t`
@@ -38,6 +36,15 @@
 - Add custom key support
 - If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
+
+## In Progress
+
+- Sub-lists
+    * Scrolling in sub-tasks
+    * Press Enter to create next
+    * Word wrapping
+    * Searching
+    * Delete items
 
 ## Done
 
