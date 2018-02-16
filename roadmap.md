@@ -27,6 +27,7 @@
 
 ## To Do
 
+- Task body - e.g. as well as sub lists, have a longer description
 - Move between lists with `m` - shows possible lists
 - Left/Right arrow keys in insert mode
 - Add tags/labels with `t`
