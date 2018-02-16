@@ -21,7 +21,7 @@ import UI.Types (ResourceName(..))
 import UI.Theme (titleAttr, taskCurrentAttr, disabledAttr)
 
 place :: Widget ResourceName -> Widget ResourceName
-place = centerLayer . border . padTopBottom 1 . padLeftRight 4
+place = hCenterLayer . border . padTopBottom 1 . padLeftRight 4
 
 modal :: Text -> Widget ResourceName -> Widget ResourceName
 modal title w = place $ t <=> w
