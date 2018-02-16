@@ -14,6 +14,7 @@ normal (EvKey (KChar 'k') _) = previousSubTask
 normal (EvKey (KChar 'j') _) = nextSubTask
 normal (EvKey (KChar 'a') _) = (ST.insertMode =<<) . (ST.lastSubTask =<<) . (ST.newItem =<<) . store
 normal (EvKey (KChar 'e') _) = (ST.insertMode =<<) . store
+normal (EvKey (KChar 'D') _) = (write =<<) . (ST.remove =<<) . store
 normal _ = return
 
 insert :: Event -> Stateful

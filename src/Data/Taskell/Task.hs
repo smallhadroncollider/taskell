@@ -1,6 +1,6 @@
 module Data.Taskell.Task where
 
-import Data.Sequence as S (Seq, null, (|>), adjust', empty, length, filter)
+import Data.Sequence as S (Seq, null, (|>), adjust', empty, length, filter, deleteAt)
 import Data.Text as T (Text, snoc, length, null, isInfixOf, empty)
 import qualified Data.Taskell.Text as T
 
@@ -38,6 +38,9 @@ hasSubTasks t = not (S.null (subTasks t))
 updateSubTask :: Int -> (SubTask -> SubTask) -> Task -> Task
 updateSubTask index fn task = task { subTasks = sts }
     where sts = adjust' fn index (subTasks task)
+
+removeSubTask :: Int -> Task -> Task
+removeSubTask index task = task { subTasks = S.deleteAt index (subTasks task) }
 
 toggleComplete :: SubTask -> SubTask
 toggleComplete st = st { complete = not (complete st) }

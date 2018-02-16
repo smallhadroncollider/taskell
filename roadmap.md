@@ -44,7 +44,7 @@
     * Press Enter to create next
     * ~Word wrapping~
     * ~Searching~
-    * Delete items
+    * ~Delete items~
 
 ## Done
 

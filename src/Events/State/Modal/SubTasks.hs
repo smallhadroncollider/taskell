@@ -3,7 +3,7 @@ module Events.State.Modal.SubTasks where
 import Data.Maybe (fromMaybe)
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, stAppend, stBackspace, countSubTasks)
+import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, stAppend, stBackspace, countSubTasks, removeSubTask)
 import Data.Sequence as S (adjust')
 
 showSubTasks :: Stateful
@@ -20,6 +20,13 @@ setComplete state = do
     index <- getCurrentSubTask state
     task <- updateSubTask index toggleComplete <$> getCurrentTask state
     setCurrentTask task state
+
+remove :: Stateful
+remove state = do
+    index <- getCurrentSubTask state
+    task <- removeSubTask index <$> getCurrentTask state
+    state' <- setCurrentTask task state
+    setIndex state' index
 
 insertMode :: Stateful
 insertMode state = case mode state of
