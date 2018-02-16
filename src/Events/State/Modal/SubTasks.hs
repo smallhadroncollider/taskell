@@ -2,7 +2,8 @@ module Events.State.Modal.SubTasks where
 
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (updateSubTask, toggleComplete)
+import Data.Taskell.Task (updateSubTask, toggleComplete, subTasks)
+import Data.Sequence as S (length)
 
 getCurrentSubTask :: State -> Maybe Int
 getCurrentSubTask state = case mode state of
@@ -14,3 +15,19 @@ setComplete state = do
     index <- getCurrentSubTask state
     task <- getCurrentTask state >>= updateSubTask index toggleComplete
     setCurrentTask task state
+
+-- list navigation
+changeSubTask :: Int -> Stateful
+changeSubTask inc state = do
+    index <- (+ inc) <$> getCurrentSubTask state
+    lst <- (+ (-1)) . S.length . subTasks <$> getCurrentTask state
+    let newIndex | index > lst = lst
+                 | index < 0 = 0
+                 | otherwise = index
+    return $ state { mode = Modal (SubTasks newIndex STNormal) }
+
+nextSubTask :: Stateful
+nextSubTask = changeSubTask 1
+
+previousSubTask :: Stateful
+previousSubTask = changeSubTask (-1)

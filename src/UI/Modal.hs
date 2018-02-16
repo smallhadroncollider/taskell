@@ -5,14 +5,16 @@ module UI.Modal (
 ) where
 
 import Events.State (State, Mode(..), ModalType(..), mode, getCurrentTask)
+import Events.State.Modal.SubTasks (getCurrentSubTask)
 import Brick
 import Brick.Widgets.Center
 import Brick.Widgets.Border
-import Data.Taskell.Task (description, subTasks, name, complete)
+import Data.Taskell.Task (SubTask, description, subTasks, name, complete)
 import Data.Text as T (Text, lines, replace, breakOn, strip, drop, append)
 import Data.Text.Encoding (decodeUtf8)
 import Data.FileEmbed (embedFile)
 import Data.Foldable (toList)
+import Data.Sequence (mapWithIndex)
 import IO.Markdown (trimListItem)
 
 import UI.Types (ResourceName(..))
@@ -33,14 +35,20 @@ help = modal "Controls" w
           right = vBox $ txt . T.strip . T.drop 1 <$> r
           w = left <+> right
 
+renderSubTask :: Int -> Int -> SubTask -> Widget ResourceName
+renderSubTask current i subtask | i == current = withAttr taskCurrentAttr widget
+                                | complete subtask = withAttr disabledAttr widget
+                                | otherwise = widget
+    where postfix = if complete subtask then " ✓" else ""
+          widget = txt $ name subtask `append` postfix
+
 st :: State -> Maybe (Widget ResourceName)
-st s = do
-    task <- getCurrentTask s
+st state = do
+    task <- getCurrentTask state
+    index <- getCurrentSubTask state
     let sts = subTasks task
-        rndr t | complete t = withAttr disabledAttr $ txt $ name t `append` " ✓"
-               | otherwise = txt $ name t
         w | null sts = withAttr disabledAttr $ txt "No sub-tasks"
-          | otherwise = vBox . toList $ rndr <$> sts
+          | otherwise = vBox . toList $ renderSubTask index `mapWithIndex` sts
     return $ modal (description task) w
 
 getModal :: State -> ModalType -> [Widget ResourceName]

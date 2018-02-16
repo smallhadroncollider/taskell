@@ -8,4 +8,6 @@ event :: Event -> Stateful
 event (EvKey KEsc _) = normalMode
 event (EvKey KEnter _) = normalMode
 event (EvKey (KChar ' ') _) = (write =<<) . (setComplete =<<) . store
+event (EvKey (KChar 'k') _) = previousSubTask
+event (EvKey (KChar 'j') _) = nextSubTask
 event _ = return
