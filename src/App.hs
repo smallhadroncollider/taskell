@@ -3,7 +3,8 @@ module App (go) where
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Control.Concurrent (forkIO)
-import Events.State (State, Mode(..), lists, continue, path, mode)
+import Events.State (State, Mode(..), continue, path, mode, io)
+import Data.Taskell.Lists (Lists)
 import Brick
 
 import IO.Taskell (writeFile)
@@ -15,9 +16,9 @@ import UI.Draw (draw, chooseCursor)
 import UI.Types (ResourceName(..))
 
 -- store
-store :: State -> IO State
-store s = do
-        forkIO $ IO.Taskell.writeFile (lists s) (path s)
+store :: Lists -> State -> IO State
+store ls s = do
+        forkIO $ IO.Taskell.writeFile ls (path s)
         return (Events.State.continue s)
 
 -- App code
@@ -25,8 +26,9 @@ handleEvent :: State -> BrickEvent ResourceName e -> EventM ResourceName (Next S
 handleEvent s' (VtyEvent e) = let s = event e s' in
     case mode s of
         Shutdown -> Brick.halt s
-        Write _ -> liftIO (store s) >>= Brick.continue
-        _ -> Brick.continue s
+        _ -> case io s of
+            Just ls -> liftIO (store ls s) >>= Brick.continue
+            Nothing -> Brick.continue s
 handleEvent s _ = Brick.continue s
 
 go :: Config -> State -> IO ()

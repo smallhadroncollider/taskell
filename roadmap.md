@@ -13,6 +13,7 @@
 - Use Reader monad to pass around config
 - Remove duplication of config - currently using ini and hard-coded
 - Move Help modal creation into Template Haskell
+- Use lenses for nested data?
 
 ## Bugs
 
@@ -27,7 +28,6 @@
 ## To Do
 
 - Move between lists with `m` - shows possible lists
-- Sub-lists
 - Left/Right arrow keys in insert mode
 - Add tags/labels with `t`
 - Add due dates to tasks with `d`
@@ -36,6 +36,9 @@
 - Add custom key support
 - If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
+
+## In Progress
+
 
 ## Done
 
@@ -114,3 +117,9 @@
 - Use Template Haskell to import in config file templates
 - On `?` show keyboard commands
 - Remove size from state
+- Sub-lists
+    * ~Scrolling in sub-tasks~
+    * ~Press Enter to create next~
+    * ~Word wrapping~
+    * ~Searching~
+    * ~Delete items~

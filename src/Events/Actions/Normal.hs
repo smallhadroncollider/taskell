@@ -3,6 +3,7 @@ module Events.Actions.Normal (event) where
 import Graphics.Vty.Input.Events
 import Data.Char (isDigit)
 import Events.State
+import Events.State.Modal.SubTasks (showSubTasks)
 
 -- Normal
 event :: Event -> Stateful
@@ -53,6 +54,9 @@ event (EvKey (KChar '/') _) = searchMode
 
 -- help
 event (EvKey (KChar '?') _) = showHelp
+
+-- subtasks
+event (EvKey KEnter _) = showSubTasks
 
 -- selecting lists
 event (EvKey (KChar n) _)

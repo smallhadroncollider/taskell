@@ -10,6 +10,7 @@ module Events.State (
     -- App
     continue,
     write,
+    io,
     path,
 
     -- record accesors
@@ -71,30 +72,20 @@ module Events.State (
     insertBS,
     insertCurrent,
 
-    -- help
-    showHelp
+    -- Events.Actions.Modal
+    showHelp,
+    getCurrentTask,
+    setCurrentTask
 ) where
 
-import Data.Text (Text, snoc, null)
+import Data.Text (snoc, null)
 import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
-import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle, getTask)
+import Data.Taskell.List (List(), updateFn, update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.Text as T
 import Data.Char (digitToInt)
 
-data ModalType = Help
-data InsertMode = EditTask | CreateTask | EditList | CreateList Text
-data Mode = Normal | Insert InsertMode | Write Mode | Modal ModalType | Search Bool Text | Shutdown
-
-type Pointer = (Int, Int)
-
-data State = State {
-    mode :: Mode,
-    lists :: Lists.Lists,
-    history :: [(Pointer, Lists.Lists)],
-    current :: Pointer,
-    path :: FilePath
-}
+import Events.State.Types
 
 create :: FilePath -> Lists.Lists -> State
 create p ls = State {
@@ -102,23 +93,19 @@ create p ls = State {
     lists = ls,
     history = [],
     current = (0, 0),
-    path = p
+    path = p,
+    io = Nothing
 }
-
-type Stateful = State -> Maybe State
-type InternalStateful = State -> State
 
 -- app state
 quit :: Stateful
 quit s = return $ s { mode = Shutdown }
 
 continue :: State -> State
-continue s = case mode s of
-    Write m -> s { mode = m }
-    _ -> s
+continue s = s { io = Nothing }
 
 write :: Stateful
-write s = return $ s { mode = Write (mode s) }
+write s = return $ s { io = Just (lists s) }
 
 store :: Stateful
 store s = return $ s { history = (current s, lists s) : history s }
@@ -183,6 +170,11 @@ getCurrentTask s = do
     l <- getList s
     getTask (getIndex s) l
 
+setCurrentTask :: Task -> Stateful
+setCurrentTask task state = do
+    list <- update (getIndex state) task <$> getList state
+    return $ setList state list
+
 startCreate :: Stateful
 startCreate s = return $ s { mode = Insert CreateTask }
 
@@ -218,9 +210,8 @@ insertCurrent char = change (Data.Taskell.Task.append char)
 
 change :: (Task -> Task) -> State -> Maybe State
 change fn s = do
-    l <- getList s
-    l' <- update (getIndex s) fn l
-    return $ setList s l'
+    l <- updateFn (getIndex s) fn <$> getList s
+    return $ setList s l
 
 clearItem :: Stateful
 clearItem = change clear
@@ -322,7 +313,7 @@ getList :: State -> Maybe List
 getList s = Lists.get (lists s) (getCurrentList s)
 
 setList :: State -> List -> State
-setList s ts = setLists s (Lists.update (getCurrentList s) (lists s) ts)
+setList s ts = setLists s (Lists.updateLists (getCurrentList s) (lists s) ts)
 
 setLists :: State -> Lists.Lists -> State
 setLists s ts = s { lists = ts }

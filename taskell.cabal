@@ -29,6 +29,8 @@ library
                      , Events.Actions.Search
                      , Events.Actions.Insert
                      , Events.Actions.Modal
+                     , Events.Actions.Modal.Help
+                     , Events.Actions.Modal.SubTasks
                      , Events.Actions.Insert.Task
                      , Events.Actions.Insert.Task.Create
                      , Events.Actions.Insert.Task.Edit
@@ -37,6 +39,8 @@ library
                      , Events.Actions.Insert.List.Edit
 
                      , Events.State
+                     , Events.State.Types
+                     , Events.State.Modal.SubTasks
 
                      , IO.Taskell
                      , IO.Markdown
