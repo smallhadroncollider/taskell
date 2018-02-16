@@ -15,7 +15,7 @@ import Data.FileEmbed (embedFile)
 import IO.Markdown (trimListItem)
 
 import UI.Types (ResourceName(..))
-import UI.Theme (titleAttr, taskCurrentAttr)
+import UI.Theme (titleAttr, taskCurrentAttr, disabledAttr)
 
 place :: Widget ResourceName -> Widget ResourceName
 place = centerLayer . border . padTopBottom 1 . padLeftRight 4
@@ -36,8 +36,11 @@ st :: State -> Maybe (Widget ResourceName)
 st s = do
     task <- getCurrentTask s
     let sts = subTasks task
-        rndr t = name t `append` (if complete t then " ✓" else "")
-    return $ modal (description task) $ vBox $ txt . rndr <$> sts
+        rndr t | complete t = withAttr disabledAttr $ txt $ name t `append` " ✓"
+               | otherwise = txt $ name t
+        w | null sts = withAttr disabledAttr $ txt "No sub-tasks"
+          | otherwise = vBox $ rndr <$> sts
+    return $ modal (description task) w
 
 getModal :: State -> ModalType -> [Widget ResourceName]
 getModal s t = case t of
