@@ -29,6 +29,8 @@ library
                      , Events.Actions.Search
                      , Events.Actions.Insert
                      , Events.Actions.Modal
+                     , Events.Actions.Modal.Help
+                     , Events.Actions.Modal.SubTasks
                      , Events.Actions.Insert.Task
                      , Events.Actions.Insert.Task.Create
                      , Events.Actions.Insert.Task.Edit
