@@ -15,6 +15,11 @@ getCurrentSubTask state = case mode state of
     Modal (SubTasks index _) -> Just index
     _ -> Nothing
 
+getCurrentMode :: State -> Maybe SubTasksMode
+getCurrentMode state = case mode state of
+    Modal (SubTasks _ m) -> Just m
+    _ -> Nothing
+
 setComplete :: Stateful
 setComplete state = do
     index <- getCurrentSubTask state
@@ -73,7 +78,8 @@ lastIndex state = (+ (-1)) . countSubTasks <$> getCurrentTask state
 setIndex :: State -> Int -> Maybe State
 setIndex state index = do
     lst <- lastIndex state
+    m <- getCurrentMode state
     let newIndex | index > lst = lst
                  | index < 0 = 0
                  | otherwise = index
-    return $ state { mode = Modal (SubTasks newIndex STNormal) }
+    return $ state { mode = Modal (SubTasks newIndex m) }

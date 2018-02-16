@@ -10,6 +10,7 @@ module Events.State (
     -- App
     continue,
     write,
+    io,
     path,
 
     -- record accesors
@@ -92,7 +93,8 @@ create p ls = State {
     lists = ls,
     history = [],
     current = (0, 0),
-    path = p
+    path = p,
+    io = Nothing
 }
 
 -- app state
@@ -100,12 +102,10 @@ quit :: Stateful
 quit s = return $ s { mode = Shutdown }
 
 continue :: State -> State
-continue s = case mode s of
-    Write m -> s { mode = m }
-    _ -> s
+continue s = s { io = Nothing }
 
 write :: Stateful
-write s = return $ s { mode = Write (mode s) }
+write s = return $ s { io = Just (lists s) }
 
 store :: Stateful
 store s = return $ s { history = (current s, lists s) : history s }

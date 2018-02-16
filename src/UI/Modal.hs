@@ -21,7 +21,7 @@ import UI.Types (ResourceName(..))
 import UI.Theme (titleAttr, taskCurrentAttr, disabledAttr)
 
 place :: Widget ResourceName -> Widget ResourceName
-place = padTopBottom 1 . centerLayer . border . padTopBottom 1 . padLeftRight 4 . vLimit 20 . hLimit 50
+place = padTopBottom 1 . centerLayer . border . padTopBottom 1 . padLeftRight 4 . hLimit 50
 
 modal :: Text -> Widget ResourceName -> Widget ResourceName
 modal title w = place $ t <=> w'
@@ -41,14 +41,14 @@ renderSubTask current i subtask | i == current = visible $ withAttr taskCurrentA
                                 | complete subtask = withAttr disabledAttr widget
                                 | otherwise = widget
     where postfix = if complete subtask then " ✓" else ""
-          widget = txt "• " <+> (txtWrap $ name subtask `append` postfix)
+          widget = txt "• " <+> txtWrap (name subtask `append` postfix)
 
 st :: State -> Maybe (Widget ResourceName)
 st state = do
     task <- getCurrentTask state
     index <- getCurrentSubTask state
     let sts = subTasks task
-        w | null sts = withAttr disabledAttr $ txt "No sub-tasks"
+        w | null sts = withAttr disabledAttr $ txt "  No sub-tasks"
           | otherwise = vBox . toList $ renderSubTask index `mapWithIndex` sts
     return $ modal (description task) w
 

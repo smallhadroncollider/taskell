@@ -7,7 +7,7 @@ data SubTasksMode = STNormal | STInsert
 data ModalType = Help | SubTasks Int SubTasksMode
 
 data InsertMode = EditTask | CreateTask | EditList | CreateList Text
-data Mode = Normal | Insert InsertMode | Write Mode | Modal ModalType | Search Bool Text | Shutdown
+data Mode = Normal | Insert InsertMode | Modal ModalType | Search Bool Text | Shutdown
 
 type Pointer = (Int, Int)
 
@@ -16,7 +16,8 @@ data State = State {
     lists :: Lists,
     history :: [(Pointer, Lists)],
     current :: Pointer,
-    path :: FilePath
+    path :: FilePath,
+    io :: Maybe Lists
 }
 
 type Stateful = State -> Maybe State
