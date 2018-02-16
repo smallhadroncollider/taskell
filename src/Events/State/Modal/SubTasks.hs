@@ -12,6 +12,5 @@ getCurrentSubTask state = case mode state of
 setComplete :: Stateful
 setComplete state = do
     index <- getCurrentSubTask state
-    task <- getCurrentTask state
-    updatedTask <- updateSubTask index toggleComplete task
-    setCurrentTask updatedTask state
+    task <- getCurrentTask state >>= updateSubTask index toggleComplete
+    setCurrentTask task state
