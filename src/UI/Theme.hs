@@ -3,7 +3,7 @@ module UI.Theme where
 import Brick.Themes (Theme, newTheme)
 import Brick (AttrName, attrName)
 import Brick.Util (fg)
-import Graphics.Vty (defAttr, green, blue, magenta, red)
+import Graphics.Vty (defAttr, green, blue, magenta, yellow)
 
 -- attrs
 titleAttr :: AttrName
@@ -28,5 +28,5 @@ defaultTheme =
         (titleAttr, fg green),
         (titleCurrentAttr, fg blue),
         (taskCurrentAttr, fg magenta),
-        (disabledAttr, fg red)
+        (disabledAttr, fg yellow)
     ]
