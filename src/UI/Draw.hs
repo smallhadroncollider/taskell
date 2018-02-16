@@ -6,9 +6,9 @@ module UI.Draw (
 
 import Events.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, normalise)
 import Brick
-import Data.Text (Text, length, pack, concat, append, empty)
+import Data.Text as T (Text, length, pack, concat, append, empty)
 import Data.Taskell.List (List, tasks, title)
-import Data.Taskell.Task (Task, description, hasSubTasks)
+import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks)
 import Data.Taskell.Text (wrap)
 import Data.Foldable (toList)
 import qualified Data.Sequence as Seq (mapWithIndex, length)
@@ -26,23 +26,36 @@ addCursor :: Int -> Int -> [Text] -> Widget ResourceName -> Widget ResourceName
 addCursor li ti d = reportExtent name . showCursor name (Location (h, v))
 
     where v = Prelude.length d - 1
-          h = Data.Text.length $ last d
+          h = T.length $ last d
           name = RNTask (li, ti)
 
 box :: [Text] -> Widget ResourceName
 box d = padBottom (Pad 1) . vBox $ txt <$> d
 
+subTaskCount :: Task -> Text
+subTaskCount t | hasSubTasks t = T.concat [
+        "[",
+        pack . show $ countCompleteSubTasks t,
+        "/",
+        pack . show $ countSubTasks t,
+        "]"
+    ]
+               | otherwise = empty
+
 renderTask :: LayoutConfig -> Pointer -> Int -> Int -> Task -> Widget ResourceName
 renderTask layout p li ti t =
-      (if (li, ti) == p then withAttr taskCurrentAttr . visible else withAttr taskAttr)
+      padBottom (Pad 1)
+    . (<=> (withAttr disabledAttr $ txt after))
+    . (if (li, ti) == p then withAttr taskCurrentAttr . visible else withAttr taskAttr)
     . addCursor li ti d
-    $ box d
+    . vBox $ txt <$> d
 
-    where text = description t `append` (if hasSubTasks t then " +" else empty)
+    where text = description t
+          after = subTaskCount t
           d = wrap (columnWidth layout) text
 
 columnNumber :: Int -> Text -> Text
-columnNumber i s = if col >= 1 && col <= 9 then Data.Text.concat [pack (show col), ". ",  s] else s
+columnNumber i s = if col >= 1 && col <= 9 then T.concat [pack (show col), ". ",  s] else s
     where col = i + 1
 
 renderTitle :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName

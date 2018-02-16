@@ -1,6 +1,6 @@
 module Data.Taskell.Task where
 
-import Data.Sequence as S (Seq, null, (|>), adjust', empty)
+import Data.Sequence as S (Seq, null, (|>), adjust', empty, length, filter)
 import Data.Text as T (Text, snoc, length, null, isInfixOf, empty)
 import qualified Data.Taskell.Text as T
 
@@ -53,6 +53,12 @@ stAppend c st = st { name = T.snoc (name st) c }
 
 stBackspace :: SubTask -> SubTask
 stBackspace st = st { name = T.backspace (name st) }
+
+countSubTasks :: Task -> Int
+countSubTasks = S.length . subTasks
+
+countCompleteSubTasks :: Task -> Int
+countCompleteSubTasks = S.length . S.filter complete . subTasks
 
 characters :: Task -> Int
 characters = T.length . description

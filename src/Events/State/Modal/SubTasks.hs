@@ -3,8 +3,8 @@ module Events.State.Modal.SubTasks where
 import Data.Maybe (fromMaybe)
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, stAppend, stBackspace)
-import Data.Sequence as S (length, adjust')
+import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, stAppend, stBackspace, countSubTasks)
+import Data.Sequence as S (adjust')
 
 showSubTasks :: Stateful
 showSubTasks s = return $ s { mode = Modal (SubTasks index STNormal) }
@@ -61,7 +61,7 @@ lastSubTask :: Stateful
 lastSubTask state = lastIndex state >>= setIndex state
 
 lastIndex :: State -> Maybe Int
-lastIndex state = (+ (-1)) . S.length . subTasks <$> getCurrentTask state
+lastIndex state = (+ (-1)) . countSubTasks <$> getCurrentTask state
 
 setIndex :: State -> Int -> Maybe State
 setIndex state index = do
