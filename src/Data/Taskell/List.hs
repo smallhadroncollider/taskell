@@ -42,10 +42,14 @@ extract i l = do
     (xs, x) <- S.extract i (tasks l)
     return (l { tasks = xs }, x)
 
-update :: Int -> (Task -> Task) -> List -> Maybe List
-update i fn l = do
+updateFn :: Int -> (Task -> Task) -> List -> Maybe List
+updateFn i fn l = do
     ts' <- S.updateFn i fn (tasks l)
     return $ l { tasks = ts' }
+
+update :: Int -> Task -> List -> List
+update i t l = l { tasks = ts }
+    where ts = S.update i (tasks l) t
 
 move :: Int -> Int -> List -> Maybe List
 move from dir l = do

@@ -12,5 +12,5 @@ event (EvKey (KChar 'q') _) s = quit s
 
 event e s = case mode s of
     Modal Help -> Help.event e s
-    Modal SubTasks -> SubTasks.event e s
+    Modal (SubTasks _ _) -> SubTasks.event e s
     _ -> return s

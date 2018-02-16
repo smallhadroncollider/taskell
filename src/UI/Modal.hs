@@ -12,6 +12,7 @@ import Data.Taskell.Task (description, subTasks, name, complete)
 import Data.Text as T (Text, lines, replace, breakOn, strip, drop, append)
 import Data.Text.Encoding (decodeUtf8)
 import Data.FileEmbed (embedFile)
+import Data.Foldable (toList)
 import IO.Markdown (trimListItem)
 
 import UI.Types (ResourceName(..))
@@ -39,13 +40,13 @@ st s = do
         rndr t | complete t = withAttr disabledAttr $ txt $ name t `append` " ✓"
                | otherwise = txt $ name t
         w | null sts = withAttr disabledAttr $ txt "No sub-tasks"
-          | otherwise = vBox $ rndr <$> sts
+          | otherwise = vBox . toList $ rndr <$> sts
     return $ modal (description task) w
 
 getModal :: State -> ModalType -> [Widget ResourceName]
 getModal s t = case t of
     Help -> [help]
-    SubTasks -> case st s of
+    SubTasks _ _ -> case st s of
         Just w -> [w]
         Nothing -> []
 

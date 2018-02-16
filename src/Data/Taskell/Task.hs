@@ -1,6 +1,8 @@
 module Data.Taskell.Task where
 
-import Data.Text (Text, snoc, length, null, isInfixOf, empty)
+import Data.Sequence as S (Seq, null, (|>))
+import Data.Taskell.Seq as S
+import Data.Text as T (Text, snoc, length, null, isInfixOf, empty)
 import qualified Data.Taskell.Text as T
 
 data SubTask = SubTask {
@@ -10,11 +12,11 @@ data SubTask = SubTask {
 
 data Task = Task {
     description :: Text,
-    subTasks :: [SubTask]
+    subTasks :: Seq SubTask
 } deriving (Show, Eq)
 
 blank :: Task
-blank = Task { description = empty, subTasks = [] }
+blank = Task { description = T.empty, subTasks = S.empty }
 
 clear :: Task -> Task
 clear _ = blank
@@ -26,22 +28,30 @@ subTask :: Text -> Bool -> SubTask
 subTask n c = SubTask { name = n, complete = c }
 
 addSubTask :: SubTask -> Task -> Task
-addSubTask s t = t { subTasks = subTasks t ++ [s] }
+addSubTask s t = t { subTasks = subTasks t |> s }
 
 hasSubTasks :: Task -> Bool
-hasSubTasks t = not (Prelude.null (subTasks t))
+hasSubTasks t = not (S.null (subTasks t))
+
+updateSubTask :: Int -> (SubTask -> SubTask) -> Task -> Maybe Task
+updateSubTask index fn task = do
+    sts <- updateFn index fn (subTasks task)
+    return $ task { subTasks = sts }
+
+toggleComplete :: SubTask -> SubTask
+toggleComplete st = st { complete = not (complete st) }
 
 append :: Char -> Task  -> Task
-append c t = t { description = Data.Text.snoc (description t) c }
+append c t = t { description = T.snoc (description t) c }
 
 backspace :: Task -> Task
 backspace t = t { description = T.backspace (description t) }
 
 characters :: Task -> Int
-characters = Data.Text.length . description
+characters = T.length . description
 
 contains :: Text -> Task -> Bool
-contains s t = s `Data.Text.isInfixOf` description t
+contains s t = s `T.isInfixOf` description t
 
 isBlank :: Task -> Bool
-isBlank t = Data.Text.null $ description t
+isBlank t = T.null $ description t

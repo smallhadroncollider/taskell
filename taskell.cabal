@@ -39,6 +39,8 @@ library
                      , Events.Actions.Insert.List.Edit
 
                      , Events.State
+                     , Events.State.Types
+                     , Events.State.Modal.SubTasks
 
                      , IO.Taskell
                      , IO.Markdown

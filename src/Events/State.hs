@@ -74,29 +74,18 @@ module Events.State (
     -- Events.Actions.Modal
     showHelp,
     showSubTasks,
-    getCurrentTask
+    getCurrentTask,
+    setCurrentTask
 ) where
 
-import Data.Text (Text, snoc, null)
+import Data.Text (snoc, null)
 import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
-import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle, getTask)
+import Data.Taskell.List (List(), updateFn, update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.Text as T
 import Data.Char (digitToInt)
 
-data ModalType = Help | SubTasks
-data InsertMode = EditTask | CreateTask | EditList | CreateList Text
-data Mode = Normal | Insert InsertMode | Write Mode | Modal ModalType | Search Bool Text | Shutdown
-
-type Pointer = (Int, Int)
-
-data State = State {
-    mode :: Mode,
-    lists :: Lists.Lists,
-    history :: [(Pointer, Lists.Lists)],
-    current :: Pointer,
-    path :: FilePath
-}
+import Events.State.Types
 
 create :: FilePath -> Lists.Lists -> State
 create p ls = State {
@@ -106,9 +95,6 @@ create p ls = State {
     current = (0, 0),
     path = p
 }
-
-type Stateful = State -> Maybe State
-type InternalStateful = State -> State
 
 -- app state
 quit :: Stateful
@@ -185,6 +171,11 @@ getCurrentTask s = do
     l <- getList s
     getTask (getIndex s) l
 
+setCurrentTask :: Task -> Stateful
+setCurrentTask task state = do
+    list <- update (getIndex state) task <$> getList state
+    return $ setList state list
+
 startCreate :: Stateful
 startCreate s = return $ s { mode = Insert CreateTask }
 
@@ -221,7 +212,7 @@ insertCurrent char = change (Data.Taskell.Task.append char)
 change :: (Task -> Task) -> State -> Maybe State
 change fn s = do
     l <- getList s
-    l' <- update (getIndex s) fn l
+    l' <- updateFn (getIndex s) fn l
     return $ setList s l'
 
 clearItem :: Stateful
@@ -373,7 +364,7 @@ showHelp :: Stateful
 showHelp s = return $ s { mode = Modal Help }
 
 showSubTasks :: Stateful
-showSubTasks s = return $ s { mode = Modal SubTasks }
+showSubTasks s = return $ s { mode = Modal (SubTasks 0 STNormal) }
 
 -- view - maybe shouldn't be in here...
 search :: State -> State
