@@ -11,29 +11,34 @@
 - Add some tests
 - Avoid having to normalise the state?
 - Use Reader monad to pass around config
-- Rename Persistence to IO.Taskell
+- Remove duplication of config - currently using ini and hard-coded
+- Move Help modal creation into Template Haskell
+- Use lenses for nested data?
 
 ## Bugs
 
 - Items near bottom of the list jump in position
-- List titles sometimes go missing
 - Up and down in search gets a bit lost
 - Editing list title doesn't always have visibility
 - Vertical spacing doesn't work if the current item is blank
 - Cursor goes missing on the left hand side at the end of a line
+- One bad config line stops all config from working - needs to merge with defaultConfig
+- Help modal needs to scroll on smaller windows
 
 ## To Do
 
-- Left/Right arrow keys in insert mode
-- If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
-- Add tags/labels with `t`
 - Move between lists with `m` - shows possible lists
-- On `?` show keyboard commands
+- Left/Right arrow keys in insert mode
+- Add tags/labels with `t`
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Copy and paste?
 - Add custom key support
+- If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
+
+## In Progress
+
 
 ## Done
 
@@ -107,3 +112,14 @@
 - `C` doesn't work properly
 - Custom colours
 - `.taskell` config file in home directory
+- Rename Persistence to IO.Taskell
+- List titles sometimes go missing
+- Use Template Haskell to import in config file templates
+- On `?` show keyboard commands
+- Remove size from state
+- Sub-lists
+    * ~Scrolling in sub-tasks~
+    * ~Press Enter to create next~
+    * ~Word wrapping~
+    * ~Searching~
+    * ~Delete items~

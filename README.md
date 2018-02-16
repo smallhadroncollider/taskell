@@ -39,30 +39,7 @@ Run `sudo dnf install ncurses-compat-libs` then download and run binary as descr
 
 ## Controls
 
-- `a`: add a task to bottom (`Enter`/`Esc` to stop)
-- `o`: add a task below
-- `O`: add a task above
-- `e`/`i`/`A`: edit a task (`Enter`/`Esc` to stop)
-- `C`: change task
-- `j`: move down
-- `k`: move up
-- `h`: move left
-- `l`: move right
-- `G`: go to bottom of list
-- `1`-`9`: select list
-- `J`: shift task down
-- `K`: shift task up
-- `H`: shift task left (current selection follows task)
-- `L`: shift task right (current selection follows task)
-- `Space`: shift task right (current selection stays put)
-- `D`: delete task
-- `u`: undo
-- `N`: new list
-- `E`: edit list title (`Enter`/`Esc` to stop)
-- `X`: delete list
-- `<`/`>`: move list left/right
-- `/`: search (`Enter` to navigate, `Esc` to leave)
-- `q`: quit
+Press `?` for a [list of controls](https://github.com/smallhadroncollider/taskell/blob/master/templates/controls.md)
 
 ### Tips
 
@@ -84,17 +61,31 @@ By default stores in a `taskell.md` file in the working directory:
 
 ## Theming
 
-You can edit Taskell's colourscheme by editing `~/.taskell/theme.ini`:
+You can edit Taskell's colour-scheme by editing `~/.taskell/theme.ini`:
+
+```ini
+[other]
+
+; list title
+title.fg = green
+
+; current list title
+titleCurrent.fg = blue
+
+; current task
+taskCurrent.fg = magenta
+```
+
+You can also change the background and default text colour:
 
 ```ini
 [default]
-default.bg = brightBlack
-default.fg = white
 
-[other]
-title.fg = green
-titleCurrent.fg = blue
-taskCurrent.fg = magenta
+; the app background colour
+default.bg = brightBlack
+
+; the app text colour
+default.fg = white
 ```
 
 The available colours are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`, `brightBlack`, `brightRed`, `brightGreen`, `brightYellow`, `brightBlue`, `brightMagenta`, `brightCyan`, `brightWhite`, or `default`

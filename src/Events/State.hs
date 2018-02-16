@@ -3,18 +3,18 @@ module Events.State (
     State,
     Stateful,
     Pointer,
-    Size,
     InsertMode(..),
     Mode(..),
+    ModalType(..),
 
     -- App
     continue,
     write,
+    io,
     path,
 
     -- record accesors
     mode,
-    size,
     current,
     lists,
 
@@ -45,7 +45,6 @@ module Events.State (
     moveRight,
     delete,
     selectList,
-    setSize,
     listLeft,
     listRight,
     undo,
@@ -71,58 +70,42 @@ module Events.State (
     newItem,
     normalMode,
     insertBS,
-    insertCurrent
+    insertCurrent,
+
+    -- Events.Actions.Modal
+    showHelp,
+    getCurrentTask,
+    setCurrentTask
 ) where
 
-import Data.Text (Text, snoc, null)
+import Data.Text (snoc, null)
 import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
-import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, title, updateTitle, getTask)
+import Data.Taskell.List (List(), updateFn, update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.Text as T
 import Data.Char (digitToInt)
 
-data InsertMode = EditTask | CreateTask | EditList | CreateList Text
-data Mode = Normal | Insert InsertMode | Write Mode | Search Bool Text | Shutdown
+import Events.State.Types
 
-type Size = (Int, Int)
-type Pointer = (Int, Int)
-
-data State = State {
-    mode :: Mode,
-    lists :: Lists.Lists,
-    history :: [(Pointer, Lists.Lists)],
-    current :: Pointer,
-    size :: Size,
-    path :: FilePath
-}
-
-create :: FilePath -> Size -> Lists.Lists -> State
-create p sz ls = State {
+create :: FilePath -> Lists.Lists -> State
+create p ls = State {
     mode = Normal,
     lists = ls,
     history = [],
     current = (0, 0),
-    size = sz,
-    path = p
+    path = p,
+    io = Nothing
 }
-
-type Stateful = State -> Maybe State
-type InternalStateful = State -> State
 
 -- app state
 quit :: Stateful
 quit s = return $ s { mode = Shutdown }
 
-setSize :: Int -> Int -> Stateful
-setSize w h s = return $ s { size = (w, h) }
-
 continue :: State -> State
-continue s = case mode s of
-    Write m -> s { mode = m }
-    _ -> s
+continue s = s { io = Nothing }
 
 write :: Stateful
-write s = return $ s { mode = Write (mode s) }
+write s = return $ s { io = Just (lists s) }
 
 store :: Stateful
 store s = return $ s { history = (current s, lists s) : history s }
@@ -187,6 +170,11 @@ getCurrentTask s = do
     l <- getList s
     getTask (getIndex s) l
 
+setCurrentTask :: Task -> Stateful
+setCurrentTask task state = do
+    list <- update (getIndex state) task <$> getList state
+    return $ setList state list
+
 startCreate :: Stateful
 startCreate s = return $ s { mode = Insert CreateTask }
 
@@ -222,9 +210,8 @@ insertCurrent char = change (Data.Taskell.Task.append char)
 
 change :: (Task -> Task) -> State -> Maybe State
 change fn s = do
-    l <- getList s
-    l' <- update (getIndex s) fn l
-    return $ setList s l'
+    l <- updateFn (getIndex s) fn <$> getList s
+    return $ setList s l
 
 clearItem :: Stateful
 clearItem = change clear
@@ -326,7 +313,7 @@ getList :: State -> Maybe List
 getList s = Lists.get (lists s) (getCurrentList s)
 
 setList :: State -> List -> State
-setList s ts = setLists s (Lists.update (getCurrentList s) (lists s) ts)
+setList s ts = setLists s (Lists.updateLists (getCurrentList s) (lists s) ts)
 
 setLists :: State -> Lists.Lists -> State
 setLists s ts = s { lists = ts }
@@ -369,6 +356,10 @@ searchChar :: Char -> Stateful
 searchChar c s = case mode s of
     Search ent term -> return $ s { mode = Search ent (Data.Text.snoc term c) }
     _ -> Nothing
+
+-- help
+showHelp :: Stateful
+showHelp s = return $ s { mode = Modal Help }
 
 -- view - maybe shouldn't be in here...
 search :: State -> State
