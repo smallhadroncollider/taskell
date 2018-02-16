@@ -21,11 +21,12 @@ import UI.Types (ResourceName(..))
 import UI.Theme (titleAttr, taskCurrentAttr, disabledAttr)
 
 place :: Widget ResourceName -> Widget ResourceName
-place = hCenterLayer . border . padTopBottom 1 . padLeftRight 4
+place = padTopBottom 1 . hCenterLayer . border . padTopBottom 1 . padLeftRight 4 . hLimit 50
 
 modal :: Text -> Widget ResourceName -> Widget ResourceName
-modal title w = place $ t <=> w
+modal title w = place $ t <=> w'
     where t = padBottom (Pad 1) . withAttr titleAttr $ txt title
+          w'= viewport RNModal Vertical w
 
 help :: Widget ResourceName
 help = modal "Controls" w
@@ -36,7 +37,7 @@ help = modal "Controls" w
           w = left <+> right
 
 renderSubTask :: Int -> Int -> SubTask -> Widget ResourceName
-renderSubTask current i subtask | i == current = withAttr taskCurrentAttr widget
+renderSubTask current i subtask | i == current = visible $ withAttr taskCurrentAttr widget
                                 | complete subtask = withAttr disabledAttr widget
                                 | otherwise = widget
     where postfix = if complete subtask then " ✓" else ""
