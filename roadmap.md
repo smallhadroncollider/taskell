@@ -40,6 +40,7 @@
 
 ## In Progress
 
+- No cursor in sub-task view
 
 ## Done
 
