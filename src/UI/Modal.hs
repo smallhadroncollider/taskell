@@ -40,7 +40,7 @@ renderSubTask current i subtask | i == current = withAttr taskCurrentAttr widget
                                 | complete subtask = withAttr disabledAttr widget
                                 | otherwise = widget
     where postfix = if complete subtask then " ✓" else ""
-          widget = txt $ name subtask `append` postfix
+          widget = txt $ "• " `append` name subtask `append` postfix
 
 st :: State -> Maybe (Widget ResourceName)
 st state = do
