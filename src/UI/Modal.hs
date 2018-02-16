@@ -21,11 +21,11 @@ import UI.Types (ResourceName(..))
 import UI.Theme (titleAttr, taskCurrentAttr, disabledAttr)
 
 place :: Widget ResourceName -> Widget ResourceName
-place = padTopBottom 1 . hCenterLayer . border . padTopBottom 1 . padLeftRight 4 . hLimit 50
+place = padTopBottom 1 . centerLayer . border . padTopBottom 1 . padLeftRight 4 . vLimit 20 . hLimit 50
 
 modal :: Text -> Widget ResourceName -> Widget ResourceName
 modal title w = place $ t <=> w'
-    where t = padBottom (Pad 1) . withAttr titleAttr $ txt title
+    where t = padLeftRight 2 . padBottom (Pad 1) . withAttr titleAttr $ txtWrap title
           w'= viewport RNModal Vertical w
 
 help :: Widget ResourceName
@@ -41,7 +41,7 @@ renderSubTask current i subtask | i == current = visible $ withAttr taskCurrentA
                                 | complete subtask = withAttr disabledAttr widget
                                 | otherwise = widget
     where postfix = if complete subtask then " ✓" else ""
-          widget = txt $ "• " `append` name subtask `append` postfix
+          widget = txt "• " <+> (txtWrap $ name subtask `append` postfix)
 
 st :: State -> Maybe (Widget ResourceName)
 st state = do

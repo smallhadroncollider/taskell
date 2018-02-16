@@ -42,7 +42,7 @@
 - Sub-lists
     * ~Scrolling in sub-tasks~
     * Press Enter to create next
-    * Word wrapping
+    * ~Word wrapping~
     * Searching
     * Delete items
 
