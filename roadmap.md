@@ -39,12 +39,6 @@
 
 ## In Progress
 
-- Sub-lists
-    * ~Scrolling in sub-tasks~
-    * ~Press Enter to create next~
-    * ~Word wrapping~
-    * ~Searching~
-    * ~Delete items~
 
 ## Done
 
@@ -123,3 +117,9 @@
 - Use Template Haskell to import in config file templates
 - On `?` show keyboard commands
 - Remove size from state
+- Sub-lists
+    * ~Scrolling in sub-tasks~
+    * ~Press Enter to create next~
+    * ~Word wrapping~
+    * ~Searching~
+    * ~Delete items~
