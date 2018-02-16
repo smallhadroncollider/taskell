@@ -98,7 +98,7 @@ draw layout state = showModal state [main]
               searchImage layout state
             . viewport RNLists Horizontal
             . hLimit (Seq.length ls * colWidth layout)
-            . padTop (Pad 1)
+            . padTopBottom 1
             . hBox
             . toList
             $ renderList layout (current s)  `Seq.mapWithIndex` ls
