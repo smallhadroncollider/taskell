@@ -23,6 +23,9 @@ clear _ = blank
 new :: Text -> Task
 new s = blank { description = s }
 
+blankSubTask :: SubTask
+blankSubTask = SubTask { name = "", complete = False }
+
 subTask :: Text -> Bool -> SubTask
 subTask n c = SubTask { name = n, complete = c }
 
@@ -44,6 +47,12 @@ append c t = t { description = T.snoc (description t) c }
 
 backspace :: Task -> Task
 backspace t = t { description = T.backspace (description t) }
+
+stAppend :: Char -> SubTask  -> SubTask
+stAppend c st = st { name = T.snoc (name st) c }
+
+stBackspace :: SubTask -> SubTask
+stBackspace st = st { name = T.backspace (name st) }
 
 characters :: Task -> Int
 characters = T.length . description

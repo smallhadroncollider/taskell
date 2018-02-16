@@ -73,7 +73,6 @@ module Events.State (
 
     -- Events.Actions.Modal
     showHelp,
-    showSubTasks,
     getCurrentTask,
     setCurrentTask
 ) where
@@ -361,9 +360,6 @@ searchChar c s = case mode s of
 -- help
 showHelp :: Stateful
 showHelp s = return $ s { mode = Modal Help }
-
-showSubTasks :: Stateful
-showSubTasks s = return $ s { mode = Modal (SubTasks 0 STNormal) }
 
 -- view - maybe shouldn't be in here...
 search :: State -> State

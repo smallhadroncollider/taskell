@@ -4,7 +4,7 @@ import Data.Text (Text)
 import Data.Taskell.Lists (Lists)
 
 data SubTasksMode = STNormal | STInsert
-data ModalType = Help | SubTasks { stIndex :: Int, stMode :: SubTasksMode }
+data ModalType = Help | SubTasks Int SubTasksMode
 
 data InsertMode = EditTask | CreateTask | EditList | CreateList Text
 data Mode = Normal | Insert InsertMode | Write Mode | Modal ModalType | Search Bool Text | Shutdown

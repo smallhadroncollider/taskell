@@ -8,8 +8,6 @@ import qualified Events.Actions.Modal.SubTasks as SubTasks
 
 event :: Event -> Stateful
 
-event (EvKey (KChar 'q') _) s = quit s
-
 event e s = case mode s of
     Modal Help -> Help.event e s
     Modal (SubTasks _ _) -> SubTasks.event e s
