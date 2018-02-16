@@ -43,7 +43,7 @@
     * ~Scrolling in sub-tasks~
     * Press Enter to create next
     * ~Word wrapping~
-    * Searching
+    * ~Searching~
     * Delete items
 
 ## Done

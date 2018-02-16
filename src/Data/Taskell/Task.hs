@@ -64,7 +64,8 @@ characters :: Task -> Int
 characters = T.length . description
 
 contains :: Text -> Task -> Bool
-contains s t = s `T.isInfixOf` description t
+contains s t = s `T.isInfixOf` description t || not (S.null sts)
+    where sts = S.filter (T.isInfixOf s) $ name <$> subTasks t
 
 isBlank :: Task -> Bool
 isBlank t = T.null $ description t
