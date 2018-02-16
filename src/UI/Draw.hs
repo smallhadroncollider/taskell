@@ -23,7 +23,7 @@ colWidth :: LayoutConfig -> Int
 colWidth layout = columnWidth layout + columnPadding layout * 2
 
 addCursor :: Int -> Int -> [Text] -> Widget ResourceName -> Widget ResourceName
-addCursor li ti d = reportExtent name . showCursor name (Location (h, v))
+addCursor li ti d = showCursor name (Location (h, v))
 
     where v = Prelude.length d - 1
           h = T.length $ last d
