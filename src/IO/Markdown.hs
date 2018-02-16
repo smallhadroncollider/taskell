@@ -5,16 +5,14 @@ module IO.Markdown (
     trimListItem
 ) where
 
-import Data.Maybe (fromMaybe)
 import Data.Text (Text, drop, append, null, lines, isPrefixOf, strip, dropAround)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8With)
 
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks, updateFn, count)
 import Data.Taskell.Task (Task, SubTask, new, description, subTasks, addSubTask, subTask, name, complete)
-import qualified Data.Taskell.Seq as S (updateFn)
 import Data.Foldable (foldl')
-import Data.Sequence (empty)
+import Data.Sequence (empty, adjust')
 import Data.ByteString (ByteString)
 import Data.Word (Word8)
 
@@ -32,11 +30,11 @@ trimTilde :: Text -> Text
 trimTilde = strip . Data.Text.dropAround (== '~')
 
 addSubItem :: Text -> Lists -> Lists
-addSubItem t ls = fromMaybe ls $ S.updateFn i updateList ls
+addSubItem t ls = adjust' updateList i ls
     where i = length ls - 1
           st | "~" `isPrefixOf` t = subTask (trimTilde t) True
              | otherwise = subTask t False
-          updateList l = fromMaybe l $ updateFn j (addSubTask st) l
+          updateList l = updateFn j (addSubTask st) l
             where j = count l - 1
 
 start :: Lists -> Text -> Lists

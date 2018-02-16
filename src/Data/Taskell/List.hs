@@ -3,7 +3,7 @@ module Data.Taskell.List where
 import Data.Text (Text)
 
 import Prelude hiding (splitAt, filter)
-import Data.Sequence (Seq, (|>), (!?), (><), deleteAt, splitAt, filter)
+import Data.Sequence as S (Seq, (|>), (!?), (><), deleteAt, splitAt, filter, adjust', update, empty)
 import qualified Data.Taskell.Seq as S
 
 import Data.Taskell.Task (Task, blank, contains)
@@ -42,14 +42,13 @@ extract i l = do
     (xs, x) <- S.extract i (tasks l)
     return (l { tasks = xs }, x)
 
-updateFn :: Int -> (Task -> Task) -> List -> Maybe List
-updateFn i fn l = do
-    ts' <- S.updateFn i fn (tasks l)
-    return $ l { tasks = ts' }
+updateFn :: Int -> (Task -> Task) -> List -> List
+updateFn i fn l = l { tasks = ts }
+    where ts = adjust' fn i (tasks l)
 
 update :: Int -> Task -> List -> List
 update i t l = l { tasks = ts }
-    where ts = S.update i (tasks l) t
+    where ts = S.update i t (tasks l)
 
 move :: Int -> Int -> List -> Maybe List
 move from dir l = do

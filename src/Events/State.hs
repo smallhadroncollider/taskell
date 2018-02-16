@@ -211,9 +211,8 @@ insertCurrent char = change (Data.Taskell.Task.append char)
 
 change :: (Task -> Task) -> State -> Maybe State
 change fn s = do
-    l <- getList s
-    l' <- updateFn (getIndex s) fn l
-    return $ setList s l'
+    l <- updateFn (getIndex s) fn <$> getList s
+    return $ setList s l
 
 clearItem :: Stateful
 clearItem = change clear
@@ -315,7 +314,7 @@ getList :: State -> Maybe List
 getList s = Lists.get (lists s) (getCurrentList s)
 
 setList :: State -> List -> State
-setList s ts = setLists s (Lists.update (getCurrentList s) (lists s) ts)
+setList s ts = setLists s (Lists.updateLists (getCurrentList s) (lists s) ts)
 
 setLists :: State -> Lists.Lists -> State
 setLists s ts = s { lists = ts }
