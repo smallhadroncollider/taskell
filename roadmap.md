@@ -17,17 +17,23 @@
 
 ## Bugs
 
-- Items near bottom of the list jump in position
+- Feels sluggish in sub-task view - cache main view?
 - Up and down in search gets a bit lost
 - Editing list title doesn't always have visibility
 - Vertical spacing doesn't work if the current item is blank
 - Cursor goes missing on the left hand side at the end of a line
 - One bad config line stops all config from working - needs to merge with defaultConfig
 - Help modal needs to scroll on smaller windows
+- Sub-task count not visible on last item in a list longer than the vertical height
 
 ## To Do
 
 - Task body - e.g. as well as sub lists, have a longer description
+- Customisable Markdown format
+    * Change top level headers
+    * Change top level list item: e.g. to H3 instead of li
+    * Change sub-list: e.g. from "    *" to "-"
+    * Change body
 - Move between lists with `m` - shows possible lists
 - Left/Right arrow keys in insert mode
 - Add tags/labels with `t`

@@ -41,7 +41,7 @@ Run `sudo dnf install ncurses-compat-libs` then download and run binary as descr
 
 Press `?` for a [list of controls](https://github.com/smallhadroncollider/taskell/blob/master/templates/controls.md)
 
-### Tips
+## Tips
 
 - If you're using a simple two-column "To Do" and "Done" then use the space bar to mark an item as complete while staying in the "To Do" list. If you're using a more complicated column setup then you will want to use `H`/`L` to move tasks between columns.
 
@@ -95,3 +95,7 @@ The available colours are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`,
 ## Roadmap
 
 See [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) for planned features
+
+## Contributing
+
+Please check the [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) before adding any bugs/feature requests to Issues.
