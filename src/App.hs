@@ -33,15 +33,23 @@ clearCache state = do
     invalidateCacheEntry (RNList li)
     invalidateCacheEntry (RNTask (li, ti))
 
+handleVtyEvent :: Config -> State -> Event -> EventM ResourceName (Next State)
+handleVtyEvent config previousState e = do
+    let state = event e previousState
+
+    case mode previousState of
+        Search _ _ -> invalidateCache
+        _ -> return  ()
+
+    case mode state of
+        Shutdown -> Brick.halt state
+        _ -> clearCache previousState >> clearCache state >> next config state
+
 -- App code
 handleEvent :: Config -> State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
-handleEvent _ s (VtyEvent (EvResize _ _ )) = invalidateCache >> Brick.continue s
-handleEvent config s' (VtyEvent e) = let s = event e s' in
-    case mode s of
-        Shutdown -> Brick.halt s
-        Search _ _ -> invalidateCache >> Brick.continue s
-        _ -> clearCache s' >> clearCache s >> next config s
-handleEvent _ s _ = Brick.continue s
+handleEvent _ state (VtyEvent (EvResize _ _ )) = invalidateCache >> Brick.continue state
+handleEvent config state (VtyEvent ev) = handleVtyEvent config state ev
+handleEvent _ state _ = Brick.continue state
 
 go :: Config -> State -> IO ()
 go config initial = do

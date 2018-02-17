@@ -17,7 +17,6 @@
 
 ## Bugs
 
-- Leaving search only refreshes current list
 - Up and down in search gets a bit lost
 - Editing list title doesn't always have visibility
 - Vertical spacing doesn't work if the current item is blank
@@ -136,3 +135,4 @@
     * ~Change top level list item: e.g. to H3 instead of li~
     * ~Change sub-list: e.g. from "    *" to "-"~
 - Feels sluggish in sub-task view - cache main view?
+- Leaving search only refreshes current list
