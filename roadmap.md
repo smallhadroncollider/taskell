@@ -14,6 +14,8 @@
 - Remove duplication of config - currently using ini and hard-coded
 - Move Help modal creation into Template Haskell
 - Use lenses for nested data?
+- Split up Draw/Modal code into more logical chunks
+- Share code between tasks and sub-tasks lists?
 
 ## Bugs
 
@@ -25,6 +27,7 @@
 - Sub-task count not visible on last item in a list longer than the vertical height
 - Pressing Enter on empty list shows an subtasks box with an error
 - Empty tasks - i.e. just a space - don't show up
+- No obvious way to know if there are more items in a list off-screen
 
 ## To Do
 
