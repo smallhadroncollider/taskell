@@ -10,8 +10,9 @@ import Brick
 import Brick.Widgets.Center
 import Brick.Widgets.Border
 import Data.Taskell.Task (SubTask, description, subTasks, name, complete)
-import Data.Text as T (Text, lines, replace, breakOn, strip, drop, append, length)
+import Data.Text as T (Text, lines, replace, breakOn, strip, drop, length)
 import Data.Text.Encoding (decodeUtf8)
+import Data.Taskell.Text (wrap)
 import Data.FileEmbed (embedFile)
 import Data.Foldable (toList)
 import Data.Sequence (mapWithIndex)
@@ -20,8 +21,11 @@ import IO.Markdown (trimListItem)
 import UI.Types (ResourceName(..))
 import UI.Theme (titleAttr, taskCurrentAttr, disabledAttr)
 
+width :: Int
+width = 50
+
 place :: Widget ResourceName -> Widget ResourceName
-place = padTopBottom 1 . centerLayer . border . padTopBottom 1 . padLeftRight 4 . hLimit 50
+place = padTopBottom 1 . centerLayer . border . padTopBottom 1 . padLeftRight 4 . hLimit width
 
 modal :: Text -> Widget ResourceName -> Widget ResourceName
 modal title w = place $ t <=> w'
@@ -36,16 +40,23 @@ help = modal "Controls" w
           right = vBox $ txt . T.strip . T.drop 1 <$> r
           w = left <+> right
 
-addCursor :: Int -> Text -> Widget ResourceName -> Widget ResourceName
-addCursor li d = showCursor (RNModalItem li) (Location (T.length d + 2, 0))
+addCursor :: Int -> [Text] -> Widget ResourceName -> Widget ResourceName
+addCursor li d = showCursor n (Location (h, v))
+
+    where v = Prelude.length d - 1
+          h = T.length $ last d
+          n = RNModalItem li
+
+box :: [Text] -> Widget ResourceName
+box d = padBottom (Pad 1) . vBox $ txt <$> d
 
 renderSubTask :: Int -> Int -> SubTask -> Widget ResourceName
 renderSubTask current i subtask | i == current = visible $ withAttr taskCurrentAttr widget
                                 | complete subtask = withAttr disabledAttr widget
                                 | otherwise = widget
     where postfix = if complete subtask then " ✓" else ""
-          text = name subtask `append` postfix
-          widget = addCursor i text (txt "• " <+> txtWrap text)
+          text = wrap (width - 6) $ name subtask
+          widget = txt "• " <+> addCursor i text (box text) <+> txt postfix
 
 st :: State -> Maybe (Widget ResourceName)
 st state = do

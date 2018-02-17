@@ -46,9 +46,6 @@
 
 ## In Progress
 
-- No cursor in sub-task view
-    * ~Single line~
-    * Multi-line
 
 ## Done
 
@@ -133,3 +130,6 @@
     * ~Word wrapping~
     * ~Searching~
     * ~Delete items~
+- No cursor in sub-task view
+    * ~Single line~
+    * ~Multi-line~
