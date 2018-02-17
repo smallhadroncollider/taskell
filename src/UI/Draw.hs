@@ -90,19 +90,23 @@ searchImage layout s i = case mode s of
             )
     _ -> i
 
+main :: LayoutConfig -> State -> Widget ResourceName
+main layout s =
+      searchImage layout s
+    . viewport RNLists Horizontal
+    . hLimit (Seq.length ls * colWidth layout)
+    . padTopBottom 1
+    . hBox
+    . toList
+    $ renderList layout (current s)  `Seq.mapWithIndex` ls
+
+    where ls = lists s
+
 -- draw
 draw :: LayoutConfig -> State -> [Widget ResourceName]
-draw layout state = showModal state [main]
-    where s = normalise state
-          ls = lists s
-          main =
-              searchImage layout state
-            . viewport RNLists Horizontal
-            . hLimit (Seq.length ls * colWidth layout)
-            . padTopBottom 1
-            . hBox
-            . toList
-            $ renderList layout (current s)  `Seq.mapWithIndex` ls
+draw layout state =
+    let s = normalise state in
+    showModal s [main layout s]
 
 -- cursors
 cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
