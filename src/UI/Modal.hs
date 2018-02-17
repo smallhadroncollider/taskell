@@ -10,7 +10,7 @@ import Brick
 import Brick.Widgets.Center
 import Brick.Widgets.Border
 import Data.Taskell.Task (SubTask, description, subTasks, name, complete)
-import Data.Text as T (Text, lines, replace, breakOn, strip, drop, append)
+import Data.Text as T (Text, lines, replace, breakOn, strip, drop, append, length)
 import Data.Text.Encoding (decodeUtf8)
 import Data.FileEmbed (embedFile)
 import Data.Foldable (toList)
@@ -36,12 +36,16 @@ help = modal "Controls" w
           right = vBox $ txt . T.strip . T.drop 1 <$> r
           w = left <+> right
 
+addCursor :: Int -> Text -> Widget ResourceName -> Widget ResourceName
+addCursor li d = showCursor (RNModalItem li) (Location (T.length d + 2, 0))
+
 renderSubTask :: Int -> Int -> SubTask -> Widget ResourceName
 renderSubTask current i subtask | i == current = visible $ withAttr taskCurrentAttr widget
                                 | complete subtask = withAttr disabledAttr widget
                                 | otherwise = widget
     where postfix = if complete subtask then " ✓" else ""
-          widget = txt "• " <+> txtWrap (name subtask `append` postfix)
+          text = name subtask `append` postfix
+          widget = addCursor i text (txt "• " <+> txtWrap text)
 
 st :: State -> Maybe (Widget ResourceName)
 st state = do

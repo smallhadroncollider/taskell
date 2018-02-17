@@ -41,6 +41,8 @@
 ## In Progress
 
 - No cursor in sub-task view
+    * ~Single line~
+    * Multi-line
 
 ## Done
 

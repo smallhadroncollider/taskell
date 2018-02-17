@@ -4,7 +4,8 @@ module UI.Draw (
     chooseCursor
 ) where
 
-import Events.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, normalise)
+import Events.State (lists, current, mode, normalise)
+import Events.State.Types (State, Mode(..), InsertMode(..), Pointer, ModalType(..), SubTasksMode(..))
 import Brick
 import Data.Text as T (Text, length, pack, concat, append, empty)
 import Data.Taskell.List (List, tasks, title)
@@ -113,6 +114,7 @@ chooseCursor state = case mode s of
     Insert EditList -> cursor (fst c, -1)
     Insert CreateTask -> cursor c
     Insert EditTask -> cursor c
+    Modal (SubTasks i STInsert) -> showCursorNamed (RNModalItem i)
     _ -> neverShowCursor s
 
     where s = normalise state
