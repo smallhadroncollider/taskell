@@ -1,1 +1,4 @@
-stack build --fast --trace && stack exec taskell $@
+rm ~/.taskell/config.ini
+rm ~/.taskell/theme.ini
+stack build --fast --trace
+stack exec taskell $@
