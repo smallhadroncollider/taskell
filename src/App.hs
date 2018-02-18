@@ -39,6 +39,7 @@ handleEvent _ s (VtyEvent (EvResize _ _ )) = invalidateCache >> Brick.continue s
 handleEvent config s' (VtyEvent e) = let s = event e s' in
     case mode s of
         Shutdown -> Brick.halt s
+        Search _ _ -> invalidateCache >> Brick.continue s
         _ -> clearCache s' >> clearCache s >> next config s
 handleEvent _ s _ = Brick.continue s
 
