@@ -45,7 +45,8 @@ subTaskCount t | hasSubTasks t = T.concat [
 
 renderTask :: LayoutConfig -> Pointer -> Int -> Int -> Task -> Widget ResourceName
 renderTask layout p li ti t =
-      padBottom (Pad 1)
+      cached (RNTask (li, ti))
+    . padBottom (Pad 1)
     . (<=> (withAttr disabledAttr $ txt after))
     . (if (li, ti) == p then withAttr taskCurrentAttr . visible else withAttr taskAttr)
     . addCursor li ti d
@@ -69,7 +70,8 @@ renderTitle layout (p, i) li l = if p /= li || i == 0 then visible title' else t
 renderList :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
 renderList layout p li l = if fst p == li then visible list else list
     where list =
-              padLeftRight (columnPadding layout)
+              cached (RNList li)
+            . padLeftRight (columnPadding layout)
             . hLimit (columnWidth layout)
             . viewport (RNList li) Vertical
             . vBox

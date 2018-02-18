@@ -3,9 +3,10 @@ module App (go) where
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Control.Concurrent (forkIO)
-import Events.State (State, Mode(..), continue, path, mode, io)
+import Events.State (State, Mode(..), continue, path, mode, io, current)
 import Data.Taskell.Lists (Lists)
 import Brick
+import Graphics.Vty.Input.Events (Event(..))
 
 import IO.Taskell (writeFile)
 import IO.Config (Config, layout, generateAttrMap)
@@ -21,14 +22,24 @@ store config ls s = do
         forkIO $ IO.Taskell.writeFile config ls (path s)
         return (Events.State.continue s)
 
+next :: Config -> State -> EventM ResourceName (Next State)
+next config s = case io s of
+    Just ls -> liftIO (store config ls s) >>= Brick.continue
+    Nothing -> Brick.continue s
+
+clearCache :: State -> EventM ResourceName ()
+clearCache state = do
+    let (li, ti) = current state
+    invalidateCacheEntry (RNList li)
+    invalidateCacheEntry (RNTask (li, ti))
+
 -- App code
 handleEvent :: Config -> State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
+handleEvent _ s (VtyEvent (EvResize _ _ )) = invalidateCache >> Brick.continue s
 handleEvent config s' (VtyEvent e) = let s = event e s' in
     case mode s of
         Shutdown -> Brick.halt s
-        _ -> case io s of
-            Just ls -> liftIO (store config ls s) >>= Brick.continue
-            Nothing -> Brick.continue s
+        _ -> clearCache s' >> clearCache s >> next config s
 handleEvent _ s _ = Brick.continue s
 
 go :: Config -> State -> IO ()
