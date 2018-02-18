@@ -5,7 +5,7 @@ module IO.Markdown (
     trimListItem
 ) where
 
-import Data.Text (Text, drop, append, null, lines, isPrefixOf, strip, dropAround)
+import Data.Text (Text, drop, append, null, lines, isPrefixOf, strip, dropAround, snoc)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8With)
 
 import Data.Taskell.Lists (Lists, newList, appendToLast)
@@ -15,6 +15,8 @@ import Data.Foldable (foldl')
 import Data.Sequence (empty, adjust')
 import Data.ByteString (ByteString)
 import Data.Word (Word8)
+
+import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, subtaskOutput)
 
 -- parse code
 trimListItem :: Text -> Text
@@ -37,37 +39,51 @@ addSubItem t ls = adjust' updateList i ls
           updateList l = updateFn j (addSubTask st) l
             where j = count l - 1
 
-start :: Lists -> Text -> Lists
-start ls s | "##" `isPrefixOf` s = newList (trimTitle s) ls
-           | "-" `isPrefixOf` s = appendToLast (trimTask s) ls
-           | "    *" `isPrefixOf` s = addSubItem (trimListItem $ strip s) ls
-           | otherwise = ls
+start :: MarkdownConfig -> Lists -> Text -> Lists
+start config ls s | titleOutput config `snoc` ' ' `isPrefixOf` s = newList (trimTitle s) ls
+                  | taskOutput config `snoc` ' ' `isPrefixOf` s = appendToLast (trimTask s) ls
+                  | subtaskOutput config `snoc` ' ' `isPrefixOf` s = addSubItem (trimListItem $ strip s) ls
+                  | otherwise = ls
 
 decodeError :: String -> Maybe Word8 -> Maybe Char
 decodeError _ _ = Just '\65533'
 
-parse :: ByteString -> Lists
-parse s = foldl' start empty $ Data.Text.lines $ decodeUtf8With decodeError s
+parse :: Config -> ByteString -> Lists
+parse config s = foldl' (start (markdown config)) empty $ Data.Text.lines $ decodeUtf8With decodeError s
 
 -- stringify code
 join :: Text -> [Text] -> Text
 join = foldl' Data.Text.append
 
-subTaskToString :: Text -> SubTask -> Text
-subTaskToString t st = join t ["    * ", surround, name st, surround, "\n"]
+subTaskToString :: MarkdownConfig -> Text -> SubTask -> Text
+subTaskToString config t st = join t [
+        subtaskOutput config,
+        " ",
+        surround,
+        name st,
+        surround,
+        "\n"
+    ]
     where surround = if complete st then "~" else ""
 
-taskToString :: Text -> Task -> Text
-taskToString s t = join s ["- ", description t, "\n", foldl' subTaskToString "" (subTasks t)]
-
-listToString :: Text -> List -> Text
-listToString s l = join s [
-        if Data.Text.null s then "" else "\n"
-      , "## "
-      , title l
-      , "\n\n"
-      , foldl' taskToString "" (tasks l)
+taskToString :: MarkdownConfig -> Text -> Task -> Text
+taskToString config s t = join s [
+        taskOutput config,
+        " ",
+        description t,
+        "\n",
+        foldl' (subTaskToString config) "" (subTasks t)
     ]
 
-stringify :: Lists -> ByteString
-stringify ls = encodeUtf8 $ foldl' listToString "" ls
+listToString :: MarkdownConfig -> Text -> List -> Text
+listToString config s l = join s [
+        if Data.Text.null s then "" else "\n"
+      , titleOutput config
+      , " "
+      , title l
+      , "\n\n"
+      , foldl' (taskToString config) "" (tasks l)
+    ]
+
+stringify :: Config -> Lists -> ByteString
+stringify config ls = encodeUtf8 $ foldl' (listToString (markdown config)) "" ls

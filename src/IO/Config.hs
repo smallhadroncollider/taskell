@@ -4,13 +4,13 @@ module IO.Config where
 
 import System.Directory
 import Data.Ini.Config
-
 import Data.FileEmbed (embedFile)
 import qualified Data.ByteString as B (writeFile)
 
 import UI.Theme
 import Brick.Themes (themeToAttrMap, loadCustomizations)
 import Brick (AttrMap)
+import Data.Text (Text, strip, dropAround)
 import qualified Data.Text.IO as T
 
 data GeneralConfig = GeneralConfig {
@@ -22,9 +22,16 @@ data LayoutConfig = LayoutConfig {
         columnPadding :: Int
     }
 
+data MarkdownConfig = MarkdownConfig {
+        titleOutput :: Text,
+        taskOutput :: Text,
+        subtaskOutput :: Text
+    }
+
 data Config = Config {
         general :: GeneralConfig,
-        layout :: LayoutConfig
+        layout :: LayoutConfig,
+        markdown :: MarkdownConfig
     }
 
 defaultConfig :: Config
@@ -35,8 +42,16 @@ defaultConfig = Config {
         layout = LayoutConfig {
             columnWidth = 24,
             columnPadding = 3
+        },
+        markdown = MarkdownConfig {
+            titleOutput = "##",
+            taskOutput = "-",
+            subtaskOutput = "    *"
         }
     }
+
+parseString :: Text -> Text
+parseString = dropAround (== '"') . strip
 
 getDir :: IO FilePath
 getDir = (++ "/.taskell") <$> getHomeDirectory
@@ -81,7 +96,16 @@ configParser = do
         columnWidthCf <- fieldOf "column_width" number
         columnPaddingCf <- fieldOf "column_padding" number
         return LayoutConfig { columnWidth = columnWidthCf, columnPadding = columnPaddingCf }
-    return Config { general = generalCf, layout = layoutCf }
+    markdownCf <- section "markdown" $ do
+        titleOutputCf <- parseString <$> fieldOf "title" string
+        taskOutputCf <- parseString <$> fieldOf "task" string
+        subtaskOutputCf <- parseString <$> fieldOf "subtask" string
+        return MarkdownConfig {
+            titleOutput = titleOutputCf,
+            taskOutput = taskOutputCf,
+            subtaskOutput = subtaskOutputCf
+        }
+    return Config { general = generalCf, layout = layoutCf, markdown = markdownCf }
 
 getConfig :: IO Config
 getConfig = do

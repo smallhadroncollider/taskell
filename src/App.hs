@@ -16,23 +16,23 @@ import UI.Draw (draw, chooseCursor)
 import UI.Types (ResourceName(..))
 
 -- store
-store :: Lists -> State -> IO State
-store ls s = do
-        forkIO $ IO.Taskell.writeFile ls (path s)
+store :: Config -> Lists -> State -> IO State
+store config ls s = do
+        forkIO $ IO.Taskell.writeFile config ls (path s)
         return (Events.State.continue s)
 
 -- App code
-handleEvent :: State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
-handleEvent s' (VtyEvent e) = let s = event e s' in
+handleEvent :: Config -> State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
+handleEvent config s' (VtyEvent e) = let s = event e s' in
     case mode s of
         Shutdown -> Brick.halt s
         _ -> case io s of
-            Just ls -> liftIO (store ls s) >>= Brick.continue
+            Just ls -> liftIO (store config ls s) >>= Brick.continue
             Nothing -> Brick.continue s
-handleEvent s _ = Brick.continue s
+handleEvent _ s _ = Brick.continue s
 
 go :: Config -> State -> IO ()
 go config initial = do
     attrMap' <- const <$> generateAttrMap
-    let app = App (draw $ layout config) chooseCursor handleEvent return attrMap'
+    let app = App (draw $ layout config) chooseCursor (handleEvent config) return attrMap'
     void (defaultMain app initial)

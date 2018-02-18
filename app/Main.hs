@@ -10,7 +10,7 @@ import App (go)
 -- read file then render
 start :: Config -> FilePath -> IO ()
 start config path = do
-    state <- create path <$> IO.Taskell.readFile path
+    state <- create path <$> IO.Taskell.readFile config path
     go config state
 
 -- if taskell.md exists/created then start

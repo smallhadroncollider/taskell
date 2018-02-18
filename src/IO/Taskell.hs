@@ -21,27 +21,27 @@ exists :: Config -> IO (Bool, FilePath)
 exists c = do
     path <- getPath c
     e <- doesFileExist path
-    success <- promptCreate e path
+    success <- promptCreate c e path
     return (success, path)
 
 -- prompt whether to create taskell.json
-promptCreate :: Bool -> String -> IO Bool
-promptCreate True _ = return True
-promptCreate False path = do
+promptCreate :: Config -> Bool -> String -> IO Bool
+promptCreate _ True _ = return True
+promptCreate config False path = do
     cwd <- getCurrentDirectory
     r <- promptYN $ "Create " ++ cwd ++ "/" ++ path ++ "?"
-    if r then createPath path >> return True else return False
+    if r then createPath config path >> return True else return False
 
 -- creates taskell file
-createPath :: FilePath -> IO ()
-createPath = writeFile initial
+createPath :: Config -> FilePath -> IO ()
+createPath config = writeFile config initial
 
 -- writes Tasks to json file
-writeFile :: Lists -> FilePath -> IO ()
-writeFile tasks path = void (BS.writeFile path $ stringify tasks)
+writeFile :: Config -> Lists -> FilePath -> IO ()
+writeFile config tasks path = void (BS.writeFile path $ stringify config tasks)
 
 -- reads json file
-readFile :: FilePath -> IO Lists
-readFile path = do
+readFile :: Config -> FilePath -> IO Lists
+readFile config path = do
     content <- BS.readFile path
-    return $ parse content
+    return $ parse config content
