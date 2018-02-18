@@ -17,7 +17,6 @@
 
 ## Bugs
 
-- One bad config line stops all config from working - needs to merge with defaultConfig
 - Feels sluggish in sub-task view - cache main view?
 - Up and down in search gets a bit lost
 - Editing list title doesn't always have visibility
@@ -31,6 +30,7 @@
 ## To Do
 
 - Task body - e.g. as well as sub lists, have a longer description
+- Display a warning if any line of the file could not be parsed - otherwise could lead to data loss
 - Move between lists with `m` - shows possible lists
 - Left/Right arrow keys in insert mode
 - Add tags/labels with `t`
@@ -43,6 +43,7 @@
 
 ## In Progress
 
+- One bad config line stops all config from working - needs to merge with defaultConfig
 
 ## Done
 

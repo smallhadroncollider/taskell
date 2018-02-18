@@ -59,6 +59,51 @@ By default stores in a `taskell.md` file in the working directory:
 - Do That
 ```
 
+## Configuration
+
+You can edit Taskell's settings by editing `~/.taskell/config.ini`:
+
+```ini
+[general]
+; the default filename to create/look for
+filename = taskell.md
+
+[layout]
+; the width of a column
+column_width = 24
+
+; the padding of a column
+; for both sides, so 3 would give a gap of 6 between two columns
+column_padding = 3
+
+[markdown]
+; the markdown to start a title line with
+title = "##"
+
+; the markdown to start a task line with
+task = "-"
+
+; the markdown to start a sub-task line with
+subtask = "    *"
+```
+
+Make sure that the values in the `[markdown]` section are surrounded by **double**-quotes.
+
+If you always use sub-tasks, an alternative setup for `[markdown]` might be:
+
+```ini
+[markdown]
+title = "##"
+
+; each task is a header
+task = "###"
+
+; subtasks are list items under the header
+subtask = "-"
+```
+
+**Warning**: currently if you change your `[markdown]` settings any older files stored with different settings will not be readable.
+
 ## Theming
 
 You can edit Taskell's colour-scheme by editing `~/.taskell/theme.ini`:
