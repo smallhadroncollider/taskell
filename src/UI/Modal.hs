@@ -10,7 +10,7 @@ import Brick
 import Brick.Widgets.Center
 import Brick.Widgets.Border
 import Data.Taskell.Task (SubTask, description, subTasks, name, complete)
-import Data.Text as T (Text, lines, replace, breakOn, strip, drop, length)
+import Data.Text as T (Text, lines, replace, breakOn, strip, drop, length, append)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Taskell.Text (wrap)
 import Data.FileEmbed (embedFile)
@@ -27,7 +27,7 @@ maxWidth = 50
 
 modal :: Int -> (Text, Widget ResourceName) -> Widget ResourceName
 modal width (title, w) = t <=> w'
-    where t = padLeftRight 2 . padBottom (Pad 1) . withAttr titleAttr $ box (wrap width title)
+    where t = padBottom (Pad 1) . withAttr titleAttr $ box (wrap width title)
           w'= viewport RNModal Vertical w
 
 surround :: (Int -> (Text, Widget ResourceName)) -> Widget ResourceName
@@ -36,7 +36,7 @@ surround fn = Widget Fixed Fixed $ do
     let fullWidth = availWidth ctx
         padding = 4
         w = (if fullWidth > maxWidth then maxWidth else fullWidth) - (padding * 2)
-        widget = modal (w - 4) $ fn w
+        widget = modal w $ fn w
     render . padTopBottom 1 . centerLayer . border . padTopBottom 1 . padLeftRight padding . hLimit w $ widget
 
 
@@ -63,8 +63,8 @@ renderSubTask width current i subtask | i == current = visible $ withAttr taskCu
                                 | complete subtask = withAttr disabledAttr widget
                                 | otherwise = widget
     where postfix = if complete subtask then " ✓" else ""
-          text = wrap (width - 6) $ name subtask
-          widget = txt "• " <+> addCursor i text (box text) <+> txt postfix
+          text = wrap width $ name subtask `T.append` postfix
+          widget = addCursor i text (box text)
 
 st' :: State -> Int -> Maybe (Text, Widget ResourceName)
 st' state width = do
