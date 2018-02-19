@@ -48,9 +48,14 @@ library
 
                      , UI.CLI
                      , UI.Draw
-                     , UI.Modal
                      , UI.Theme
                      , UI.Types
+                     , UI.Internal
+
+                     , UI.Modal
+                     , UI.Modal.Internal
+                     , UI.Modal.Help
+                     , UI.Modal.SubTasks
 
   build-depends:       base <= 5
                      , vty

@@ -14,7 +14,6 @@
 - Remove duplication of config - currently using ini and hard-coded
 - Move Help modal creation into Template Haskell
 - Use lenses for nested data?
-- Split up Draw/Modal code into more logical chunks
 - Share code between tasks and sub-tasks lists?
 
 ## Bugs
@@ -141,3 +140,4 @@
 - Leaving search only refreshes current list
 - Display a warning if any line of the file could not be parsed - otherwise could lead to data loss
 - One bad config line stops all config from working - needs to merge with defaultConfig
+- Split up Draw/Modal code into more logical chunks

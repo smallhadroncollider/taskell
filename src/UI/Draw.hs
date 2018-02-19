@@ -19,6 +19,7 @@ import IO.Config (LayoutConfig, columnWidth, columnPadding)
 import UI.Modal (showModal)
 import UI.Types (ResourceName(..))
 import UI.Theme
+import UI.Internal (box)
 
 colWidth :: LayoutConfig -> Int
 colWidth layout = columnWidth layout + columnPadding layout * 2
@@ -29,9 +30,6 @@ addCursor li ti d = showCursor name (Location (h, v))
     where v = Prelude.length d - 1
           h = T.length $ last d
           name = RNTask (li, ti)
-
-box :: [Text] -> Widget ResourceName
-box d = padBottom (Pad 1) . vBox $ txt <$> d
 
 subTaskCount :: Task -> Widget ResourceName
 subTaskCount t
