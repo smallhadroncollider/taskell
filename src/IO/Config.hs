@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module IO.Config where
 
+import Data.Maybe (fromMaybe)
 import System.Directory
 import Data.Ini.Config
 import Data.FileEmbed (embedFile)
@@ -10,7 +11,7 @@ import qualified Data.ByteString as B (writeFile)
 import UI.Theme
 import Brick.Themes (themeToAttrMap, loadCustomizations)
 import Brick (AttrMap)
-import Data.Text (Text, strip, dropAround)
+import Data.Text as T (Text, strip, dropAround, null)
 import qualified Data.Text.IO as T
 
 data GeneralConfig = GeneralConfig {
@@ -34,24 +35,30 @@ data Config = Config {
         markdown :: MarkdownConfig
     }
 
+defaultGeneralConfig :: GeneralConfig
+defaultGeneralConfig = GeneralConfig {
+    filename = "taskell.md"
+}
+
+defaultLayoutConfig :: LayoutConfig
+defaultLayoutConfig = LayoutConfig {
+    columnWidth = 24,
+                columnPadding = 3
+}
+
+defaultMarkdownConfig :: MarkdownConfig
+defaultMarkdownConfig = MarkdownConfig {
+    titleOutput = "##",
+    taskOutput = "-",
+    subtaskOutput = "    *"
+}
+
 defaultConfig :: Config
 defaultConfig = Config {
-        general = GeneralConfig {
-            filename = "taskell.md"
-        },
-        layout = LayoutConfig {
-            columnWidth = 24,
-            columnPadding = 3
-        },
-        markdown = MarkdownConfig {
-            titleOutput = "##",
-            taskOutput = "-",
-            subtaskOutput = "    *"
-        }
-    }
-
-parseString :: Text -> Text
-parseString = dropAround (== '"') . strip
+    general = defaultGeneralConfig,
+    layout = defaultLayoutConfig,
+    markdown = defaultMarkdownConfig
+}
 
 getDir :: IO FilePath
 getDir = (++ "/.taskell") <$> getHomeDirectory
@@ -87,34 +94,50 @@ createConfig = do
     exists <- doesFileExist path
     if exists then return () else writeConfig path
 
+noEmpty :: Maybe Text -> Maybe Text
+noEmpty (Just txt) = if T.null txt then Nothing else Just txt
+noEmpty Nothing = Nothing
+
+noEmptyString :: Maybe String -> Maybe String
+noEmptyString (Just txt) = if Prelude.null txt then Nothing else Just txt
+noEmptyString Nothing = Nothing
+
+parseString :: Maybe Text -> Maybe Text
+parseString (Just s) = Just . dropAround (== '"') $ strip s
+parseString Nothing = Nothing
+
 configParser :: IniParser Config
 configParser = do
-    generalCf <- section "general" $ do
-        filenameCf <- fieldOf "filename" string
+    generalCf <- sectionMb "general" $ do
+        filenameCf <- fromMaybe (filename defaultGeneralConfig) . noEmptyString <$> fieldMbOf "filename" string
         return GeneralConfig { filename = filenameCf }
-    layoutCf <- section "layout" $ do
-        columnWidthCf <- fieldOf "column_width" number
-        columnPaddingCf <- fieldOf "column_padding" number
+    layoutCf <- sectionMb "layout" $ do
+        columnWidthCf <- fromMaybe (columnWidth defaultLayoutConfig) <$> fieldMbOf "column_width" number
+        columnPaddingCf <- fromMaybe (columnPadding defaultLayoutConfig) <$> fieldMbOf "column_padding" number
         return LayoutConfig { columnWidth = columnWidthCf, columnPadding = columnPaddingCf }
-    markdownCf <- section "markdown" $ do
-        titleOutputCf <- parseString <$> fieldOf "title" string
-        taskOutputCf <- parseString <$> fieldOf "task" string
-        subtaskOutputCf <- parseString <$> fieldOf "subtask" string
+    markdownCf <- sectionMb "markdown" $ do
+        titleOutputCf <- fromMaybe (titleOutput defaultMarkdownConfig) . noEmpty . parseString <$> fieldMb "title"
+        taskOutputCf <- fromMaybe (taskOutput defaultMarkdownConfig) . noEmpty . parseString <$> fieldMb "task"
+        subtaskOutputCf <- fromMaybe (subtaskOutput defaultMarkdownConfig) . noEmpty . parseString <$> fieldMb "subtask"
         return MarkdownConfig {
             titleOutput = titleOutputCf,
             taskOutput = taskOutputCf,
             subtaskOutput = subtaskOutputCf
         }
-    return Config { general = generalCf, layout = layoutCf, markdown = markdownCf }
+    return Config {
+        general = fromMaybe defaultGeneralConfig generalCf,
+        layout = fromMaybe defaultLayoutConfig layoutCf,
+        markdown = fromMaybe defaultMarkdownConfig markdownCf
+    }
 
 getConfig :: IO Config
 getConfig = do
     content <- getConfigPath >>= T.readFile
     let config = parseIniFile content configParser
 
-    return $ case config of
-        Right c -> c
-        Left _ -> defaultConfig
+    case config of
+        Right c -> return c
+        Left s -> putStrLn ("config.ini: " ++ s) >> return defaultConfig
 
 -- generate theme
 generateAttrMap :: IO AttrMap

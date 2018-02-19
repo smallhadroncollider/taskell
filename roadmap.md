@@ -46,7 +46,6 @@
 
 ## In Progress
 
-- One bad config line stops all config from working - needs to merge with defaultConfig
 
 ## Done
 
@@ -141,3 +140,4 @@
 - Feels sluggish in sub-task view - cache main view?
 - Leaving search only refreshes current list
 - Display a warning if any line of the file could not be parsed - otherwise could lead to data loss
+- One bad config line stops all config from working - needs to merge with defaultConfig
