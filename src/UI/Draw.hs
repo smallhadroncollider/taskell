@@ -7,7 +7,7 @@ module UI.Draw (
 import Events.State (lists, current, mode, normalise)
 import Events.State.Types (State, Mode(..), InsertMode(..), Pointer, ModalType(..), SubTasksMode(..))
 import Brick
-import Data.Text as T (Text, length, pack, concat, append, empty)
+import Data.Text as T (Text, length, pack, concat, append)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks)
 import Data.Taskell.Text (wrap)
@@ -33,21 +33,16 @@ addCursor li ti d = showCursor name (Location (h, v))
 box :: [Text] -> Widget ResourceName
 box d = padBottom (Pad 1) . vBox $ txt <$> d
 
-subTaskCount :: Task -> Text
-subTaskCount t | hasSubTasks t = T.concat [
-        "[",
-        pack . show $ countCompleteSubTasks t,
-        "/",
-        pack . show $ countSubTasks t,
-        "]"
-    ]
-               | otherwise = empty
+subTaskCount :: Task -> Widget ResourceName
+subTaskCount t
+    | hasSubTasks t = str $ Prelude.concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
+    | otherwise = emptyWidget
 
 renderTask :: LayoutConfig -> Pointer -> Int -> Int -> Task -> Widget ResourceName
 renderTask layout p li ti t =
       cached (RNTask (li, ti))
     . padBottom (Pad 1)
-    . (<=> (withAttr disabledAttr $ txt after))
+    . (<=> withAttr disabledAttr after)
     . (if (li, ti) == p then withAttr taskCurrentAttr . visible else withAttr taskAttr)
     . addCursor li ti d
     . vBox $ txt <$> d
