@@ -34,7 +34,7 @@ renderSubTask width current i subtask
 
     where postfix = if complete subtask then " ✓" else ""
           text = wrap width $ name subtask `T.append` postfix
-          widget = addCursor i text (box text)
+          widget = addCursor i text (box 1 text)
 
 st :: State -> Int -> (Text, Widget ResourceName)
 st state width = fromMaybe ("Error", txt "Oops") $ do

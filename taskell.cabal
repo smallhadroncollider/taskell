@@ -30,6 +30,7 @@ library
                      , Events.Actions.Insert
                      , Events.Actions.Modal
                      , Events.Actions.Modal.Help
+                     , Events.Actions.Modal.MoveTo
                      , Events.Actions.Modal.SubTasks
                      , Events.Actions.Insert.Task
                      , Events.Actions.Insert.Task.Create
@@ -56,6 +57,7 @@ library
                      , UI.Modal.Internal
                      , UI.Modal.Help
                      , UI.Modal.SubTasks
+                     , UI.Modal.MoveTo
 
   build-depends:       base <= 5
                      , vty

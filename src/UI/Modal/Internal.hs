@@ -18,7 +18,7 @@ maxWidth = 50
 
 modal :: Int -> (Text, Widget ResourceName) -> Widget ResourceName
 modal width (title, w) = t <=> w'
-    where t = padBottom (Pad 1) . withAttr titleAttr $ box (wrap width title)
+    where t = withAttr titleAttr $ box 1 (wrap width title)
           w'= viewport RNModal Vertical w
 
 surround :: (Int -> (Text, Widget ResourceName)) -> Widget ResourceName

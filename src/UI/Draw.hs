@@ -58,7 +58,7 @@ renderTitle layout (p, i) li l = if p /= li || i == 0 then visible title' else t
 
     where d = wrap (columnWidth layout) $ columnNumber li (title l)
           attr = if p == li then titleCurrentAttr else titleAttr
-          title' = withAttr attr . addCursor li (-1) d $ box d
+          title' = withAttr attr . addCursor li (-1) d $ box 1 d
 
 renderList :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
 renderList layout p li l = if fst p == li then visible list else list

@@ -30,12 +30,12 @@
 
 ## To Do
 
-- Move between lists with `m` - shows possible lists
 - Left/Right arrow keys in insert mode
 - Task body - e.g. as well as sub lists, have a longer description
 - Add tags/labels with `t`
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
+- Should change list numbering to letters when in move list mode
 - Copy and paste?
 - Add custom key support
 - Show filename somewhere
@@ -141,3 +141,4 @@
 - Display a warning if any line of the file could not be parsed - otherwise could lead to data loss
 - One bad config line stops all config from working - needs to merge with defaultConfig
 - Split up Draw/Modal code into more logical chunks
+- Move between lists with `m` - shows possible lists
