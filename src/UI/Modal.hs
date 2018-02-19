@@ -78,12 +78,12 @@ st' state width = do
 st :: State -> Int -> (Text, Widget ResourceName)
 st state width = fromMaybe ("Error", txt "Oops") $ st' state width
 
-getModal :: State -> ModalType -> [Widget ResourceName]
+getModal :: State -> ModalType -> Widget ResourceName
 getModal s t = case t of
-    Help -> [surround help]
-    SubTasks _ _ -> [surround $ st s]
+    Help -> surround help
+    SubTasks _ _ -> surround $ st s
 
 showModal :: State -> [Widget ResourceName] -> [Widget ResourceName]
 showModal s view = case mode s of
-    Modal t -> getModal s t ++ view
+    Modal t -> getModal s t : view
     _ -> view
