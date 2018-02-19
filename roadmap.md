@@ -31,14 +31,16 @@
 
 ## To Do
 
-- Task body - e.g. as well as sub lists, have a longer description
 - Move between lists with `m` - shows possible lists
 - Left/Right arrow keys in insert mode
+- Task body - e.g. as well as sub lists, have a longer description
 - Add tags/labels with `t`
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Copy and paste?
 - Add custom key support
+- Show filename somewhere
+- Editable title?
 - If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
 
