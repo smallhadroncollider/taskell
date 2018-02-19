@@ -4,9 +4,10 @@ module UI.Draw (
     chooseCursor
 ) where
 
-import Events.State (State, Mode(..), InsertMode(..), Pointer, lists, current, mode, normalise)
+import Events.State (lists, current, mode, normalise)
+import Events.State.Types (State, Mode(..), InsertMode(..), Pointer, ModalType(..), SubTasksMode(..))
 import Brick
-import Data.Text as T (Text, length, pack, concat, append, empty)
+import Data.Text as T (Text, length, pack, concat, append)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks)
 import Data.Taskell.Text (wrap)
@@ -32,20 +33,16 @@ addCursor li ti d = showCursor name (Location (h, v))
 box :: [Text] -> Widget ResourceName
 box d = padBottom (Pad 1) . vBox $ txt <$> d
 
-subTaskCount :: Task -> Text
-subTaskCount t | hasSubTasks t = T.concat [
-        "[",
-        pack . show $ countCompleteSubTasks t,
-        "/",
-        pack . show $ countSubTasks t,
-        "]"
-    ]
-               | otherwise = empty
+subTaskCount :: Task -> Widget ResourceName
+subTaskCount t
+    | hasSubTasks t = str $ Prelude.concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
+    | otherwise = emptyWidget
 
 renderTask :: LayoutConfig -> Pointer -> Int -> Int -> Task -> Widget ResourceName
 renderTask layout p li ti t =
-      padBottom (Pad 1)
-    . (<=> (withAttr disabledAttr $ txt after))
+      cached (RNTask (li, ti))
+    . padBottom (Pad 1)
+    . (<=> withAttr disabledAttr after)
     . (if (li, ti) == p then withAttr taskCurrentAttr . visible else withAttr taskAttr)
     . addCursor li ti d
     . vBox $ txt <$> d
@@ -68,7 +65,8 @@ renderTitle layout (p, i) li l = if p /= li || i == 0 then visible title' else t
 renderList :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
 renderList layout p li l = if fst p == li then visible list else list
     where list =
-              padLeftRight (columnPadding layout)
+              cached (RNList li)
+            . padLeftRight (columnPadding layout)
             . hLimit (columnWidth layout)
             . viewport (RNList li) Vertical
             . vBox
@@ -89,19 +87,23 @@ searchImage layout s i = case mode s of
             )
     _ -> i
 
+main :: LayoutConfig -> State -> Widget ResourceName
+main layout s =
+      searchImage layout s
+    . viewport RNLists Horizontal
+    . hLimit (Seq.length ls * colWidth layout)
+    . padTopBottom 1
+    . hBox
+    . toList
+    $ renderList layout (current s)  `Seq.mapWithIndex` ls
+
+    where ls = lists s
+
 -- draw
 draw :: LayoutConfig -> State -> [Widget ResourceName]
-draw layout state = showModal state [main]
-    where s = normalise state
-          ls = lists s
-          main =
-              searchImage layout state
-            . viewport RNLists Horizontal
-            . hLimit (Seq.length ls * colWidth layout)
-            . padTopBottom 1
-            . hBox
-            . toList
-            $ renderList layout (current s)  `Seq.mapWithIndex` ls
+draw layout state =
+    let s = normalise state in
+    showModal s [main layout s]
 
 -- cursors
 cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
@@ -113,6 +115,7 @@ chooseCursor state = case mode s of
     Insert EditList -> cursor (fst c, -1)
     Insert CreateTask -> cursor c
     Insert EditTask -> cursor c
+    Modal (SubTasks i STInsert) -> showCursorNamed (RNModalItem i)
     _ -> neverShowCursor s
 
     where s = normalise state

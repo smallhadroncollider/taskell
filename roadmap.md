@@ -14,19 +14,24 @@
 - Remove duplication of config - currently using ini and hard-coded
 - Move Help modal creation into Template Haskell
 - Use lenses for nested data?
+- Split up Draw/Modal code into more logical chunks
+- Share code between tasks and sub-tasks lists?
 
 ## Bugs
 
-- Items near bottom of the list jump in position
 - Up and down in search gets a bit lost
 - Editing list title doesn't always have visibility
 - Vertical spacing doesn't work if the current item is blank
-- Cursor goes missing on the left hand side at the end of a line
-- One bad config line stops all config from working - needs to merge with defaultConfig
+- Cursor goes missing on the left hand side at the end of a line - needs to wrap
 - Help modal needs to scroll on smaller windows
+- Sub-task count not visible on last item in a list longer than the vertical height
+- Pressing Enter on empty list shows an subtasks box with an error
+- Empty tasks - i.e. just a space - don't show up
+- No obvious way to know if there are more items in a list off-screen
 
 ## To Do
 
+- Task body - e.g. as well as sub lists, have a longer description
 - Move between lists with `m` - shows possible lists
 - Left/Right arrow keys in insert mode
 - Add tags/labels with `t`
@@ -39,6 +44,7 @@
 
 ## In Progress
 
+- One bad config line stops all config from working - needs to merge with defaultConfig
 
 ## Done
 
@@ -123,3 +129,13 @@
     * ~Word wrapping~
     * ~Searching~
     * ~Delete items~
+- No cursor in sub-task view
+    * ~Single line~
+    * ~Multi-line~
+- Customisable Markdown format
+    * ~Change top level headers~
+    * ~Change top level list item: e.g. to H3 instead of li~
+    * ~Change sub-list: e.g. from "    *" to "-"~
+- Feels sluggish in sub-task view - cache main view?
+- Leaving search only refreshes current list
+- Display a warning if any line of the file could not be parsed - otherwise could lead to data loss
