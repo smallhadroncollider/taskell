@@ -11,4 +11,10 @@ main :: IO ()
 main = do
     config <- setup
     (exists, path) <- T.exists config
-    when exists $ create path <$> T.readFile config path >>= go config
+
+    when exists $ do
+        content <- T.readFile config path
+
+        case content of
+            Right lists -> go config $ create path lists
+            Left err -> putStrLn $ path ++ ": " ++ err

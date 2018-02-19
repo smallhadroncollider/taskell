@@ -41,7 +41,7 @@ writeFile :: Config -> Lists -> FilePath -> IO ()
 writeFile config tasks path = void (BS.writeFile path $ stringify config tasks)
 
 -- reads json file
-readFile :: Config -> FilePath -> IO Lists
+readFile :: Config -> FilePath -> IO (Either String Lists)
 readFile config path = do
     content <- BS.readFile path
     return $ parse config content
