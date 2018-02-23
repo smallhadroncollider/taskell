@@ -1,5 +1,5 @@
 name:                taskell
-version:             0.11.1.0
+version:             0.11.2.0
 -- synopsis: A CLI task manager, written in Haskell
 -- description: Allows you to create version controlled task lists
 homepage:            https://github.com/smallhadroncollider/taskell#readme
@@ -30,6 +30,7 @@ library
                      , Events.Actions.Insert
                      , Events.Actions.Modal
                      , Events.Actions.Modal.Help
+                     , Events.Actions.Modal.MoveTo
                      , Events.Actions.Modal.SubTasks
                      , Events.Actions.Insert.Task
                      , Events.Actions.Insert.Task.Create
@@ -48,9 +49,15 @@ library
 
                      , UI.CLI
                      , UI.Draw
-                     , UI.Modal
                      , UI.Theme
                      , UI.Types
+                     , UI.Internal
+
+                     , UI.Modal
+                     , UI.Modal.Internal
+                     , UI.Modal.Help
+                     , UI.Modal.SubTasks
+                     , UI.Modal.MoveTo
 
   build-depends:       base <= 5
                      , vty

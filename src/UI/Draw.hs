@@ -19,6 +19,7 @@ import IO.Config (LayoutConfig, columnWidth, columnPadding)
 import UI.Modal (showModal)
 import UI.Types (ResourceName(..))
 import UI.Theme
+import UI.Internal (box)
 
 colWidth :: LayoutConfig -> Int
 colWidth layout = columnWidth layout + columnPadding layout * 2
@@ -29,9 +30,6 @@ addCursor li ti d = showCursor name (Location (h, v))
     where v = Prelude.length d - 1
           h = T.length $ last d
           name = RNTask (li, ti)
-
-box :: [Text] -> Widget ResourceName
-box d = padBottom (Pad 1) . vBox $ txt <$> d
 
 subTaskCount :: Task -> Widget ResourceName
 subTaskCount t
@@ -60,7 +58,7 @@ renderTitle layout (p, i) li l = if p /= li || i == 0 then visible title' else t
 
     where d = wrap (columnWidth layout) $ columnNumber li (title l)
           attr = if p == li then titleCurrentAttr else titleAttr
-          title' = withAttr attr . addCursor li (-1) d $ box d
+          title' = withAttr attr . addCursor li (-1) d $ box 1 d
 
 renderList :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
 renderList layout p li l = if fst p == li then visible list else list

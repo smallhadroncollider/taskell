@@ -74,6 +74,8 @@ module Events.State (
 
     -- Events.Actions.Modal
     showHelp,
+    showMoveTo,
+    moveTo,
     getCurrentTask,
     setCurrentTask
 ) where
@@ -83,7 +85,7 @@ import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
 import Data.Taskell.List (List(), updateFn, update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.Text as T
-import Data.Char (digitToInt)
+import Data.Char (digitToInt, ord)
 
 import Events.State.Types
 
@@ -318,6 +320,18 @@ setList s ts = setLists s (Lists.updateLists (getCurrentList s) (lists s) ts)
 setLists :: State -> Lists.Lists -> State
 setLists s ts = s { lists = ts }
 
+moveTo :: Char -> Stateful
+moveTo char state = do
+    let li = ord char - ord 'a'
+        cur = getCurrentList state
+
+    if li == cur || li < 0 || li >= length (lists state)
+        then Nothing
+        else do
+            s <- move' (li - cur) state
+            return . selectLast $ setCurrentList s li
+
+
 -- move lists
 listMove :: Int -> Stateful
 listMove dir s = do
@@ -360,6 +374,9 @@ searchChar c s = case mode s of
 -- help
 showHelp :: Stateful
 showHelp s = return $ s { mode = Modal Help }
+
+showMoveTo :: Stateful
+showMoveTo s = return $ s { mode = Modal MoveTo }
 
 -- view - maybe shouldn't be in here...
 search :: State -> State

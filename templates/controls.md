@@ -9,6 +9,7 @@
 - `Enter`: show sub-tasks
 - `J` / `K`: shift task down/up
 - `H` / `L`: shift task left/right (current selection follows task)
+- `m`: move task to specific list (current selection follows task)
 - `Space`: shift task right (current selection stays put)
 - `D`: delete task
 - `u`: undo

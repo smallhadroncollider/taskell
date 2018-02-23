@@ -24,7 +24,7 @@ store config ls s = do
 
 next :: Config -> State -> EventM ResourceName (Next State)
 next config s = case io s of
-    Just ls -> liftIO (store config ls s) >>= Brick.continue
+    Just ls -> invalidateCache >> liftIO (store config ls s) >>= Brick.continue
     Nothing -> Brick.continue s
 
 clearCache :: State -> EventM ResourceName ()
