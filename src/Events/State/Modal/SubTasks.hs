@@ -8,8 +8,10 @@ import Data.Sequence as S (adjust')
 import Data.ByteString (ByteString)
 
 showSubTasks :: Stateful
-showSubTasks s = return $ s { mode = Modal (SubTasks index STNormal) }
-    where index = fromMaybe 0 $ getCurrentSubTask s
+showSubTasks s = do
+    getCurrentTask s
+    let index = fromMaybe 0 $ getCurrentSubTask s
+    return $ s { mode = Modal (SubTasks index STNormal) }
 
 getCurrentSubTask :: State -> Maybe Int
 getCurrentSubTask state = case mode state of
