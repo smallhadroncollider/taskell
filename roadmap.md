@@ -18,7 +18,6 @@
 
 ## Bugs
 
-- Editing list title doesn't always have visibility
 - Help modal needs to scroll on smaller windows
 - No obvious way to know if there are more items in a list off-screen
 - Modal boxes shouldn't be full height unless they need to be
@@ -148,3 +147,4 @@
 - Sub-task count not visible on last item in a list longer than the vertical height
 - Vertical spacing doesn't work if the current item is blank
 - Empty tasks - i.e. just a space - don't show up
+- Editing list title doesn't always have visibility

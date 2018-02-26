@@ -41,10 +41,10 @@ subTaskCount t
     | hasSubTasks t = str $ Prelude.concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
     | otherwise = emptyWidget
 
-renderTask :: LayoutConfig -> Pointer -> Int -> Int -> Task -> Widget ResourceName
-renderTask layout p li ti t = if T.null text then blank li ti else
+renderTask :: LayoutConfig -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
+renderTask layout eTitle p li ti t = if T.null text then blank li ti else
       cached (RNTask (li, ti))
-    . (if cur then visible else id)
+    . (if not eTitle && cur then visible else id)
     . padBottom (Pad 1)
     . (<=> withAttr disabledAttr after)
     . withAttr (if cur then taskCurrentAttr else taskAttr)
@@ -61,25 +61,28 @@ columnNumber :: Int -> Text -> Text
 columnNumber i s = if col >= 1 && col <= 9 then T.concat [pack (show col), ". ",  s] else s
     where col = i + 1
 
-renderTitle :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
-renderTitle layout (p, i) li l = if p /= li || i == 0 then visible title' else title'
+renderTitle :: LayoutConfig -> Bool -> Pointer -> Int -> List -> Widget ResourceName
+renderTitle layout eTitle (p, i) li l =
+    if (p == li && eTitle) || p /= li || i == 0
+        then visible title'
+        else title'
 
     where width = columnWidth layout
           d = wrap width  $ columnNumber li (title l)
           attr = if p == li then titleCurrentAttr else titleAttr
           title' = withAttr attr . addCursor width li (-1) d $ box 1 d
 
-renderList :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
-renderList layout p li l = if fst p == li then visible list else list
+renderList :: LayoutConfig -> Bool -> Pointer -> Int -> List -> Widget ResourceName
+renderList layout eTitle p li l = if fst p == li then visible list else list
     where list =
               cached (RNList li)
             . padLeftRight (columnPadding layout)
             . hLimit (columnWidth layout)
             . viewport (RNList li) Vertical
             . vBox
-            . (renderTitle layout p li l :)
+            . (renderTitle layout eTitle p li l :)
             . toList
-            $ renderTask layout p li `Seq.mapWithIndex` tasks l
+            $ renderTask layout eTitle p li `Seq.mapWithIndex` tasks l
 
 searchImage :: LayoutConfig -> State -> Widget ResourceName -> Widget ResourceName
 searchImage layout s i = case mode s of
@@ -102,9 +105,16 @@ main layout s =
     . padTopBottom 1
     . hBox
     . toList
-    $ renderList layout (current s)  `Seq.mapWithIndex` ls
+    $ renderList layout (editingTitle s) (current s)  `Seq.mapWithIndex` ls
 
     where ls = lists s
+
+
+editingTitle :: State -> Bool
+editingTitle state = case mode state of
+    Insert (CreateList _) -> True
+    Insert EditList -> True
+    _ -> False
 
 -- draw
 draw :: LayoutConfig -> State -> [Widget ResourceName]
