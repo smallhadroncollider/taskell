@@ -3,8 +3,9 @@ module Events.State.Modal.SubTasks where
 import Data.Maybe (fromMaybe)
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, stAppend, stBackspace, countSubTasks, removeSubTask)
+import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, stAppend, stBackspace, countSubTasks, removeSubTask, stAppendByteString)
 import Data.Sequence as S (adjust')
+import Data.ByteString (ByteString)
 
 showSubTasks :: Stateful
 showSubTasks s = return $ s { mode = Modal (SubTasks index STNormal) }
@@ -48,6 +49,9 @@ insertBS = change stBackspace
 
 insertCurrent :: Char -> Stateful
 insertCurrent char = change (stAppend char)
+
+insertByteString :: ByteString -> Stateful
+insertByteString bs = change (stAppendByteString bs)
 
 change :: (SubTask -> SubTask) -> State -> Maybe State
 change fn state = do

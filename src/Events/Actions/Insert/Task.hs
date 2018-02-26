@@ -7,6 +7,7 @@ import qualified Events.Actions.Insert.Task.Create as Create
 import qualified Events.Actions.Insert.Task.Edit as Edit
 
 event :: Event -> Stateful
+event (EvPaste bs) s = insertByteString bs s
 event (EvKey KEsc _) s = write =<< removeBlank =<< normalMode s
 event (EvKey KBS _) s = insertBS s
 event (EvKey (KChar char) _) s = insertCurrent char s

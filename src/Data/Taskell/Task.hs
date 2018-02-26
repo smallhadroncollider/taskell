@@ -1,8 +1,10 @@
 module Data.Taskell.Task where
 
 import Data.Sequence as S (Seq, null, (|>), adjust', empty, length, filter, deleteAt)
-import Data.Text as T (Text, snoc, length, null, isInfixOf, empty)
+import Data.Text as T (Text, snoc, length, null, isInfixOf, empty, append)
 import qualified Data.Taskell.Text as T
+import Data.ByteString (ByteString)
+import Data.Text.Encoding (decodeUtf8)
 
 data SubTask = SubTask {
     name :: Text,
@@ -48,6 +50,9 @@ toggleComplete st = st { complete = not (complete st) }
 append :: Char -> Task  -> Task
 append c t = t { description = T.snoc (description t) c }
 
+appendByteString :: ByteString -> Task  -> Task
+appendByteString bs t = t { description = T.append (description t) $ decodeUtf8 bs }
+
 backspace :: Task -> Task
 backspace t = t { description = T.backspace (description t) }
 
@@ -56,6 +61,9 @@ stAppend c st = st { name = T.snoc (name st) c }
 
 stBackspace :: SubTask -> SubTask
 stBackspace st = st { name = T.backspace (name st) }
+
+stAppendByteString :: ByteString -> SubTask  -> SubTask
+stAppendByteString bs st = st { name = T.append (name st) $ decodeUtf8 bs }
 
 countSubTasks :: Task -> Int
 countSubTasks = S.length . subTasks

@@ -32,7 +32,6 @@
 ## To Do
 
 - Left/Right arrow keys in insert mode
-- Copy and paste?
 - Add custom key support
 - Task body - e.g. as well as sub lists, have a longer description
 - Show filename somewhere
@@ -43,6 +42,7 @@
 - Should change list numbering to letters when in move list mode
 - If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
+- Copy and paste for list titles
 
 ## In Progress
 
@@ -144,3 +144,4 @@
 - Split up Draw/Modal code into more logical chunks
 - Move between lists with `m` - shows possible lists
 - Caching issue when using `m` to move lists - doesn't update previous list
+- Copy and paste?

@@ -19,6 +19,7 @@ normal (EvKey (KChar 'u') _) = (write =<<) . undo
 normal _ = return
 
 insert :: Event -> Stateful
+insert (EvPaste bs) = ST.insertByteString bs
 insert (EvKey KEsc _) = (write =<<) . showSubTasks
 insert (EvKey KEnter _) = (ST.lastSubTask =<<) . (ST.newItem =<<) . (store =<<) . write
 insert (EvKey KBS _) = ST.insertBS

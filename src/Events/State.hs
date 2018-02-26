@@ -71,6 +71,7 @@ module Events.State (
     normalMode,
     insertBS,
     insertCurrent,
+    insertByteString,
 
     -- Events.Actions.Modal
     showHelp,
@@ -80,8 +81,9 @@ module Events.State (
     setCurrentTask
 ) where
 
+import Data.ByteString (ByteString)
 import Data.Text (snoc, null)
-import Data.Taskell.Task (Task, backspace, append, clear, isBlank)
+import Data.Taskell.Task (Task, backspace, append, appendByteString, clear, isBlank)
 import Data.Taskell.List (List(), updateFn, update, move, new, deleteTask, newAt, title, updateTitle, getTask)
 import qualified Data.Taskell.Lists as Lists
 import qualified Data.Taskell.Text as T
@@ -209,6 +211,9 @@ insertBS = change backspace
 
 insertCurrent :: Char -> Stateful
 insertCurrent char = change (Data.Taskell.Task.append char)
+
+insertByteString :: ByteString -> Stateful
+insertByteString bs = change (Data.Taskell.Task.appendByteString bs)
 
 change :: (Task -> Task) -> State -> Maybe State
 change fn s = do
