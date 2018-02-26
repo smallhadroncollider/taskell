@@ -23,7 +23,6 @@
 - Empty tasks - i.e. just a space - don't show up
 - Help modal needs to scroll on smaller windows
 - No obvious way to know if there are more items in a list off-screen
-- Sub-task count not visible on last item in a list longer than the vertical height
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
 
@@ -147,3 +146,4 @@
 - Copy and paste?
 - Pressing Enter on empty list shows an subtasks box with an error
 - Cursor goes missing on the left hand side at the end of a line - needs to wrap
+- Sub-task count not visible on last item in a list longer than the vertical height

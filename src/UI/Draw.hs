@@ -40,13 +40,15 @@ subTaskCount t
 renderTask :: LayoutConfig -> Pointer -> Int -> Int -> Task -> Widget ResourceName
 renderTask layout p li ti t =
       cached (RNTask (li, ti))
+    . (if cur then visible else id)
     . padBottom (Pad 1)
     . (<=> withAttr disabledAttr after)
-    . (if (li, ti) == p then withAttr taskCurrentAttr . visible else withAttr taskAttr)
+    . withAttr (if cur then taskCurrentAttr else taskAttr)
     . addCursor width li ti d
     . vBox $ txt <$> d
 
-    where text = description t
+    where cur = (li, ti) == p
+          text = description t
           after = subTaskCount t
           width = columnWidth layout
           d = wrap width text
