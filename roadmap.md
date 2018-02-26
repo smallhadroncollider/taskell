@@ -18,29 +18,29 @@
 
 ## Bugs
 
-- Up and down in search gets a bit lost
 - Editing list title doesn't always have visibility
 - Vertical spacing doesn't work if the current item is blank
-- Cursor goes missing on the left hand side at the end of a line - needs to wrap
-- Help modal needs to scroll on smaller windows
-- Sub-task count not visible on last item in a list longer than the vertical height
-- Pressing Enter on empty list shows an subtasks box with an error
 - Empty tasks - i.e. just a space - don't show up
+- Pressing Enter on empty list shows an subtasks box with an error
+- Help modal needs to scroll on smaller windows
 - No obvious way to know if there are more items in a list off-screen
-- Caching issue when using `m` to move lists - doesn't update previous list
+- Sub-task count not visible on last item in a list longer than the vertical height
+- Modal boxes shouldn't be full height unless they need to be
+- Up and down in search gets a bit lost
+- Cursor goes missing on the left hand side at the end of a line - needs to wrap
 
 ## To Do
 
 - Left/Right arrow keys in insert mode
+- Copy and paste?
+- Add custom key support
 - Task body - e.g. as well as sub lists, have a longer description
+- Show filename somewhere
+- Editable title?
 - Add tags/labels with `t`
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
-- Copy and paste?
-- Add custom key support
-- Show filename somewhere
-- Editable title?
 - If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
 
@@ -143,3 +143,4 @@
 - One bad config line stops all config from working - needs to merge with defaultConfig
 - Split up Draw/Modal code into more logical chunks
 - Move between lists with `m` - shows possible lists
+- Caching issue when using `m` to move lists - doesn't update previous list
