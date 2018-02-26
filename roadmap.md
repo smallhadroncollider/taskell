@@ -25,6 +25,7 @@
 - No obvious way to know if there are more items in a list off-screen
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
+- Caching doesn't clear properly when using `o` and `O`
 
 ## To Do
 
