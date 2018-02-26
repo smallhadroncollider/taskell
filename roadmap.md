@@ -26,7 +26,6 @@
 - Sub-task count not visible on last item in a list longer than the vertical height
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
-- Cursor goes missing on the left hand side at the end of a line - needs to wrap
 
 ## To Do
 
@@ -145,3 +144,4 @@
 - Caching issue when using `m` to move lists - doesn't update previous list
 - Copy and paste?
 - Pressing Enter on empty list shows an subtasks box with an error
+- Cursor goes missing on the left hand side at the end of a line - needs to wrap

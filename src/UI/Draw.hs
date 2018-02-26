@@ -24,11 +24,12 @@ import UI.Internal (box)
 colWidth :: LayoutConfig -> Int
 colWidth layout = columnWidth layout + columnPadding layout * 2
 
-addCursor :: Int -> Int -> [Text] -> Widget ResourceName -> Widget ResourceName
-addCursor li ti d = showCursor name (Location (h, v))
+addCursor :: Int -> Int -> Int -> [Text] -> Widget ResourceName -> Widget ResourceName
+addCursor width li ti d = showCursor name (Location location)
 
     where v = Prelude.length d - 1
           h = T.length $ last d
+          location = if h >= width then (0, v + 1) else (h, v)
           name = RNTask (li, ti)
 
 subTaskCount :: Task -> Widget ResourceName
@@ -42,12 +43,13 @@ renderTask layout p li ti t =
     . padBottom (Pad 1)
     . (<=> withAttr disabledAttr after)
     . (if (li, ti) == p then withAttr taskCurrentAttr . visible else withAttr taskAttr)
-    . addCursor li ti d
+    . addCursor width li ti d
     . vBox $ txt <$> d
 
     where text = description t
           after = subTaskCount t
-          d = wrap (columnWidth layout) text
+          width = columnWidth layout
+          d = wrap width text
 
 columnNumber :: Int -> Text -> Text
 columnNumber i s = if col >= 1 && col <= 9 then T.concat [pack (show col), ". ",  s] else s
@@ -56,9 +58,10 @@ columnNumber i s = if col >= 1 && col <= 9 then T.concat [pack (show col), ". ",
 renderTitle :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
 renderTitle layout (p, i) li l = if p /= li || i == 0 then visible title' else title'
 
-    where d = wrap (columnWidth layout) $ columnNumber li (title l)
+    where width = columnWidth layout
+          d = wrap width  $ columnNumber li (title l)
           attr = if p == li then titleCurrentAttr else titleAttr
-          title' = withAttr attr . addCursor li (-1) d $ box 1 d
+          title' = withAttr attr . addCursor width li (-1) d $ box 1 d
 
 renderList :: LayoutConfig -> Pointer -> Int -> List -> Widget ResourceName
 renderList layout p li l = if fst p == li then visible list else list
