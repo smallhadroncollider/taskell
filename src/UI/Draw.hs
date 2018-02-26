@@ -7,7 +7,7 @@ module UI.Draw (
 import Events.State (lists, current, mode, normalise)
 import Events.State.Types (State, Mode(..), InsertMode(..), Pointer, ModalType(..), SubTasksMode(..))
 import Brick
-import Data.Text as T (Text, length, pack, concat, append)
+import Data.Text as T (Text, length, pack, concat, append, null)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks)
 import Data.Taskell.Text (wrap)
@@ -32,13 +32,17 @@ addCursor width li ti d = showCursor name (Location location)
           location = if h >= width then (0, v + 1) else (h, v)
           name = RNTask (li, ti)
 
+
+blank :: Int -> Int -> Widget ResourceName
+blank li ti = showCursor (RNTask (li, ti)) (Location (0, 0)) . padBottom (Pad 1) $ txt " "
+
 subTaskCount :: Task -> Widget ResourceName
 subTaskCount t
     | hasSubTasks t = str $ Prelude.concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
     | otherwise = emptyWidget
 
 renderTask :: LayoutConfig -> Pointer -> Int -> Int -> Task -> Widget ResourceName
-renderTask layout p li ti t =
+renderTask layout p li ti t = if T.null text then blank li ti else
       cached (RNTask (li, ti))
     . (if cur then visible else id)
     . padBottom (Pad 1)
