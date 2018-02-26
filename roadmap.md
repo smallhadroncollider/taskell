@@ -40,7 +40,9 @@
 - Should change list numbering to letters when in move list mode
 - If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
-- Copy and paste for list titles
+- Copy and paste
+    * List titles
+    * Search
 
 ## In Progress
 
