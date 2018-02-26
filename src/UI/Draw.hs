@@ -75,7 +75,7 @@ renderTitle layout eTitle (p, i) li l =
 renderList :: LayoutConfig -> Bool -> Pointer -> Int -> List -> Widget ResourceName
 renderList layout eTitle p li l = if fst p == li then visible list else list
     where list =
-              cached (RNList li)
+              (if not eTitle then cached (RNList li) else id)
             . padLeftRight (columnPadding layout)
             . hLimit (columnWidth layout)
             . viewport (RNList li) Vertical
