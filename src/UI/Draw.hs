@@ -12,7 +12,7 @@ import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks)
 import Data.Taskell.Text (wrap)
 import Data.Foldable (toList)
-import qualified Data.Sequence as Seq (mapWithIndex, length)
+import qualified Data.Sequence as Seq (mapWithIndex)
 
 import IO.Config (LayoutConfig, columnWidth, columnPadding)
 
@@ -20,9 +20,6 @@ import UI.Modal (showModal)
 import UI.Types (ResourceName(..))
 import UI.Theme
 import UI.Internal (box)
-
-colWidth :: LayoutConfig -> Int
-colWidth layout = columnWidth layout + columnPadding layout * 2
 
 addCursor :: Int -> Int -> Int -> [Text] -> Widget ResourceName -> Widget ResourceName
 addCursor width li ti d = showCursor name (Location location)
@@ -101,7 +98,6 @@ main :: LayoutConfig -> State -> Widget ResourceName
 main layout s =
       searchImage layout s
     . viewport RNLists Horizontal
-    . hLimit (Seq.length ls * colWidth layout)
     . padTopBottom 1
     . hBox
     . toList
