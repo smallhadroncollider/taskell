@@ -1,6 +1,6 @@
 module UI.Field where
 
-import qualified Brick as B (Widget, txt, vBox)
+import qualified Brick as B (Widget, txt, vBox, Location(..), showCursor)
 import qualified Data.Taskell.Text as T (wrap)
 import qualified Data.Text as T (Text, length, snoc, init, append, null, splitAt, concat)
 import qualified Data.Text.Encoding as T (decodeUtf8)
@@ -56,5 +56,9 @@ cursorPosition text cursor = (x, y)
 getText :: Field -> T.Text
 getText (Field text _) = text
 
-field :: T.Text -> B.Widget UI.ResourceName
-field text = B.vBox $ B.txt <$> T.wrap 30 text
+field :: Int -> UI.ResourceName -> Field -> B.Widget UI.ResourceName
+field width name (Field text cursor) =
+    B.showCursor name (B.Location location) widget
+    where wrapped = T.wrap width text
+          widget = B.vBox $ B.txt <$> wrapped
+          location = cursorPosition wrapped cursor
