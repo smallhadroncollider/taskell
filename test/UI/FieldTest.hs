@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module UI.FieldTest where
 
-import UI.Field (Field(Field), updateCursor, insertCharacter, insertText, cursorPosition)
+import UI.Field (Field(Field), updateCursor, insertCharacter, insertText, cursorPosition, backspace)
 
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -30,6 +30,15 @@ test_field =
                     (assertEqual "Should insert character at end" (Field "Blahs" 5) (insertCharacter 's' (Field "Blah" 4)))
               , testCase "At beginning"
                     (assertEqual "Should insert character at beginning" (Field "sBlah" 1) (insertCharacter 's' (Field "Blah" 0)))
+            ]
+
+          , testGroup "Field backspace" [
+                testCase "At end"
+                    (assertEqual "Should remove last character" (Field "Bla" 3) (backspace (Field "Blah" 4)))
+              , testCase "At beginning"
+                    (assertEqual "Should stay the same" (Field "Blah" 0) (backspace (Field "Blah" 0)))
+              , testCase "In middle"
+                    (assertEqual "Should remove middle" (Field "Bah" 1) (backspace (Field "Blah" 2)))
             ]
 
           , testGroup "Field insert text" [
