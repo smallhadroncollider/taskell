@@ -14,10 +14,11 @@
 - Remove duplication of config - currently using ini and hard-coded
 - Move Help modal creation into Template Haskell
 - Use lenses for nested data?
-- Share code between tasks and sub-tasks lists?
+- Add a List widget for common actions between tasks and sub-tasks
 
 ## Bugs
 
+- Very long words should get hyphenated
 - Help modal needs to scroll on smaller windows
 - No obvious way to know if there are more items in a list off-screen
 - Modal boxes shouldn't be full height unless they need to be
@@ -26,7 +27,6 @@
 
 ## To Do
 
-- Left/Right arrow keys in insert mode
 - Add custom key support
 - Task body - e.g. as well as sub lists, have a longer description
 - Show filename somewhere
@@ -35,11 +35,7 @@
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
-- If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
-- Copy and paste
-    * List titles
-    * Search
 
 ## In Progress
 
@@ -148,3 +144,14 @@
 - Vertical spacing doesn't work if the current item is blank
 - Empty tasks - i.e. just a space - don't show up
 - Editing list title doesn't always have visibility
+- Left/Right arrow keys in insert mode
+- Share code between tasks and sub-tasks lists?
+    * ~Move wrap into Field widget~
+    * ~Use Field for search~
+    * ~Use Field for sub-tasks~
+    * ~Use Field for titles~
+    * ~Use Field for tasks~
+    * ~Make sure `C` works~
+- Copy and paste
+    * ~List titles~
+    * ~Search~
