@@ -6,11 +6,8 @@
 ## Refactoring
 
 - Break up State module
-- Simplify state by composing Actions
 - Use a map in Actions to tidy things up/add custom key support
-- Add some tests
 - Avoid having to normalise the state?
-- Use Reader monad to pass around config
 - Remove duplication of config - currently using ini and hard-coded
 - Move Help modal creation into Template Haskell
 - Use lenses for nested data?
@@ -18,8 +15,6 @@
 
 ## Bugs
 
-- Very long words should get hyphenated
-- Help modal needs to scroll on smaller windows
 - No obvious way to know if there are more items in a list off-screen
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
@@ -39,6 +34,8 @@
 
 ## In Progress
 
+- Very long words should get hyphenated
+- Help modal needs to wrap and scroll
 
 ## Done
 
