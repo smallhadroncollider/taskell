@@ -5,12 +5,11 @@ module UI.Draw (
 ) where
 
 import Events.State (lists, current, mode, normalise)
-import Events.State.Types (State, Mode(..), InsertMode(..), Pointer, ModalType(..), SubTasksMode(..))
+import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), SubTasksMode(..))
 import Brick
-import Data.Text as T (Text, length, pack, concat, append, null)
+import Data.Text as T (Text, pack, concat)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks)
-import Data.Taskell.Text (wrap)
 import Data.Foldable (toList)
 import qualified Data.Sequence as Seq (mapWithIndex)
 
@@ -19,78 +18,70 @@ import IO.Config (LayoutConfig, columnWidth, columnPadding)
 import UI.Modal (showModal)
 import UI.Types (ResourceName(..))
 import UI.Theme
-import UI.Internal (box)
 
-addCursor :: Int -> Int -> Int -> [Text] -> Widget ResourceName -> Widget ResourceName
-addCursor width li ti d = showCursor name (Location location)
-
-    where v = Prelude.length d - 1
-          h = T.length $ last d
-          location = if h >= width then (0, v + 1) else (h, v)
-          name = RNTask (li, ti)
-
-
-blank :: Int -> Int -> Widget ResourceName
-blank li ti = showCursor (RNTask (li, ti)) (Location (0, 0)) . padBottom (Pad 1) $ txt " "
+import UI.Field (Field, field, textField, fromMaybe)
 
 subTaskCount :: Task -> Widget ResourceName
 subTaskCount t
     | hasSubTasks t = str $ Prelude.concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
     | otherwise = emptyWidget
 
-renderTask :: LayoutConfig -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
-renderTask layout eTitle p li ti t = if T.null text then blank li ti else
-      cached (RNTask (li, ti))
+renderTask :: Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
+renderTask f eTitle p li ti t =
+      cached name
     . (if not eTitle && cur then visible else id)
     . padBottom (Pad 1)
     . (<=> withAttr disabledAttr after)
     . withAttr (if cur then taskCurrentAttr else taskAttr)
-    . addCursor width li ti d
-    . vBox $ txt <$> d
+    $ if cur && not eTitle then widget' else widget
 
     where cur = (li, ti) == p
           text = description t
           after = subTaskCount t
-          width = columnWidth layout
-          d = wrap width text
+          name = RNTask (li, ti)
+          widget = textField text
+          widget' = fromMaybe widget f
 
-columnNumber :: Int -> Text -> Text
-columnNumber i s = if col >= 1 && col <= 9 then T.concat [pack (show col), ". ",  s] else s
+columnNumber :: Int -> Text
+columnNumber i = if col >= 1 && col <= 9 then T.concat [pack (show col), ". "] else ""
     where col = i + 1
 
-renderTitle :: LayoutConfig -> Bool -> Pointer -> Int -> List -> Widget ResourceName
-renderTitle layout eTitle (p, i) li l =
-    if (p == li && eTitle) || p /= li || i == 0
+renderTitle :: Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
+renderTitle f eTitle (p, i) li l =
+    if cur || p /= li || i == 0
         then visible title'
         else title'
 
-    where width = columnWidth layout
-          d = wrap width  $ columnNumber li (title l)
+    where cur = p == li && eTitle
+          text = title l
+          col = txt $ columnNumber li
           attr = if p == li then titleCurrentAttr else titleAttr
-          title' = withAttr attr . addCursor width li (-1) d $ box 1 d
+          title' = padBottom (Pad 1) . withAttr attr . (col <+>) $ if cur then widget' else widget
+          widget = textField text
+          widget' = fromMaybe widget f
 
-renderList :: LayoutConfig -> Bool -> Pointer -> Int -> List -> Widget ResourceName
-renderList layout eTitle p li l = if fst p == li then visible list else list
+renderList :: LayoutConfig -> Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
+renderList layout f eTitle p li l = if fst p == li then visible list else list
     where list =
               (if not eTitle then cached (RNList li) else id)
             . padLeftRight (columnPadding layout)
             . hLimit (columnWidth layout)
             . viewport (RNList li) Vertical
             . vBox
-            . (renderTitle layout eTitle p li l :)
+            . (renderTitle f eTitle p li l :)
             . toList
-            $ renderTask layout eTitle p li `Seq.mapWithIndex` tasks l
+            $ renderTask f eTitle p li `Seq.mapWithIndex` tasks l
 
 searchImage :: LayoutConfig -> State -> Widget ResourceName -> Widget ResourceName
 searchImage layout s i = case mode s of
-    Search ent term ->
+    Search ent f ->
         let attr = if ent then taskCurrentAttr else taskAttr
         in
             i <=> (
                   withAttr attr
                 . padTopBottom 1
                 . padLeftRight (columnPadding layout)
-                $ txt ("/" `append` term)
+                $ txt "/" <+> field f
             )
     _ -> i
 
@@ -101,15 +92,19 @@ main layout s =
     . padTopBottom 1
     . hBox
     . toList
-    $ renderList layout (editingTitle s) (current s)  `Seq.mapWithIndex` ls
+    $ renderList layout (getField s) (editingTitle s) (current s)  `Seq.mapWithIndex` ls
 
     where ls = lists s
+
+getField :: State -> Maybe Field
+getField state = case mode state of
+    Insert _ _ f -> Just f
+    _ -> Nothing
 
 
 editingTitle :: State -> Bool
 editingTitle state = case mode state of
-    Insert (CreateList _) -> True
-    Insert EditList -> True
+    Insert IList _ _ -> True
     _ -> False
 
 -- draw
@@ -119,17 +114,9 @@ draw layout state =
     showModal s [main layout s]
 
 -- cursors
-cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
-cursor c = showCursorNamed (RNTask c)
-
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
-chooseCursor state = case mode s of
-    Insert (CreateList _) -> cursor (fst c, -1)
-    Insert EditList -> cursor (fst c, -1)
-    Insert CreateTask -> cursor c
-    Insert EditTask -> cursor c
-    Modal (SubTasks i STInsert) -> showCursorNamed (RNModalItem i)
-    _ -> neverShowCursor s
-
-    where s = normalise state
-          c = current s
+chooseCursor state = case mode (normalise state) of
+    Insert {} -> showCursorNamed RNCursor
+    Search True _ -> showCursorNamed RNCursor
+    Modal (SubTasks _ (STInsert _)) -> showCursorNamed RNCursor
+    _ -> neverShowCursor state

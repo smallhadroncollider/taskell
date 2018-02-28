@@ -2,17 +2,18 @@ module Events.Actions.Search (event) where
 
 import Graphics.Vty.Input.Events
 import Events.State
+import qualified UI.Field as F (event)
 
 import qualified Events.Actions.Normal as Normal
 
-event' :: Event -> Stateful
-event' (EvKey KEnter _) = searchEntered
-event' (EvKey KBS _) = searchBS
-event' (EvKey (KChar char) _) = searchChar char
-event' _ = return
+search :: Event -> Stateful
+search (EvKey KEnter _) s = searchEntered s
+search e s = return $ case mode s of
+    Search ent field -> s { mode = Search ent (F.event e field) }
+    _ -> s
 
 event :: Event -> Stateful
 event (EvKey KEsc _) s = normalMode s
 event e s = case mode s of
-    Search ent _ -> (if ent then event' else Normal.event) e s
+    Search ent _ -> (if ent then search else Normal.event) e s
     _ -> return s

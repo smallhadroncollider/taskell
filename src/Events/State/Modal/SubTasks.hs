@@ -3,9 +3,16 @@ module Events.State.Modal.SubTasks where
 import Data.Maybe (fromMaybe)
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, stAppend, stBackspace, countSubTasks, removeSubTask, stAppendByteString)
+import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask)
 import Data.Sequence as S (adjust')
-import Data.ByteString (ByteString)
+import UI.Field (Field, blankField, getText, textToField)
+
+finishSubTask :: Stateful
+finishSubTask state = do
+    text <- getText <$> getField state
+    index <- getCurrentSubTask state
+    task <- updateSubTask index (setSubTaskName text) <$> getCurrentTask state
+    setCurrentTask task $ state { mode = Modal (SubTasks index (STInsert blankField)) }
 
 showSubTasks :: Stateful
 showSubTasks s = do
@@ -23,6 +30,11 @@ getCurrentMode state = case mode state of
     Modal (SubTasks _ m) -> Just m
     _ -> Nothing
 
+getField :: State -> Maybe Field
+getField state = case mode state of
+    Modal (SubTasks _ (STInsert f)) -> Just f
+    _ -> Nothing
+
 setComplete :: Stateful
 setComplete state = do
     index <- getCurrentSubTask state
@@ -37,23 +49,18 @@ remove state = do
     setIndex state' index
 
 insertMode :: Stateful
-insertMode state = case mode state of
-    Modal (SubTasks index _) -> Just state { mode = Modal (SubTasks index STInsert) }
-    _ -> Nothing
+insertMode state = do
+    index <- getCurrentSubTask state
+    task <- getCurrentTask state
+    n <- name <$> getSubTask index task
+    case mode state of
+        Modal (SubTasks i _) -> Just state { mode = Modal (SubTasks i (STInsert (textToField n))) }
+        _ -> Nothing
 
 newItem :: Stateful
 newItem state = do
     task <- addSubTask blankSubTask <$> getCurrentTask state
     setCurrentTask task state
-
-insertBS :: Stateful
-insertBS = change stBackspace
-
-insertCurrent :: Char -> Stateful
-insertCurrent char = change (stAppend char)
-
-insertByteString :: ByteString -> Stateful
-insertByteString bs = change (stAppendByteString bs)
 
 change :: (SubTask -> SubTask) -> State -> Maybe State
 change fn state = do

@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Events.State (
     -- types
     State,
@@ -52,26 +53,15 @@ module Events.State (
     searchMode,
 
     -- Events.Actions.Search
-    searchBS,
-    searchChar,
     searchEntered,
 
-    -- Events.Actions.CreateList
+    -- Events.Actions.Insert
     createList,
-    createListBS,
-    createListChar,
-
-    -- Events.Actions.EditList
-    editListBS,
-    editListChar,
-
-    -- Events.Actions.Create/Edit
     removeBlank,
     newItem,
     normalMode,
-    insertBS,
-    insertCurrent,
-    insertByteString,
+    finishTask,
+    finishListTitle,
 
     -- Events.Actions.Modal
     showHelp,
@@ -81,15 +71,14 @@ module Events.State (
     setCurrentTask
 ) where
 
-import Data.ByteString (ByteString)
-import Data.Text (snoc, null)
-import Data.Taskell.Task (Task, backspace, append, appendByteString, clear, isBlank)
-import Data.Taskell.List (List(), updateFn, update, move, new, deleteTask, newAt, title, updateTitle, getTask)
+import Data.Text (Text)
+import Data.Taskell.Task (Task, isBlank, description)
+import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, getTask, title)
 import qualified Data.Taskell.Lists as Lists
-import qualified Data.Taskell.Text as T
 import Data.Char (digitToInt, ord)
 
 import Events.State.Types
+import UI.Field (getText, blankField, textToField)
 
 create :: FilePath -> Lists.Lists -> State
 create p ls = State {
@@ -126,44 +115,20 @@ undo s = return $ case history s of
 -- createList
 createList :: Stateful
 createList s = return $ case mode s of
-    Insert (CreateList n) -> updateListToLast . setLists s $ Lists.newList n $ lists s
+    Insert IList ICreate f -> updateListToLast . setLists s $ Lists.newList (getText f) $ lists s
     _ -> s
 
 updateListToLast :: InternalStateful
 updateListToLast s = setCurrentList s (length (lists s) - 1)
 
 createListStart :: Stateful
-createListStart s = return $ s { mode = Insert (CreateList "") }
-
-createListBS :: Stateful
-createListBS s = case mode s of
-    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (T.backspace n)) }
-    _ -> Nothing
-
-createListChar :: Char -> Stateful
-createListChar c s = case mode s of
-    Insert (CreateList n) -> return $ s { mode = Insert (CreateList (Data.Text.snoc n c)) }
-    _ -> Nothing
+createListStart s = return $ s { mode = Insert IList ICreate blankField }
 
 -- editList
 editListStart :: Stateful
-editListStart s = return $ s { mode = Insert EditList }
-
-editListBS :: Stateful
-editListBS s = case mode s of
-    Insert EditList -> do
-        l <- getList s
-        let t = T.backspace (title l)
-        return $ setList s $ updateTitle l t
-    _ -> Nothing
-
-editListChar :: Char -> Stateful
-editListChar c s = case mode s of
-    Insert EditList -> do
-        l <- getList s
-        let t = Data.Text.snoc (title l) c
-        return $ setList s $ updateTitle l t
-    _ -> Nothing
+editListStart s = do
+    f <- textToField . title <$> getList s
+    return $ s { mode = Insert IList IEdit f }
 
 deleteCurrentList :: Stateful
 deleteCurrentList s = return $ fixIndex $ setLists s $ Lists.delete (getCurrentList s) (lists s)
@@ -179,11 +144,30 @@ setCurrentTask task state = do
     list <- update (getIndex state) task <$> getList state
     return $ setList state list
 
+setCurrentTaskText :: Text -> Stateful
+setCurrentTaskText text state = do
+    task <- getCurrentTask state
+    let task' = task { description = text }
+    setCurrentTask task' state
+
 startCreate :: Stateful
-startCreate s = return $ s { mode = Insert CreateTask }
+startCreate s = return $ s { mode = Insert ITask ICreate blankField }
 
 startEdit :: Stateful
-startEdit s = return $ s { mode = Insert EditTask }
+startEdit state = do
+    field <- textToField . description <$> getCurrentTask state
+    return state { mode = Insert ITask IEdit field }
+
+finishTask :: Stateful
+finishTask s = case mode s of
+    Insert ITask iMode f -> setCurrentTaskText (getText f) $ s { mode = Insert ITask iMode blankField }
+    _ -> return s
+
+finishListTitle :: Stateful
+finishListTitle s = case mode s of
+    Insert IList iMode f -> setCurrentListTitle (getText f) $ s { mode = Insert IList iMode blankField }
+    _ -> return s
+
 
 normalMode :: Stateful
 normalMode s = return $ s { mode = Normal }
@@ -206,22 +190,8 @@ newItem s = do
     l <- getList s
     return $ selectLast $ setList s (new l)
 
-insertBS :: Stateful
-insertBS = change backspace
-
-insertCurrent :: Char -> Stateful
-insertCurrent char = change (Data.Taskell.Task.append char)
-
-insertByteString :: ByteString -> Stateful
-insertByteString bs = change (Data.Taskell.Task.appendByteString bs)
-
-change :: (Task -> Task) -> State -> Maybe State
-change fn s = do
-    l <- updateFn (getIndex s) fn <$> getList s
-    return $ setList s l
-
 clearItem :: Stateful
-clearItem = change clear
+clearItem = setCurrentTaskText ""
 
 bottom :: Stateful
 bottom = return . selectLast
@@ -322,6 +292,11 @@ getList s = Lists.get (lists s) (getCurrentList s)
 setList :: State -> List -> State
 setList s ts = setLists s (Lists.updateLists (getCurrentList s) (lists s) ts)
 
+setCurrentListTitle :: Text -> Stateful
+setCurrentListTitle text state = do
+    list <- getList state
+    return $ setList state $ list { title = text }
+
 setLists :: State -> Lists.Lists -> State
 setLists s ts = s { lists = ts }
 
@@ -355,25 +330,12 @@ listRight = listMove 1
 -- search
 searchMode :: Stateful
 searchMode s = return $ case mode s of
-    Search _ term -> s { mode = Search True term }
-    _ -> s { mode = Search True "" }
+    Search _ field -> s { mode = Search True field }
+    _ -> s { mode = Search True blankField }
 
 searchEntered :: Stateful
 searchEntered s = case mode s of
-    Search _ term -> return $ s { mode = Search False term }
-    _ -> Nothing
-
-searchBS :: Stateful
-searchBS s = case mode s of
-    Search ent term -> return $
-        if Data.Text.null term
-            then s { mode = Normal }
-            else s { mode = Search ent (T.backspace term) }
-    _ -> Nothing
-
-searchChar :: Char -> Stateful
-searchChar c s = case mode s of
-    Search ent term -> return $ s { mode = Search ent (Data.Text.snoc term c) }
+    Search _ field -> return $ s { mode = Search False field }
     _ -> Nothing
 
 -- help
@@ -386,13 +348,14 @@ showMoveTo s = return $ s { mode = Modal MoveTo }
 -- view - maybe shouldn't be in here...
 search :: State -> State
 search s = case mode s of
-    Search _ term -> fixIndex $ setLists s $ Lists.search term (lists s)
+    Search _ field -> fixIndex $ setLists s $ Lists.search (getText field) (lists s)
     _ -> s
 
 newList :: State -> State
 newList s = case mode s of
-    Insert (CreateList t) -> let ls = lists s in
-                               fixIndex $ setCurrentList (setLists s (Lists.newList t ls)) (length ls)
+    Insert IList ICreate f ->
+        let ls = lists s in
+        fixIndex $ setCurrentList (setLists s (Lists.newList (getText f) ls)) (length ls)
     _ -> s
 
 normalise :: State -> State

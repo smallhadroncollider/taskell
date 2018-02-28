@@ -1,11 +1,11 @@
 module UI.Types where
 
-import Events.State.Types (Pointer)
-
 data ResourceName =
-      RNTask Pointer
+      RNCursor
+    | RNTask (Int, Int)
     | RNList Int
     | RNLists
+    | RNSearch
     | RNModal
     | RNModalItem Int
     deriving (Show, Eq, Ord)
