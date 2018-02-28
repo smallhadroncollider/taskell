@@ -19,7 +19,7 @@ import UI.Modal (showModal)
 import UI.Types (ResourceName(..))
 import UI.Theme
 
-import UI.Field (Field, field, textField)
+import UI.Field (Field, field, textField, fromMaybe)
 
 subTaskCount :: Task -> Widget ResourceName
 subTaskCount t
@@ -40,9 +40,7 @@ renderTask f eTitle p li ti t =
           after = subTaskCount t
           name = RNTask (li, ti)
           widget = textField text
-          widget' = case f of
-            Just f' -> field name f'
-            Nothing -> widget
+          widget' = fromMaybe widget f
 
 columnNumber :: Int -> Text
 columnNumber i = if col >= 1 && col <= 9 then T.concat [pack (show col), ". "] else ""
@@ -60,9 +58,7 @@ renderTitle f eTitle (p, i) li l =
           attr = if p == li then titleCurrentAttr else titleAttr
           title' = padBottom (Pad 1) . withAttr attr . (col <+>) $ if cur then widget' else widget
           widget = textField text
-          widget' = case f of
-            Just f' -> field (RNTask (li, -1)) f'
-            Nothing -> widget
+          widget' = fromMaybe widget f
 
 renderList :: LayoutConfig -> Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
 renderList layout f eTitle p li l = if fst p == li then visible list else list
@@ -85,7 +81,7 @@ searchImage layout s i = case mode s of
                   withAttr attr
                 . padTopBottom 1
                 . padLeftRight (columnPadding layout)
-                $ txt "/" <+> field RNSearch f
+                $ txt "/" <+> field f
             )
     _ -> i
 
@@ -118,16 +114,9 @@ draw layout state =
     showModal s [main layout s]
 
 -- cursors
-cursor :: (Int, Int) -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
-cursor c = showCursorNamed (RNTask c)
-
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
-chooseCursor state = case mode s of
-    Insert IList _ _ -> cursor (fst c, -1)
-    Insert ITask _ _ -> cursor c
-    Search True _ -> showCursorNamed RNSearch
-    Modal (SubTasks i (STInsert _)) -> showCursorNamed (RNModalItem i)
-    _ -> neverShowCursor s
-
-    where s = normalise state
-          c = current s
+chooseCursor state = case mode (normalise state) of
+    Insert {} -> showCursorNamed RNCursor
+    Search True _ -> showCursorNamed RNCursor
+    Modal (SubTasks _ (STInsert _)) -> showCursorNamed RNCursor
+    _ -> neverShowCursor state

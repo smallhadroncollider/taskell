@@ -1,7 +1,8 @@
 module UI.Types where
 
 data ResourceName =
-      RNTask (Int, Int)
+      RNCursor
+    | RNTask (Int, Int)
     | RNList Int
     | RNLists
     | RNSearch

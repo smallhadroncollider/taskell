@@ -7,7 +7,7 @@ import qualified Data.List as L (foldl')
 import qualified Data.Text as T (Text, length, snoc, init, append, null, splitAt, concat, singleton, foldl', strip)
 import qualified Data.Text.Encoding as T (decodeUtf8)
 import qualified Graphics.Vty.Input.Events as V (Event(..), Key(..))
-import qualified UI.Types as UI (ResourceName)
+import qualified UI.Types as UI (ResourceName(RNCursor))
 
 data Field = Field {
     _text :: T.Text
@@ -67,12 +67,16 @@ getText (Field text _) = text
 textToField :: T.Text -> Field
 textToField text = Field text (T.length text)
 
-field :: UI.ResourceName -> Field -> B.Widget UI.ResourceName
-field name (Field text cursor) = B.Widget B.Fixed B.Fixed $ do
+field :: Field -> B.Widget UI.ResourceName
+field (Field text cursor) = B.Widget B.Fixed B.Fixed $ do
     width <- B.availWidth <$> B.getContext
     let wrapped = wrap width $ text `T.append` " "
         location = cursorPosition wrapped cursor
-    B.render . B.showCursor name (B.Location location) . B.vBox $ B.txt <$> wrapped
+    B.render . B.showCursor UI.RNCursor (B.Location location) . B.vBox $ B.txt <$> wrapped
+
+fromMaybe :: B.Widget UI.ResourceName -> Maybe Field -> B.Widget UI.ResourceName
+fromMaybe _ (Just f) = field f
+fromMaybe w Nothing = w
 
 textField :: T.Text -> B.Widget UI.ResourceName
 textField text = B.Widget B.Fixed B.Fixed $ do

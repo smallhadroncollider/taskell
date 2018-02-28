@@ -10,12 +10,12 @@ import Data.Taskell.Task (SubTask, description, subTasks, name, complete)
 import Data.Text as T (Text, append)
 import Data.Foldable (toList)
 import Data.Sequence (mapWithIndex)
-import Data.Maybe (fromMaybe)
+import qualified Data.Maybe as Maybe (fromMaybe)
 
 import UI.Types (ResourceName(..))
 import UI.Theme (taskCurrentAttr, disabledAttr)
 
-import UI.Field(Field, field, textField)
+import UI.Field(Field, textField, fromMaybe)
 
 renderSubTask :: Maybe Field -> Int -> Int -> SubTask -> Widget ResourceName
 renderSubTask f current i subtask = padBottom (Pad 1) final
@@ -24,15 +24,13 @@ renderSubTask f current i subtask = padBottom (Pad 1) final
           postfix = if complete subtask then " ✓" else ""
           text = name subtask `T.append` postfix
           widget = textField text
-          widget' = case f of
-              Just f' -> field (RNModalItem i) f'
-              Nothing -> widget
+          widget' = fromMaybe widget f
           final | cur = visible $ withAttr taskCurrentAttr widget'
                 | complete subtask = withAttr disabledAttr widget
                 | otherwise = widget
 
 st :: State -> (Text, Widget ResourceName)
-st state = fromMaybe ("Error", txt "Oops") $ do
+st state = Maybe.fromMaybe ("Error", txt "Oops") $ do
     task <- getCurrentTask state
     index <- getCurrentSubTask state
     let f = getField state
