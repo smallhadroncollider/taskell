@@ -15,7 +15,7 @@ event (EvKey KEnter _) s = case mode s of
     _ -> return s
 
 event (EvKey KEsc _) s = case mode s of
-    Insert IList ICreate _ -> (write =<<) . (startCreate =<<) . (newItem =<<) . (store =<<) $ createList s
+    Insert IList ICreate _ -> (normalMode =<<) . (write =<<) $ createList s
     Insert IList IEdit _ -> (write =<<) . (normalMode =<<) $ finishListTitle s
     Insert ITask _ _ -> (write =<<) . (removeBlank =<<) . (normalMode =<<) $ finishTask s
     _ -> return s
