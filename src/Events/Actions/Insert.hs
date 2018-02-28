@@ -1,21 +1,25 @@
 module Events.Actions.Insert (event) where
 
-import Graphics.Vty.Input.Events (Event(..), Key(..))
-import Events.State (Stateful, Mode(..), InsertMode(..), mode)
-
-import qualified Events.Actions.Insert.Task as Task
-import qualified Events.Actions.Insert.List as List
+import Events.State
+import Events.State.Types
+import Graphics.Vty.Input.Events (Event(EvKey), Key(KEnter, KEsc))
+import qualified UI.Field as F (event)
 
 event :: Event -> Stateful
+event (EvKey KEnter _) s = case mode s of
+    Insert IList ICreate _ -> (write =<<) . (startCreate =<<) . (newItem =<<) . (store =<<) $ createList s
+    Insert IList IEdit _ -> (write =<<) . (normalMode =<<) $ finishListTitle s
 
-event (EvKey (KChar '\t') _) s = return s
-
--- for other events pass through to relevant modules
-event e s = case mode s of
-    Insert CreateTask -> Task.event e s
-    Insert EditTask -> Task.event e s
-
-    Insert EditList -> List.event e s
-    Insert (CreateList _) -> List.event e s
-
+    Insert ITask ICreate _ -> (write =<<) . (below =<<) . (removeBlank =<<) . (store =<<) $ finishTask s
+    Insert ITask IEdit _ -> (write =<<) . (removeBlank =<<) . (normalMode =<<) $ finishTask s
     _ -> return s
+
+event (EvKey KEsc _) s = case mode s of
+    Insert IList ICreate _ -> (write =<<) . (startCreate =<<) . (newItem =<<) . (store =<<) $ createList s
+    Insert IList IEdit _ -> (write =<<) . (normalMode =<<) $ finishListTitle s
+    Insert ITask _ _ -> (write =<<) . (removeBlank =<<) . (normalMode =<<) $ finishTask s
+    _ -> return s
+
+event e s = return $ case mode s of
+    Insert iType iMode field -> s { mode = Insert iType iMode (F.event e field) }
+    _ -> s

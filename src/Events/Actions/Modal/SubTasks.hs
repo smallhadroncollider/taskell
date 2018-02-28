@@ -4,6 +4,7 @@ import Graphics.Vty.Input.Events
 import Events.State
 import Events.State.Types
 import Events.State.Modal.SubTasks as ST
+import qualified UI.Field as F (event)
 
 normal :: Event -> Stateful
 normal (EvKey (KChar 'q') _) = quit
@@ -19,15 +20,16 @@ normal (EvKey (KChar 'u') _) = (write =<<) . undo
 normal _ = return
 
 insert :: Event -> Stateful
-insert (EvPaste bs) = ST.insertByteString bs
-insert (EvKey KEsc _) = (write =<<) . showSubTasks
-insert (EvKey KEnter _) = (ST.lastSubTask =<<) . (ST.newItem =<<) . (store =<<) . write
-insert (EvKey KBS _) = ST.insertBS
-insert (EvKey (KChar char) _) = ST.insertCurrent char
-insert _ = return
+insert (EvKey KEsc _) s = (write =<<) . (showSubTasks =<<) $ finishSubTask s
+insert (EvKey KEnter _) s = (ST.lastSubTask =<<) . (ST.newItem =<<) . (store =<<) . (write =<<) $ finishSubTask s
+insert e s = return $ case mode s of
+    Modal (SubTasks i (STInsert field)) -> s {
+        mode = Modal (SubTasks i (STInsert (F.event e field)))
+    }
+    _ -> s
 
 event :: Event -> Stateful
 event e s = case mode s of
     Modal (SubTasks _ STNormal) -> normal e s
-    Modal (SubTasks _ STInsert) -> insert e s
+    Modal (SubTasks _ (STInsert _)) -> insert e s
     _ -> return s

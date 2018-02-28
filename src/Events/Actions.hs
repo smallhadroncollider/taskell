@@ -16,9 +16,9 @@ event' :: Event -> Stateful
 -- for other events pass through to relevant modules
 event' e s = case mode s of
     Normal -> Normal.event e s
-    Search _ _ -> Search.event e s
-    Insert _ -> Insert.event e s
-    Modal _ -> Modal.event e s
+    Search {} -> Search.event e s
+    Insert {} -> Insert.event e s
+    Modal {} -> Modal.event e s
     _ -> return s
 
 -- returns new state if successful

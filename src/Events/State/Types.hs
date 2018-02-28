@@ -1,13 +1,23 @@
 module Events.State.Types where
 
-import Data.Text (Text)
 import Data.Taskell.Lists (Lists)
+import UI.Field (Field)
 
-data SubTasksMode = STNormal | STInsert
+data SubTasksMode = STNormal | STInsert Field
 data ModalType = Help | MoveTo | SubTasks Int SubTasksMode
 
-data InsertMode = EditTask | CreateTask | EditList | CreateList Text
-data Mode = Normal | Insert InsertMode | Modal ModalType | Search Bool Text | Shutdown
+data InsertType = ITask | IList
+data InsertMode = IEdit | ICreate
+data Mode =
+    Normal
+  | Insert {
+    _type :: InsertType,
+    _mode :: InsertMode,
+    _field :: Field
+  }
+  | Modal ModalType
+  | Search Bool Field
+  | Shutdown
 
 type Pointer = (Int, Int)
 

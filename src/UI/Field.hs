@@ -1,6 +1,7 @@
+{-# LANGUAGE OverloadedStrings #-}
 module UI.Field where
 
-import qualified Brick as B (Widget, txt, vBox, Location(..), showCursor)
+import qualified Brick as B (Widget(Widget), Size(Fixed), availWidth, render, txt, vBox, Location(Location), showCursor, getContext)
 import qualified Data.Taskell.Text as T (wrap)
 import qualified Data.Text as T (Text, length, snoc, init, append, null, splitAt, concat)
 import qualified Data.Text.Encoding as T (decodeUtf8)
@@ -8,14 +9,19 @@ import qualified Graphics.Vty.Input.Events as V (Event(..), Key(..))
 import qualified UI.Types as UI (ResourceName)
 
 data Field = Field {
-    _text :: T.Text,
-    _cursor :: Int
+    _text :: T.Text
+  , _cursor :: Int
 } deriving (Eq, Show)
+
+blankField :: Field
+blankField = Field "" 0
 
 event :: V.Event -> Field -> Field
 event (V.EvKey (V.KChar '\t') _) f = f
 event (V.EvPaste bs) f = insertText (T.decodeUtf8 bs) f
 event (V.EvKey V.KBS _) f = backspace f
+event (V.EvKey V.KLeft _) f = updateCursor (-1) f
+event (V.EvKey V.KRight _) f = updateCursor 1 f
 event (V.EvKey (V.KChar char) _) f = insertCharacter char f
 event _ f = f
 
@@ -56,9 +62,17 @@ cursorPosition text cursor = (x, y)
 getText :: Field -> T.Text
 getText (Field text _) = text
 
-field :: Int -> UI.ResourceName -> Field -> B.Widget UI.ResourceName
-field width name (Field text cursor) =
-    B.showCursor name (B.Location location) widget
-    where wrapped = T.wrap width text
-          widget = B.vBox $ B.txt <$> wrapped
-          location = cursorPosition wrapped cursor
+textToField :: T.Text -> Field
+textToField text = Field text (T.length text)
+
+field :: UI.ResourceName -> Field -> B.Widget UI.ResourceName
+field name (Field text cursor) = B.Widget B.Fixed B.Fixed $ do
+    width <- B.availWidth <$> B.getContext
+    let wrapped = T.wrap width $ text `T.append` " "
+        location = cursorPosition wrapped cursor
+    B.render . B.showCursor name (B.Location location) . B.vBox $ B.txt <$> wrapped
+
+textField :: T.Text -> B.Widget UI.ResourceName
+textField text = B.Widget B.Fixed B.Fixed $ do
+    width <- B.availWidth <$> B.getContext
+    B.render . B.vBox $ B.txt <$> T.wrap width text

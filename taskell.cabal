@@ -32,12 +32,6 @@ library
                      , Events.Actions.Modal.Help
                      , Events.Actions.Modal.MoveTo
                      , Events.Actions.Modal.SubTasks
-                     , Events.Actions.Insert.Task
-                     , Events.Actions.Insert.Task.Create
-                     , Events.Actions.Insert.Task.Edit
-                     , Events.Actions.Insert.List
-                     , Events.Actions.Insert.List.Create
-                     , Events.Actions.Insert.List.Edit
 
                      , Events.State
                      , Events.State.Types
