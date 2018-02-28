@@ -53,11 +53,12 @@ insertText insert (Field text cursor) = Field newText newCursor
           newCursor = cursor + T.length insert
 
 cursorPosition :: [T.Text] -> Int -> (Int, Int)
-cursorPosition text cursor = (x, y)
+cursorPosition text cursor =
+    if null below
+        then (cursor, 0)
+        else (cursor - last below, length below - 1)
     where scanned = scanl (+) 0 $ T.length <$> text
           below = takeWhile (<= cursor) scanned
-          x = cursor - sum below
-          y = if null below then 0 else length below - 1
 
 getText :: Field -> T.Text
 getText (Field text _) = text

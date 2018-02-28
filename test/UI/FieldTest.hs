@@ -59,5 +59,7 @@ test_field =
                     (assertEqual "Should return on first line" (2, 0) (cursorPosition ["Blah ", "Blaz"] 2))
               , testCase "End of line"
                     (assertEqual "Should return on next line" (0, 1) (cursorPosition ["Blah ", "Blaz"] 5))
+              , testCase "Lots of lines"
+                    (assertEqual "Should return on fourth line" (2, 3) (cursorPosition ["Blah ", "Blaz", "Cow", "Monkey"] 14))
             ]
         ]
