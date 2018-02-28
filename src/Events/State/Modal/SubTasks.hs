@@ -3,8 +3,7 @@ module Events.State.Modal.SubTasks where
 import Data.Maybe (fromMaybe)
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask)
-import Data.Sequence as S (adjust')
+import Data.Taskell.Task (updateSubTask, toggleComplete, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask)
 import UI.Field (Field, blankField, getText, textToField)
 
 finishSubTask :: Stateful
@@ -61,14 +60,6 @@ newItem :: Stateful
 newItem state = do
     task <- addSubTask blankSubTask <$> getCurrentTask state
     setCurrentTask task state
-
-change :: (SubTask -> SubTask) -> State -> Maybe State
-change fn state = do
-    index <- getCurrentSubTask state
-    task <- getCurrentTask state
-    let sts = adjust' fn index $ subTasks task
-    let updatedTask = task { subTasks = sts }
-    setCurrentTask updatedTask state
 
 -- list navigation
 changeSubTask :: Int -> Stateful
