@@ -31,8 +31,8 @@ renderSubTask f current i subtask = padBottom (Pad 1) final
                 | complete subtask = withAttr disabledAttr widget
                 | otherwise = widget
 
-st :: State -> Int -> (Text, Widget ResourceName)
-st state _ = fromMaybe ("Error", txt "Oops") $ do
+st :: State -> (Text, Widget ResourceName)
+st state = fromMaybe ("Error", txt "Oops") $ do
     task <- getCurrentTask state
     index <- getCurrentSubTask state
     let f = getField state

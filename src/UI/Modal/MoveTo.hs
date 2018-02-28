@@ -7,14 +7,18 @@ import Events.State (State, lists)
 import Brick
 import Data.Taskell.List (title)
 import Data.Text as T (Text, concat, singleton)
-import Data.Taskell.Text (wrap)
 import Data.Foldable (toList)
 
+import UI.Field (textField)
 import UI.Types (ResourceName)
-import UI.Internal (box)
 
-moveTo :: State -> Int -> (Text, Widget ResourceName)
-moveTo state width = ("Move To:", widget)
+moveTo :: State -> (Text, Widget ResourceName)
+moveTo state = ("Move To:", widget)
     where ls = toList $ lists state
-          text (a, list) = T.concat ["[", singleton a, "] ", title list]
-          widget = vBox $ box 0 . wrap width . text <$> zip ['a'..] ls
+          titles = textField . title <$> ls
+
+          letter a = padRight (Pad 1) . txt $ T.concat ["[", singleton a, "]"]
+          letters = letter <$> ['a'..]
+
+          output (l, t) = l <+> t
+          widget = vBox $ output <$> zip letters titles

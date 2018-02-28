@@ -2,8 +2,9 @@
 module UI.Field where
 
 import qualified Brick as B (Widget(Widget), Size(Fixed), availWidth, render, txt, vBox, Location(Location), showCursor, getContext)
-import qualified Data.Taskell.Text as T (wrap)
-import qualified Data.Text as T (Text, length, snoc, init, append, null, splitAt, concat)
+import qualified Brick.Widgets.Core as B (textWidth)
+import qualified Data.List as L (foldl')
+import qualified Data.Text as T (Text, length, snoc, init, append, null, splitAt, concat, singleton, foldl', strip)
 import qualified Data.Text.Encoding as T (decodeUtf8)
 import qualified Graphics.Vty.Input.Events as V (Event(..), Key(..))
 import qualified UI.Types as UI (ResourceName)
@@ -69,11 +70,33 @@ textToField text = Field text (T.length text)
 field :: UI.ResourceName -> Field -> B.Widget UI.ResourceName
 field name (Field text cursor) = B.Widget B.Fixed B.Fixed $ do
     width <- B.availWidth <$> B.getContext
-    let wrapped = T.wrap width $ text `T.append` " "
+    let wrapped = wrap width $ text `T.append` " "
         location = cursorPosition wrapped cursor
     B.render . B.showCursor name (B.Location location) . B.vBox $ B.txt <$> wrapped
 
 textField :: T.Text -> B.Widget UI.ResourceName
 textField text = B.Widget B.Fixed B.Fixed $ do
     width <- B.availWidth <$> B.getContext
-    B.render . B.vBox $ B.txt <$> T.wrap width text
+    B.render . B.vBox $ B.txt <$> wrap width text
+
+-- wrap
+wrap :: Int -> T.Text -> [T.Text]
+wrap width = L.foldl' (combine width) [""] . spl
+
+spl' :: [T.Text] -> Char -> [T.Text]
+spl' ts c
+    | c == ' ' = ts ++ [" "] ++ [""]
+    | Prelude.null ts = [T.singleton c]
+    | otherwise = Prelude.init ts ++ [T.snoc (Prelude.last ts) c]
+
+spl :: T.Text -> [T.Text]
+spl = T.foldl' spl' [""]
+
+combine :: Int -> [T.Text] -> T.Text -> [T.Text]
+combine width acc s = if nl then acc ++ [T.strip s] else append (l `T.append` s) acc
+    where l = if Prelude.null acc then "" else last acc
+          nl = B.textWidth l + B.textWidth s > width
+
+append :: T.Text -> [T.Text] -> [T.Text]
+append s l = l' ++ [s]
+    where l' = if Prelude.null l then l else Prelude.init l

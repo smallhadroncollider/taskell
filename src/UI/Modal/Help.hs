@@ -13,8 +13,8 @@ import IO.Markdown (trimListItem)
 import UI.Types (ResourceName)
 import UI.Theme (taskCurrentAttr)
 
-help :: Int -> (Text, Widget ResourceName)
-help _ = ("Controls", w)
+help :: (Text, Widget ResourceName)
+help = ("Controls", w)
     where ls = T.lines $ decodeUtf8 $(embedFile "templates/controls.md")
           (l, r) = unzip $ breakOn ":" . T.replace "`" "" . trimListItem <$> ls
           left = padRight (Pad 2) . vBox $ withAttr taskCurrentAttr . txt <$> l
