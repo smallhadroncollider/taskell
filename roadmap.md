@@ -20,7 +20,7 @@
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
 - Caching doesn't clear properly when using `o` and `O`
-- Multiple spaces at the beginning of a line can break cursor positioning
+- Multiple spaces in a line don't show up as more than one, but are saved as more than one
 
 ## To Do
 
@@ -155,3 +155,4 @@
 - Copy and paste
     * ~List titles~
     * ~Search~
+- Multiple spaces at the beginning of a line can break cursor positioning

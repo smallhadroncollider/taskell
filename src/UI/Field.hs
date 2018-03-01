@@ -4,7 +4,7 @@ module UI.Field where
 import qualified Brick as B (Widget(Widget), Size(Fixed), availWidth, render, txt, vBox, Location(Location), showCursor, getContext)
 import qualified Brick.Widgets.Core as B (textWidth)
 import qualified Data.List as L (foldl')
-import qualified Data.Text as T (Text, length, snoc, init, append, null, splitAt, concat, singleton, foldl')
+import qualified Data.Text as T (Text, length, snoc, init, append, null, splitAt, concat, singleton, foldl', last)
 import qualified Data.Text.Encoding as T (decodeUtf8)
 import qualified Graphics.Vty.Input.Events as V (Event(..), Key(..))
 import qualified Safe as S (lastDef, scanl1Def)
@@ -106,6 +106,7 @@ spl = T.foldl' spl' [""]
 combine :: Int -> ([T.Text], Int) -> T.Text -> ([T.Text], Int)
 combine width (acc, offset) s
     | newline && s == " " = (acc, offset + 1)
+    | not (T.null l) && T.last l == ' ' && s == " " = (acc, offset + 1)
     | newline = (acc ++ [s], offset)
     | otherwise = (append (l `T.append` s) acc, offset)
     where l = if Prelude.null acc then "" else last acc
