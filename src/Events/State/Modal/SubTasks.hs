@@ -3,12 +3,21 @@ module Events.State.Modal.SubTasks where
 import Data.Maybe (fromMaybe)
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (SubTask, updateSubTask, toggleComplete, subTasks, addSubTask, blankSubTask, stAppend, stBackspace, countSubTasks, removeSubTask)
-import Data.Sequence as S (adjust')
+import Data.Taskell.Task (updateSubTask, toggleComplete, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask)
+import UI.Field (Field, blankField, getText, textToField)
+
+finishSubTask :: Stateful
+finishSubTask state = do
+    text <- getText <$> getField state
+    index <- getCurrentSubTask state
+    task <- updateSubTask index (setSubTaskName text) <$> getCurrentTask state
+    setCurrentTask task $ state { mode = Modal (SubTasks index (STInsert blankField)) }
 
 showSubTasks :: Stateful
-showSubTasks s = return $ s { mode = Modal (SubTasks index STNormal) }
-    where index = fromMaybe 0 $ getCurrentSubTask s
+showSubTasks s = do
+    getCurrentTask s
+    let index = fromMaybe 0 $ getCurrentSubTask s
+    return $ s { mode = Modal (SubTasks index STNormal) }
 
 getCurrentSubTask :: State -> Maybe Int
 getCurrentSubTask state = case mode state of
@@ -18,6 +27,11 @@ getCurrentSubTask state = case mode state of
 getCurrentMode :: State -> Maybe SubTasksMode
 getCurrentMode state = case mode state of
     Modal (SubTasks _ m) -> Just m
+    _ -> Nothing
+
+getField :: State -> Maybe Field
+getField state = case mode state of
+    Modal (SubTasks _ (STInsert f)) -> Just f
     _ -> Nothing
 
 setComplete :: Stateful
@@ -34,28 +48,18 @@ remove state = do
     setIndex state' index
 
 insertMode :: Stateful
-insertMode state = case mode state of
-    Modal (SubTasks index _) -> Just state { mode = Modal (SubTasks index STInsert) }
-    _ -> Nothing
+insertMode state = do
+    index <- getCurrentSubTask state
+    task <- getCurrentTask state
+    n <- name <$> getSubTask index task
+    case mode state of
+        Modal (SubTasks i _) -> Just state { mode = Modal (SubTasks i (STInsert (textToField n))) }
+        _ -> Nothing
 
 newItem :: Stateful
 newItem state = do
     task <- addSubTask blankSubTask <$> getCurrentTask state
     setCurrentTask task state
-
-insertBS :: Stateful
-insertBS = change stBackspace
-
-insertCurrent :: Char -> Stateful
-insertCurrent char = change (stAppend char)
-
-change :: (SubTask -> SubTask) -> State -> Maybe State
-change fn state = do
-    index <- getCurrentSubTask state
-    task <- getCurrentTask state
-    let sts = adjust' fn index $ subTasks task
-    let updatedTask = task { subTasks = sts }
-    setCurrentTask updatedTask state
 
 -- list navigation
 changeSubTask :: Int -> Stateful

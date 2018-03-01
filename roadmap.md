@@ -1,51 +1,39 @@
-## Goals
-
-- Nix support?
-- apt-get repository
-
 ## Refactoring
 
 - Break up State module
-- Simplify state by composing Actions
 - Use a map in Actions to tidy things up/add custom key support
-- Add some tests
 - Avoid having to normalise the state?
-- Use Reader monad to pass around config
 - Remove duplication of config - currently using ini and hard-coded
 - Move Help modal creation into Template Haskell
 - Use lenses for nested data?
-- Share code between tasks and sub-tasks lists?
+- Add a List widget for common actions between tasks and sub-tasks
+- Use Safe for unsafe operations
 
 ## Bugs
 
-- Up and down in search gets a bit lost
-- Editing list title doesn't always have visibility
-- Vertical spacing doesn't work if the current item is blank
-- Cursor goes missing on the left hand side at the end of a line - needs to wrap
-- Help modal needs to scroll on smaller windows
-- Sub-task count not visible on last item in a list longer than the vertical height
-- Pressing Enter on empty list shows an subtasks box with an error
-- Empty tasks - i.e. just a space - don't show up
 - No obvious way to know if there are more items in a list off-screen
-- Caching issue when using `m` to move lists - doesn't update previous list
+- Modal boxes shouldn't be full height unless they need to be
+- Up and down in search gets a bit lost
+- Caching doesn't clear properly when using `o` and `O`
+- Multiple spaces in a line don't show up as more than one, but are saved as more than one
 
-## To Do
+## Features
 
-- Left/Right arrow keys in insert mode
+- Add custom key support
 - Task body - e.g. as well as sub lists, have a longer description
+- Show filename somewhere
+- Editable title?
 - Add tags/labels with `t`
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
-- Copy and paste?
-- Add custom key support
-- Show filename somewhere
-- Editable title?
-- If column width is more than the screen width then padding and width should be reduced so that it fits (within reason)
 - Add Trello import
+- Redo functionality
 
 ## In Progress
 
+- Very long words should get hyphenated
+- Help modal needs to wrap and scroll
 
 ## Done
 
@@ -143,3 +131,23 @@
 - One bad config line stops all config from working - needs to merge with defaultConfig
 - Split up Draw/Modal code into more logical chunks
 - Move between lists with `m` - shows possible lists
+- Caching issue when using `m` to move lists - doesn't update previous list
+- Copy and paste?
+- Pressing Enter on empty list shows an subtasks box with an error
+- Cursor goes missing on the left hand side at the end of a line - needs to wrap
+- Sub-task count not visible on last item in a list longer than the vertical height
+- Vertical spacing doesn't work if the current item is blank
+- Empty tasks - i.e. just a space - don't show up
+- Editing list title doesn't always have visibility
+- Left/Right arrow keys in insert mode
+- Share code between tasks and sub-tasks lists?
+    * ~Move wrap into Field widget~
+    * ~Use Field for search~
+    * ~Use Field for sub-tasks~
+    * ~Use Field for titles~
+    * ~Use Field for tasks~
+    * ~Make sure `C` works~
+- Copy and paste
+    * ~List titles~
+    * ~Search~
+- Multiple spaces at the beginning of a line can break cursor positioning

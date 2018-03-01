@@ -1,8 +1,8 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Data.Taskell.Task where
 
-import Data.Sequence as S (Seq, null, (|>), adjust', empty, length, filter, deleteAt)
-import Data.Text as T (Text, snoc, length, null, isInfixOf, empty)
-import qualified Data.Taskell.Text as T
+import Data.Sequence as S (Seq, null, (|>), (!?), adjust', empty, length, filter, deleteAt)
+import Data.Text as T (Text, length, null, isInfixOf, empty)
 
 data SubTask = SubTask {
     name :: Text,
@@ -29,8 +29,14 @@ blankSubTask = SubTask { name = "", complete = False }
 subTask :: Text -> Bool -> SubTask
 subTask n c = SubTask { name = n, complete = c }
 
+getSubTask :: Int -> Task -> Maybe SubTask
+getSubTask index task = subTasks task !? index
+
 addSubTask :: SubTask -> Task -> Task
 addSubTask s t = t { subTasks = subTasks t |> s }
+
+setSubTaskName :: Text -> SubTask -> SubTask
+setSubTaskName text subtask = subtask { name = text }
 
 hasSubTasks :: Task -> Bool
 hasSubTasks t = not (S.null (subTasks t))
@@ -44,18 +50,6 @@ removeSubTask index task = task { subTasks = S.deleteAt index (subTasks task) }
 
 toggleComplete :: SubTask -> SubTask
 toggleComplete st = st { complete = not (complete st) }
-
-append :: Char -> Task  -> Task
-append c t = t { description = T.snoc (description t) c }
-
-backspace :: Task -> Task
-backspace t = t { description = T.backspace (description t) }
-
-stAppend :: Char -> SubTask  -> SubTask
-stAppend c st = st { name = T.snoc (name st) c }
-
-stBackspace :: SubTask -> SubTask
-stBackspace st = st { name = T.backspace (name st) }
 
 countSubTasks :: Task -> Int
 countSubTasks = S.length . subTasks

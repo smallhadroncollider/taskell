@@ -42,8 +42,8 @@ defaultGeneralConfig = GeneralConfig {
 
 defaultLayoutConfig :: LayoutConfig
 defaultLayoutConfig = LayoutConfig {
-    columnWidth = 24,
-                columnPadding = 3
+    columnWidth = 30,
+    columnPadding = 3
 }
 
 defaultMarkdownConfig :: MarkdownConfig
