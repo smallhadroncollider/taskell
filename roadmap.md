@@ -1,8 +1,3 @@
-## Goals
-
-- Nix support?
-- apt-get repository
-
 ## Refactoring
 
 - Break up State module
@@ -22,7 +17,7 @@
 - Caching doesn't clear properly when using `o` and `O`
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
 
-## To Do
+## Features
 
 - Add custom key support
 - Task body - e.g. as well as sub lists, have a longer description
