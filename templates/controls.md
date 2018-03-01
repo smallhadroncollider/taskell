@@ -1,21 +1,22 @@
-- `?`: show this list of controls
-- `j` / `k` / `h` / `l`: move down/up/left/right
-- `G`: go to bottom of list
-- `1`-`9`: select list
-- `a`: add a task (`Enter`/`Esc` to stop)
-- `O` / `o`: add a task above/below
-- `e`, `i`, `A`: edit a task (`Enter`/`Esc` to stop)
-- `C`: change task
-- `Enter`: show sub-tasks
-- `J` / `K`: shift task down/up
-- `H` / `L`: shift task left/right (current selection follows task)
-- `m`: move task to specific list (current selection follows task)
-- `Space`: shift task right (current selection stays put)
-- `D`: delete task
-- `u`: undo
-- `N`: new list
-- `E`: edit list title (`Enter`/`Esc` to stop)
-- `X`: delete list
-- `<` / `>`: move list left/right
-- `/`: search (`Enter` to navigate, `Esc` to leave)
-- `q`: quit
+- `?`: Show this list of controls
+- `j` / `k` / `h` / `l`: Move down/up/left/right
+- `G`: Go to bottom of list
+- `1`-`9`: Select list
+- `a`: Add a task
+- `O` / `o`: Add a task above/below
+- `e`, `i`, `A`: Edit a task
+- `C`: Change task
+- `Enter`: Show sub-tasks
+- `J` / `K`: Shift task down/up
+- `H` / `L`: Shift task left/right
+- `Space`: Shift task right
+- `m`: Move task to specific list
+- `D`: Delete task
+- `u`: Undo
+- `N`: New list
+- `E`: Edit list title
+- `X`: Delete list
+- `<` / `>`: Move list left/right
+- `/`: Search
+- `Esc`: Return to lists
+- `q`: Quit
