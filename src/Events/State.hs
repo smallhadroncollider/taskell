@@ -67,6 +67,7 @@ module Events.State (
     showHelp,
     showMoveTo,
     moveTo,
+    getCurrentList,
     getCurrentTask,
     setCurrentTask
 ) where
