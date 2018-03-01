@@ -12,6 +12,7 @@
 - Move Help modal creation into Template Haskell
 - Use lenses for nested data?
 - Add a List widget for common actions between tasks and sub-tasks
+- Use Safe for unsafe operations
 
 ## Bugs
 
@@ -19,6 +20,7 @@
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
 - Caching doesn't clear properly when using `o` and `O`
+- Multiple spaces at the beginning of a line can break cursor positioning
 
 ## To Do
 
@@ -31,6 +33,7 @@
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
 - Add Trello import
+- Redo functionality
 
 ## In Progress
 

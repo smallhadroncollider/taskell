@@ -53,6 +53,7 @@ library
 
   build-depends:       base <= 5
                      , vty
+                     , safe
                      , text
                      , brick
                      , bytestring
@@ -79,6 +80,7 @@ test-suite taskell-test
   main-is:             Spec.hs
   other-modules:       UI.FieldTest
   build-depends:       base
+                     , text
                      , taskell
                      , tasty
                      , tasty-hunit

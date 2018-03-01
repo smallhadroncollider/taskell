@@ -4,9 +4,10 @@ module UI.Field where
 import qualified Brick as B (Widget(Widget), Size(Fixed), availWidth, render, txt, vBox, Location(Location), showCursor, getContext)
 import qualified Brick.Widgets.Core as B (textWidth)
 import qualified Data.List as L (foldl')
-import qualified Data.Text as T (Text, length, snoc, init, append, null, splitAt, concat, singleton, foldl', strip)
+import qualified Data.Text as T (Text, length, snoc, init, append, null, splitAt, concat, singleton, foldl')
 import qualified Data.Text.Encoding as T (decodeUtf8)
 import qualified Graphics.Vty.Input.Events as V (Event(..), Key(..))
+import qualified Safe as S (lastDef, scanl1Def)
 import qualified UI.Types as UI (ResourceName(RNCursor))
 
 data Field = Field {
@@ -53,13 +54,13 @@ insertText insert (Field text cursor) = Field newText newCursor
           newText = T.concat [start, insert, end]
           newCursor = cursor + T.length insert
 
-cursorPosition :: [T.Text] -> Int -> (Int, Int)
-cursorPosition text cursor =
-    if null below
-        then (cursor, 0)
-        else (cursor - last below, length below - 1)
-    where scanned = scanl (+) 0 $ T.length <$> text
-          below = takeWhile (<= cursor) scanned
+cursorPosition :: [T.Text] -> Int -> Int -> (Int, Int)
+cursorPosition text width cursor =
+    if x == width then (0, y + 1) else (x, y)
+    where scanned = S.scanl1Def [] (+) $ T.length <$> text
+          below = takeWhile (< cursor) scanned
+          x = cursor - S.lastDef 0 below
+          y = length below
 
 getText :: Field -> T.Text
 getText (Field text _) = text
@@ -70,9 +71,12 @@ textToField text = Field text (T.length text)
 field :: Field -> B.Widget UI.ResourceName
 field (Field text cursor) = B.Widget B.Fixed B.Fixed $ do
     width <- B.availWidth <$> B.getContext
-    let wrapped = wrap width $ text `T.append` " "
-        location = cursorPosition wrapped cursor
-    B.render . B.showCursor UI.RNCursor (B.Location location) . B.vBox $ B.txt <$> wrapped
+    let (wrapped, offset) = wrap width text
+        location = cursorPosition wrapped width (cursor - offset)
+
+    B.render $ if T.null text
+        then B.showCursor UI.RNCursor (B.Location (0, 0)) $ B.txt " "
+        else B.showCursor UI.RNCursor (B.Location location) . B.vBox $ B.txt <$> wrapped
 
 fromMaybe :: B.Widget UI.ResourceName -> Maybe Field -> B.Widget UI.ResourceName
 fromMaybe _ (Just f) = field f
@@ -81,11 +85,14 @@ fromMaybe w Nothing = w
 textField :: T.Text -> B.Widget UI.ResourceName
 textField text = B.Widget B.Fixed B.Fixed $ do
     width <- B.availWidth <$> B.getContext
-    B.render . B.vBox $ B.txt <$> wrap width text
+    let (wrapped, _) = wrap width text
+    B.render $ if T.null text
+        then B.txt " "
+        else B.vBox $ B.txt <$> wrapped
 
 -- wrap
-wrap :: Int -> T.Text -> [T.Text]
-wrap width = L.foldl' (combine width) [""] . spl
+wrap :: Int -> T.Text -> ([T.Text], Int)
+wrap width = L.foldl' (combine width) ([""], 0) . spl
 
 spl' :: [T.Text] -> Char -> [T.Text]
 spl' ts c
@@ -96,10 +103,13 @@ spl' ts c
 spl :: T.Text -> [T.Text]
 spl = T.foldl' spl' [""]
 
-combine :: Int -> [T.Text] -> T.Text -> [T.Text]
-combine width acc s = if nl then acc ++ [T.strip s] else append (l `T.append` s) acc
+combine :: Int -> ([T.Text], Int) -> T.Text -> ([T.Text], Int)
+combine width (acc, offset) s
+    | newline && s == " " = (acc, offset + 1)
+    | newline = (acc ++ [s], offset)
+    | otherwise = (append (l `T.append` s) acc, offset)
     where l = if Prelude.null acc then "" else last acc
-          nl = B.textWidth l + B.textWidth s > width
+          newline = B.textWidth l + B.textWidth s > width
 
 append :: T.Text -> [T.Text] -> [T.Text]
 append s l = l' ++ [s]

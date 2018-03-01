@@ -1,10 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 module UI.FieldTest where
 
-import UI.Field (Field(Field), updateCursor, insertCharacter, insertText, cursorPosition, backspace)
+import UI.Field (Field(Field), updateCursor, insertCharacter, insertText, cursorPosition, backspace, wrap)
+import Data.Text (Text)
 
 import Test.Tasty
 import Test.Tasty.HUnit
+
+width :: Int
+width = 30
+
+cursorPosition' :: Text -> Int -> (Int, Int)
+cursorPosition' text cursor = cursorPosition wrapped width (cursor - offset)
+    where (wrapped, offset) = wrap width text
 
 test_field :: TestTree
 test_field =
@@ -50,16 +58,20 @@ test_field =
 
           , testGroup "Cursor position" [
                 testCase "Empty"
-                    (assertEqual "Should (0,0)" (0, 0) (cursorPosition [] 0))
-              , testCase "One line"
-                    (assertEqual "Should return on same line" (3, 0) (cursorPosition ["Blah"] 3))
-              , testCase "Two line"
-                    (assertEqual "Should return on second line" (1, 1) (cursorPosition ["Blah ", "Blaz"] 6))
-              , testCase "Early cursor"
-                    (assertEqual "Should return on first line" (2, 0) (cursorPosition ["Blah ", "Blaz"] 2))
+                    (assertEqual "Should be at beginning" (0, 0) (cursorPosition' "" 0))
+              , testCase "First line"
+                    (assertEqual "Should be on first line" (14, 0) (cursorPosition' "Blah blah blah" 14))
+              , testCase "Half way along"
+                    (assertEqual "Should be on first line" (7, 0) (cursorPosition' "Blah blah blah" 7))
               , testCase "End of line"
-                    (assertEqual "Should return on next line" (0, 1) (cursorPosition ["Blah ", "Blaz"] 5))
-              , testCase "Lots of lines"
-                    (assertEqual "Should return on fourth line" (2, 3) (cursorPosition ["Blah ", "Blaz", "Cow", "Monkey"] 14))
+                    (assertEqual "Should be on first line" (29, 0) (cursorPosition' "Blah blah blah blah blah blah" 29))
+              , testCase "End of line wrap"
+                    (assertEqual "Should wrap" (0, 1) (cursorPosition' "Blah blah blah blah blah blahs" 30))
+              , testCase "End of line with space wrap"
+                    (assertEqual "Should wrap" (0, 1) (cursorPosition' "Blah blah blah blah blah blah " 30))
+              , testCase "Long words"
+                    (assertEqual "Should wrap to correct position" (6, 1) (cursorPosition' "Artichoke penguin astronaut wombat" 34))
+              , testCase "Long words with space"
+                    (assertEqual "Should ignore the space when counting" (16, 1) (cursorPosition' "Blah fish wombat monkey sponge catpult arsonist" 47))
             ]
         ]
