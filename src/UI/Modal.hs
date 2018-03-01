@@ -31,13 +31,9 @@ surround (title, widget) =
 
     where t = padBottom (Pad 1) . withAttr titleAttr $ textField title
 
-getModal :: State -> ModalType -> Widget ResourceName
-getModal s t = case t of
-    Help -> surround help
-    SubTasks _ _ -> surround $ st s
-    MoveTo -> surround $ moveTo s
-
 showModal :: State -> [Widget ResourceName] -> [Widget ResourceName]
 showModal s view = case mode s of
-    Modal t -> getModal s t : view
+    Modal Help -> surround help : view
+    Modal SubTasks {} -> surround (st s) : view
+    Modal MoveTo -> surround (moveTo s) : view
     _ -> view
