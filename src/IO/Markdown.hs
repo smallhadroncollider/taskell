@@ -1,11 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module IO.Markdown (
     parse,
-    stringify,
-    trimListItem
+    stringify
 ) where
 
-import Data.Text as T (Text, drop, append, null, lines, isPrefixOf, strip, dropAround, snoc)
+import Data.Text as T (Text, drop, append, null, lines, isPrefixOf, strip, dropAround, snoc, length)
 import Data.List (intercalate)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8With)
 
@@ -20,21 +19,15 @@ import Data.Word (Word8)
 import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, subtaskOutput)
 
 -- parse code
-trimListItem :: Text -> Text
-trimListItem = strip . T.drop 1
-
-trimTitle :: Text -> Text
-trimTitle = strip . T.drop 2
-
-trimTask :: Text -> Task
-trimTask = new . trimListItem
+trim :: Int -> Text -> Text
+trim i = strip . T.drop i
 
 trimTilde :: Text -> Text
 trimTilde = strip . T.dropAround (== '~')
 
 addSubItem :: Text -> Lists -> Lists
 addSubItem t ls = adjust' updateList i ls
-    where i = length ls - 1
+    where i = Prelude.length ls - 1
           st | "~" `isPrefixOf` t = subTask (trimTilde t) True
              | otherwise = subTask t False
           updateList l = updateFn j (addSubTask st) l
@@ -42,11 +35,14 @@ addSubItem t ls = adjust' updateList i ls
 
 start :: MarkdownConfig -> (Lists, [Int]) -> (Text, Int) -> (Lists, [Int])
 start config (ls, errs) (s, li)
-    | titleOutput config `snoc` ' ' `isPrefixOf` s = (newList (trimTitle s) ls, errs)
-    | taskOutput config `snoc` ' ' `isPrefixOf` s = (appendToLast (trimTask s) ls, errs)
-    | subtaskOutput config `snoc` ' ' `isPrefixOf` s = (addSubItem (trimListItem $ strip s) ls, errs)
+    | titleO `isPrefixOf` s = (newList (trim (T.length titleO) s) ls, errs)
+    | taskO `isPrefixOf` s = (appendToLast (new $ trim (T.length taskO) s) ls, errs)
+    | staskO `isPrefixOf` s = (addSubItem (trim (T.length staskO) s) ls, errs)
     | not (T.null (strip s)) = (ls, errs ++ [li])
     | otherwise = (ls, errs)
+    where titleO = titleOutput config `snoc` ' '
+          taskO = taskOutput config `snoc` ' '
+          staskO = subtaskOutput config `snoc` ' '
 
 decodeError :: String -> Maybe Word8 -> Maybe Char
 decodeError _ _ = Just '\65533'
