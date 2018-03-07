@@ -8,7 +8,6 @@ import Brick
 import Data.Text as T (Text, lines, replace, breakOn, strip, drop, length, justifyRight)
 import Data.Text.Encoding (decodeUtf8)
 import Data.FileEmbed (embedFile)
-import IO.Markdown (trimListItem)
 import Data.Foldable (foldl')
 
 import UI.Types (ResourceName)
@@ -23,6 +22,6 @@ line m (l, r) = left <+> right
 help :: (Text, Widget ResourceName)
 help = ("Controls", w)
     where ls = T.lines $ decodeUtf8 $(embedFile "templates/controls.md")
-          (l, r) = unzip $ breakOn ":" . T.replace "`" "" . trimListItem <$> ls
+          (l, r) = unzip $ breakOn ":" . T.replace "`" "" . T.strip . T.drop 1 <$> ls
           m = foldl' max 0 $ T.length <$> l
           w = vBox $ line m <$> zip l r
