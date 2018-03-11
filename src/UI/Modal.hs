@@ -1,21 +1,21 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module UI.Modal (
     showModal
 ) where
 
-import Events.State (State, Mode(..), ModalType(..), mode)
+import ClassyPrelude
+
 import Brick
 import Brick.Widgets.Center
 import Brick.Widgets.Border
 
-import UI.Modal.Help (help)
-import UI.Modal.SubTasks (st)
-import UI.Modal.MoveTo (moveTo)
-import Data.Text as T (Text)
-
-import UI.Types (ResourceName(..))
-import UI.Theme (titleAttr)
-
+import Events.State (State, Mode(..), ModalType(..), mode)
 import UI.Field (textField)
+import UI.Modal.Help (help)
+import UI.Modal.MoveTo (moveTo)
+import UI.Modal.SubTasks (st)
+import UI.Theme (titleAttr)
+import UI.Types (ResourceName(..))
 
 surround :: (Text, Widget ResourceName) -> Widget ResourceName
 surround (title, widget) =

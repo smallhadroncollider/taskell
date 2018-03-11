@@ -8,7 +8,7 @@ module IO.Markdown (
 import ClassyPrelude
 
 import Data.Sequence (adjust')
-import Data.Text as T (strip, dropAround, append)
+import Data.Text as T (strip, dropAround)
 import Data.Text.Encoding (decodeUtf8With)
 
 import Data.Taskell.Lists (Lists, newList, appendToLast)
@@ -60,7 +60,7 @@ parse config s = do
 
 -- stringify code
 subTaskToString :: MarkdownConfig -> Text -> SubTask -> Text
-subTaskToString config t st = foldl' append t [
+subTaskToString config t st = foldl' (++) t [
         subtaskOutput config,
         " ",
         surround,
@@ -71,7 +71,7 @@ subTaskToString config t st = foldl' append t [
     where surround = if complete st then "~" else ""
 
 taskToString :: MarkdownConfig -> Text -> Task -> Text
-taskToString config s t = foldl' append s [
+taskToString config s t = foldl' (++) s [
         taskOutput config,
         " ",
         description t,
@@ -80,7 +80,7 @@ taskToString config s t = foldl' append s [
     ]
 
 listToString :: MarkdownConfig -> Text -> List -> Text
-listToString config s l = foldl' append s [
+listToString config s l = foldl' (++) s [
         if null s then "" else "\n"
       , titleOutput config
       , " "

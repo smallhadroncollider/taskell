@@ -1,4 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 module IO.Taskell where
 
 import ClassyPrelude as P
@@ -26,11 +27,11 @@ exists c = do
     return (success, path)
 
 -- prompt whether to create taskell.json
-promptCreate :: Config -> Bool -> String -> IO Bool
+promptCreate :: Config -> Bool -> FilePath -> IO Bool
 promptCreate _ True _ = return True
 promptCreate config False path = do
-    cwd <- getCurrentDirectory
-    r <- promptYN $ "Create " ++ cwd ++ "/" ++ path ++ "?"
+    cwd <- pack <$> getCurrentDirectory
+    r <- promptYN $ "Create " ++ cwd ++ "/" ++ pack path ++ "?"
     if r then createPath config path >> return True else return False
 
 -- creates taskell file
