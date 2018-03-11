@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Events.State (
     -- types
@@ -72,11 +73,13 @@ module Events.State (
     setCurrentTask
 ) where
 
-import Data.Text (Text)
+import ClassyPrelude hiding (delete)
+
+import Data.Char (digitToInt, ord)
+
 import Data.Taskell.Task (Task, isBlank, description)
 import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, getTask, title)
 import qualified Data.Taskell.Lists as Lists
-import Data.Char (digitToInt, ord)
 
 import Events.State.Types
 import UI.Field (getText, blankField, textToField)

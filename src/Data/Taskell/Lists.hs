@@ -1,13 +1,14 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Data.Taskell.Lists where
 
-import Prelude hiding (length)
-import Data.Text (Text)
-import Data.Maybe (fromMaybe)
-import Data.Sequence as S (Seq, fromList, (!?), (|>), deleteAt, length, update)
-import qualified Data.Taskell.Seq as S
-import Data.Taskell.Task (Task)
+import ClassyPrelude hiding (empty)
+
+import Data.Sequence as S ((!?), (|>), update, deleteAt)
+
 import Data.Taskell.List (List(..), empty, extract, append, searchFor)
+import Data.Taskell.Task (Task)
+import qualified Data.Taskell.Seq as S
 
 type Lists = Seq List
 

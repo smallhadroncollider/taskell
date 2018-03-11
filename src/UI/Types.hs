@@ -1,4 +1,7 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module UI.Types where
+
+import ClassyPrelude (Int, Show, Eq, Ord)
 
 data ResourceName =
       RNCursor

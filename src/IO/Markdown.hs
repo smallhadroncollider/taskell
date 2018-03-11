@@ -1,33 +1,32 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module IO.Markdown (
     parse,
     stringify
 ) where
 
-import Data.Text as T (Text, drop, append, null, lines, isPrefixOf, strip, dropAround, snoc, length)
-import Data.List (intercalate)
-import Data.Text.Encoding (encodeUtf8, decodeUtf8With)
+import ClassyPrelude
+
+import Data.Sequence (adjust')
+import Data.Text as T (strip, dropAround)
+import Data.Text.Encoding (decodeUtf8With)
 
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks, updateFn, count)
 import Data.Taskell.Task (Task, SubTask, new, description, subTasks, addSubTask, subTask, name, complete)
-import Data.Foldable (foldl')
-import Data.Sequence (empty, adjust')
-import Data.ByteString (ByteString)
-import Data.Word (Word8)
 
 import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, subtaskOutput)
 
 -- parse code
 trim :: Int -> Text -> Text
-trim i = strip . T.drop i
+trim i = strip . drop i
 
 trimTilde :: Text -> Text
 trimTilde = strip . T.dropAround (== '~')
 
 addSubItem :: Text -> Lists -> Lists
 addSubItem t ls = adjust' updateList i ls
-    where i = Prelude.length ls - 1
+    where i = length ls - 1
           st | "~" `isPrefixOf` t = subTask (trimTilde t) True
              | otherwise = subTask t False
           updateList l = updateFn j (addSubTask st) l
@@ -35,10 +34,10 @@ addSubItem t ls = adjust' updateList i ls
 
 start :: MarkdownConfig -> (Lists, [Int]) -> (Text, Int) -> (Lists, [Int])
 start config (ls, errs) (s, li)
-    | titleO `isPrefixOf` s = (newList (trim (T.length titleO) s) ls, errs)
-    | taskO `isPrefixOf` s = (appendToLast (new $ trim (T.length taskO) s) ls, errs)
-    | staskO `isPrefixOf` s = (addSubItem (trim (T.length staskO) s) ls, errs)
-    | not (T.null (strip s)) = (ls, errs ++ [li])
+    | titleO `isPrefixOf` s = (newList (trim (length titleO) s) ls, errs)
+    | taskO `isPrefixOf` s = (appendToLast (new $ trim (length taskO) s) ls, errs)
+    | staskO `isPrefixOf` s = (addSubItem (trim (length staskO) s) ls, errs)
+    | not (null (strip s)) = (ls, errs ++ [li])
     | otherwise = (ls, errs)
     where titleO = titleOutput config `snoc` ' '
           taskO = taskOutput config `snoc` ' '
@@ -49,22 +48,19 @@ decodeError _ _ = Just '\65533'
 
 parse :: Config -> ByteString -> Either String Lists
 parse config s = do
-    let lns = T.lines $ decodeUtf8With decodeError s
+    let lns = lines $ decodeUtf8With decodeError s
     let fn = start (markdown config)
     let acc = (empty, [])
     let (lists, errs) = foldl' fn acc $ zip lns [1..]
 
-    if Prelude.null errs
+    if null errs
         then Right lists
         else Left $ "could not parse line(s) " ++ intercalate ", " (show <$> errs)
 
 
 -- stringify code
-join :: Text -> [Text] -> Text
-join = foldl' T.append
-
 subTaskToString :: MarkdownConfig -> Text -> SubTask -> Text
-subTaskToString config t st = join t [
+subTaskToString config t st = foldl' (++) t [
         subtaskOutput config,
         " ",
         surround,
@@ -75,7 +71,7 @@ subTaskToString config t st = join t [
     where surround = if complete st then "~" else ""
 
 taskToString :: MarkdownConfig -> Text -> Task -> Text
-taskToString config s t = join s [
+taskToString config s t = foldl' (++) s [
         taskOutput config,
         " ",
         description t,
@@ -84,8 +80,8 @@ taskToString config s t = join s [
     ]
 
 listToString :: MarkdownConfig -> Text -> List -> Text
-listToString config s l = join s [
-        if T.null s then "" else "\n"
+listToString config s l = foldl' (++) s [
+        if null s then "" else "\n"
       , titleOutput config
       , " "
       , title l

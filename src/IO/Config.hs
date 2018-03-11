@@ -1,18 +1,20 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 module IO.Config where
 
-import Data.Maybe (fromMaybe)
-import System.Directory
-import Data.Ini.Config
+import ClassyPrelude
+
+import Data.Text as T (dropAround, strip)
+import qualified Data.Text.IO as T (readFile)
+import System.Directory (createDirectoryIfMissing, getHomeDirectory, doesFileExist)
+
+import Brick (AttrMap)
+import Brick.Themes (themeToAttrMap, loadCustomizations)
 import Data.FileEmbed (embedFile)
-import qualified Data.ByteString as B (writeFile)
+import Data.Ini.Config
 
 import UI.Theme
-import Brick.Themes (themeToAttrMap, loadCustomizations)
-import Brick (AttrMap)
-import Data.Text as T (Text, strip, dropAround, null)
-import qualified Data.Text.IO as T
 
 data GeneralConfig = GeneralConfig {
         filename :: FilePath
@@ -77,7 +79,7 @@ setup = do
     getConfig
 
 writeTheme :: FilePath -> IO ()
-writeTheme path = B.writeFile path $(embedFile "templates/theme.ini")
+writeTheme path = writeFile path $(embedFile "templates/theme.ini")
 
 createTheme :: IO ()
 createTheme = do
@@ -86,7 +88,7 @@ createTheme = do
     if exists then return () else writeTheme path
 
 writeConfig :: FilePath -> IO ()
-writeConfig path = B.writeFile path $(embedFile "templates/config.ini")
+writeConfig path = writeFile path $(embedFile "templates/config.ini")
 
 createConfig :: IO ()
 createConfig = do
@@ -95,11 +97,11 @@ createConfig = do
     if exists then return () else writeConfig path
 
 noEmpty :: Maybe Text -> Maybe Text
-noEmpty (Just txt) = if T.null txt then Nothing else Just txt
+noEmpty (Just txt) = if null txt then Nothing else Just txt
 noEmpty Nothing = Nothing
 
 noEmptyString :: Maybe String -> Maybe String
-noEmptyString (Just txt) = if Prelude.null txt then Nothing else Just txt
+noEmptyString (Just txt) = if null txt then Nothing else Just txt
 noEmptyString Nothing = Nothing
 
 parseString :: Maybe Text -> Maybe Text
@@ -137,7 +139,7 @@ getConfig = do
 
     case config of
         Right c -> return c
-        Left s -> putStrLn ("config.ini: " ++ s) >> return defaultConfig
+        Left s -> putStrLn (pack $ "config.ini: " ++ s) >> return defaultConfig
 
 -- generate theme
 generateAttrMap :: IO AttrMap
