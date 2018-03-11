@@ -1,4 +1,7 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module Events.Actions.Normal (event) where
+
+import ClassyPrelude hiding (delete)
 
 import Graphics.Vty.Input.Events
 import Data.Char (isDigit)

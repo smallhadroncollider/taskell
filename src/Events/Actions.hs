@@ -1,9 +1,11 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module Events.Actions (event) where
+
+import ClassyPrelude
 
 import Graphics.Vty.Input.Events (Event(..))
 
 import Events.State (State, Stateful, Mode(..), mode)
-import Data.Maybe (fromMaybe)
 
 import qualified Events.Actions.Normal as Normal
 import qualified Events.Actions.Search as Search

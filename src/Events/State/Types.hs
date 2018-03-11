@@ -1,4 +1,7 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module Events.State.Types where
+
+import ClassyPrelude
 
 import Data.Taskell.Lists (Lists)
 import UI.Field (Field)
