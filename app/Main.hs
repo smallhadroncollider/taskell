@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 module Main where
 
@@ -11,11 +12,11 @@ import App (go)
 main :: IO ()
 main = do
     config <- setup
-    (exists, path) <- exists config
+    (exists', path) <- exists config
 
-    when exists $ do
+    when exists' $ do
         content <- readData config path
 
         case content of
             Right lists -> go config $ create path lists
-            Left err -> putStrLn . pack $ path ++ ": " ++ err
+            Left err -> putStrLn $ pack path ++ ": " ++ err

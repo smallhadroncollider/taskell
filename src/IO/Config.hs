@@ -96,40 +96,40 @@ createConfig = do
     exists <- doesFileExist path
     if exists then return () else writeConfig path
 
-noEmpty :: Maybe Text -> Maybe Text
-noEmpty (Just txt) = if null txt then Nothing else Just txt
-noEmpty Nothing = Nothing
+noEmpty :: Text -> Maybe Text
+noEmpty txt = if null txt then Nothing else Just txt
 
-noEmptyString :: Maybe String -> Maybe String
-noEmptyString (Just txt) = if null txt then Nothing else Just txt
-noEmptyString Nothing = Nothing
-
-parseString :: Maybe Text -> Maybe Text
-parseString (Just s) = Just . dropAround (== '"') $ strip s
-parseString Nothing = Nothing
+parseText :: Text -> Text
+parseText txt = dropAround (== '"') $ strip txt
 
 configParser :: IniParser Config
 configParser = do
-    generalCf <- sectionMb "general" $ do
-        filenameCf <- fromMaybe (filename defaultGeneralConfig) . noEmptyString <$> fieldMbOf "filename" string
-        return GeneralConfig { filename = filenameCf }
-    layoutCf <- sectionMb "layout" $ do
-        columnWidthCf <- fromMaybe (columnWidth defaultLayoutConfig) <$> fieldMbOf "column_width" number
-        columnPaddingCf <- fromMaybe (columnPadding defaultLayoutConfig) <$> fieldMbOf "column_padding" number
-        return LayoutConfig { columnWidth = columnWidthCf, columnPadding = columnPaddingCf }
-    markdownCf <- sectionMb "markdown" $ do
-        titleOutputCf <- fromMaybe (titleOutput defaultMarkdownConfig) . noEmpty . parseString <$> fieldMb "title"
-        taskOutputCf <- fromMaybe (taskOutput defaultMarkdownConfig) . noEmpty . parseString <$> fieldMb "task"
-        subtaskOutputCf <- fromMaybe (subtaskOutput defaultMarkdownConfig) . noEmpty . parseString <$> fieldMb "subtask"
-        return MarkdownConfig {
-            titleOutput = titleOutputCf,
-            taskOutput = taskOutputCf,
-            subtaskOutput = subtaskOutputCf
-        }
+    generalCf <- fromMaybe defaultGeneralConfig <$>
+        sectionMb "general" (do
+            filenameCf <- maybe (filename defaultGeneralConfig) unpack . (noEmpty =<<) <$> fieldMb "filename"
+            return GeneralConfig { filename = filenameCf }
+        )
+    layoutCf <- fromMaybe defaultLayoutConfig <$>
+        sectionMb "layout" (do
+            columnWidthCf <- fromMaybe (columnWidth defaultLayoutConfig) <$> fieldMbOf "column_width" number
+            columnPaddingCf <- fromMaybe (columnPadding defaultLayoutConfig) <$> fieldMbOf "column_padding" number
+            return LayoutConfig { columnWidth = columnWidthCf, columnPadding = columnPaddingCf }
+        )
+    markdownCf <-fromMaybe defaultMarkdownConfig <$>
+        sectionMb "markdown" (do
+            titleOutputCf <- fromMaybe (titleOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "title"
+            taskOutputCf <- fromMaybe (taskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "task"
+            subtaskOutputCf <- fromMaybe (subtaskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "subtask"
+            return MarkdownConfig {
+                titleOutput = titleOutputCf,
+                taskOutput = taskOutputCf,
+                subtaskOutput = subtaskOutputCf
+            }
+        )
     return Config {
-        general = fromMaybe defaultGeneralConfig generalCf,
-        layout = fromMaybe defaultLayoutConfig layoutCf,
-        markdown = fromMaybe defaultMarkdownConfig markdownCf
+        general = generalCf,
+        layout = layoutCf,
+        markdown = markdownCf
     }
 
 getConfig :: IO Config

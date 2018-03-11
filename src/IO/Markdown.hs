@@ -46,7 +46,7 @@ start config (ls, errs) (s, li)
 decodeError :: String -> Maybe Word8 -> Maybe Char
 decodeError _ _ = Just '\65533'
 
-parse :: Config -> ByteString -> Either String Lists
+parse :: Config -> ByteString -> Either Text Lists
 parse config s = do
     let lns = lines $ decodeUtf8With decodeError s
     let fn = start (markdown config)
@@ -55,12 +55,12 @@ parse config s = do
 
     if null errs
         then Right lists
-        else Left $ "could not parse line(s) " ++ intercalate ", " (show <$> errs)
+        else Left $ "could not parse line(s) " ++ intercalate ", " (tshow <$> errs)
 
 
 -- stringify code
-subTaskToString :: MarkdownConfig -> Text -> SubTask -> Text
-subTaskToString config t st = foldl' (++) t [
+subTaskStringify :: MarkdownConfig -> Text -> SubTask -> Text
+subTaskStringify config t st = foldl' (++) t [
         subtaskOutput config,
         " ",
         surround,
@@ -70,24 +70,24 @@ subTaskToString config t st = foldl' (++) t [
     ]
     where surround = if complete st then "~" else ""
 
-taskToString :: MarkdownConfig -> Text -> Task -> Text
-taskToString config s t = foldl' (++) s [
+taskStringify :: MarkdownConfig -> Text -> Task -> Text
+taskStringify config s t = foldl' (++) s [
         taskOutput config,
         " ",
         description t,
         "\n",
-        foldl' (subTaskToString config) "" (subTasks t)
+        foldl' (subTaskStringify config) "" (subTasks t)
     ]
 
-listToString :: MarkdownConfig -> Text -> List -> Text
-listToString config s l = foldl' (++) s [
+listStringify :: MarkdownConfig -> Text -> List -> Text
+listStringify config s l = foldl' (++) s [
         if null s then "" else "\n"
       , titleOutput config
       , " "
       , title l
       , "\n\n"
-      , foldl' (taskToString config) "" (tasks l)
+      , foldl' (taskStringify config) "" (tasks l)
     ]
 
 stringify :: Config -> Lists -> ByteString
-stringify config ls = encodeUtf8 $ foldl' (listToString (markdown config)) "" ls
+stringify config ls = encodeUtf8 $ foldl' (listStringify (markdown config)) "" ls

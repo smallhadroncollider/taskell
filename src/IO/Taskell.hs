@@ -11,7 +11,7 @@ import IO.Config (Config, general, filename)
 import IO.Markdown (stringify, parse)
 import UI.CLI (promptYN)
 
-getPath :: Config -> IO String
+getPath :: Config -> IO FilePath
 getPath c = do
     let defaultPath = filename $ general c
     mArgs <- fromNullable <$> getArgs
@@ -43,7 +43,7 @@ writeData :: Config -> Lists -> FilePath -> IO ()
 writeData config tasks path = void (P.writeFile path $ stringify config tasks)
 
 -- reads json file
-readData :: Config -> FilePath -> IO (Either String Lists)
+readData :: Config -> FilePath -> IO (Either Text Lists)
 readData config path = do
     content <- P.readFile path
     return $ parse config content
