@@ -1,6 +1,9 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module Data.Taskell.Seq where
 
-import Data.Sequence (Seq, (!?), insertAt, deleteAt)
+import ClassyPrelude
+
+import Data.Sequence ((!?), insertAt, deleteAt)
 
 extract :: Int -> Seq a -> Maybe (Seq a, a)
 extract i xs = do
