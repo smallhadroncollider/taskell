@@ -4,17 +4,17 @@ module Main where
 import ClassyPrelude
 
 import Events.State (create)
-import qualified IO.Taskell as T (exists, readFile)
+import IO.Taskell (exists, readData)
 import IO.Config (setup)
 import App (go)
 
 main :: IO ()
 main = do
     config <- setup
-    (exists, path) <- T.exists config
+    (exists, path) <- exists config
 
     when exists $ do
-        content <- T.readFile config path
+        content <- readData config path
 
         case content of
             Right lists -> go config $ create path lists
