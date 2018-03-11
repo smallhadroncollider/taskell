@@ -14,7 +14,7 @@ extra-source-files:  README.md
 cabal-version:       >= 2.0
 
 library
-  ghc-options:         -Wall -fno-warn-unused-do-bind
+  ghc-options:         -Wall -Werror
   hs-source-dirs:      src
   exposed-modules:     App
 

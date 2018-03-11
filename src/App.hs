@@ -20,7 +20,7 @@ import UI.Types (ResourceName(..))
 -- store
 store :: Config -> Lists -> State -> IO State
 store config ls s = do
-    forkIO $ IO.Taskell.writeFile config ls (path s)
+    _ <- forkIO $ IO.Taskell.writeFile config ls (path s)
     return (Events.State.continue s)
 
 next :: Config -> State -> EventM ResourceName (Next State)

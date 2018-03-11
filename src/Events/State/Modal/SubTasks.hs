@@ -15,7 +15,7 @@ finishSubTask state = do
 
 showSubTasks :: Stateful
 showSubTasks s = do
-    getCurrentTask s
+    _ <- getCurrentTask s
     let index = fromMaybe 0 $ getCurrentSubTask s
     return $ s { mode = Modal (SubTasks index STNormal) }
 
