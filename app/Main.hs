@@ -1,10 +1,11 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module Main where
 
-import Control.Monad (when)
+import ClassyPrelude
+
 import Events.State (create)
 import qualified IO.Taskell as T (exists, readFile)
 import IO.Config (setup)
-
 import App (go)
 
 main :: IO ()
@@ -17,4 +18,4 @@ main = do
 
         case content of
             Right lists -> go config $ create path lists
-            Left err -> putStrLn $ path ++ ": " ++ err
+            Left err -> putStrLn . pack $ path ++ ": " ++ err
