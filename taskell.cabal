@@ -52,6 +52,7 @@ library
                      , UI.Modal.MoveTo
 
   build-depends:       base <= 5
+                     , classy-prelude
                      , vty
                      , safe
                      , text
