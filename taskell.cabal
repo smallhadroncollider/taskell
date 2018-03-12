@@ -75,6 +75,7 @@ executable taskell
                      , taskell
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
+                     , NoImplicitPrelude
 
 test-suite taskell-test
   type:                exitcode-stdio-1.0
