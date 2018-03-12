@@ -1,4 +1,4 @@
-resolver="lts-10.8"
+resolver="lts-10.9"
 ghcv="8.2.2"
 
 if [ ! -d ".stack-work" ]; then
