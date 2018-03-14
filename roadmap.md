@@ -11,6 +11,8 @@
 
 ## Bugs
 
+- Very long words should get hyphenated
+- Help modal needs to wrap and scroll
 - No obvious way to know if there are more items in a list off-screen
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
@@ -19,6 +21,7 @@
 
 ## Features
 
+- GitHub checklist support - []/[x]
 - Add custom key support
 - Task body - e.g. as well as sub lists, have a longer description
 - Show filename somewhere
@@ -32,8 +35,6 @@
 
 ## In Progress
 
-- Very long words should get hyphenated
-- Help modal needs to wrap and scroll
 
 ## Done
 
