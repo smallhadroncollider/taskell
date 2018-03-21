@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module IO.Taskell where
 
-import ClassyPrelude as P
+import ClassyPrelude
 
 import System.Directory (getCurrentDirectory, doesFileExist)
 
@@ -11,39 +11,44 @@ import IO.Config (Config, general, filename)
 import IO.Markdown (stringify, parse)
 import UI.CLI (promptYN)
 
-getPath :: Config -> IO FilePath
-getPath c = do
-    let defaultPath = filename $ general c
+type ReaderConfig a = ReaderT Config IO a
+
+getPath :: ReaderConfig FilePath
+getPath = do
+    config <- ask
+    let defaultPath = filename $ general config
     mArgs <- fromNullable <$> getArgs
     return $ case mArgs of
         Just args -> unpack $ head args
         Nothing -> defaultPath
 
-exists :: Config -> IO (Bool, FilePath)
-exists c = do
-    path <- getPath c
-    e <- doesFileExist path
-    success <- promptCreate c e path
+exists :: ReaderConfig (Bool, FilePath)
+exists = do
+    path <- getPath
+    exists' <- lift $ doesFileExist path
+    success <- promptCreate exists' path
     return (success, path)
 
 -- prompt whether to create taskell.json
-promptCreate :: Config -> Bool -> FilePath -> IO Bool
-promptCreate _ True _ = return True
-promptCreate config False path = do
-    cwd <- pack <$> getCurrentDirectory
-    r <- promptYN $ "Create " ++ cwd ++ "/" ++ pack path ++ "?"
-    if r then createPath config path >> return True else return False
+promptCreate :: Bool -> FilePath -> ReaderConfig Bool
+promptCreate True _ = return True
+promptCreate False path = do
+    cwd <- lift $ pack <$> getCurrentDirectory
+    create <- lift $ promptYN $ "Create " ++ cwd ++ "/" ++ pack path ++ "?"
+    if create then createPath path >> return True else return False
 
 -- creates taskell file
-createPath :: Config -> FilePath -> IO ()
-createPath config = writeData config initial
+createPath :: FilePath -> ReaderConfig ()
+createPath path = do
+    config <- ask
+    lift (writeData config initial path)
 
 -- writes Tasks to json file
 writeData :: Config -> Lists -> FilePath -> IO ()
-writeData config tasks path = void (P.writeFile path $ stringify config tasks)
+writeData config tasks path = void (writeFile path $ stringify config tasks)
 
 -- reads json file
 readData :: Config -> FilePath -> IO (Either Text Lists)
 readData config path = do
-    content <- P.readFile path
+    content <- readFile path
     return $ parse config content
