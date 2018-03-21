@@ -3,7 +3,6 @@
 module UI.CLI where
 
 import ClassyPrelude
-import System.IO (stdout, hFlush)
 
 prompt :: Text -> IO Text
 prompt s = do
