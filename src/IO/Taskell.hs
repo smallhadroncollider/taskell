@@ -34,7 +34,7 @@ promptCreate :: Bool -> FilePath -> ReaderConfig Bool
 promptCreate True _ = return True
 promptCreate False path = do
     cwd <- lift $ pack <$> getCurrentDirectory
-    create <- lift $ promptYN $ "Create " ++ cwd ++ "/" ++ pack path ++ "?"
+    create <- lift $ promptYN $ concat ["Create ", cwd, "/", pack path, "?"]
     if create then createPath path >> return True else return False
 
 -- creates taskell file
