@@ -97,10 +97,11 @@ createConfig = do
     if exists then return () else writeConfig path
 
 noEmpty :: Text -> Maybe Text
-noEmpty txt = if null txt then Nothing else Just txt
+noEmpty "" = Nothing
+noEmpty txt = Just txt
 
 parseText :: Text -> Text
-parseText txt = dropAround (== '"') $ strip txt
+parseText = dropAround (== '"') . strip
 
 configParser :: IniParser Config
 configParser = do
