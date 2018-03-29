@@ -38,6 +38,7 @@ library
 
                      , IO.Taskell
                      , IO.Markdown
+                     , IO.Markdown.Internal
                      , IO.Config
 
                      , UI.CLI
