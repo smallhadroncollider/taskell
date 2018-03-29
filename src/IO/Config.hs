@@ -78,23 +78,23 @@ setup = do
     createTheme
     getConfig
 
+create :: IO FilePath -> (FilePath -> IO ()) -> IO ()
+create getPath write = do
+    path <- getPath
+    exists <- doesFileExist path
+    unless exists $ write path
+
 writeTheme :: FilePath -> IO ()
 writeTheme path = writeFile path $(embedFile "templates/theme.ini")
 
 createTheme :: IO ()
-createTheme = do
-    path <- getThemePath
-    exists <- doesFileExist path
-    if exists then return () else writeTheme path
+createTheme = create getThemePath writeTheme
 
 writeConfig :: FilePath -> IO ()
 writeConfig path = writeFile path $(embedFile "templates/config.ini")
 
 createConfig :: IO ()
-createConfig = do
-    path <- getConfigPath
-    exists <- doesFileExist path
-    if exists then return () else writeConfig path
+createConfig = create getConfigPath writeConfig
 
 noEmpty :: Text -> Maybe Text
 noEmpty "" = Nothing
