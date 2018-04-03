@@ -84,6 +84,7 @@ test-suite taskell-test
   main-is:             Spec.hs
   other-modules:       UI.FieldTest
   build-depends:       base
+                     , classy-prelude
                      , text
                      , taskell
                      , tasty
