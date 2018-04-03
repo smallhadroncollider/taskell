@@ -83,6 +83,7 @@ test-suite taskell-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   other-modules:       UI.FieldTest
+                     , IO.MarkdownTest
   build-depends:       base
                      , classy-prelude
                      , text
