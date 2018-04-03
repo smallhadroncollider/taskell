@@ -1,3 +1,3 @@
-resolver: nightly-2018-03-28
+resolver: nightly-2018-04-03
 packages:
   - .

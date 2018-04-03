@@ -1,4 +1,4 @@
-resolver="nightly-2018-03-28"
+resolver="nightly-2018-04-03"
 ghcv="8.4.1"
 
 if [ ! -d ".stack-work" ]; then
