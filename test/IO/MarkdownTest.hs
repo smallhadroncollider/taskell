@@ -6,6 +6,7 @@ import ClassyPrelude
 
 import Test.Tasty
 import Test.Tasty.HUnit
+import Test.Tasty.ExpectedFailure (ignoreTest)
 
 import IO.Markdown.Internal (start)
 import IO.Config (MarkdownConfig(..), defaultMarkdownConfig)
@@ -73,8 +74,19 @@ test_markdown =
                         (start defaultMarkdownConfig (appendToLast (new "Test Item") (newList "Test" empty), []) ("    * ~Blah~", 1))
                 )
 
-              -- test if list item but no list
-              -- test if sub task but no list item
+              , ignoreTest $ testCase "List item without list" (
+                    assertEqual
+                        "Parse Error"
+                        (empty, [1])
+                        (start defaultMarkdownConfig (empty, []) ("- Test Item", 1))
+                )
+
+              , ignoreTest $ testCase "Sub task without list item" (
+                    assertEqual
+                        "Parse Error"
+                        (newList "Test" empty, [1])
+                        (start defaultMarkdownConfig (newList "Test" empty, []) ("    * Blah", 1))
+                )
             ]
 
           , testGroup "Alternative" [
@@ -126,9 +138,6 @@ test_markdown =
                         (appendToLast (addSubTask (subTask "Blah" True) (new "Test Item")) (newList "Test" empty), [])
                         (start alternativeMarkdownConfig (appendToLast (new "Test Item") (newList "Test" empty), []) ("- ~Blah~", 1))
                 )
-
-              -- test if list item but no list
-              -- test if sub task but no list item
             ]
         ]
     ]
