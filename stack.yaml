@@ -1,3 +1,5 @@
 resolver: nightly-2018-04-03
 packages:
   - .
+extra-deps:
+  - tasty-discover-4.2.0
