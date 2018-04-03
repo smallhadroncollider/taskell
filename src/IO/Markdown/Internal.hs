@@ -29,16 +29,27 @@ addSubItem t ls = adjust' updateList i ls
           updateList l = updateFn j (addSubTask st) l
             where j = count l - 1
 
+prefix :: MarkdownConfig -> Text -> (MarkdownConfig -> Text) -> (Text -> Lists -> Lists) -> Maybe (Lists -> Lists)
+prefix config str get set
+    | pre `isPrefixOf` str = Just $ set (trim (length pre) str)
+    | otherwise = Nothing
+    where pre = get config `snoc` ' '
+
+matches :: [(MarkdownConfig -> Text, Text -> Lists -> Lists)]
+matches = [
+        (titleOutput, newList)
+      , (taskOutput, appendToLast . new)
+      , (subtaskOutput, addSubItem)
+    ]
+
 start :: MarkdownConfig -> (Lists, [Int]) -> (Text, Int) -> (Lists, [Int])
-start config (ls, errs) (s, li)
-    | titleO `isPrefixOf` s = (newList (trim (length titleO) s) ls, errs)
-    | taskO `isPrefixOf` s = (appendToLast (new $ trim (length taskO) s) ls, errs)
-    | staskO `isPrefixOf` s = (addSubItem (trim (length staskO) s) ls, errs)
-    | not (null (strip s)) = (ls, errs ++ [li])
-    | otherwise = (ls, errs)
-    where titleO = titleOutput config `snoc` ' '
-          taskO = taskOutput config `snoc` ' '
-          staskO = subtaskOutput config `snoc` ' '
+start config (current, errs) (text, line) =
+    case find isJust $ uncurry (prefix config text) <$> matches of
+        Just (Just set) -> (set current, errs)
+        _ -> if not (null (strip text))
+            then (current, errs ++ [line])
+            else (current, errs)
+
 
 decodeError :: String -> Maybe Word8 -> Maybe Char
 decodeError _ _ = Just '\65533'
