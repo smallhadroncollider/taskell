@@ -85,6 +85,8 @@ test-suite taskell-test
   main-is:             Spec.hs
   other-modules:       UI.FieldTest
                      , IO.MarkdownTest
+
+                     , Data.Taskell.SeqTest
   build-depends:       base
                      , classy-prelude
                      , mtl
