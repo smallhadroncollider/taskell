@@ -151,3 +151,9 @@ See [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roa
 ## Contributing
 
 Please check the [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) before adding any bugs/feature requests to Issues.
+
+---
+
+## Acknowledgements
+
+Built using [Brick](https://github.com/jtdaugherty/brick). Thanks to [Jonathan Daugherty](https://github.com/jtdaugherty) for answering all my questions and pointing me in the right direction. Also thanks to [Jack Leigh](https://github.com/leighman) and [Thom Wright](https://github.com/ThomWright) for helping me get started.
