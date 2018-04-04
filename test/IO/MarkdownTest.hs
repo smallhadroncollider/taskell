@@ -8,7 +8,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.ExpectedFailure (ignoreTest)
 
-import IO.Markdown.Internal (start, parse)
+import IO.Markdown.Internal (start, parse, listStringify)
 import IO.Config (MarkdownConfig(..), defaultMarkdownConfig, defaultConfig)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.Task (Task, new, subTask, addSubTask)
@@ -39,7 +39,7 @@ test_markdown :: TestTree
 test_markdown =
     testGroup "IO.Markdown" [
         testGroup "Line Parsing" [
-            testGroup "Default" [
+            testGroup "Default Format" [
                 testCase "List Title" (
                     assertEqual
                         "One list"
@@ -109,7 +109,7 @@ test_markdown =
                 )
             ]
 
-          , testGroup "Alternative" [
+          , testGroup "Alternative Format" [
                 testCase "List Title" (
                     assertEqual
                         "One list"
@@ -182,5 +182,39 @@ test_markdown =
                     (Left "could not parse line(s) 3, 5")
                     (parse defaultConfig (encodeUtf8 "## Test\n- Test Item\n* Spoon\n- Test Item\nCow"))
             )
+        ]
+
+      , testGroup "Stringification" [
+            testGroup "Default Format" [
+                testCase "Standard list" (
+                    assertEqual
+                        "Markdown formatted output"
+                        "## Test\n\n- Test Item\n"
+                        (foldl' (listStringify defaultMarkdownConfig) "" listWithItem)
+                )
+
+              , testCase "Standard list with sub-task" (
+                    assertEqual
+                        "Markdown formatted output"
+                        "## Test\n\n- Test Item\n    * ~Blah~\n"
+                        (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask True))
+                )
+            ],
+
+            testGroup "Alternative Format" [
+                testCase "Standard list" (
+                    assertEqual
+                        "Markdown formatted output"
+                        "## Test\n\n### Test Item\n"
+                        (foldl' (listStringify alternativeMarkdownConfig) "" listWithItem)
+                )
+
+              , testCase "Standard list with sub-task" (
+                    assertEqual
+                        "Markdown formatted output"
+                        "## Test\n\n- Test Item\n    * Blah\n"
+                        (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask False))
+                )
+            ]
         ]
     ]
