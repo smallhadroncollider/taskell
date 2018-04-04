@@ -311,9 +311,13 @@ moveTo char state = do
 listMove :: Int -> Stateful
 listMove dir s = do
     let c = getCurrentList s
-    ls <- Lists.shiftBy c dir $ lists s
-    let s' = fixIndex $ setCurrentList s (c + dir)
-    return $ setLists s' ls
+    let lists' = lists s
+    if c + dir < 0 || c + dir >= length lists'
+        then Nothing
+        else do
+            ls <- Lists.shiftBy c dir lists'
+            let s' = fixIndex $ setCurrentList s (c + dir)
+            return $ setLists s' ls
 
 listLeft :: Stateful
 listLeft = listMove (-1)
