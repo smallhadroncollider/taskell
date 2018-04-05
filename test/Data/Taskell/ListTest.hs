@@ -73,14 +73,14 @@ test_list =
                 assertEqual
                     "List with new item"
                     (List "Populated" (fromList [T.new "Hello", T.new "Blah", T.new "Fish", T.new "Spoon"]))
-                    (append (T.new "Spoon") populatedList)
+                    (append populatedList (T.new "Spoon"))
             )
 
           , testCase "empty" (
                 assertEqual
                     "List with new item"
                     (List "Test" (fromList [T.new "Spoon"]))
-                    (append (T.new "Spoon") emptyList)
+                    (append emptyList (T.new "Spoon"))
             )
         ]
 

@@ -21,7 +21,7 @@ empty t = List {
 }
 
 new :: List -> List
-new = append blank
+new list = append list blank
 
 count :: List -> Int
 count = length . tasks
@@ -34,8 +34,8 @@ newAt i l = l { tasks = (a |> blank) >< b }
     where (a, b) = splitAt i $ tasks l
 
 
-append :: Task -> List -> List
-append t l = l { tasks = tasks l |> t }
+append :: List -> Task -> List
+append l t = l { tasks = tasks l |> t }
 
 extract :: Int -> List -> Maybe (List, Task)
 extract i l = do
