@@ -43,9 +43,7 @@ delete :: Int -> Lists -> Lists
 delete = deleteAt
 
 exists :: Int -> Lists -> Bool
-exists i ts = case ts !? i of
-    Just _ -> True
-    Nothing -> False
+exists i ts = isJust $ ts !? i
 
 shiftBy :: Int -> Int -> Lists -> Maybe Lists
 shiftBy = S.shiftBy
@@ -53,12 +51,9 @@ shiftBy = S.shiftBy
 search :: Text -> Lists -> Lists
 search s ls = searchFor s <$> ls
 
-appendToLast' :: Task -> Lists -> Maybe Lists
-appendToLast' t ls = do
+appendToLast :: Task -> Lists -> Lists
+appendToLast t ls = fromMaybe ls $ do
     let i = length ls - 1
     l <- ls !? i
     let l' = append l t
     return $ updateLists i ls l'
-
-appendToLast :: Task -> Lists -> Lists
-appendToLast t ls = fromMaybe ls $ appendToLast' t ls
