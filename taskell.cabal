@@ -89,6 +89,7 @@ test-suite taskell-test
                      , Data.Taskell.ListsTest
                      , Data.Taskell.ListTest
                      , Data.Taskell.SeqTest
+                     , Data.Taskell.TaskTest
   build-depends:       base
                      , classy-prelude
                      , text

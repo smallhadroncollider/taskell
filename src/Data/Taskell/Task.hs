@@ -56,9 +56,6 @@ countSubTasks = length . subTasks
 countCompleteSubTasks :: Task -> Int
 countCompleteSubTasks = length . filter complete . subTasks
 
-characters :: Task -> Int
-characters = length . description
-
 contains :: Text -> Task -> Bool
 contains s t = s `isInfixOf` description t || not (null sts)
     where sts = filter (isInfixOf s) $ name <$> subTasks t
