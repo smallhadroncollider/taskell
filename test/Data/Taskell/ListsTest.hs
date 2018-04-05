@@ -1,6 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Data.Taskell.ListsTest where
+module Data.Taskell.ListsTest (
+    test_lists
+) where
 
 import ClassyPrelude hiding (delete)
 
@@ -22,8 +24,8 @@ testLists :: Lists
 testLists = fromList [list1, list2, list3]
 
 -- tests
-test_list :: TestTree
-test_list =
+test_lists :: TestTree
+test_lists =
     testGroup "Data.Taskell.Lists" [
         testCase "initial" (
             assertEqual

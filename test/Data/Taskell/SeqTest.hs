@@ -1,6 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Data.Taskell.SeqTest where
+module Data.Taskell.SeqTest (
+    test_seq
+) where
 
 import ClassyPrelude
 
@@ -14,8 +16,8 @@ testSeq :: Seq Int
 testSeq = fromList [1, 2, 3, 4, 5]
 
 -- tests
-test_list :: TestTree
-test_list =
+test_seq :: TestTree
+test_seq =
     testGroup "Data.Taskell.Seq" [
         testGroup "extract" [
             testCase "Standard" (

@@ -91,7 +91,6 @@ test-suite taskell-test
                      , Data.Taskell.SeqTest
   build-depends:       base
                      , classy-prelude
-                     , mtl
                      , text
                      , taskell
                      , tasty

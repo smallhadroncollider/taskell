@@ -19,9 +19,6 @@ data Task = Task {
 blank :: Task
 blank = Task { description = "", subTasks = empty }
 
-clear :: Task -> Task
-clear _ = blank
-
 new :: Text -> Task
 new s = blank { description = s }
 

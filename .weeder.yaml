@@ -1,0 +1,7 @@
+- package:
+  - name: taskell
+  - section:
+    - name: test:taskell-test
+    - message:
+      - name: Redundant build-depends entry
+      - depends: tasty-discover

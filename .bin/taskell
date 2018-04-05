@@ -1,4 +1,4 @@
 rm ~/.taskell/config.ini
 rm ~/.taskell/theme.ini
-stack build --fast --trace
+weeder . --build
 stack exec taskell $@

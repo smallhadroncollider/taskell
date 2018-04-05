@@ -1,6 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module UI.FieldTest where
+module UI.FieldTest (
+    test_field
+) where
 
 import ClassyPrelude
 

@@ -1,6 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module IO.MarkdownTest where
+module IO.MarkdownTest (
+    test_markdown
+) where
 
 import ClassyPrelude
 

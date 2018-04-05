@@ -1,6 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Data.Taskell.ListTest where
+module Data.Taskell.ListTest (
+    test_list
+) where
 
 import ClassyPrelude as CP
 
