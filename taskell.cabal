@@ -86,6 +86,8 @@ test-suite taskell-test
   other-modules:       UI.FieldTest
                      , IO.MarkdownTest
 
+                     , Events.StateTest
+
                      , Data.Taskell.ListsTest
                      , Data.Taskell.ListTest
                      , Data.Taskell.SeqTest

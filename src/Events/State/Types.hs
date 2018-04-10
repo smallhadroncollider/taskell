@@ -6,11 +6,11 @@ import ClassyPrelude
 import Data.Taskell.Lists (Lists)
 import UI.Field (Field)
 
-data SubTasksMode = STNormal | STInsert Field
-data ModalType = Help | MoveTo | SubTasks Int SubTasksMode
+data SubTasksMode = STNormal | STInsert Field deriving (Eq, Show)
+data ModalType = Help | MoveTo | SubTasks Int SubTasksMode deriving (Eq, Show)
 
-data InsertType = ITask | IList
-data InsertMode = IEdit | ICreate
+data InsertType = ITask | IList deriving (Eq, Show)
+data InsertMode = IEdit | ICreate deriving (Eq, Show)
 data Mode =
     Normal
   | Insert {
@@ -21,6 +21,7 @@ data Mode =
   | Modal ModalType
   | Search Bool Field
   | Shutdown
+  deriving (Eq, Show)
 
 type Pointer = (Int, Int)
 
@@ -31,7 +32,7 @@ data State = State {
     current :: Pointer,
     path :: FilePath,
     io :: Maybe Lists
-}
+} deriving (Eq, Show)
 
 type Stateful = State -> Maybe State
 type InternalStateful = State -> State
