@@ -1,4 +1,2 @@
-rm ~/.taskell/config.ini
-rm ~/.taskell/theme.ini
 weeder . --build
 stack exec taskell $@
