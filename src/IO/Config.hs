@@ -13,6 +13,7 @@ import Brick (AttrMap)
 import Brick.Themes (themeToAttrMap, loadCustomizations)
 import Data.FileEmbed (embedFile)
 import Data.Ini.Config
+import IO.Trello (TrelloToken)
 
 import UI.Theme
 
@@ -32,7 +33,7 @@ data MarkdownConfig = MarkdownConfig {
     }
 
 data TrelloConfig = TrelloConfig {
-        token :: Maybe Text
+        token :: Maybe TrelloToken
     }
 
 data Config = Config {
