@@ -5,6 +5,10 @@ module IO.Trello where
 import ClassyPrelude
 
 import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody)
+import Data.Aeson
+
+import IO.Trello.List (List, trelloListToList)
+import Data.Taskell.Lists (Lists)
 
 type TrelloToken = Text
 type TrelloBoardID = Text
@@ -29,9 +33,11 @@ getUrl token board = unpack $ concat [
         token
     ]
 
+trelloListsToLists :: [List] -> Lists
+trelloListsToLists ls = fromList $ trelloListToList <$> ls
 
-getCards :: TrelloToken -> TrelloBoardID -> IO ByteString
+getCards :: TrelloToken -> TrelloBoardID -> IO (Maybe Lists)
 getCards token board = do
     request <- parseRequest $ getUrl token board
-    response <- httpBS request
-    return $ getResponseBody response
+    response <- getResponseBody <$> httpBS request
+    return $ trelloListsToLists <$> decodeStrict response

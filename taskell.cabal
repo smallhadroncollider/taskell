@@ -41,6 +41,8 @@ library
                      , IO.Markdown.Internal
                      , IO.Config
                      , IO.Trello
+                     , IO.Trello.Card
+                     , IO.Trello.List
 
                      , UI.CLI
                      , UI.Draw
@@ -59,6 +61,7 @@ library
                      , text
                      , mtl
                      , brick
+                     , aeson
                      , bytestring
                      , config-ini
                      , containers
