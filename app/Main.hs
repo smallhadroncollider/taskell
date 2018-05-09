@@ -1,20 +1,20 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Main where
 
-import Control.Monad (when)
-import Events.State (create)
-import qualified IO.Taskell as T (exists, readFile)
-import IO.Config (setup)
+import ClassyPrelude
 
+import Events.State (create)
+import IO.Taskell (Next(..), load)
+import IO.Config (setup)
 import App (go)
 
 main :: IO ()
 main = do
     config <- setup
-    (exists, path) <- T.exists config
+    next <- runReaderT load config
 
-    when exists $ do
-        content <- T.readFile config path
-
-        case content of
-            Right lists -> go config $ create path lists
-            Left err -> putStrLn $ path ++ ": " ++ err
+    case next of
+        Exit -> return ()
+        Output text -> putStrLn text
+        Load path lists -> go config $ create path lists

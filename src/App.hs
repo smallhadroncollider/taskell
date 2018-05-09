@@ -1,26 +1,25 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module App (go) where
 
-import Control.Monad (void, when)
-import Control.Monad.IO.Class (liftIO)
+import ClassyPrelude
 import Control.Concurrent (forkIO)
-import Events.State (State, Mode(..), continue, path, mode, io, current)
-import Data.Taskell.Lists (Lists)
+
 import Brick
 import Graphics.Vty (Mode(BracketedPaste), outputIface, supportsMode, setMode)
 import Graphics.Vty.Input.Events (Event(..))
 
-import IO.Taskell (writeFile)
-import IO.Config (Config, layout, generateAttrMap)
-
+import Data.Taskell.Lists (Lists)
 import Events.Actions (event)
-
+import Events.State (State, Mode(..), continue, path, mode, io, current)
+import IO.Config (Config, layout, generateAttrMap)
+import IO.Taskell (writeData)
 import UI.Draw (draw, chooseCursor)
 import UI.Types (ResourceName(..))
 
 -- store
 store :: Config -> Lists -> State -> IO State
 store config ls s = do
-    forkIO $ IO.Taskell.writeFile config ls (path s)
+    _ <- forkIO $ writeData config ls (path s)
     return (Events.State.continue s)
 
 next :: Config -> State -> EventM ResourceName (Next State)

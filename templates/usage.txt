@@ -1,0 +1,7 @@
+Usage: taskell ([options] | [-t <trello-board-id>] file)
+
+Options:
+
+-h                      Help
+-v                      Version number
+-t <trello-board-id>    Create a new taskell file from the given Trello board ID

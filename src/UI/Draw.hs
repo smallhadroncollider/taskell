@@ -1,29 +1,29 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module UI.Draw (
     draw,
     chooseCursor
 ) where
 
-import Events.State (lists, current, mode, normalise)
-import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), SubTasksMode(..))
+import ClassyPrelude
+
+import Data.Sequence (mapWithIndex)
+
 import Brick
-import Data.Text as T (Text, pack, concat)
+
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks)
-import Data.Foldable (toList)
-import qualified Data.Sequence as Seq (mapWithIndex)
-
+import Events.State (lists, current, mode, normalise)
+import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), SubTasksMode(..))
 import IO.Config (LayoutConfig, columnWidth, columnPadding)
-
+import UI.Field (Field, field, textField, widgetFromMaybe)
 import UI.Modal (showModal)
-import UI.Types (ResourceName(..))
 import UI.Theme
-
-import UI.Field (Field, field, textField, fromMaybe)
+import UI.Types (ResourceName(..))
 
 subTaskCount :: Task -> Widget ResourceName
 subTaskCount t
-    | hasSubTasks t = str $ Prelude.concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
+    | hasSubTasks t = str $ concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
     | otherwise = emptyWidget
 
 renderTask :: Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
@@ -40,10 +40,10 @@ renderTask f eTitle p li ti t =
           after = subTaskCount t
           name = RNTask (li, ti)
           widget = textField text
-          widget' = fromMaybe widget f
+          widget' = widgetFromMaybe widget f
 
 columnNumber :: Int -> Text
-columnNumber i = if col >= 1 && col <= 9 then T.concat [pack (show col), ". "] else ""
+columnNumber i = if col >= 1 && col <= 9 then pack (show col) ++ ". " else ""
     where col = i + 1
 
 renderTitle :: Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
@@ -58,7 +58,7 @@ renderTitle f eTitle (p, i) li l =
           attr = if p == li then titleCurrentAttr else titleAttr
           title' = padBottom (Pad 1) . withAttr attr . (col <+>) $ if cur then widget' else widget
           widget = textField text
-          widget' = fromMaybe widget f
+          widget' = widgetFromMaybe widget f
 
 renderList :: LayoutConfig -> Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
 renderList layout f eTitle p li l = if fst p == li then visible list else list
@@ -70,7 +70,7 @@ renderList layout f eTitle p li l = if fst p == li then visible list else list
             . vBox
             . (renderTitle f eTitle p li l :)
             . toList
-            $ renderTask f eTitle p li `Seq.mapWithIndex` tasks l
+            $ renderTask f eTitle p li `mapWithIndex` tasks l
 
 searchImage :: LayoutConfig -> State -> Widget ResourceName -> Widget ResourceName
 searchImage layout s i = case mode s of
@@ -92,7 +92,7 @@ main layout s =
     . padTopBottom 1
     . hBox
     . toList
-    $ renderList layout (getField s) (editingTitle s) (current s)  `Seq.mapWithIndex` ls
+    $ renderList layout (getField s) (editingTitle s) (current s)  `mapWithIndex` ls
 
     where ls = lists s
 

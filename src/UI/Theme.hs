@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module UI.Theme where
 
 import Brick.Themes (Theme, newTheme)

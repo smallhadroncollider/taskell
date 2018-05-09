@@ -1,12 +1,14 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 module UI.CLI where
 
-import System.IO (stdout, hFlush)
+import ClassyPrelude
 
-prompt :: String -> IO String
+prompt :: Text -> IO Text
 prompt s = do
     putStr $ s ++ ": "
-    hFlush stdout -- prevents buffering 
+    hFlush stdout -- prevents buffering
     getLine
 
-promptYN :: String -> IO Bool
+promptYN :: Text -> IO Bool
 promptYN s = (==) "y" <$> prompt (s ++ " (y/n)")

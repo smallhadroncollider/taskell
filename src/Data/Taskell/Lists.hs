@@ -1,13 +1,14 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Data.Taskell.Lists where
 
-import Prelude hiding (length)
-import Data.Text (Text)
-import Data.Maybe (fromMaybe)
-import Data.Sequence as S (Seq, fromList, (!?), (|>), deleteAt, length, update)
-import qualified Data.Taskell.Seq as S
-import Data.Taskell.Task (Task)
+import ClassyPrelude hiding (empty)
+
+import Data.Sequence as S ((!?), (|>), update, deleteAt)
+
 import Data.Taskell.List (List(..), empty, extract, append, searchFor)
+import Data.Taskell.Task (Task)
+import qualified Data.Taskell.Seq as S
 
 type Lists = Seq List
 
@@ -31,7 +32,7 @@ changeList (list, i) ts dir = do
     a <- ts !? list -- get current list
     b <- ts !? next -- get next list
     (a', task) <- extract i a -- extract selected task
-    let b' = append task b -- add selected task to next list
+    let b' = append b task -- add selected task to next list
     let list' = updateLists list ts a' -- update extracted list
     return $ updateLists next list' b' -- update next list
 
@@ -42,9 +43,7 @@ delete :: Int -> Lists -> Lists
 delete = deleteAt
 
 exists :: Int -> Lists -> Bool
-exists i ts = case ts !? i of
-    Just _ -> True
-    Nothing -> False
+exists i ts = isJust $ ts !? i
 
 shiftBy :: Int -> Int -> Lists -> Maybe Lists
 shiftBy = S.shiftBy
@@ -52,12 +51,9 @@ shiftBy = S.shiftBy
 search :: Text -> Lists -> Lists
 search s ls = searchFor s <$> ls
 
-appendToLast' :: Task -> Lists -> Maybe Lists
-appendToLast' t ls = do
+appendToLast :: Task -> Lists -> Lists
+appendToLast t ls = fromMaybe ls $ do
     let i = length ls - 1
     l <- ls !? i
-    let l' = append t l
+    let l' = append l t
     return $ updateLists i ls l'
-
-appendToLast :: Task -> Lists -> Lists
-appendToLast t ls = fromMaybe ls $ appendToLast' t ls

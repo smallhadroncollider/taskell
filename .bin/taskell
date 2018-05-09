@@ -1,4 +1,3 @@
-rm ~/.taskell/config.ini
-rm ~/.taskell/theme.ini
-stack build --fast --trace
-stack exec taskell $@
+weeder . --build
+stack install > /dev/null
+~/.local/bin/taskell $@

@@ -1,18 +1,21 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 module IO.Config where
 
-import Data.Maybe (fromMaybe)
-import System.Directory
-import Data.Ini.Config
+import ClassyPrelude
+
+import Data.Text as T (dropAround, strip)
+import qualified Data.Text.IO as T (readFile)
+import System.Directory (createDirectoryIfMissing, getHomeDirectory, doesFileExist)
+
+import Brick (AttrMap)
+import Brick.Themes (themeToAttrMap, loadCustomizations)
 import Data.FileEmbed (embedFile)
-import qualified Data.ByteString as B (writeFile)
+import Data.Ini.Config
+import IO.Trello (TrelloToken)
 
 import UI.Theme
-import Brick.Themes (themeToAttrMap, loadCustomizations)
-import Brick (AttrMap)
-import Data.Text as T (Text, strip, dropAround, null)
-import qualified Data.Text.IO as T
 
 data GeneralConfig = GeneralConfig {
         filename :: FilePath
@@ -29,10 +32,15 @@ data MarkdownConfig = MarkdownConfig {
         subtaskOutput :: Text
     }
 
+data TrelloConfig = TrelloConfig {
+        token :: Maybe TrelloToken
+    }
+
 data Config = Config {
         general :: GeneralConfig,
         layout :: LayoutConfig,
-        markdown :: MarkdownConfig
+        markdown :: MarkdownConfig,
+        trello :: TrelloConfig
     }
 
 defaultGeneralConfig :: GeneralConfig
@@ -53,11 +61,17 @@ defaultMarkdownConfig = MarkdownConfig {
     subtaskOutput = "    *"
 }
 
+defaultTrelloConfig :: TrelloConfig
+defaultTrelloConfig = TrelloConfig {
+    token = Nothing
+}
+
 defaultConfig :: Config
 defaultConfig = Config {
     general = defaultGeneralConfig,
     layout = defaultLayoutConfig,
-    markdown = defaultMarkdownConfig
+    markdown = defaultMarkdownConfig,
+    trello = defaultTrelloConfig
 }
 
 getDir :: IO FilePath
@@ -76,58 +90,65 @@ setup = do
     createTheme
     getConfig
 
+create :: IO FilePath -> (FilePath -> IO ()) -> IO ()
+create getPath write = do
+    path <- getPath
+    exists <- doesFileExist path
+    unless exists $ write path
+
 writeTheme :: FilePath -> IO ()
-writeTheme path = B.writeFile path $(embedFile "templates/theme.ini")
+writeTheme path = writeFile path $(embedFile "templates/theme.ini")
 
 createTheme :: IO ()
-createTheme = do
-    path <- getThemePath
-    exists <- doesFileExist path
-    if exists then return () else writeTheme path
+createTheme = create getThemePath writeTheme
 
 writeConfig :: FilePath -> IO ()
-writeConfig path = B.writeFile path $(embedFile "templates/config.ini")
+writeConfig path = writeFile path $(embedFile "templates/config.ini")
 
 createConfig :: IO ()
-createConfig = do
-    path <- getConfigPath
-    exists <- doesFileExist path
-    if exists then return () else writeConfig path
+createConfig = create getConfigPath writeConfig
 
-noEmpty :: Maybe Text -> Maybe Text
-noEmpty (Just txt) = if T.null txt then Nothing else Just txt
-noEmpty Nothing = Nothing
+noEmpty :: Text -> Maybe Text
+noEmpty "" = Nothing
+noEmpty txt = Just txt
 
-noEmptyString :: Maybe String -> Maybe String
-noEmptyString (Just txt) = if Prelude.null txt then Nothing else Just txt
-noEmptyString Nothing = Nothing
-
-parseString :: Maybe Text -> Maybe Text
-parseString (Just s) = Just . dropAround (== '"') $ strip s
-parseString Nothing = Nothing
+parseText :: Text -> Text
+parseText = dropAround (== '"') . strip
 
 configParser :: IniParser Config
 configParser = do
-    generalCf <- sectionMb "general" $ do
-        filenameCf <- fromMaybe (filename defaultGeneralConfig) . noEmptyString <$> fieldMbOf "filename" string
-        return GeneralConfig { filename = filenameCf }
-    layoutCf <- sectionMb "layout" $ do
-        columnWidthCf <- fromMaybe (columnWidth defaultLayoutConfig) <$> fieldMbOf "column_width" number
-        columnPaddingCf <- fromMaybe (columnPadding defaultLayoutConfig) <$> fieldMbOf "column_padding" number
-        return LayoutConfig { columnWidth = columnWidthCf, columnPadding = columnPaddingCf }
-    markdownCf <- sectionMb "markdown" $ do
-        titleOutputCf <- fromMaybe (titleOutput defaultMarkdownConfig) . noEmpty . parseString <$> fieldMb "title"
-        taskOutputCf <- fromMaybe (taskOutput defaultMarkdownConfig) . noEmpty . parseString <$> fieldMb "task"
-        subtaskOutputCf <- fromMaybe (subtaskOutput defaultMarkdownConfig) . noEmpty . parseString <$> fieldMb "subtask"
-        return MarkdownConfig {
-            titleOutput = titleOutputCf,
-            taskOutput = taskOutputCf,
-            subtaskOutput = subtaskOutputCf
-        }
+    generalCf <- fromMaybe defaultGeneralConfig <$>
+        sectionMb "general" (do
+            filenameCf <- maybe (filename defaultGeneralConfig) unpack . (noEmpty =<<) <$> fieldMb "filename"
+            return GeneralConfig { filename = filenameCf }
+        )
+    layoutCf <- fromMaybe defaultLayoutConfig <$>
+        sectionMb "layout" (do
+            columnWidthCf <- fromMaybe (columnWidth defaultLayoutConfig) <$> fieldMbOf "column_width" number
+            columnPaddingCf <- fromMaybe (columnPadding defaultLayoutConfig) <$> fieldMbOf "column_padding" number
+            return LayoutConfig { columnWidth = columnWidthCf, columnPadding = columnPaddingCf }
+        )
+    markdownCf <-fromMaybe defaultMarkdownConfig <$>
+        sectionMb "markdown" (do
+            titleOutputCf <- fromMaybe (titleOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "title"
+            taskOutputCf <- fromMaybe (taskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "task"
+            subtaskOutputCf <- fromMaybe (subtaskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "subtask"
+            return MarkdownConfig {
+                titleOutput = titleOutputCf,
+                taskOutput = taskOutputCf,
+                subtaskOutput = subtaskOutputCf
+            }
+        )
+    trelloCf <- fromMaybe defaultTrelloConfig <$>
+        sectionMb "trello" (do
+            tokenCf <- fieldMb "token"
+            return TrelloConfig { token = tokenCf }
+        )
     return Config {
-        general = fromMaybe defaultGeneralConfig generalCf,
-        layout = fromMaybe defaultLayoutConfig layoutCf,
-        markdown = fromMaybe defaultMarkdownConfig markdownCf
+        general = generalCf,
+        layout = layoutCf,
+        markdown = markdownCf,
+        trello = trelloCf
     }
 
 getConfig :: IO Config
@@ -137,7 +158,7 @@ getConfig = do
 
     case config of
         Right c -> return c
-        Left s -> putStrLn ("config.ini: " ++ s) >> return defaultConfig
+        Left s -> putStrLn (pack $ "config.ini: " ++ s) >> return defaultConfig
 
 -- generate theme
 generateAttrMap :: IO AttrMap

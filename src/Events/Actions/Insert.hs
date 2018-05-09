@@ -1,4 +1,7 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module Events.Actions.Insert (event) where
+
+import ClassyPrelude
 
 import Events.State
 import Events.State.Types

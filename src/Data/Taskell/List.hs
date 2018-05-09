@@ -1,11 +1,11 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module Data.Taskell.List where
 
-import Data.Text (Text)
+import ClassyPrelude
 
-import Prelude hiding (splitAt, filter)
-import Data.Sequence as S (Seq, (|>), (!?), (><), deleteAt, splitAt, filter, adjust', update, empty)
+import Data.Sequence as S ((|>), (!?), (><), adjust', deleteAt, update)
+
 import qualified Data.Taskell.Seq as S
-
 import Data.Taskell.Task (Task, blank, contains)
 
 data List = List {
@@ -17,11 +17,11 @@ data List = List {
 empty :: Text -> List
 empty t = List {
     title = t,
-    tasks = S.empty
+    tasks = ClassyPrelude.empty
 }
 
 new :: List -> List
-new = append blank
+new list = append list blank
 
 count :: List -> Int
 count = length . tasks
@@ -34,8 +34,8 @@ newAt i l = l { tasks = (a |> blank) >< b }
     where (a, b) = splitAt i $ tasks l
 
 
-append :: Task -> List -> List
-append t l = l { tasks = tasks l |> t }
+append :: List -> Task -> List
+append l t = l { tasks = tasks l |> t }
 
 extract :: Int -> List -> Maybe (List, Task)
 extract i l = do

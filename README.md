@@ -1,5 +1,7 @@
 # Taskell
 
+[![Build Status](https://travis-ci.org/smallhadroncollider/taskell.svg?branch=master)](https://travis-ci.org/smallhadroncollider/taskell)
+
 A CLI kanban board/task manager for Mac and Linux
 
 - Per project task lists
@@ -10,6 +12,8 @@ A CLI kanban board/task manager for Mac and Linux
 - Written in Haskell
 
 ![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
+
+<a href="https://www.buymeacoffee.com/shc" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
 ## Installation
 
@@ -39,6 +43,51 @@ Run `sudo dnf install ncurses-compat-libs` then download and run binary as descr
 
 - `taskell`: will use `taskell.md` in the pwd - offers to create if not found
 - `taskell filename.md`: will use `filename.md` in the pwd - offers to create if not found
+
+## Options
+
+- `-h`: show help
+- `-v`: show version number
+- `-t <trello-board-id>`: import a Trello board (see below)
+
+## Trello
+
+Taskell includes the ability to fetch a Trello board and store it as local taskell file.
+
+### Authentication
+
+Before fetching a Trello board, you'll need to create an access token and store it in `~/.taskell/config.ini`.
+
+- First, [get a Trello token](https://trello.com/1/authorize?expiration=never&name=taskell&scope=read&response_type=token&key=66ad7449f2e72e85641a1b438a08e81b)
+- Then add it to `~/.taskell/config.ini`:
+
+    ```ini
+    [trello]
+    token = <your-trello-access-token>
+    ```
+
+You can revoke access tokens [on Trello](https://trello.com/my/account)
+
+### Fetching
+
+Running the following would pull down the Trello board with the ID "TRe1l0iD" into a file named `trello.md` and then open taskell with that file.
+
+```bash
+taskell -t TRe1l0iD trello.md
+```
+
+Make sure you have permission to view the Trello board, otherwise you'll get an error.
+
+### Limitations
+
+- This is a one-off procedure: it effectively imports a Trello board to taskell
+- Only list and card titles are supported
+
+### Plans
+
+- Better support for Card details (e.g. sub-tasks, due dates)
+- Full syncing with Trello: effectively using taskell as a CLI Trello front-end
+
 
 ## Controls
 
@@ -147,3 +196,9 @@ See [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roa
 ## Contributing
 
 Please check the [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) before adding any bugs/feature requests to Issues.
+
+---
+
+## Acknowledgements
+
+Built using [Brick](https://github.com/jtdaugherty/brick). Thanks to [Jonathan Daugherty](https://github.com/jtdaugherty) for answering all my questions and pointing me in the right direction. Also thanks to [Jack Leigh](https://github.com/leighman) and [Thom Wright](https://github.com/ThomWright) for helping me get started.

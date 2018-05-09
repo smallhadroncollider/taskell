@@ -1,4 +1,7 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 module Events.Actions.Modal (event) where
+
+import ClassyPrelude
 
 import Graphics.Vty.Input.Events
 import Events.State

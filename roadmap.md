@@ -11,14 +11,18 @@
 
 ## Bugs
 
+- Very long words should get hyphenated
+- Help modal needs to wrap and scroll
 - No obvious way to know if there are more items in a list off-screen
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
 - Caching doesn't clear properly when using `o` and `O`
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
+- The isBlank check on tasks could potentially delete a task with no description but which does have sub-tasks
 
 ## Features
 
+- GitHub checklist support - []/[x]
 - Add custom key support
 - Task body - e.g. as well as sub lists, have a longer description
 - Show filename somewhere
@@ -27,13 +31,14 @@
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
-- Add Trello import
 - Redo functionality
 
 ## In Progress
 
-- Very long words should get hyphenated
-- Help modal needs to wrap and scroll
+- Add Trello import
+    * ~Basic trello import~
+    * Add due date support
+    * Add sub-tasks support
 
 ## Done
 
