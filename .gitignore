@@ -3,3 +3,5 @@ taskell.md
 .stack-work/
 releases/
 homebrew-taskell/
+dist-newstyle/
+.ghc.environment.*
