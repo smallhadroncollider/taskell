@@ -1,0 +1,8 @@
+Please visit:
+
+https://trello.com/1/authorize?expiration=never&name=taskell&scope=read&response_type=token&key=66ad7449f2e72e85641a1b438a08e81b
+
+When you have your token, add it to ~/.taskell/config.ini:
+
+[trello]
+token = <your-trello-api-token>

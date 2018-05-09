@@ -55,6 +55,8 @@ library
                      , UI.Modal.SubTasks
                      , UI.Modal.MoveTo
 
+                     , Config
+
   build-depends:       base <= 5
                      , classy-prelude
                      , vty

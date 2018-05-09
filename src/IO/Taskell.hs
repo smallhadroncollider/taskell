@@ -1,41 +1,98 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 module IO.Taskell where
 
 import ClassyPrelude
 
 import System.Directory (getCurrentDirectory, doesFileExist)
+import Data.FileEmbed (embedFile)
 
+import Config (version, usage)
 import Data.Taskell.Lists (Lists, initial)
-import IO.Config (Config, general, filename)
+import IO.Config (Config, general, filename, token, trello)
 import IO.Markdown (stringify, parse)
+import IO.Trello (TrelloBoardID, getCards)
 import UI.CLI (promptYN)
 
 type ReaderConfig a = ReaderT Config IO a
 
-getPath :: ReaderConfig FilePath
-getPath = do
+data Next = Output Text | Load FilePath Lists | Exit
+
+parseArgs :: [Text] -> ReaderConfig Next
+parseArgs ["-v"] = return $ Output version
+parseArgs ["-h"] = return $ Output usage
+parseArgs ["-t", boardID, file] = loadTrello boardID file
+parseArgs [file] = loadFile file
+parseArgs [] = (pack . filename . general <$> ask) >>= loadFile
+parseArgs  _ = return $ Output (unlines ["Invalid options", "", usage])
+
+load :: ReaderConfig Next
+load = getArgs >>= parseArgs
+
+loadFile :: Text -> ReaderConfig Next
+loadFile filepath = do
+    mPath <- exists filepath
+    case mPath of
+        Nothing -> return Exit
+        Just path -> do
+            content <- readData path
+            return $ case content of
+                Right lists -> Load path lists
+                Left err -> Output $ pack path ++ ": " ++ err
+
+loadTrello :: TrelloBoardID -> Text -> ReaderConfig Next
+loadTrello boardID filepath = do
+    let path = unpack filepath
+    exists' <- fileExists path
+
+    if exists'
+        then return $ Output (filepath ++ " already exists")
+        else do
+            create <- promptCreate filepath
+
+            if create
+                then createTrello boardID path
+                else return Exit
+
+createTrello :: TrelloBoardID -> FilePath -> ReaderConfig Next
+createTrello boardID path = do
     config <- ask
-    let defaultPath = filename $ general config
-    mArgs <- fromNullable <$> getArgs
-    return $ case mArgs of
-        Just args -> unpack $ head args
-        Nothing -> defaultPath
+    let maybeToken = token $ trello config
+    case maybeToken of
+        Nothing -> return $ Output $ decodeUtf8 $(embedFile "templates/token.txt")
+        Just trelloToken -> do
+            lists <- lift $ getCards trelloToken boardID
+            case lists of
+                Nothing ->
+                    return $ Output ("Could not fetch Trello board " ++ boardID ++ ". Please make sure you have permission to view it.")
+                Just ls -> do
+                    lift $ writeData config ls path
+                    return $ Load path ls
 
-exists :: ReaderConfig (Bool, FilePath)
-exists = do
-    path <- getPath
-    exists' <- lift $ doesFileExist path
-    success <- promptCreate exists' path
-    return (success, path)
 
--- prompt whether to create taskell.json
-promptCreate :: Bool -> FilePath -> ReaderConfig Bool
-promptCreate True _ = return True
-promptCreate False path = do
+exists :: Text -> ReaderConfig (Maybe FilePath)
+exists filepath = do
+    let path = unpack filepath
+    exists' <- fileExists path
+
+    if exists'
+        then return $ Just path
+        else do
+            create <- promptCreate filepath
+            if create
+                then do
+                    createPath path
+                    return $ Just path
+                else return Nothing
+
+fileExists :: FilePath -> ReaderConfig Bool
+fileExists path = lift $ doesFileExist path
+
+promptCreate :: Text -> ReaderConfig Bool
+promptCreate path = do
     cwd <- lift $ pack <$> getCurrentDirectory
-    create <- lift $ promptYN $ concat ["Create ", cwd, "/", pack path, "?"]
-    if create then createPath path >> return True else return False
+    lift $ promptYN $ concat ["Create ", cwd, "/", path, "?"]
 
 -- creates taskell file
 createPath :: FilePath -> ReaderConfig ()
@@ -48,7 +105,8 @@ writeData :: Config -> Lists -> FilePath -> IO ()
 writeData config tasks path = void (writeFile path $ stringify config tasks)
 
 -- reads json file
-readData :: Config -> FilePath -> IO (Either Text Lists)
-readData config path = do
+readData :: FilePath -> ReaderConfig (Either Text Lists)
+readData path = do
+    config <- ask
     content <- readFile path
     return $ parse config content

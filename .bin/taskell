@@ -1,2 +1,3 @@
 weeder . --build
-stack exec taskell $@
+stack install > /dev/null
+~/.local/bin/taskell $@

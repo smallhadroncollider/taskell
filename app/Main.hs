@@ -5,18 +5,16 @@ module Main where
 import ClassyPrelude
 
 import Events.State (create)
-import IO.Taskell (exists, readData)
+import IO.Taskell (Next(..), load)
 import IO.Config (setup)
 import App (go)
 
 main :: IO ()
 main = do
     config <- setup
-    (exists', path) <- runReaderT exists config
+    next <- runReaderT load config
 
-    when exists' $ do
-        content <- readData config path
-
-        case content of
-            Right lists -> go config $ create path lists
-            Left err -> putStrLn $ pack path ++ ": " ++ err
+    case next of
+        Exit -> return ()
+        Output text -> putStrLn text
+        Load path lists -> go config $ create path lists
