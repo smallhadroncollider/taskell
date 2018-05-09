@@ -48,12 +48,7 @@ loadTrello boardID filepath = do
 
     if exists'
         then return $ Output (filepath ++ " already exists")
-        else do
-            create <- promptCreate filepath
-
-            if create
-                then createTrello boardID path
-                else return Exit
+        else createTrello boardID path
 
 createTrello :: TrelloBoardID -> FilePath -> ReaderConfig Next
 createTrello boardID path = do
@@ -67,8 +62,12 @@ createTrello boardID path = do
                 Nothing ->
                     return $ Output ("Could not fetch Trello board " ++ boardID ++ ". Please make sure you have permission to view it.")
                 Just ls -> do
-                    lift $ writeData config ls path
-                    return $ Load path ls
+                    create <- promptCreate path
+                    if create
+                        then do
+                            lift $ writeData config ls path
+                            return $ Load path ls
+                        else return Exit
 
 
 exists :: Text -> ReaderConfig (Maybe FilePath)
@@ -79,7 +78,7 @@ exists filepath = do
     if exists'
         then return $ Just path
         else do
-            create <- promptCreate filepath
+            create <- promptCreate path
             if create
                 then do
                     createPath path
@@ -89,10 +88,10 @@ exists filepath = do
 fileExists :: FilePath -> ReaderConfig Bool
 fileExists path = lift $ doesFileExist path
 
-promptCreate :: Text -> ReaderConfig Bool
+promptCreate :: FilePath -> ReaderConfig Bool
 promptCreate path = do
     cwd <- lift $ pack <$> getCurrentDirectory
-    lift $ promptYN $ concat ["Create ", cwd, "/", path, "?"]
+    lift $ promptYN $ concat ["Create ", cwd, "/", pack path, "?"]
 
 -- creates taskell file
 createPath :: FilePath -> ReaderConfig ()
