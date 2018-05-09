@@ -44,6 +44,51 @@ Run `sudo dnf install ncurses-compat-libs` then download and run binary as descr
 - `taskell`: will use `taskell.md` in the pwd - offers to create if not found
 - `taskell filename.md`: will use `filename.md` in the pwd - offers to create if not found
 
+## Options
+
+- `-h`: show help
+- `-v`: show version number
+- `-t <trello-board-id>`: import a Trello board (see below)
+
+## Trello
+
+Taskell includes the ability to fetch a Trello board and store it as local taskell file.
+
+### Authentication
+
+Before fetching a Trello board, you'll need to create an access token and store it in `~/.taskell/config.ini`.
+
+- First, [get a Trello token](https://trello.com/1/authorize?expiration=never&name=taskell&scope=read&response_type=token&key=66ad7449f2e72e85641a1b438a08e81b)
+- Then add it to `~/.taskell/config.ini`:
+
+    ```ini
+    [trello]
+    token = <your-trello-access-token>
+    ```
+
+You can revoke access tokens [on Trello](https://trello.com/my/account)
+
+### Fetching
+
+Running the following would pull down the Trello board with the ID "TRe1l0iD" into a file named `trello.md` and then open taskell with that file.
+
+```bash
+taskell -t TRe1l0iD trello.md
+```
+
+Make sure you have permission to view the Trello board, otherwise you'll get an error.
+
+### Limitations
+
+- This is a one-off procedure: it effectively imports a Trello board to taskell
+- Only list and card titles are supported
+
+### Plans
+
+- Better support for Card details (e.g. sub-tasks, due dates)
+- Full syncing with Trello: effectively using taskell as a CLI Trello front-end
+
+
 ## Controls
 
 Press `?` for a [list of controls](https://github.com/smallhadroncollider/taskell/blob/master/templates/controls.md)

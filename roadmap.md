@@ -31,11 +31,14 @@
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
-- Add Trello import
 - Redo functionality
 
 ## In Progress
 
+- Add Trello import
+    * ~Basic trello import~
+    * Add due date support
+    * Add sub-tasks support
 
 ## Done
 
