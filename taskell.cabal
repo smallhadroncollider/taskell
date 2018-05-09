@@ -40,6 +40,9 @@ library
                      , IO.Markdown
                      , IO.Markdown.Internal
                      , IO.Config
+                     , IO.Trello
+                     , IO.Trello.Card
+                     , IO.Trello.List
 
                      , UI.CLI
                      , UI.Draw
@@ -52,17 +55,21 @@ library
                      , UI.Modal.SubTasks
                      , UI.Modal.MoveTo
 
+                     , Config
+
   build-depends:       base <= 5
                      , classy-prelude
                      , vty
                      , text
                      , mtl
                      , brick
+                     , aeson
                      , bytestring
                      , config-ini
                      , containers
                      , directory
                      , file-embed
+                     , http-conduit
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
                      , NoImplicitPrelude

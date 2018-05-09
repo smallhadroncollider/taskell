@@ -13,6 +13,7 @@ import Brick (AttrMap)
 import Brick.Themes (themeToAttrMap, loadCustomizations)
 import Data.FileEmbed (embedFile)
 import Data.Ini.Config
+import IO.Trello (TrelloToken)
 
 import UI.Theme
 
@@ -31,10 +32,15 @@ data MarkdownConfig = MarkdownConfig {
         subtaskOutput :: Text
     }
 
+data TrelloConfig = TrelloConfig {
+        token :: Maybe TrelloToken
+    }
+
 data Config = Config {
         general :: GeneralConfig,
         layout :: LayoutConfig,
-        markdown :: MarkdownConfig
+        markdown :: MarkdownConfig,
+        trello :: TrelloConfig
     }
 
 defaultGeneralConfig :: GeneralConfig
@@ -55,11 +61,17 @@ defaultMarkdownConfig = MarkdownConfig {
     subtaskOutput = "    *"
 }
 
+defaultTrelloConfig :: TrelloConfig
+defaultTrelloConfig = TrelloConfig {
+    token = Nothing
+}
+
 defaultConfig :: Config
 defaultConfig = Config {
     general = defaultGeneralConfig,
     layout = defaultLayoutConfig,
-    markdown = defaultMarkdownConfig
+    markdown = defaultMarkdownConfig,
+    trello = defaultTrelloConfig
 }
 
 getDir :: IO FilePath
@@ -127,10 +139,16 @@ configParser = do
                 subtaskOutput = subtaskOutputCf
             }
         )
+    trelloCf <- fromMaybe defaultTrelloConfig <$>
+        sectionMb "trello" (do
+            tokenCf <- fieldMb "token"
+            return TrelloConfig { token = tokenCf }
+        )
     return Config {
         general = generalCf,
         layout = layoutCf,
-        markdown = markdownCf
+        markdown = markdownCf,
+        trello = trelloCf
     }
 
 getConfig :: IO Config
