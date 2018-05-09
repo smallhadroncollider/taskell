@@ -12,9 +12,7 @@ import Data.Aeson
 import Data.Taskell.Task (Task, new)
 
 data Card = Card {
-    id :: Text
-  , name :: Text
-  , due :: Maybe Text
+    name :: Text
 } deriving (Eq, Show, Generic, ToJSON, FromJSON)
 
 cardToTask :: Card -> Task
