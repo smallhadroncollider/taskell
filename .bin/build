@@ -1,5 +1,5 @@
-resolver="nightly-2018-04-09"
-ghcv="8.4.1"
+resolver="lts-11.8"
+ghcv="8.2.2"
 
 if [ ! -d ".stack-work" ]; then
     echo "\033[0;31mMust be run in project root\033[0m"
