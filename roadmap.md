@@ -28,7 +28,6 @@
 
 ## Features
 
-- Task body - e.g. as well as sub lists, have a longer description
 - GitHub checklist support - []/[x]
 - Add custom key support
 - Show filename somewhere
@@ -51,6 +50,8 @@
     * Add due date support
     * Add sub-tasks support
     * Add card summary support
+- Task body - e.g. as well as sub lists, have a longer description
+- Better Trello import errors - e.g. auth vs. parsing issues
 
 ## Done
 
