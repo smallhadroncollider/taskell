@@ -8,6 +8,7 @@
 - Use lenses for nested data?
 - Add a List widget for common actions between tasks and sub-tasks
 - Use Safe for unsafe operations
+- Tidy up load functions in IO.Taskell
 
 ## Bugs
 
@@ -22,9 +23,9 @@
 
 ## Features
 
+- Task body - e.g. as well as sub lists, have a longer description
 - GitHub checklist support - []/[x]
 - Add custom key support
-- Task body - e.g. as well as sub lists, have a longer description
 - Show filename somewhere
 - Editable title?
 - Add tags/labels with `t`
@@ -32,6 +33,11 @@
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
 - Redo functionality
+- Make trello token UX better
+    * Open link automatically?
+    * Ask for token and save to ini file automatically
+- Reordering sub-tasks
+- Add Trello syncing
 
 ## In Progress
 
@@ -39,6 +45,7 @@
     * ~Basic trello import~
     * Add due date support
     * Add sub-tasks support
+    * Add card summary support
 
 ## Done
 
