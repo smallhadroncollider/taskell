@@ -1,3 +1,8 @@
+## Misc.
+
+- Add Twitter link to website/GitHub
+- Automate website publishing when doing a new build
+
 ## Refactoring
 
 - Break up State module
