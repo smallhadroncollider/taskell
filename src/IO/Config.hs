@@ -29,6 +29,7 @@ data LayoutConfig = LayoutConfig {
 data MarkdownConfig = MarkdownConfig {
         titleOutput :: Text,
         taskOutput :: Text,
+        summaryOutput :: Text,
         subtaskOutput :: Text
     }
 
@@ -58,6 +59,7 @@ defaultMarkdownConfig :: MarkdownConfig
 defaultMarkdownConfig = MarkdownConfig {
     titleOutput = "##",
     taskOutput = "-",
+    summaryOutput = "    >",
     subtaskOutput = "    *"
 }
 
@@ -132,10 +134,12 @@ configParser = do
         sectionMb "markdown" (do
             titleOutputCf <- fromMaybe (titleOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "title"
             taskOutputCf <- fromMaybe (taskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "task"
+            summaryOutputCf <- fromMaybe (summaryOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "summary"
             subtaskOutputCf <- fromMaybe (subtaskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "subtask"
             return MarkdownConfig {
                 titleOutput = titleOutputCf,
                 taskOutput = taskOutputCf,
+                summaryOutput = summaryOutputCf,
                 subtaskOutput = subtaskOutputCf
             }
         )

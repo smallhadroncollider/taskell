@@ -13,13 +13,14 @@ import Test.Tasty.ExpectedFailure (ignoreTest)
 import IO.Markdown.Internal (start, parse, listStringify)
 import IO.Config (MarkdownConfig(..), defaultMarkdownConfig, defaultConfig)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
-import Data.Taskell.Task (Task, new, subTask, addSubTask)
+import Data.Taskell.Task (Task(..), new, subTask, addSubTask)
 
 -- alternative markdown configs
 alternativeMarkdownConfig :: MarkdownConfig
 alternativeMarkdownConfig = MarkdownConfig {
     titleOutput = "##",
     taskOutput = "###",
+    summaryOutput = ">",
     subtaskOutput = "-"
 }
 
@@ -35,6 +36,12 @@ listWithItem = appendToLast task list
 
 makeSubTask :: Bool -> Lists
 makeSubTask b = appendToLast (addSubTask (subTask "Blah" b) task) list
+
+taskWithSummary :: Task
+taskWithSummary = Task "Test Item" (Just "Summary") empty
+
+listWithSummaryItem :: Lists
+listWithSummaryItem = appendToLast taskWithSummary list
 
 -- tests
 test_markdown :: TestTree
@@ -75,6 +82,13 @@ test_markdown =
                         "List item"
                         (listWithItem, [])
                         (start defaultMarkdownConfig (list, []) ("- Test Item", 1))
+                )
+
+              , testCase "Summary" (
+                    assertEqual
+                        "Summary"
+                        (listWithSummaryItem, [])
+                        (start defaultMarkdownConfig (listWithItem, []) ("    > Summary", 1))
                 )
 
               , testCase "Sub-Task" (
@@ -178,6 +192,13 @@ test_markdown =
                     (parse defaultConfig (encodeUtf8 "## Test\n- Test Item"))
             )
 
+          , testCase "List Item with Summary" (
+                assertEqual
+                    "List item with a summary"
+                    (Right listWithSummaryItem)
+                    (parse defaultConfig (encodeUtf8 "## Test\n- Test Item\n    > Summary"))
+            )
+
           , testCase "Parsing Errors" (
                 assertEqual
                     "Errors"
@@ -193,6 +214,13 @@ test_markdown =
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n"
                         (foldl' (listStringify defaultMarkdownConfig) "" listWithItem)
+                )
+
+              , testCase "Standard list with summary" (
+                    assertEqual
+                        "Markdown formatted output"
+                        "## Test\n\n- Test Item\n    > Summary\n"
+                        (foldl' (listStringify defaultMarkdownConfig) "" listWithSummaryItem)
                 )
 
               , testCase "Standard list with sub-task" (
