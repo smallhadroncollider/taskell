@@ -1,19 +1,34 @@
+## Misc.
+
+- Add Twitter link to website/GitHub
+- Automate website publishing when doing a new build
+- Move image to taskell.app
+    * Move image
+    * Update site
+    * Update GitHub README.md
+    * Remove img branch
+
 ## Refactoring
 
+- Update Task field naming
+    * Task: description -> name/title
+    * Task: summary -> description
+    * UI.Modal.SubTasks -> UI.Modal.Detail
 - Break up State module
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
-- Remove duplication of config - currently using ini and hard-coded
+- Remove duplication of config - currently using ini and hard-coded defaults
 - Move Help modal creation into Template Haskell
 - Use lenses for nested data?
 - Add a List widget for common actions between tasks and sub-tasks
-- Use Safe for unsafe operations
+- Tidy up load functions in IO.Taskell
 
 ## Bugs
 
 - Very long words should get hyphenated
 - Help modal needs to wrap and scroll
 - No obvious way to know if there are more items in a list off-screen
+- Task description not visible on shorter screens - needs to have visibility if not scrolling through sub-tasks
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
 - Caching doesn't clear properly when using `o` and `O`
@@ -24,7 +39,6 @@
 
 - GitHub checklist support - []/[x]
 - Add custom key support
-- Task body - e.g. as well as sub lists, have a longer description
 - Show filename somewhere
 - Editable title?
 - Add tags/labels with `t`
@@ -32,6 +46,11 @@
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
 - Redo functionality
+- Make trello token UX better
+    * Open link automatically?
+    * Ask for token and save to ini file automatically
+- Reordering sub-tasks
+- Add Trello syncing
 
 ## In Progress
 
@@ -39,6 +58,8 @@
     * ~Basic trello import~
     * Add due date support
     * Add sub-tasks support
+    * ~Add card summary support~
+- Better Trello import errors - e.g. auth vs. parsing issues
 
 ## Done
 
@@ -156,3 +177,4 @@
     * ~List titles~
     * ~Search~
 - Multiple spaces at the beginning of a line can break cursor positioning
+- Task body - e.g. as well as sub lists, have a longer description

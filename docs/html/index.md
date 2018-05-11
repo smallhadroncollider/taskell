@@ -1,3 +1,8 @@
+---
+layout: default
+title: {{ site.name }}
+---
+
 # Taskell
 
 [![Build Status](https://travis-ci.org/smallhadroncollider/taskell.svg?branch=master)](https://travis-ci.org/smallhadroncollider/taskell)
@@ -85,7 +90,7 @@ Make sure you have permission to view the Trello board, otherwise you'll get an 
 ### Limitations
 
 - This is a one-off procedure: it effectively imports a Trello board to taskell
-- Only lists, card titles, and card descriptions are currently supported
+- Only list and card titles are supported
 
 ### Plans
 
@@ -200,8 +205,6 @@ See [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roa
 ## Contributing
 
 Please check the [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) before adding any bugs/feature requests to Issues.
-
-Anyone is welcome to contribute to the project, but please read through [CONTRIBUTING.md](https://github.com/smallhadroncollider/taskell/blob/master/CONTRIBUTING.md) and make sure that you agree with the [Code of Conduct](https://github.com/smallhadroncollider/taskell/blob/master/CODE_OF_CONDUCT.md) before getting involved.
 
 ---
 

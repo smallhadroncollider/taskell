@@ -10,9 +10,9 @@ import Data.Text.Encoding (decodeUtf8With)
 
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks, updateFn, count)
-import Data.Taskell.Task (Task, SubTask, new, description, subTasks, addSubTask, subTask, name, complete)
+import Data.Taskell.Task (Task, SubTask, new, description, subTasks, addSubTask, setSummary, subTask, name, complete, summary)
 
-import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, subtaskOutput)
+import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, summaryOutput, subtaskOutput)
 
 -- parse code
 trim :: Int -> Text -> Text
@@ -29,6 +29,12 @@ addSubItem t ls = adjust' updateList i ls
           updateList l = updateFn j (addSubTask st) l
             where j = count l - 1
 
+addSummary :: Text -> Lists -> Lists
+addSummary t ls = adjust' updateList i ls
+    where i = length ls - 1
+          updateList l = updateFn j (setSummary t) l
+            where j = count l - 1
+
 prefix :: MarkdownConfig -> Text -> (MarkdownConfig -> Text) -> (Text -> Lists -> Lists) -> Maybe (Lists -> Lists)
 prefix config str get set
     | pre `isPrefixOf` str = Just $ set (trim (length pre) str)
@@ -39,6 +45,7 @@ matches :: [(MarkdownConfig -> Text, Text -> Lists -> Lists)]
 matches = [
         (titleOutput, newList)
       , (taskOutput, appendToLast . new)
+      , (summaryOutput, addSummary)
       , (subtaskOutput, addSubItem)
     ]
 
@@ -84,8 +91,12 @@ taskStringify config s t = foldl' (++) s [
         " ",
         description t,
         "\n",
+        mSum,
         foldl' (subTaskStringify config) "" (subTasks t)
     ]
+    where mSum = case summary t of
+            Nothing -> ""
+            Just sm -> concat [summaryOutput config, " ", sm, "\n"]
 
 listStringify :: MarkdownConfig -> Text -> List -> Text
 listStringify config s l = foldl' (++) s [

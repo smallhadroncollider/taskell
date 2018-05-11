@@ -5,6 +5,7 @@ module Data.Taskell.Task where
 import ClassyPrelude
 
 import Data.Sequence as S ((|>), (!?), adjust', deleteAt)
+import Data.Text (strip)
 
 data SubTask = SubTask {
     name :: Text,
@@ -13,14 +14,22 @@ data SubTask = SubTask {
 
 data Task = Task {
     description :: Text,
+    summary :: Maybe Text,
     subTasks :: Seq SubTask
 } deriving (Show, Eq)
 
 blank :: Task
-blank = Task { description = "", subTasks = empty }
+blank = Task {
+        description = "",
+        summary = Nothing,
+        subTasks = empty
+    }
 
 new :: Text -> Task
 new s = blank { description = s }
+
+setSummary :: Text -> Task -> Task
+setSummary text task = if null (strip text) then task else task { summary = Just text }
 
 blankSubTask :: SubTask
 blankSubTask = SubTask { name = "", complete = False }

@@ -6,7 +6,7 @@
 - `O` / `o`: Add a task above/below
 - `e`, `i`, `A`: Edit a task
 - `C`: Change task
-- `Enter`: Show sub-tasks
+- `Enter`: Show task details / Edit task description
 - `J` / `K`: Shift task down/up
 - `H` / `L`: Shift task left/right
 - `Space`: Shift task right

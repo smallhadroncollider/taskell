@@ -1,0 +1,19 @@
+# Setup
+title:        taskell
+tagline:      Command-line Kanban board/task managment
+baseurl:      ""
+locale:       "en"
+version:      1.1.1
+destination:  _site/public
+exclude:      [deployment, Capfile, log, Gemfile, Gemfile.lock]
+
+# About/contact
+author:
+  name:       smallhadroncollider
+  url:        https://smallhadroncollider.com
+
+#Others
+markdown: kramdown
+
+kramdown:
+  parse_block_html: true

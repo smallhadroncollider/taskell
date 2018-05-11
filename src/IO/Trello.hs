@@ -25,7 +25,7 @@ getUrl token board = unpack $ concat [
         board,
         "/lists",
         "?cards=all",
-        "&card_fields=name,due",
+        "&card_fields=name,due,desc",
         "&fields=id,name,cards",
         "&key=",
         key,

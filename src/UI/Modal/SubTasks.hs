@@ -10,7 +10,7 @@ import Data.Sequence (mapWithIndex)
 
 import Brick
 
-import Data.Taskell.Task (SubTask, description, subTasks, name, complete)
+import Data.Taskell.Task (Task, SubTask, description, subTasks, name, complete, summary)
 import Events.State (State, getCurrentTask)
 import Events.State.Modal.SubTasks (getCurrentSubTask, getField)
 import UI.Field (Field, textField, widgetFromMaybe)
@@ -21,13 +21,20 @@ renderSubTask :: Maybe Field -> Int -> Int -> SubTask -> Widget ResourceName
 renderSubTask f current i subtask = padBottom (Pad 1) final
 
     where cur = i == current
-          postfix = if complete subtask then " ✓" else ""
-          text = name subtask ++ postfix
+          prefix = if complete subtask then "[x] " else "[ ] "
+          text = prefix ++ name subtask
           widget = textField text
           widget' = widgetFromMaybe widget f
           final | cur = visible $ withAttr taskCurrentAttr widget'
                 | complete subtask = withAttr disabledAttr widget
                 | otherwise = widget
+
+renderSummary :: Maybe Field -> Int -> Task -> Widget ResourceName
+renderSummary f i task = padTop (Pad 1) $ padBottom (Pad 2) w'
+    where w = case summary task of
+            Just s -> textField s
+            Nothing -> textField "No description"
+          w' = if i == (-1) then widgetFromMaybe w f else w
 
 st :: State -> (Text, Widget ResourceName)
 st state = fromMaybe ("Error", txt "Oops") $ do
@@ -39,4 +46,4 @@ st state = fromMaybe ("Error", txt "Oops") $ do
         w | null sts = withAttr disabledAttr $ txt "No sub-tasks"
           | otherwise = vBox . toList $ renderSubTask f i `mapWithIndex` sts
 
-    return (description task, w)
+    return (description task, renderSummary f i task <=> w)

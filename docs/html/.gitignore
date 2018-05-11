@@ -1,0 +1,6 @@
+_site
+.bundle
+.sass-cache
+Gemfile.lock
+.DS_Store
+log/

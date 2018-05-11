@@ -1,11 +1,12 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Events.State.Modal.SubTasks where
 
 import ClassyPrelude
 
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (updateSubTask, toggleComplete, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask)
+import Data.Taskell.Task (updateSubTask, toggleComplete, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask, summary, setSummary)
 import UI.Field (Field, blankField, getText, textToField)
 
 finishSubTask :: Stateful
@@ -14,6 +15,12 @@ finishSubTask state = do
     i <- getCurrentSubTask state
     task <- updateSubTask i (setSubTaskName text) <$> getCurrentTask state
     setCurrentTask task $ state { mode = Modal (SubTasks i (STInsert blankField)) }
+
+finishSummary :: Stateful
+finishSummary state = do
+    text <- getText <$> getField state
+    task <- setSummary text <$> getCurrentTask state
+    setCurrentTask task $ state { mode = Modal (SubTasks 0 STNormal) }
 
 showSubTasks :: Stateful
 showSubTasks s = do
@@ -57,6 +64,12 @@ insertMode state = do
     case mode state of
         Modal (SubTasks i' _) -> Just state { mode = Modal (SubTasks i' (STInsert (textToField n))) }
         _ -> Nothing
+
+editSummary :: Stateful
+editSummary state = do
+    summ <- summary <$> getCurrentTask state
+    let summ' = fromMaybe "" summ
+    return $ state { mode = Modal (SubTasks (-1) (STInsert (textToField summ'))) }
 
 newItem :: Stateful
 newItem state = do
