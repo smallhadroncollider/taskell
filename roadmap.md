@@ -2,17 +2,25 @@
 
 - Add Twitter link to website/GitHub
 - Automate website publishing when doing a new build
+- Move image to taskell.app
+    * Move image
+    * Update site
+    * Update GitHub README.md
+    * Remove img branch
 
 ## Refactoring
 
+- Update Task field naming
+    * Task: description -> name/title
+    * Task: summary -> description
+    * UI.Modal.SubTasks -> UI.Modal.Detail
 - Break up State module
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
-- Remove duplication of config - currently using ini and hard-coded
+- Remove duplication of config - currently using ini and hard-coded defaults
 - Move Help modal creation into Template Haskell
 - Use lenses for nested data?
 - Add a List widget for common actions between tasks and sub-tasks
-- Use Safe for unsafe operations
 - Tidy up load functions in IO.Taskell
 
 ## Bugs
@@ -20,6 +28,7 @@
 - Very long words should get hyphenated
 - Help modal needs to wrap and scroll
 - No obvious way to know if there are more items in a list off-screen
+- Task description not visible on shorter screens - needs to have visibility if not scrolling through sub-tasks
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
 - Caching doesn't clear properly when using `o` and `O`
