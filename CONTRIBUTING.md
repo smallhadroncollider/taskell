@@ -18,6 +18,12 @@ This is my first Haskell project, so the style is often a bit inconsistent. I'm 
 
 I'm also very bad at comments: but please don't follow my example on that.
 
+### Git
+
+Please use the [git-flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model. You should only commit to `feature/*` branches: **do not commit to `develop` or `master` directly**. This will keep commit history simpler and make handling pull requests easier.
+
+Please also use the `--rebase` and `--ff-only` options when running `git pull` - although if you're on your own `feature/*` branch this shouldn't make any difference.
+
 ### Testing
 
 I'm trying to add more unit tests to the codebase, although coverage is still pretty poor. At a minimum any pull requests should make sure all tests pass (use `stack test` before you commit anything). If you're adding/changing a significant amount of code then adding appropriate unit tests would be much appreciated.
