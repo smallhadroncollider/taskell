@@ -85,7 +85,7 @@ Make sure you have permission to view the Trello board, otherwise you'll get an 
 ### Limitations
 
 - This is a one-off procedure: it effectively imports a Trello board to taskell
-- Only list and card titles are supported
+- Only lists, card titles, and card descriptions are currently supported
 
 ### Plans
 

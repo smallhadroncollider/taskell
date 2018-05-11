@@ -58,8 +58,7 @@
     * ~Basic trello import~
     * Add due date support
     * Add sub-tasks support
-    * Add card summary support
-- Task body - e.g. as well as sub lists, have a longer description
+    * ~Add card summary support~
 - Better Trello import errors - e.g. auth vs. parsing issues
 
 ## Done
@@ -178,3 +177,4 @@
     * ~List titles~
     * ~Search~
 - Multiple spaces at the beginning of a line can break cursor positioning
+- Task body - e.g. as well as sub lists, have a longer description
