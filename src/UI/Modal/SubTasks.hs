@@ -29,11 +29,12 @@ renderSubTask f current i subtask = padBottom (Pad 1) final
                 | complete subtask = withAttr disabledAttr widget
                 | otherwise = widget
 
-renderSummary :: Task -> Widget ResourceName
-renderSummary task = padTop (Pad 1) $ padBottom (Pad 2) w
+renderSummary :: Maybe Field -> Int -> Task -> Widget ResourceName
+renderSummary f i task = padTop (Pad 1) $ padBottom (Pad 2) w'
     where w = case summary task of
-            Just s -> txt s
-            Nothing -> txt "No description"
+            Just s -> textField s
+            Nothing -> textField "No description"
+          w' = if i == (-1) then widgetFromMaybe w f else w
 
 st :: State -> (Text, Widget ResourceName)
 st state = fromMaybe ("Error", txt "Oops") $ do
@@ -45,4 +46,4 @@ st state = fromMaybe ("Error", txt "Oops") $ do
         w | null sts = withAttr disabledAttr $ txt "No sub-tasks"
           | otherwise = vBox . toList $ renderSubTask f i `mapWithIndex` sts
 
-    return (description task, renderSummary task <=> w)
+    return (description task, renderSummary f i task <=> w)
