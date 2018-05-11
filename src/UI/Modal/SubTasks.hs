@@ -14,19 +14,20 @@ import Data.Taskell.Task (Task, SubTask, description, subTasks, name, complete, 
 import Events.State (State, getCurrentTask)
 import Events.State.Modal.SubTasks (getCurrentSubTask, getField)
 import UI.Field (Field, textField, widgetFromMaybe)
-import UI.Theme (taskCurrentAttr, disabledAttr)
+import UI.Theme (taskCurrentAttr, disabledAttr, titleCurrentAttr)
 import UI.Types (ResourceName(..))
 
 renderSubTask :: Maybe Field -> Int -> Int -> SubTask -> Widget ResourceName
-renderSubTask f current i subtask = padBottom (Pad 1) final
+renderSubTask f current i subtask = padBottom (Pad 1) $ prefix <+> final
 
     where cur = i == current
-          prefix = if complete subtask then "[x] " else "[ ] "
-          text = prefix ++ name subtask
+          done = complete subtask
+          prefix = withAttr (if cur then taskCurrentAttr else titleCurrentAttr) . txt $ if done then "[x] " else "[ ] "
+          text = name subtask
           widget = textField text
           widget' = widgetFromMaybe widget f
           final | cur = visible $ withAttr taskCurrentAttr widget'
-                | complete subtask = withAttr disabledAttr widget
+                | not done = withAttr titleCurrentAttr widget
                 | otherwise = widget
 
 renderSummary :: Maybe Field -> Int -> Task -> Widget ResourceName
