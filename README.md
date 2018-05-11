@@ -201,6 +201,8 @@ See [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roa
 
 Please check the [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) before adding any bugs/feature requests to Issues.
 
+Anyone is welcome to contribute to the project, but please read through [CONTRIBUTING.md](https://github.com/smallhadroncollider/taskell/blob/master/CONTRIBUTING.md) and make sure that you agree with the [Code of Conduct](https://github.com/smallhadroncollider/taskell/blob/master/CODE_OF_CONDUCT.md) before getting involved.
+
 ---
 
 ## Acknowledgements
