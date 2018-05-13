@@ -67,7 +67,7 @@ Taskell includes the ability to fetch a Trello board and store it as local taske
 
 Before fetching a Trello board, you'll need to create an access token and store it in `~/.taskell/config.ini`.
 
-- First, [get a Trello token](https://trello.com/1/authorize?expiration=never&name=taskell&scope=read&response_type=token&key=66ad7449f2e72e85641a1b438a08e81b)
+- First, [get a Trello token](https://trello.com/1/authorize?expiration=never&name=taskell&scope=read&response_type=token&key=80dbcf6f88f62cc5639774e13342c20b)
 - Then add it to `~/.taskell/config.ini`:
 
     ```ini

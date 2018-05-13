@@ -8,7 +8,7 @@ import ClassyPrelude
 import Data.FileEmbed (embedFile)
 
 version :: Text
-version = "1.1.1"
+version = "1.1.2"
 
 usage :: Text
 usage = decodeUtf8 $(embedFile "templates/usage.txt")
