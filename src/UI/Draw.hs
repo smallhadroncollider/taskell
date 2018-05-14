@@ -12,7 +12,7 @@ import Data.Sequence (mapWithIndex)
 import Brick
 
 import Data.Taskell.List (List, tasks, title)
-import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks)
+import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary)
 import Events.State (lists, current, mode, normalise)
 import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), SubTasksMode(..))
 import IO.Config (LayoutConfig, columnWidth, columnPadding)
@@ -21,10 +21,12 @@ import UI.Modal (showModal)
 import UI.Theme
 import UI.Types (ResourceName(..))
 
-subTaskCount :: Task -> Widget ResourceName
-subTaskCount t
-    | hasSubTasks t = str $ concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
-    | otherwise = emptyWidget
+indicators :: Task -> Widget ResourceName
+indicators t = case summary t of
+    Nothing -> w
+    Just _ -> txt "≡ " <+> w
+    where w | hasSubTasks t = str $ concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
+            | otherwise = emptyWidget
 
 renderTask :: Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
 renderTask f eTitle p li ti t =
@@ -37,7 +39,7 @@ renderTask f eTitle p li ti t =
 
     where cur = (li, ti) == p
           text = description t
-          after = subTaskCount t
+          after = indicators t
           name = RNTask (li, ti)
           widget = textField text
           widget' = widgetFromMaybe widget f
