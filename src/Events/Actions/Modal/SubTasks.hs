@@ -23,11 +23,12 @@ normal (EvKey (KChar 'u') _) = (write =<<) . undo
 normal _ = return
 
 insert :: Event -> Stateful
-insert (EvKey KEsc _) s = (write =<<) . (showSubTasks =<<) $ finishSubTask s
-insert (EvKey KEnter _) s = case mode s of
-    Modal (SubTasks (-1) _) -> (write =<<) $ finishSummary s
-    Modal (SubTasks _ _) -> (ST.lastSubTask =<<) . (ST.newItem =<<) . (store =<<) . (write =<<) $ finishSubTask s
-    _ -> return s
+insert (EvKey KEsc _) s
+    | editingSummary s = (write =<<) $ finishSummary s
+    | otherwise = (write =<<) . (showSubTasks =<<) $ finishSubTask s
+insert (EvKey KEnter _) s
+    | editingSummary s = (write =<<) $ finishSummary s
+    | otherwise = (ST.lastSubTask =<<) . (ST.newItem =<<) . (store =<<) . (write =<<) $ finishSubTask s
 insert e s = return $ case mode s of
     Modal (SubTasks i (STInsert field)) -> s {
         mode = Modal (SubTasks i (STInsert (F.event e field)))

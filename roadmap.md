@@ -65,7 +65,6 @@
     * Find someone to submit it
     * Use `install_cabal_package`
     * Use `depends_on "cabal-install" => :build`
-- Pressing `Esc` when entering task description shouldn't reset it
 - Add Trello import
     * ~Basic trello import~
     * Add due date support
@@ -194,3 +193,4 @@
 - Task body - e.g. as well as sub lists, have a longer description
 - Indicator for when a task has a description
     > Use ≡?
+- Pressing `Esc` when entering task description shouldn't reset it
