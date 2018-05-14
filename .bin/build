@@ -1,6 +1,13 @@
 resolver="lts-11.8"
 ghcv="8.2.2"
 
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ $branch != "master" ]; then
+    echo "\033[0;31mMust be on master branch\033[0m"
+    exit
+fi
+
 if [ ! -d ".stack-work" ]; then
     echo "\033[0;31mMust be run in project root\033[0m"
     exit

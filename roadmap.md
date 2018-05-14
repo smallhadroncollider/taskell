@@ -1,8 +1,12 @@
 ## Misc.
 
-- Add Twitter link to website/GitHub
+- Add Twitter links
+    * Website
+    * Github
 - Automate website publishing when doing a new build
+    > Should automatically update the `_config.yml` file, build the website, then deploy it
 - Move image to taskell.app
+    > The demo image should live on the taskell.app server, rather than being on an orphan branch on GitHub
     * Move image
     * Update site
     * Update GitHub README.md
@@ -10,6 +14,7 @@
 
 ## Refactoring
 
+- Use a Makefile instead of bash script
 - Update Task field naming
     * Task: description -> name/title
     * Task: summary -> description
@@ -41,6 +46,7 @@
 - Add custom key support
 - Show filename somewhere
 - Editable title?
+    > Use a `# Title` at top of file and display title somewhere in taskell
 - Add tags/labels with `t`
 - Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
@@ -54,12 +60,22 @@
 
 ## In Progress
 
+- Sort out Homebrew forumula
+    > Make the necessary changes so that taskell can be put on the homebrew-core repository
+    * Find someone to submit it
+    * Use `install_cabal_package`
+    * Use `depends_on "cabal-install" => :build`
+- Indicator for when a task has a description
+    > Use ≡?
+- Pressing `Esc` when entering task description shouldn't reset it
 - Add Trello import
     * ~Basic trello import~
     * Add due date support
     * Add sub-tasks support
     * ~Add card summary support~
 - Better Trello import errors - e.g. auth vs. parsing issues
+    * Error on parse issues
+    * Error on Auth issues
 
 ## Done
 
