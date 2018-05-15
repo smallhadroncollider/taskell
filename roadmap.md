@@ -11,6 +11,10 @@
     * Update site
     * Update GitHub README.md
     * Remove img branch
+- Add more information to taskell.app
+    > Update taskell.app to have more than just README.md contents. Use cases, more images, examples, etc.
+    * Use case example: checklist
+    * Use case example: Git controlled tasks
 
 ## Refactoring
 
@@ -64,6 +68,8 @@
     > Show the numbers of items in a list next to its title
 - Always show list title
     > Floating list titles - so you can always see what list you're in
+- Add description status indicator option to config.ini
+    > Part of the themeing should allow changing to different icon - might not work in all fonts
 
 ## In Progress
 
