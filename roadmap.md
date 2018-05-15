@@ -31,9 +31,12 @@
 ## Bugs
 
 - Very long words should get hyphenated
+    > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
 - Help modal needs to wrap and scroll
 - No obvious way to know if there are more items in a list off-screen
-- Task description not visible on shorter screens - needs to have visibility if not scrolling through sub-tasks
+    > Lowest item should be "..." if more items
+- Task description not visible on shorter screens
+    > Visibility only applies to scroll items, so description is often hidden if the screen height is small
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
 - Caching doesn't clear properly when using `o` and `O`
@@ -57,6 +60,10 @@
     * Ask for token and save to ini file automatically
 - Reordering sub-tasks
 - Add Trello syncing
+- Item count for lists?
+    > Show the numbers of items in a list next to its title
+- Always show list title
+    > Floating list titles - so you can always see what list you're in
 
 ## In Progress
 
