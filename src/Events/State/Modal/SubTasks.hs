@@ -9,6 +9,12 @@ import Events.State (getCurrentTask, setCurrentTask, mode)
 import Data.Taskell.Task (updateSubTask, toggleComplete, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask, summary, setSummary)
 import UI.Field (Field, blankField, getText, textToField)
 
+editingSummary :: State -> Bool
+editingSummary s = case mode s of
+    Modal (SubTasks (-1) _) -> True
+    Modal (SubTasks _ _) -> False
+    _ -> False
+
 finishSubTask :: Stateful
 finishSubTask state = do
     text <- getText <$> getField state
