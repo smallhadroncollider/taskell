@@ -9,6 +9,7 @@ import Graphics.Vty (Mode(BracketedPaste), outputIface, supportsMode, setMode)
 import Graphics.Vty.Input.Events (Event(..))
 
 import Data.Taskell.Lists (Lists)
+import Data.Taskell.Date (currentDay, deadline)
 import Events.Actions (event)
 import Events.State (State, Mode(..), continue, path, mode, io, current)
 import IO.Config (Config, layout, generateAttrMap)
@@ -62,5 +63,12 @@ appStart state = do
 go :: Config -> State -> IO ()
 go config initial = do
     attrMap' <- const <$> generateAttrMap
-    let app = App (draw $ layout config) chooseCursor (handleEvent config) appStart attrMap'
+    deadlineFn <- deadline . Just <$> currentDay
+    let app = App {
+            appDraw = draw (layout config) deadlineFn
+          , appChooseCursor = chooseCursor
+          , appHandleEvent = handleEvent config
+          , appStartEvent = appStart
+          , appAttrMap = attrMap'
+        }
     void (defaultMain app initial)

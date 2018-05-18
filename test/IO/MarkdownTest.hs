@@ -13,7 +13,7 @@ import Test.Tasty.ExpectedFailure (ignoreTest)
 import IO.Markdown.Internal (start, parse, listStringify)
 import IO.Config (MarkdownConfig(..), defaultMarkdownConfig, defaultConfig)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
-import Data.Taskell.Task (Task(..), new, subTask, addSubTask)
+import Data.Taskell.Task (Task(..), new, subTask, addSubTask, setSummary, setDue)
 
 -- alternative markdown configs
 alternativeMarkdownConfig :: MarkdownConfig
@@ -21,6 +21,7 @@ alternativeMarkdownConfig = MarkdownConfig {
     titleOutput = "##",
     taskOutput = "###",
     summaryOutput = ">",
+    dueOutput = "@",
     subtaskOutput = "-"
 }
 
@@ -38,10 +39,16 @@ makeSubTask :: Bool -> Lists
 makeSubTask b = appendToLast (addSubTask (subTask "Blah" b) task) list
 
 taskWithSummary :: Task
-taskWithSummary = Task "Test Item" (Just "Summary") empty
+taskWithSummary = setSummary "Summary" task
 
 listWithSummaryItem :: Lists
 listWithSummaryItem = appendToLast taskWithSummary list
+
+taskWithDueDate :: Task
+taskWithDueDate = setDue "2018-04-12" task
+
+listWithDueDateItem :: Lists
+listWithDueDateItem = appendToLast taskWithDueDate list
 
 -- tests
 test_markdown :: TestTree
@@ -89,6 +96,13 @@ test_markdown =
                         "Summary"
                         (listWithSummaryItem, [])
                         (start defaultMarkdownConfig (listWithItem, []) ("    > Summary", 1))
+                )
+
+              , testCase "Due Date" (
+                    assertEqual
+                        "Due Date"
+                        (listWithDueDateItem, [])
+                        (start defaultMarkdownConfig (listWithItem, []) ("    @ 2018-04-12", 1))
                 )
 
               , testCase "Sub-Task" (
@@ -221,6 +235,13 @@ test_markdown =
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n    > Summary\n"
                         (foldl' (listStringify defaultMarkdownConfig) "" listWithSummaryItem)
+                )
+
+              , testCase "Standard list with date" (
+                    assertEqual
+                        "Markdown formatted output"
+                        "## Test\n\n- Test Item\n    @ 2018-04-12\n"
+                        (foldl' (listStringify defaultMarkdownConfig) "" listWithDueDateItem)
                 )
 
               , testCase "Standard list with sub-task" (

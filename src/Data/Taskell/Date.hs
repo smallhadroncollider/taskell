@@ -1,8 +1,12 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Data.Taskell.Date (
+    Day,
     Deadline(..),
-    stringToDay,
+    DeadlineFn,
+    dayToText,
+    dayToOutput,
+    textToDay,
     currentDay,
     deadline
 ) where
@@ -10,16 +14,24 @@ module Data.Taskell.Date (
 import ClassyPrelude
 
 import Data.Time (Day)
-import Data.Time.Format (parseTimeM)
+import Data.Time.Clock (secondsToDiffTime)
+import Data.Time.Format (parseTimeM, formatTime)
 import Data.Time.Calendar (diffDays)
 
 data Deadline = Passed | Today | Tomorrow | ThisWeek | Plenty deriving (Show, Eq)
+type DeadlineFn = Maybe Day -> Maybe Deadline
 
-stringToTime :: Text -> Maybe UTCTime
-stringToTime = parseTimeM False defaultTimeLocale "%Y-%m-%d" . unpack
+dayToText :: Day -> Text
+dayToText day = pack $ formatTime defaultTimeLocale "%d-%b" (UTCTime day (secondsToDiffTime 0))
 
-stringToDay :: Text -> Maybe Day
-stringToDay = (utctDay <$>) . stringToTime
+dayToOutput :: Day -> Text
+dayToOutput day = pack $ formatTime defaultTimeLocale "%Y-%m-%d" (UTCTime day (secondsToDiffTime 0))
+
+textToTime :: Text -> Maybe UTCTime
+textToTime = parseTimeM False defaultTimeLocale "%Y-%m-%d" . unpack
+
+textToDay :: Text -> Maybe Day
+textToDay = (utctDay <$>) . textToTime
 
 currentDay :: IO Day
 currentDay = utctDay <$> getCurrentTime

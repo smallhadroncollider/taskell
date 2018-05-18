@@ -55,7 +55,6 @@
 - Editable title?
     > Use a `# Title` at top of file and display title somewhere in taskell
 - Add tags/labels with `t`
-- Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
 - Redo functionality
@@ -74,19 +73,23 @@
 
 ## In Progress
 
+- Add due dates to tasks with `@`
+    * ~Render due dates~
+    * Editable due dates
+- Add Trello import
+    * ~Basic trello import~
+    * ~Add due date support~
+    * Add sub-tasks support
+    * ~Add card summary support~
+- Trello dates need to take current timezone into account
+    > Trello gives dates in UTC, but need to display them in the current timezone. Deadlines should also take timezones into account if necessary.
+    * Trello dates
+    * Deadlines
 - Sort out Homebrew forumula
     > Make the necessary changes so that taskell can be put on the homebrew-core repository
     * Find someone to submit it
     * Use `install_cabal_package`
     * Use `depends_on "cabal-install" => :build`
-- Add Trello import
-    * ~Basic trello import~
-    * Add due date support
-    * Add sub-tasks support
-    * ~Add card summary support~
-- Better Trello import errors - e.g. auth vs. parsing issues
-    * Error on parse issues
-    * Error on Auth issues
 
 ## Done
 
@@ -208,3 +211,6 @@
 - Indicator for when a task has a description
     > Use ≡?
 - Pressing `Esc` when entering task description shouldn't reset it
+- Better Trello import errors - e.g. auth vs. parsing issues
+    * ~Error on parse issues~
+    * ~Error on Auth issues~

@@ -17,42 +17,54 @@ import Data.Taskell.Date
 test_date :: TestTree
 test_date =
     testGroup "Data.Taskell.Date" [
-        testCase "stringToDay" (
+        testCase "dayToOutput" (
             assertEqual
-                "Plenty of time"
+                "Date in yyyy-mm-dd format"
+                (Just "2018-05-18")
+                (dayToOutput <$> fromGregorianValid 2018 05 18)
+        )
+      , testCase "dayToText" (
+            assertEqual
+                "Date in 18-May format"
+                (Just "18-May")
+                (dayToText <$> fromGregorianValid 2018 05 18)
+        )
+      , testCase "textToDay" (
+            assertEqual
+                "A valid Day"
                 (fromGregorianValid 2018 05 18)
-                (stringToDay "2018-05-18")
+                (textToDay "2018-05-18")
         )
       , testGroup "deadline" [
             testCase "Plenty" (
                 assertEqual
                     "Plenty of time"
                     (Just Plenty)
-                    (deadline (stringToDay "2018-05-18") (stringToDay "2018-05-28"))
+                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-28"))
             )
           , testCase "ThisWeek" (
                 assertEqual
                     "This week"
                     (Just ThisWeek)
-                    (deadline (stringToDay "2018-05-18") (stringToDay "2018-05-24"))
+                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-24"))
             )
           , testCase "Tomorrow" (
                 assertEqual
                     "Tomorrow"
                     (Just Tomorrow)
-                    (deadline (stringToDay "2018-05-18") (stringToDay "2018-05-19"))
+                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-19"))
             )
           , testCase "Today" (
                 assertEqual
                     "Today"
                     (Just Today)
-                    (deadline (stringToDay "2018-05-18") (stringToDay "2018-05-18"))
+                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-18"))
             )
           , testCase "Passed" (
                 assertEqual
                     "Passed"
                     (Just Passed)
-                    (deadline (stringToDay "2018-05-18") (stringToDay "2018-05-17"))
+                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-17"))
             )
         ]
     ]

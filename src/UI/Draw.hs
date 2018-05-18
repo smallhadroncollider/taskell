@@ -11,8 +11,9 @@ import Data.Sequence (mapWithIndex)
 
 import Brick
 
+import Data.Taskell.Date (Day, DeadlineFn, Deadline(..), dayToText)
 import Data.Taskell.List (List, tasks, title)
-import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary)
+import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary, due)
 import Events.State (lists, current, mode, normalise)
 import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), SubTasksMode(..))
 import IO.Config (LayoutConfig, columnWidth, columnPadding)
@@ -21,15 +22,38 @@ import UI.Modal (showModal)
 import UI.Theme
 import UI.Types (ResourceName(..))
 
-indicators :: Task -> Widget ResourceName
-indicators t = case summary t of
-    Nothing -> w
-    Just _ -> txt "≡ " <+> w
-    where w | hasSubTasks t = str $ concat ["[", show $ countCompleteSubTasks t, "/", show $ countSubTasks t, "]"]
-            | otherwise = emptyWidget
+dlToAttr :: Deadline -> AttrName
+dlToAttr dl = case dl of
+    Plenty -> dlFar
+    ThisWeek -> dlSoon
+    Tomorrow -> dlSoon
+    Today -> dlDue
+    Passed -> dlDue
 
-renderTask :: Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
-renderTask f eTitle p li ti t =
+renderDate :: DeadlineFn -> Maybe Day -> Maybe (Widget ResourceName)
+renderDate deadlineFn day = do
+    attr <- withAttr . dlToAttr <$> deadlineFn day
+    widget <- txt . dayToText <$> day
+    return $ attr widget
+
+renderSubTaskCount :: Task -> Widget ResourceName
+renderSubTaskCount t = str $ concat [
+        "["
+      , show $ countCompleteSubTasks t
+      , "/"
+      , show $ countSubTasks t
+      , "]"
+    ]
+
+indicators :: DeadlineFn -> Task -> Widget ResourceName
+indicators deadlineFn t = hBox $ padRight (Pad 1) <$> widgets
+    where summ = const (txt "≡") <$> summary t
+          sts = bool Nothing (Just (renderSubTaskCount t)) (hasSubTasks t)
+          dl = renderDate deadlineFn (due t)
+          widgets = catMaybes [summ, sts, dl]
+
+renderTask :: DeadlineFn -> Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
+renderTask deadlineFn f eTitle p li ti t =
       cached name
     . (if not eTitle && cur then visible else id)
     . padBottom (Pad 1)
@@ -39,7 +63,7 @@ renderTask f eTitle p li ti t =
 
     where cur = (li, ti) == p
           text = description t
-          after = indicators t
+          after = indicators deadlineFn t
           name = RNTask (li, ti)
           widget = textField text
           widget' = widgetFromMaybe widget f
@@ -62,8 +86,8 @@ renderTitle f eTitle (p, i) li l =
           widget = textField text
           widget' = widgetFromMaybe widget f
 
-renderList :: LayoutConfig -> Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
-renderList layout f eTitle p li l = if fst p == li then visible list else list
+renderList :: LayoutConfig -> DeadlineFn -> Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
+renderList layout deadlineFn f eTitle p li l = if fst p == li then visible list else list
     where list =
               (if not eTitle then cached (RNList li) else id)
             . padLeftRight (columnPadding layout)
@@ -72,7 +96,7 @@ renderList layout f eTitle p li l = if fst p == li then visible list else list
             . vBox
             . (renderTitle f eTitle p li l :)
             . toList
-            $ renderTask f eTitle p li `mapWithIndex` tasks l
+            $ renderTask deadlineFn f eTitle p li `mapWithIndex` tasks l
 
 searchImage :: LayoutConfig -> State -> Widget ResourceName -> Widget ResourceName
 searchImage layout s i = case mode s of
@@ -87,14 +111,14 @@ searchImage layout s i = case mode s of
             )
     _ -> i
 
-main :: LayoutConfig -> State -> Widget ResourceName
-main layout s =
+main :: LayoutConfig -> DeadlineFn -> State -> Widget ResourceName
+main layout deadlineFn s =
       searchImage layout s
     . viewport RNLists Horizontal
     . padTopBottom 1
     . hBox
     . toList
-    $ renderList layout (getField s) (editingTitle s) (current s)  `mapWithIndex` ls
+    $ renderList layout deadlineFn (getField s) (editingTitle s) (current s)  `mapWithIndex` ls
 
     where ls = lists s
 
@@ -110,10 +134,10 @@ editingTitle state = case mode state of
     _ -> False
 
 -- draw
-draw :: LayoutConfig -> State -> [Widget ResourceName]
-draw layout state =
+draw :: LayoutConfig -> DeadlineFn -> State -> [Widget ResourceName]
+draw layout deadlineFn state =
     let s = normalise state in
-    showModal s [main layout s]
+    showModal s [main layout deadlineFn s]
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)

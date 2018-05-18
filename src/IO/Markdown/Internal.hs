@@ -8,11 +8,12 @@ import Data.Sequence (adjust')
 import Data.Text as T (strip, dropAround)
 import Data.Text.Encoding (decodeUtf8With)
 
+import Data.Taskell.Date (dayToOutput)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks, updateFn, count)
-import Data.Taskell.Task (Task, SubTask, new, description, subTasks, addSubTask, setSummary, subTask, name, complete, summary)
+import Data.Taskell.Task (Task, SubTask, new, description, subTasks, addSubTask, setSummary, setDue, subTask, name, complete, due, summary)
 
-import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, summaryOutput, subtaskOutput)
+import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, summaryOutput, dueOutput, subtaskOutput)
 
 -- parse code
 trim :: Int -> Text -> Text
@@ -35,6 +36,12 @@ addSummary t ls = adjust' updateList i ls
           updateList l = updateFn j (setSummary t) l
             where j = count l - 1
 
+addDue :: Text -> Lists -> Lists
+addDue t ls = adjust' updateList i ls
+    where i = length ls - 1
+          updateList l = updateFn j (setDue t) l
+            where j = count l - 1
+
 prefix :: MarkdownConfig -> Text -> (MarkdownConfig -> Text) -> (Text -> Lists -> Lists) -> Maybe (Lists -> Lists)
 prefix config str get set
     | pre `isPrefixOf` str = Just $ set (trim (length pre) str)
@@ -46,6 +53,7 @@ matches = [
         (titleOutput, newList)
       , (taskOutput, appendToLast . new)
       , (summaryOutput, addSummary)
+      , (dueOutput, addDue)
       , (subtaskOutput, addSubItem)
     ]
 
@@ -85,18 +93,22 @@ subTaskStringify config t st = foldl' (++) t [
     ]
     where surround = if complete st then "~" else ""
 
+summaryStringify :: MarkdownConfig -> Text -> Text
+summaryStringify config sm = concat [summaryOutput config, " ", sm, "\n"]
+
+dueStringify :: MarkdownConfig -> Day -> Text
+dueStringify config day = concat [dueOutput config, " ", dayToOutput day, "\n"]
+
+descriptionStringify :: MarkdownConfig -> Text -> Text
+descriptionStringify config desc = concat [taskOutput config, " ", desc, "\n"]
+
 taskStringify :: MarkdownConfig -> Text -> Task -> Text
 taskStringify config s t = foldl' (++) s [
-        taskOutput config,
-        " ",
-        description t,
-        "\n",
-        mSum,
+        descriptionStringify config (description t),
+        maybe "" (dueStringify config) (due t),
+        maybe "" (summaryStringify config) (summary t),
         foldl' (subTaskStringify config) "" (subTasks t)
     ]
-    where mSum = case summary t of
-            Nothing -> ""
-            Just sm -> concat [summaryOutput config, " ", sm, "\n"]
 
 listStringify :: MarkdownConfig -> Text -> List -> Text
 listStringify config s l = foldl' (++) s [
