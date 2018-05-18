@@ -70,6 +70,7 @@
     > Floating list titles - so you can always see what list you're in
 - Add description status indicator option to config.ini
     > Part of the themeing should allow changing to different icon - might not work in all fonts
+- Duplicate task with `+`
 
 ## In Progress
 
