@@ -13,7 +13,7 @@ import Events.State (State, Mode(..), ModalType(..), mode)
 import UI.Field (textField)
 import UI.Modal.Help (help)
 import UI.Modal.MoveTo (moveTo)
-import UI.Modal.SubTasks (st)
+import UI.Modal.Detail (detail)
 import UI.Theme (titleAttr)
 import UI.Types (ResourceName(..))
 
@@ -34,6 +34,6 @@ surround (title, widget) =
 showModal :: State -> [Widget ResourceName] -> [Widget ResourceName]
 showModal s view = case mode s of
     Modal Help -> surround help : view
-    Modal SubTasks {} -> surround (st s) : view
+    Modal Detail {} -> surround (detail s) : view
     Modal MoveTo -> surround (moveTo s) : view
     _ -> view

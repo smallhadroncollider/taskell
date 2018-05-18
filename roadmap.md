@@ -22,7 +22,7 @@
 - Update Task field naming
     * Task: description -> name/title
     * Task: summary -> description
-    * UI.Modal.SubTasks -> UI.Modal.Detail
+    * ~UI.Modal.SubTasks -> UI.Modal.Detail~
 - Break up State module
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?

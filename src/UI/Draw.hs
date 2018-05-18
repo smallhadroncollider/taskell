@@ -15,7 +15,7 @@ import Data.Taskell.Date (Day, DeadlineFn, Deadline(..), dayToText)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary, due)
 import Events.State (lists, current, mode, normalise)
-import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), SubTasksMode(..))
+import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), DetailMode(..))
 import IO.Config (LayoutConfig, columnWidth, columnPadding)
 import UI.Field (Field, field, textField, widgetFromMaybe)
 import UI.Modal (showModal)
@@ -144,5 +144,5 @@ chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation 
 chooseCursor state = case mode (normalise state) of
     Insert {} -> showCursorNamed RNCursor
     Search True _ -> showCursorNamed RNCursor
-    Modal (SubTasks _ (STInsert _)) -> showCursorNamed RNCursor
+    Modal (Detail _ (DetailInsert _)) -> showCursorNamed RNCursor
     _ -> neverShowCursor state

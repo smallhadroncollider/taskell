@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Events.State.Modal.SubTasks where
+module Events.State.Modal.Detail where
 
 import ClassyPrelude
 
@@ -9,10 +9,16 @@ import Events.State (getCurrentTask, setCurrentTask, mode)
 import Data.Taskell.Task (updateSubTask, toggleComplete, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask, summary, setSummary)
 import UI.Field (Field, blankField, getText, textToField)
 
+updateField :: (Field -> Field) -> Stateful
+updateField fieldEvent s = return $ case mode s of
+    Modal (Detail detailItem (DetailInsert field)) -> s {
+        mode = Modal (Detail detailItem (DetailInsert (fieldEvent field)))
+    }
+    _ -> s
+
 editingSummary :: State -> Bool
 editingSummary s = case mode s of
-    Modal (SubTasks (-1) _) -> True
-    Modal (SubTasks _ _) -> False
+    Modal (Detail DetailDescription _) -> True
     _ -> False
 
 finishSubTask :: Stateful
@@ -20,33 +26,38 @@ finishSubTask state = do
     text <- getText <$> getField state
     i <- getCurrentSubTask state
     task <- updateSubTask i (setSubTaskName text) <$> getCurrentTask state
-    setCurrentTask task $ state { mode = Modal (SubTasks i (STInsert blankField)) }
+    setCurrentTask task $ state { mode = Modal (Detail (DetailItem i) (DetailInsert blankField)) }
 
 finishSummary :: Stateful
 finishSummary state = do
     text <- getText <$> getField state
     task <- setSummary text <$> getCurrentTask state
-    setCurrentTask task $ state { mode = Modal (SubTasks 0 STNormal) }
+    setCurrentTask task $ state { mode = Modal (Detail (DetailItem 0) DetailNormal) }
 
-showSubTasks :: Stateful
-showSubTasks s = do
+showDetail :: Stateful
+showDetail s = do
     _ <- getCurrentTask s
     let i = fromMaybe 0 $ getCurrentSubTask s
-    return $ s { mode = Modal (SubTasks i STNormal) }
+    return $ s { mode = Modal (Detail (DetailItem i) DetailNormal) }
 
 getCurrentSubTask :: State -> Maybe Int
 getCurrentSubTask state = case mode state of
-    Modal (SubTasks i _) -> Just i
+    Modal (Detail (DetailItem i) _) -> Just i
     _ -> Nothing
 
-getCurrentMode :: State -> Maybe SubTasksMode
+getCurrentItem :: State -> Maybe DetailItem
+getCurrentItem state = case mode state of
+    Modal (Detail item _) -> Just item
+    _ -> Nothing
+
+getCurrentMode :: State -> Maybe DetailMode
 getCurrentMode state = case mode state of
-    Modal (SubTasks _ m) -> Just m
+    Modal (Detail _ m) -> Just m
     _ -> Nothing
 
 getField :: State -> Maybe Field
 getField state = case mode state of
-    Modal (SubTasks _ (STInsert f)) -> Just f
+    Modal (Detail _ (DetailInsert f)) -> Just f
     _ -> Nothing
 
 setComplete :: Stateful
@@ -68,14 +79,14 @@ insertMode state = do
     task <- getCurrentTask state
     n <- name <$> getSubTask i task
     case mode state of
-        Modal (SubTasks i' _) -> Just state { mode = Modal (SubTasks i' (STInsert (textToField n))) }
+        Modal (Detail (DetailItem i') _) -> Just state { mode = Modal (Detail (DetailItem i') (DetailInsert (textToField n))) }
         _ -> Nothing
 
 editSummary :: Stateful
 editSummary state = do
     summ <- summary <$> getCurrentTask state
     let summ' = fromMaybe "" summ
-    return $ state { mode = Modal (SubTasks (-1) (STInsert (textToField summ'))) }
+    return $ state { mode = Modal (Detail DetailDescription (DetailInsert (textToField summ'))) }
 
 newItem :: Stateful
 newItem state = do
@@ -107,4 +118,4 @@ setIndex state i = do
     let newIndex | i > lst = lst
                  | i < 0 = 0
                  | otherwise = i
-    return $ state { mode = Modal (SubTasks newIndex m) }
+    return $ state { mode = Modal (Detail (DetailItem newIndex) m) }

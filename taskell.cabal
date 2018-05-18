@@ -31,11 +31,11 @@ library
                      , Events.Actions.Modal
                      , Events.Actions.Modal.Help
                      , Events.Actions.Modal.MoveTo
-                     , Events.Actions.Modal.SubTasks
+                     , Events.Actions.Modal.Detail
 
                      , Events.State
                      , Events.State.Types
-                     , Events.State.Modal.SubTasks
+                     , Events.State.Modal.Detail
 
                      , IO.Taskell
                      , IO.Markdown
@@ -53,7 +53,7 @@ library
 
                      , UI.Modal
                      , UI.Modal.Help
-                     , UI.Modal.SubTasks
+                     , UI.Modal.Detail
                      , UI.Modal.MoveTo
 
                      , Config

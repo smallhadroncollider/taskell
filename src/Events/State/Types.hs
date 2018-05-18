@@ -6,8 +6,10 @@ import ClassyPrelude
 import Data.Taskell.Lists (Lists)
 import UI.Field (Field)
 
-data SubTasksMode = STNormal | STInsert Field deriving (Eq, Show)
-data ModalType = Help | MoveTo | SubTasks Int SubTasksMode deriving (Eq, Show)
+data DetailMode = DetailNormal | DetailInsert Field deriving (Eq, Show)
+data DetailItem = DetailItem Int | DetailDescription | DetailDate deriving (Eq, Show)
+
+data ModalType = Help | MoveTo | Detail DetailItem DetailMode deriving (Eq, Show)
 
 data InsertType = ITask | IList deriving (Eq, Show)
 data InsertMode = IEdit | ICreate deriving (Eq, Show)
