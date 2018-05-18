@@ -4,7 +4,7 @@ module IO.Trello where
 
 import ClassyPrelude
 
-import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody)
+import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody, getResponseStatusCode)
 import Data.Aeson
 
 import IO.Trello.List (List, trelloListToList)
@@ -36,8 +36,19 @@ getUrl token board = unpack $ concat [
 trelloListsToLists :: [List] -> Lists
 trelloListsToLists ls = fromList $ trelloListToList <$> ls
 
-getCards :: TrelloToken -> TrelloBoardID -> IO (Maybe Lists)
+getCards :: TrelloToken -> TrelloBoardID -> IO (Either Text Lists)
 getCards token board = do
     request <- parseRequest $ getUrl token board
-    response <- getResponseBody <$> httpBS request
-    return $ trelloListsToLists <$> decodeStrict response
+    response <- httpBS request
+    let status = getResponseStatusCode response
+    let body = getResponseBody response
+
+    let result
+            | status == 200 = case trelloListsToLists <$> decodeStrict body of
+                Just ls -> Right ls
+                Nothing -> Left "Could not parse response. Please file an Issue on GitHub."
+            | status == 404 = Left $ "Could not find Trello board " ++ board ++ ". Make sure the ID is correct"
+            | status == 401 = Left $ "You do not have permission to view Trello board " ++ board
+            | otherwise = Left $ tshow status ++ " error. Cannot fetch from Trello."
+
+    return result

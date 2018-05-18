@@ -59,9 +59,8 @@ createTrello boardID path = do
         Just trelloToken -> do
             lists <- lift $ getCards trelloToken boardID
             case lists of
-                Nothing ->
-                    return $ Output ("Could not fetch Trello board " ++ boardID ++ ". Please make sure you have permission to view it.")
-                Just ls -> do
+                Left txt -> return $ Output txt
+                Right ls -> do
                     create <- promptCreate path
                     if create
                         then do
