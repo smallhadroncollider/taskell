@@ -10,6 +10,10 @@
 - Build website
 - Push website to GitHub
 - Deploy website
+- Update Homebrew formula
+- Build Homebrew bottles
+- Push bottles to server
+- Update Hombrew formula with bottles
 
 ## Done
 
