@@ -2,6 +2,8 @@
 set :application, 'taskell.app'
 set :repo_url, 'git@github.com:smallhadroncollider/build--taskell.app.git'
 
+append :linked_dirs, "public/bottles"
+
 namespace :deploy do
     task :mod_group do
         on roles(:app) do
