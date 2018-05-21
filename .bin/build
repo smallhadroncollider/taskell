@@ -21,6 +21,7 @@ fi
 rm -rf .stack-work/install
 
 stack build --ghc-options -O3
+stack docker pull
 stack build --docker --ghc-options -O3
 
 mkdir -p "releases/$1/taskell/DEBIAN"
