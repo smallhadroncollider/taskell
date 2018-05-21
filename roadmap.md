@@ -78,10 +78,6 @@
 
 ## In Progress
 
-- Trello dates need to take current timezone into account
-    > Trello gives dates in UTC, but need to display them in the current timezone. Deadlines should also take timezones into account if necessary.
-    * Trello dates
-    * Deadlines
 - Move to column only works for columns before the one you're in
 - Add Trello import
     * ~Basic trello import~
@@ -215,3 +211,5 @@
 - Add due dates to tasks with `@`
     * ~Render due dates~
     * ~Editable due dates~
+- Trello dates need to take current timezone into account
+    > Trello gives dates in UTC, but need to display them in the current timezone. Deadlines should also take timezones into account if necessary.

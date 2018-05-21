@@ -9,6 +9,7 @@ import Data.Aeson
 
 import IO.Trello.List (List, trelloListToList)
 import Data.Taskell.Lists (Lists)
+import Data.Time.LocalTime (TimeZone, getCurrentTimeZone)
 
 type TrelloToken = Text
 type TrelloBoardID = Text
@@ -33,18 +34,19 @@ getUrl token board = unpack $ concat [
         token
     ]
 
-trelloListsToLists :: [List] -> Lists
-trelloListsToLists ls = fromList $ trelloListToList <$> ls
+trelloListsToLists :: TimeZone -> [List] -> Lists
+trelloListsToLists tz ls = fromList $ trelloListToList tz <$> ls
 
 getCards :: TrelloToken -> TrelloBoardID -> IO (Either Text Lists)
 getCards token board = do
     request <- parseRequest $ getUrl token board
     response <- httpBS request
+    timezone <- getCurrentTimeZone
     let status = getResponseStatusCode response
     let body = getResponseBody response
 
     let result
-            | status == 200 = case trelloListsToLists <$> decodeStrict body of
+            | status == 200 = case trelloListsToLists timezone <$> decodeStrict body of
                 Just ls -> Right ls
                 Nothing -> Left "Could not parse response. Please file an Issue on GitHub."
             | status == 404 = Left $ "Could not find Trello board " ++ board ++ ". Make sure the ID is correct"
