@@ -13,11 +13,16 @@ import Test.Tasty.ExpectedFailure (ignoreTest)
 import Data.Taskell.Task
 
 testTask :: Task
-testTask = Task "Test" Nothing (fromList [
+testTask = Task {
+    description = "Test"
+  , summary = Nothing
+  , subTasks = fromList [
         SubTask "One" True
       , SubTask "Two" False
       , SubTask "Three" False
-    ])
+    ]
+  , due = Nothing
+}
 
 -- tests
 test_task :: TestTree
@@ -26,14 +31,14 @@ test_task =
         testCase "blank" (
             assertEqual
                 "Returns empty task"
-                (Task "" Nothing empty)
+                (Task "" Nothing empty Nothing)
                 blank
         )
 
       , testCase "new" (
             assertEqual
                 "Returns a new task"
-                (Task "Hello" Nothing empty)
+                (Task "Hello" Nothing empty Nothing)
                 (new "Hello")
         )
 
@@ -71,21 +76,21 @@ test_task =
             testCase "empty sub-tasks" (
                 assertEqual
                     "Updates summary"
-                    (Task "Test" (Just "Summary") empty)
-                    (setSummary "Summary" (Task "Test" Nothing empty))
+                    (Task "Test" (Just "Summary") empty Nothing)
+                    (setSummary "Summary" (new "Test"))
             )
           , testCase "empty" (
                 assertEqual
                     "Keeps summary as Nothing"
-                    (Task "Test" Nothing empty)
-                    (setSummary "" (Task "Test" Nothing empty))
+                    (new "Test")
+                    (setSummary "" (new "Test"))
             )
 
           , testCase "blank" (
                 assertEqual
                     "Keeps summary as Nothing"
-                    (Task "Test" Nothing empty)
-                    (setSummary "   " (Task "Test" Nothing empty))
+                    (new "Test")
+                    (setSummary "   " (new "Test"))
             )
         ]
 
@@ -98,15 +103,15 @@ test_task =
                       , SubTask "Two" False
                       , SubTask "Three" False
                       , SubTask "Four" True
-                    ]))
+                    ]) Nothing)
                     (addSubTask (SubTask "Four" True) testTask)
             )
 
           , testCase "empty sub-tasks" (
                 assertEqual
                     "Returns the task with added subtask"
-                    (Task "Test" Nothing (fromList [SubTask "One" False]))
-                    (addSubTask (SubTask "One" False) (Task "Test" Nothing empty))
+                    (Task "Test" Nothing (fromList [SubTask "One" False]) Nothing)
+                    (addSubTask (SubTask "One" False) (new "Test"))
             )
         ]
 
@@ -129,7 +134,7 @@ test_task =
                 assertEqual
                     "Returns False"
                     False
-                    (hasSubTasks (Task "Test" Nothing empty))
+                    (hasSubTasks (new "Test"))
             )
         ]
 
@@ -141,7 +146,7 @@ test_task =
                          SubTask "One" True
                        , SubTask "Cow" False
                        , SubTask "Three" False
-                    ]))
+                    ]) Nothing)
                     (updateSubTask 1 (\s -> s { name = "Cow" }) testTask)
             )
 
@@ -152,7 +157,7 @@ test_task =
                          SubTask "One" True
                        , SubTask "Two" False
                        , SubTask "Three" False
-                    ]))
+                    ]) Nothing)
                     (updateSubTask 10 (\s -> s { name = "Cow" }) testTask)
             )
         ]
@@ -164,7 +169,7 @@ test_task =
                     (Task "Test" Nothing (fromList [
                          SubTask "One" True
                        , SubTask "Three" False
-                    ]))
+                    ]) Nothing)
                     (removeSubTask 1 testTask)
             )
 
@@ -175,7 +180,7 @@ test_task =
                          SubTask "One" True
                        , SubTask "Two" False
                        , SubTask "Three" False
-                    ]))
+                    ]) Nothing)
                     (removeSubTask 10 testTask)
             )
         ]
@@ -239,7 +244,7 @@ test_task =
                 assertEqual
                     "Return True"
                     True
-                    (isBlank (Task "" Nothing empty))
+                    (isBlank (Task "" Nothing empty Nothing))
             )
 
           , testCase "not blank" (

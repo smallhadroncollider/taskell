@@ -1,5 +1,5 @@
 name:                taskell
-version:             1.1.4.0
+version:             1.2.0.0
 -- synopsis: A CLI task manager, written in Haskell
 -- description: Allows you to create version controlled task lists
 homepage:            https://github.com/smallhadroncollider/taskell#readme
@@ -22,6 +22,7 @@ library
                      , Data.Taskell.List
                      , Data.Taskell.Lists
                      , Data.Taskell.Seq
+                     , Data.Taskell.Date
 
                      , Events.Actions
                      , Events.Actions.Normal
@@ -30,11 +31,11 @@ library
                      , Events.Actions.Modal
                      , Events.Actions.Modal.Help
                      , Events.Actions.Modal.MoveTo
-                     , Events.Actions.Modal.SubTasks
+                     , Events.Actions.Modal.Detail
 
                      , Events.State
                      , Events.State.Types
-                     , Events.State.Modal.SubTasks
+                     , Events.State.Modal.Detail
 
                      , IO.Taskell
                      , IO.Markdown
@@ -52,7 +53,7 @@ library
 
                      , UI.Modal
                      , UI.Modal.Help
-                     , UI.Modal.SubTasks
+                     , UI.Modal.Detail
                      , UI.Modal.MoveTo
 
                      , Config
@@ -61,6 +62,7 @@ library
                      , classy-prelude
                      , vty
                      , text
+                     , time
                      , mtl
                      , brick
                      , aeson
@@ -99,8 +101,11 @@ test-suite taskell-test
                      , Data.Taskell.ListTest
                      , Data.Taskell.SeqTest
                      , Data.Taskell.TaskTest
+                     , Data.Taskell.DateTest
   build-depends:       base
                      , classy-prelude
+                     , time
+                     , containers
                      , text
                      , taskell
                      , tasty

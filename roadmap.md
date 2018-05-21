@@ -11,6 +11,10 @@
     * Update site
     * Update GitHub README.md
     * Remove img branch
+- Add more information to taskell.app
+    > Update taskell.app to have more than just README.md contents. Use cases, more images, examples, etc.
+    * Use case example: checklist
+    * Use case example: Git controlled tasks
 
 ## Refactoring
 
@@ -18,7 +22,7 @@
 - Update Task field naming
     * Task: description -> name/title
     * Task: summary -> description
-    * UI.Modal.SubTasks -> UI.Modal.Detail
+    * ~UI.Modal.SubTasks -> UI.Modal.Detail~
 - Break up State module
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
@@ -45,13 +49,17 @@
 
 ## Features
 
+- Sort out Homebrew forumula
+    > Make the necessary changes so that taskell can be put on the homebrew-core repository
+    * Find someone to submit it
+    * Use `install_cabal_package`
+    * Use `depends_on "cabal-install" => :build`
 - GitHub checklist support - []/[x]
 - Add custom key support
 - Show filename somewhere
 - Editable title?
     > Use a `# Title` at top of file and display title somewhere in taskell
 - Add tags/labels with `t`
-- Add due dates to tasks with `d`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Should change list numbering to letters when in move list mode
 - Redo functionality
@@ -64,22 +72,18 @@
     > Show the numbers of items in a list next to its title
 - Always show list title
     > Floating list titles - so you can always see what list you're in
+- Add description status indicator option to config.ini
+    > Part of the themeing should allow changing to different icon - might not work in all fonts
+- Duplicate task with `+`
 
 ## In Progress
 
-- Sort out Homebrew forumula
-    > Make the necessary changes so that taskell can be put on the homebrew-core repository
-    * Find someone to submit it
-    * Use `install_cabal_package`
-    * Use `depends_on "cabal-install" => :build`
+- Move to column only works for columns before the one you're in
 - Add Trello import
     * ~Basic trello import~
-    * Add due date support
+    * ~Add due date support~
     * Add sub-tasks support
     * ~Add card summary support~
-- Better Trello import errors - e.g. auth vs. parsing issues
-    * Error on parse issues
-    * Error on Auth issues
 
 ## Done
 
@@ -201,3 +205,11 @@
 - Indicator for when a task has a description
     > Use ≡?
 - Pressing `Esc` when entering task description shouldn't reset it
+- Better Trello import errors - e.g. auth vs. parsing issues
+    * ~Error on parse issues~
+    * ~Error on Auth issues~
+- Add due dates to tasks with `@`
+    * ~Render due dates~
+    * ~Editable due dates~
+- Trello dates need to take current timezone into account
+    > Trello gives dates in UTC, but need to display them in the current timezone. Deadlines should also take timezones into account if necessary.

@@ -1,0 +1,52 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+module Data.Taskell.Date (
+    Day,
+    Deadline(..),
+    DeadlineFn,
+    dayToText,
+    dayToOutput,
+    textToDay,
+    utcToLocalDay,
+    currentDay,
+    deadline
+) where
+
+import ClassyPrelude
+
+import Data.Time (Day)
+import Data.Time.Clock (secondsToDiffTime)
+import Data.Time.Format (parseTimeM, formatTime)
+import Data.Time.Calendar (diffDays)
+import Data.Time.LocalTime (TimeZone, utcToZonedTime, zonedTimeToLocalTime, localDay)
+
+data Deadline = Passed | Today | Tomorrow | ThisWeek | Plenty deriving (Show, Eq)
+type DeadlineFn = Day -> Deadline
+
+dayToText :: Day -> Text
+dayToText day = pack $ formatTime defaultTimeLocale "%d-%b" (UTCTime day (secondsToDiffTime 0))
+
+dayToOutput :: Day -> Text
+dayToOutput day = pack $ formatTime defaultTimeLocale "%Y-%m-%d" (UTCTime day (secondsToDiffTime 0))
+
+utcToLocalDay :: TimeZone -> UTCTime -> Day
+utcToLocalDay tz = localDay . zonedTimeToLocalTime . utcToZonedTime tz
+
+textToTime :: Text -> Maybe UTCTime
+textToTime = parseTimeM False defaultTimeLocale "%Y-%m-%d" . unpack
+
+textToDay :: Text -> Maybe Day
+textToDay = (utctDay <$>) . textToTime
+
+currentDay :: IO Day
+currentDay = utctDay <$> getCurrentTime
+
+-- work out the deadline
+deadline :: Day -> Day -> Deadline
+deadline today date
+    | days < 0 = Passed
+    | days == 0 = Today
+    | days == 1 = Tomorrow
+    | days < 7 = ThisWeek
+    | otherwise = Plenty
+    where days = diffDays date today

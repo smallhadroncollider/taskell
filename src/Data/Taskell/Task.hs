@@ -6,6 +6,7 @@ import ClassyPrelude
 
 import Data.Sequence as S ((|>), (!?), adjust', deleteAt)
 import Data.Text (strip)
+import Data.Taskell.Date (Day, textToDay)
 
 data SubTask = SubTask {
     name :: Text,
@@ -15,14 +16,16 @@ data SubTask = SubTask {
 data Task = Task {
     description :: Text,
     summary :: Maybe Text,
-    subTasks :: Seq SubTask
+    subTasks :: Seq SubTask,
+    due :: Maybe Day
 } deriving (Show, Eq)
 
 blank :: Task
 blank = Task {
         description = "",
         summary = Nothing,
-        subTasks = empty
+        subTasks = empty,
+        due = Nothing
     }
 
 new :: Text -> Task
@@ -30,6 +33,12 @@ new s = blank { description = s }
 
 setSummary :: Text -> Task -> Task
 setSummary text task = if null (strip text) then task else task { summary = Just text }
+
+setDue :: Text -> Task -> Task
+setDue date task = case due' of
+    Just d -> task { due = Just d }
+    Nothing -> task
+    where due' = textToDay date
 
 blankSubTask :: SubTask
 blankSubTask = SubTask { name = "", complete = False }
