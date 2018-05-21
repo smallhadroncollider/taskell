@@ -105,6 +105,7 @@ test-suite taskell-test
   build-depends:       base
                      , classy-prelude
                      , time
+                     , containers
                      , text
                      , taskell
                      , tasty
