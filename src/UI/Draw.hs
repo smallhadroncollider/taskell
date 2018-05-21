@@ -46,11 +46,11 @@ renderSubTaskCount t = str $ concat [
     ]
 
 indicators :: DeadlineFn -> Task -> Widget ResourceName
-indicators deadlineFn t = hBox $ padRight (Pad 1) <$> widgets
-    where summ = const (txt "≡") <$> summary t
-          sts = bool Nothing (Just (renderSubTaskCount t)) (hasSubTasks t)
-          dl = renderDate deadlineFn (due t)
-          widgets = catMaybes [summ, sts, dl]
+indicators deadlineFn t = hBox $ padRight (Pad 1) <$> catMaybes [
+        const (txt "≡") <$> summary t
+      , bool Nothing (Just (renderSubTaskCount t)) (hasSubTasks t)
+      , renderDate deadlineFn (due t)
+    ]
 
 renderTask :: DeadlineFn -> Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
 renderTask deadlineFn f eTitle p li ti t =
