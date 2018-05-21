@@ -1,5 +1,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-module UI.Theme where
+module UI.Theme (
+    titleAttr
+  , titleCurrentAttr
+  , taskCurrentAttr
+  , taskAttr
+  , disabledAttr
+  , dlToAttr
+  , defaultTheme
+) where
 
 import Brick.Themes (Theme, newTheme)
 import Brick (AttrName, attrName)
