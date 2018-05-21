@@ -35,7 +35,10 @@ setSummary :: Text -> Task -> Task
 setSummary text task = if null (strip text) then task else task { summary = Just text }
 
 setDue :: Text -> Task -> Task
-setDue date task = task { due = textToDay date}
+setDue date task = case due' of
+    Just d -> task { due = Just d }
+    Nothing -> task
+    where due' = textToDay date
 
 blankSubTask :: SubTask
 blankSubTask = SubTask { name = "", complete = False }

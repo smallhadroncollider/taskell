@@ -49,6 +49,11 @@
 
 ## Features
 
+- Sort out Homebrew forumula
+    > Make the necessary changes so that taskell can be put on the homebrew-core repository
+    * Find someone to submit it
+    * Use `install_cabal_package`
+    * Use `depends_on "cabal-install" => :build`
 - GitHub checklist support - []/[x]
 - Add custom key support
 - Show filename somewhere
@@ -73,23 +78,16 @@
 
 ## In Progress
 
-- Add due dates to tasks with `@`
-    * ~Render due dates~
-    * Editable due dates
+- Trello dates need to take current timezone into account
+    > Trello gives dates in UTC, but need to display them in the current timezone. Deadlines should also take timezones into account if necessary.
+    * Trello dates
+    * Deadlines
+- Move to column only works for columns before the one you're in
 - Add Trello import
     * ~Basic trello import~
     * ~Add due date support~
     * Add sub-tasks support
     * ~Add card summary support~
-- Trello dates need to take current timezone into account
-    > Trello gives dates in UTC, but need to display them in the current timezone. Deadlines should also take timezones into account if necessary.
-    * Trello dates
-    * Deadlines
-- Sort out Homebrew forumula
-    > Make the necessary changes so that taskell can be put on the homebrew-core repository
-    * Find someone to submit it
-    * Use `install_cabal_package`
-    * Use `depends_on "cabal-install" => :build`
 
 ## Done
 
@@ -214,3 +212,6 @@
 - Better Trello import errors - e.g. auth vs. parsing issues
     * ~Error on parse issues~
     * ~Error on Auth issues~
+- Add due dates to tasks with `@`
+    * ~Render due dates~
+    * ~Editable due dates~

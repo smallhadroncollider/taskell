@@ -6,7 +6,7 @@ import ClassyPrelude hiding (delete)
 import Graphics.Vty.Input.Events
 import Data.Char (isDigit)
 import Events.State
-import Events.State.Modal.Detail (showDetail)
+import Events.State.Modal.Detail (showDetail, editDue)
 
 -- Normal
 event :: Event -> Stateful
@@ -61,6 +61,7 @@ event (EvKey (KChar '?') _) = showHelp
 
 -- subtasks
 event (EvKey KEnter _) = showDetail
+event (EvKey (KChar '@') _) = (editDue =<<) . (store =<<) . showDetail
 
 -- selecting lists
 event (EvKey (KChar n) _)

@@ -4,9 +4,10 @@ module Events.State.Modal.Detail where
 
 import ClassyPrelude
 
+import Data.Taskell.Date (dayToOutput)
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (updateSubTask, toggleComplete, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask, summary, setSummary)
+import Data.Taskell.Task (Task, updateSubTask, toggleComplete, addSubTask, blankSubTask, countSubTasks, removeSubTask, setSubTaskName, name, getSubTask, summary, setSummary, due, setDue)
 import UI.Field (Field, blankField, getText, textToField)
 
 updateField :: (Field -> Field) -> Stateful
@@ -28,11 +29,17 @@ finishSubTask state = do
     task <- updateSubTask i (setSubTaskName text) <$> getCurrentTask state
     setCurrentTask task $ state { mode = Modal (Detail (DetailItem i) (DetailInsert blankField)) }
 
-finishSummary :: Stateful
-finishSummary state = do
+finish :: (Text -> Task -> Task) -> Stateful
+finish fn state = do
     text <- getText <$> getField state
-    task <- setSummary text <$> getCurrentTask state
+    task <- fn text <$> getCurrentTask state
     setCurrentTask task $ state { mode = Modal (Detail (DetailItem 0) DetailNormal) }
+
+finishSummary :: Stateful
+finishSummary = finish setSummary
+
+finishDue :: Stateful
+finishDue = finish setDue
 
 showDetail :: Stateful
 showDetail s = do
@@ -87,6 +94,12 @@ editSummary state = do
     summ <- summary <$> getCurrentTask state
     let summ' = fromMaybe "" summ
     return $ state { mode = Modal (Detail DetailDescription (DetailInsert (textToField summ'))) }
+
+editDue :: Stateful
+editDue state = do
+    day <- due <$> getCurrentTask state
+    let day' = maybe "" dayToOutput day
+    return $ state { mode = Modal (Detail DetailDate (DetailInsert (textToField day'))) }
 
 newItem :: Stateful
 newItem state = do

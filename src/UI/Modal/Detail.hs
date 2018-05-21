@@ -41,14 +41,14 @@ renderSummary f i task = padTop (Pad 1) $ padBottom (Pad 2) w'
             _ -> w
 
 renderDate :: DeadlineFn -> Maybe Field -> DetailItem -> Task -> Widget ResourceName
-renderDate deadlineFn field item task = case due task of
-    Nothing -> emptyWidget
-    Just day -> attr $ padBottom (Pad 1) widget'
-        where attr = withAttr . dlToAttr $ deadlineFn day
-              widget = textField $ dayToOutput day
-              widget' = case item of
-                DetailDate -> visible $ widgetFromMaybe widget field
-                _ -> widget
+renderDate deadlineFn field item task = case item of
+    DetailDate -> visible $ prefix <+> widgetFromMaybe widget field
+    _ -> case day of
+        Just d -> prefix <+> withAttr (dlToAttr (deadlineFn d)) widget
+        Nothing -> emptyWidget
+    where day = due task
+          prefix = txt "Due: "
+          widget = textField $ maybe "" dayToOutput day
 
 detail :: State -> DeadlineFn -> (Text, Widget ResourceName)
 detail state deadlineFn = fromMaybe ("Error", txt "Oops") $ do
