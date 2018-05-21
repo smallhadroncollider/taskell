@@ -6,6 +6,8 @@ import Brick (AttrName, attrName)
 import Brick.Util (fg)
 import Graphics.Vty (defAttr, green, blue, magenta, yellow, red)
 
+import Data.Taskell.Date (Deadline(..))
+
 -- attrs
 titleAttr :: AttrName
 titleAttr = attrName "title"
@@ -26,6 +28,16 @@ dlDue, dlSoon, dlFar :: AttrName
 dlDue = attrName "dlDue"
 dlSoon = attrName "dlSoon"
 dlFar = attrName "dlFar"
+
+-- convert deadline into attribute
+dlToAttr :: Deadline -> AttrName
+dlToAttr dl = case dl of
+    Plenty -> dlFar
+    ThisWeek -> dlSoon
+    Tomorrow -> dlSoon
+    Today -> dlDue
+    Passed -> dlDue
+
 
 -- default theme
 defaultTheme :: Theme

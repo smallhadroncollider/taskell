@@ -19,7 +19,7 @@ import Data.Time.Format (parseTimeM, formatTime)
 import Data.Time.Calendar (diffDays)
 
 data Deadline = Passed | Today | Tomorrow | ThisWeek | Plenty deriving (Show, Eq)
-type DeadlineFn = Maybe Day -> Maybe Deadline
+type DeadlineFn = Day -> Deadline
 
 dayToText :: Day -> Text
 dayToText day = pack $ formatTime defaultTimeLocale "%d-%b" (UTCTime day (secondsToDiffTime 0))
@@ -36,16 +36,12 @@ textToDay = (utctDay <$>) . textToTime
 currentDay :: IO Day
 currentDay = utctDay <$> getCurrentTime
 
-daysUntil :: Maybe Day -> Maybe Day -> Maybe Integer
-daysUntil = liftA2 diffDays
-
 -- work out the deadline
-deadline :: Maybe Day -> Maybe Day -> Maybe Deadline
-deadline today date = do
-    days <- daysUntil date today
-    let d | days < 0 = Passed
-          | days == 0 = Today
-          | days == 1 = Tomorrow
-          | days < 7 = ThisWeek
-          | otherwise = Plenty
-    return d
+deadline :: Day -> Day -> Deadline
+deadline today date
+    | days < 0 = Passed
+    | days == 0 = Today
+    | days == 1 = Tomorrow
+    | days < 7 = ThisWeek
+    | otherwise = Plenty
+    where days = diffDays date today

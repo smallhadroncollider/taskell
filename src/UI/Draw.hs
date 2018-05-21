@@ -11,7 +11,7 @@ import Data.Sequence (mapWithIndex)
 
 import Brick
 
-import Data.Taskell.Date (Day, DeadlineFn, Deadline(..), dayToText)
+import Data.Taskell.Date (Day, DeadlineFn, dayToText)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary, due)
 import Events.State (lists, current, mode, normalise)
@@ -22,17 +22,9 @@ import UI.Modal (showModal)
 import UI.Theme
 import UI.Types (ResourceName(..))
 
-dlToAttr :: Deadline -> AttrName
-dlToAttr dl = case dl of
-    Plenty -> dlFar
-    ThisWeek -> dlSoon
-    Tomorrow -> dlSoon
-    Today -> dlDue
-    Passed -> dlDue
-
 renderDate :: DeadlineFn -> Maybe Day -> Maybe (Widget ResourceName)
 renderDate deadlineFn day = do
-    attr <- withAttr . dlToAttr <$> deadlineFn day
+    attr <- withAttr . dlToAttr . deadlineFn <$> day
     widget <- txt . dayToText <$> day
     return $ attr widget
 
@@ -137,7 +129,7 @@ editingTitle state = case mode state of
 draw :: LayoutConfig -> DeadlineFn -> State -> [Widget ResourceName]
 draw layout deadlineFn state =
     let s = normalise state in
-    showModal s [main layout deadlineFn s]
+    showModal s deadlineFn [main layout deadlineFn s]
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)

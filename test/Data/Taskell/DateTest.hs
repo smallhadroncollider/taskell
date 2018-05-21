@@ -13,6 +13,9 @@ import Test.Tasty.ExpectedFailure (ignoreTest)
 import Data.Time
 import Data.Taskell.Date
 
+testDate :: Day
+testDate = fromGregorian 2018 05 18
+
 -- tests
 test_date :: TestTree
 test_date =
@@ -39,32 +42,32 @@ test_date =
             testCase "Plenty" (
                 assertEqual
                     "Plenty of time"
-                    (Just Plenty)
-                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-28"))
+                    Plenty
+                    (deadline testDate (fromGregorian 2018 05 28))
             )
           , testCase "ThisWeek" (
                 assertEqual
                     "This week"
-                    (Just ThisWeek)
-                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-24"))
+                    ThisWeek
+                    (deadline testDate (fromGregorian 2018 05 24))
             )
           , testCase "Tomorrow" (
                 assertEqual
                     "Tomorrow"
-                    (Just Tomorrow)
-                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-19"))
+                    Tomorrow
+                    (deadline testDate (fromGregorian 2018 05 19))
             )
           , testCase "Today" (
                 assertEqual
                     "Today"
-                    (Just Today)
-                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-18"))
+                    Today
+                    (deadline testDate testDate)
             )
           , testCase "Passed" (
                 assertEqual
                     "Passed"
-                    (Just Passed)
-                    (deadline (textToDay "2018-05-18") (textToDay "2018-05-17"))
+                    Passed
+                    (deadline testDate (fromGregorian 2018 05 17))
             )
         ]
     ]

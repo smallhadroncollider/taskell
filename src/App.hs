@@ -63,7 +63,7 @@ appStart state = do
 go :: Config -> State -> IO ()
 go config initial = do
     attrMap' <- const <$> generateAttrMap
-    deadlineFn <- deadline . Just <$> currentDay
+    deadlineFn <- deadline <$> currentDay
     let app = App {
             appDraw = draw (layout config) deadlineFn
           , appChooseCursor = chooseCursor

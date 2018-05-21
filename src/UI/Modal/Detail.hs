@@ -10,12 +10,13 @@ import Data.Sequence (mapWithIndex)
 
 import Brick
 
-import Data.Taskell.Task (Task, SubTask, description, subTasks, name, complete, summary)
+import Data.Taskell.Date (DeadlineFn, dayToOutput)
+import Data.Taskell.Task (Task, SubTask, description, subTasks, name, complete, summary, due)
 import Events.State (State, getCurrentTask)
 import Events.State.Types (DetailItem(..))
 import Events.State.Modal.Detail (getCurrentItem, getField)
 import UI.Field (Field, textField, widgetFromMaybe)
-import UI.Theme (taskCurrentAttr, disabledAttr, titleCurrentAttr)
+import UI.Theme (taskCurrentAttr, disabledAttr, titleCurrentAttr, dlToAttr)
 import UI.Types (ResourceName(..))
 
 renderSubTask :: Maybe Field -> DetailItem -> Int -> SubTask -> Widget ResourceName
@@ -39,8 +40,18 @@ renderSummary f i task = padTop (Pad 1) $ padBottom (Pad 2) w'
             DetailDescription -> visible $ widgetFromMaybe w f
             _ -> w
 
-detail :: State -> (Text, Widget ResourceName)
-detail state = fromMaybe ("Error", txt "Oops") $ do
+renderDate :: DeadlineFn -> Maybe Field -> DetailItem -> Task -> Widget ResourceName
+renderDate deadlineFn field item task = case due task of
+    Nothing -> emptyWidget
+    Just day -> attr $ padBottom (Pad 1) widget'
+        where attr = withAttr . dlToAttr $ deadlineFn day
+              widget = textField $ dayToOutput day
+              widget' = case item of
+                DetailDate -> visible $ widgetFromMaybe widget field
+                _ -> widget
+
+detail :: State -> DeadlineFn -> (Text, Widget ResourceName)
+detail state deadlineFn = fromMaybe ("Error", txt "Oops") $ do
     task <- getCurrentTask state
     i <- getCurrentItem state
     let f = getField state
@@ -49,4 +60,4 @@ detail state = fromMaybe ("Error", txt "Oops") $ do
         w | null sts = withAttr disabledAttr $ txt "No sub-tasks"
           | otherwise = vBox . toList $ renderSubTask f i `mapWithIndex` sts
 
-    return (description task, renderSummary f i task <=> w)
+    return (description task, renderDate deadlineFn f i task <=> renderSummary f i task <=> w)
