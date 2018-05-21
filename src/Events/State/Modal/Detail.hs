@@ -1,6 +1,24 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Events.State.Modal.Detail where
+module Events.State.Modal.Detail (
+    updateField
+  , finishSubTask
+  , finishSummary
+  , finishDue
+  , showDetail
+  , getCurrentItem
+  , getCurrentMode
+  , getField
+  , setComplete
+  , remove
+  , insertMode
+  , editSummary
+  , editDue
+  , newItem
+  , nextSubTask
+  , previousSubTask
+  , lastSubTask
+) where
 
 import ClassyPrelude
 
@@ -16,11 +34,6 @@ updateField fieldEvent s = return $ case mode s of
         mode = Modal (Detail detailItem (DetailInsert (fieldEvent field)))
     }
     _ -> s
-
-editingSummary :: State -> Bool
-editingSummary s = case mode s of
-    Modal (Detail DetailDescription _) -> True
-    _ -> False
 
 finishSubTask :: Stateful
 finishSubTask state = do

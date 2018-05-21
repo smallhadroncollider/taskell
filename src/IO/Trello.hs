@@ -1,6 +1,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module IO.Trello where
+module IO.Trello (
+    TrelloToken
+  , TrelloBoardID
+  , getCards
+) where
 
 import ClassyPrelude
 

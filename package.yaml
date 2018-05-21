@@ -1,0 +1,85 @@
+name: taskell
+version: '1.2.0.0'
+category: CLI
+author: Mark Wales
+maintainer: mark@smallhadroncollider.com
+copyright: 2017 Mark Wales
+license: BSD3
+github: smallhadroncollider/taskell
+
+extra-source-files:
+- README.md
+
+default-extensions:
+- OverloadedStrings
+- NoImplicitPrelude
+
+dependencies:
+- classy-prelude
+
+library:
+  source-dirs: src
+  ghc-options:
+  - -Wall
+  - -Werror
+  exposed-modules:
+  - App
+  - Events.State
+  - IO.Taskell
+  - IO.Config
+
+  # tests
+  - Data.Taskell.Date
+  - Data.Taskell.Lists
+  - Data.Taskell.List
+  - Data.Taskell.Seq
+  - Data.Taskell.Task
+  - Events.State.Types
+  - IO.Markdown.Internal
+  - UI.Field
+
+  dependencies:
+  - base <=5
+  - vty
+  - text
+  - time
+  - mtl
+  - brick
+  - aeson
+  - bytestring
+  - config-ini
+  - containers
+  - directory
+  - file-embed
+  - http-conduit
+
+executables:
+  taskell:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - taskell
+
+tests:
+  taskell-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - time
+    - containers
+    - text
+    - taskell
+    - tasty
+    - tasty-hunit
+    - tasty-discover
+    - tasty-expected-failure

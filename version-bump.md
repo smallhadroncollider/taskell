@@ -1,6 +1,6 @@
 ## To Do
 
-- Update taskell.cabal
+- Update package.yaml
 - Update src/Config.hs
 - Update docs/html/_config.yml
 - Finish release
@@ -16,4 +16,3 @@
 - Update Hombrew formula with bottles
 
 ## Done
-

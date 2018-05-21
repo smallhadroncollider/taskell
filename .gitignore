@@ -1,4 +1,5 @@
 taskell.json
+taskell.cabal
 taskell.md
 .stack-work/
 releases/
