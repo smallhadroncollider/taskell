@@ -49,6 +49,7 @@
 
 ## Features
 
+- Check times work no matter what timezone
 - Sort out Homebrew forumula
     > Make the necessary changes so that taskell can be put on the homebrew-core repository
     * Find someone to submit it
@@ -78,12 +79,10 @@
 
 ## In Progress
 
-- Move to column only works for columns before the one you're in
-- Add Trello import
-    * ~Basic trello import~
-    * ~Add due date support~
-    * Add sub-tasks support
-    * ~Add card summary support~
+- Improve Trello checklist import
+    * ~Take checklist fetch errors into account~
+    * ~Refactor code~
+    * Use Reader to pass around trello token?
 
 ## Done
 
@@ -213,3 +212,9 @@
     * ~Editable due dates~
 - Trello dates need to take current timezone into account
     > Trello gives dates in UTC, but need to display them in the current timezone. Deadlines should also take timezones into account if necessary.
+- Move to column only works for columns before the one you're in
+- Add Trello import
+    * ~Basic trello import~
+    * ~Add due date support~
+    * ~Add sub-tasks support~
+    * ~Add card summary support~
