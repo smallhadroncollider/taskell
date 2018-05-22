@@ -33,7 +33,7 @@ fullURL uri token = unpack $ concat [root, uri, "&key=", key, "&token=", token]
 boardURL :: TrelloBoardID -> TrelloToken -> String
 boardURL board = fullURL $ concat [
         "boards/", board, "/lists",
-        "?cards=all",
+        "?cards=open",
         "&card_fields=name,due,desc,idChecklists",
         "&fields=id,name,cards"
     ]
