@@ -80,8 +80,9 @@
 ## In Progress
 
 - Improve Trello checklist import
-    * Take checklist fetch errors into account
+    * ~Take checklist fetch errors into account~
     * Refactor code
+    * Use Reader to pass around trello token?
 
 ## Done
 
