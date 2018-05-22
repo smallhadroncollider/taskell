@@ -34,5 +34,5 @@ cardToTask tz card = task' { T.due = textToTime tz $ fromMaybe "" (due card) }
     where task = T.setSummary (desc card) $ T.new (name card)
           task' = task { T.subTasks = fromList $ checklistItemToSubTask <$> fromMaybe [] (checklists card) }
 
-setChecklists :: [ChecklistItem] -> Card -> Card
-setChecklists cls card = card { checklists = Just cls }
+setChecklists :: Card -> [ChecklistItem] -> Card
+setChecklists card cls = card { checklists = Just cls }

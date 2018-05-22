@@ -65,44 +65,35 @@ getChecklist token checklist = do
         429 -> Left "Too many checklists"
         _ -> Left $ tshow status ++ " error while fetching checklist " ++ checklist
 
-updateCard :: TrelloToken -> Card -> IO (Either [Text] Card)
+updateCard :: TrelloToken -> Card -> IO (Either Text Card)
 updateCard token card = do
     let ids = idChecklists card
     checklists <- sequence $ getChecklist token <$> ids
-    return $ case lefts checklists of
-        [] -> do
-            let cl = foldl' (++) [] $ rights checklists
-            Right $ setChecklists cl card
-        ls -> Left ls
+    return $ setChecklists card . concat <$> sequence checklists
 
-updateList :: TrelloToken -> List -> IO (Either [Text] List)
+updateList :: TrelloToken -> List -> IO (Either Text List)
 updateList token l = do
+    let set c = l { cards = c }
     cs <- sequence $ updateCard token <$> cards l
-    return $ case lefts cs of
-        [] -> Right $ l { cards = rights cs }
-        ls -> Left $ concat ls
+    return $ set <$> sequence cs
 
-getChecklists :: TrelloToken -> [List] -> IO (Either [Text] [List])
+getChecklists :: TrelloToken -> [List] -> IO (Either Text [List])
 getChecklists token ls = do
     lists <- sequence $ updateList token <$> ls
-    return $ case lefts lists of
-        [] -> Right $ rights lists
-        ls' -> Left $ concat ls'
+    return $ sequence lists
 
 getCards :: TrelloToken -> TrelloBoardID -> IO (Either Text Lists)
 getCards token board = do
     (status, body) <- fetch (boardURL board token)
     timezone <- getCurrentTimeZone
 
-    putStrLn "Loading from Trello..."
+    putStrLn "Fetching from Trello..."
 
     case status of
         200 -> case decodeStrict body of
             Just raw -> do
                 lists <- getChecklists token raw
-                case lists of
-                    Right ls -> return $ Right (trelloListsToLists timezone ls)
-                    Left t -> return .Left $ unlines t
+                return $ trelloListsToLists timezone <$> lists
             Nothing -> return $ Left "Could not parse response. Please file an Issue on GitHub."
         404 -> return . Left $ "Could not find Trello board " ++ board ++ ". Make sure the ID is correct"
         401 -> return . Left $ "You do not have permission to view Trello board " ++ board
