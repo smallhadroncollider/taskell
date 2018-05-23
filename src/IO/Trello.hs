@@ -11,7 +11,7 @@ import ClassyPrelude
 import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody, getResponseStatusCode)
 import Data.Aeson
 
-import IO.Trello.List (List, trelloListToList, cards)
+import IO.Trello.List (List, trelloListToList, setCards, cards)
 import IO.Trello.Card (Card, idChecklists, setChecklists)
 import IO.Trello.ChecklistItem (ChecklistItem, checkItems)
 import Data.Taskell.Lists (Lists)
@@ -75,8 +75,7 @@ updateCard card = (setChecklists card . concat <$>) . sequence <$> checklists
     where checklists = sequence $ getChecklist <$> idChecklists card
 
 updateList :: List -> ReaderTrelloToken (Either Text List)
-updateList l = (set <$>) . sequence <$> sequence (updateCard <$> cards l)
-    where set c = l { cards = c }
+updateList l = (setCards l <$>) . sequence <$> sequence (updateCard <$> cards l)
 
 getChecklists :: [List] -> ReaderTrelloToken (Either Text [List])
 getChecklists ls = sequence <$> sequence (updateList <$> ls)
