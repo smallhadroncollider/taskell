@@ -12,6 +12,7 @@ import Data.Sequence (mapWithIndex)
 import Brick
 
 import Data.Taskell.Date (Day, dayToText, deadline)
+import Data.Taskell.Lists (Lists)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary, due)
 import Events.State (lists, current, mode, normalise)
@@ -22,6 +23,16 @@ import UI.Modal (showModal)
 import UI.Theme
 import UI.Types (ResourceName(..))
 
+data DrawState = DrawState {
+    dsLists :: Lists
+  , dsMode :: Mode
+  , dsLayout :: LayoutConfig
+  , dsToday :: Day
+  , dsCurrent :: Pointer
+  , dsField :: Maybe Field
+  , dsEditingTitle :: Bool
+}
+
 renderDate :: Day -> Maybe Day -> Maybe (Widget ResourceName)
 renderDate today day = do
     attr <- withAttr . dlToAttr . deadline today <$> day
@@ -29,23 +40,23 @@ renderDate today day = do
     return $ attr widget
 
 renderSubTaskCount :: Task -> Widget ResourceName
-renderSubTaskCount t = str $ concat [
+renderSubTaskCount task = str $ concat [
         "["
-      , show $ countCompleteSubTasks t
+      , show $ countCompleteSubTasks task
       , "/"
-      , show $ countSubTasks t
+      , show $ countSubTasks task
       , "]"
     ]
 
 indicators :: Day -> Task -> Widget ResourceName
-indicators today t = hBox $ padRight (Pad 1) <$> catMaybes [
-        const (txt "≡") <$> summary t
-      , bool Nothing (Just (renderSubTaskCount t)) (hasSubTasks t)
-      , renderDate today (due t)
+indicators today task = hBox $ padRight (Pad 1) <$> catMaybes [
+        const (txt "≡") <$> summary task
+      , bool Nothing (Just (renderSubTaskCount task)) (hasSubTasks task)
+      , renderDate today (due task)
     ]
 
-renderTask :: Day -> Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
-renderTask today f eTitle p li ti t =
+renderTask :: DrawState -> Int -> Int -> Task -> Widget ResourceName
+renderTask drawState listIndex taskIndex task =
       cached name
     . (if not eTitle && cur then visible else id)
     . padBottom (Pad 1)
@@ -53,83 +64,91 @@ renderTask today f eTitle p li ti t =
     . withAttr (if cur then taskCurrentAttr else taskAttr)
     $ if cur && not eTitle then widget' else widget
 
-    where cur = (li, ti) == p
-          text = description t
-          after = indicators today t
-          name = RNTask (li, ti)
+    where eTitle = dsEditingTitle drawState
+          cur = (listIndex, taskIndex) == dsCurrent drawState
+          text = description task
+          after = indicators (dsToday drawState) task
+          name = RNTask (listIndex, taskIndex)
           widget = textField text
-          widget' = widgetFromMaybe widget f
+          widget' = widgetFromMaybe widget $ dsField drawState
 
 columnNumber :: Int -> Text
 columnNumber i = if col >= 1 && col <= 9 then pack (show col) ++ ". " else ""
     where col = i + 1
 
-renderTitle :: Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
-renderTitle f eTitle (p, i) li l =
-    if cur || p /= li || i == 0
-        then visible title'
-        else title'
+renderTitle :: DrawState -> Int -> List -> Widget ResourceName
+renderTitle drawState listIndex list =
+    if cur || p /= listIndex || i == 0 then visible title' else title'
 
-    where cur = p == li && eTitle
-          text = title l
-          col = txt $ columnNumber li
-          attr = if p == li then titleCurrentAttr else titleAttr
+    where (p, i) = dsCurrent drawState
+          cur = p == listIndex && dsEditingTitle drawState
+          text = title list
+          col = txt $ columnNumber listIndex
+          attr = if p == listIndex then titleCurrentAttr else titleAttr
           title' = padBottom (Pad 1) . withAttr attr . (col <+>) $ if cur then widget' else widget
           widget = textField text
-          widget' = widgetFromMaybe widget f
+          widget' = widgetFromMaybe widget $ dsField drawState
 
-renderList :: LayoutConfig -> Day -> Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
-renderList layout today f eTitle p li l = if fst p == li then visible list else list
-    where list =
-              (if not eTitle then cached (RNList li) else id)
+renderList :: DrawState -> Int -> List -> Widget ResourceName
+renderList drawState listIndex list =
+    if fst (dsCurrent drawState) == listIndex then visible widget else widget
+
+    where layout = dsLayout drawState
+          widget =
+              (if not (dsEditingTitle drawState) then cached (RNList listIndex) else id)
             . padLeftRight (columnPadding layout)
             . hLimit (columnWidth layout)
-            . viewport (RNList li) Vertical
+            . viewport (RNList listIndex) Vertical
             . vBox
-            . (renderTitle f eTitle p li l :)
+            . (renderTitle drawState listIndex list :)
             . toList
-            $ renderTask today f eTitle p li `mapWithIndex` tasks l
+            $ renderTask drawState listIndex `mapWithIndex` tasks list
 
-searchImage :: LayoutConfig -> State -> Widget ResourceName -> Widget ResourceName
-searchImage layout s i = case mode s of
-    Search ent f ->
-        let attr = if ent then taskCurrentAttr else taskAttr
+searchImage :: DrawState -> Widget ResourceName -> Widget ResourceName
+searchImage drawState mainWidget = case dsMode drawState of
+    Search editing searchField ->
+        let attr = if editing then taskCurrentAttr else taskAttr
         in
-            i <=> (
+            mainWidget <=> (
                   withAttr attr
                 . padTopBottom 1
-                . padLeftRight (columnPadding layout)
-                $ txt "/" <+> field f
+                . padLeftRight (columnPadding (dsLayout drawState))
+                $ txt "/" <+> field searchField
             )
-    _ -> i
+    _ -> mainWidget
 
-main :: LayoutConfig -> Day -> State -> Widget ResourceName
-main layout today s =
-      searchImage layout s
+main :: DrawState -> Widget ResourceName
+main drawState =
+      searchImage drawState
     . viewport RNLists Horizontal
     . padTopBottom 1
     . hBox
     . toList
-    $ renderList layout today (getField s) (editingTitle s) (current s)  `mapWithIndex` ls
+    $ renderList drawState `mapWithIndex` dsLists drawState
 
-    where ls = lists s
+getField :: Mode -> Maybe Field
+getField (Insert _ _ f) = Just f
+getField _ = Nothing
 
-getField :: State -> Maybe Field
-getField state = case mode state of
-    Insert _ _ f -> Just f
-    _ -> Nothing
-
-
-editingTitle :: State -> Bool
-editingTitle state = case mode state of
-    Insert IList _ _ -> True
-    _ -> False
+editingTitle :: Mode -> Bool
+editingTitle (Insert IList _ _) = True
+editingTitle _ = False
 
 -- draw
 draw :: LayoutConfig -> Day -> State -> [Widget ResourceName]
 draw layout today state =
-    let s = normalise state in
-    showModal s today [main layout today s]
+    showModal normalisedState today [main DrawState {
+        dsLists = lists normalisedState
+      , dsMode = stateMode
+      , dsLayout = layout
+      , dsToday = today
+      , dsField = getField stateMode
+      , dsCurrent = current normalisedState
+      , dsEditingTitle = editingTitle stateMode
+    }]
+
+    where normalisedState = normalise state
+          stateMode = mode state
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
