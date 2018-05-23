@@ -17,6 +17,8 @@ import IO.Trello.ChecklistItem (ChecklistItem, checkItems)
 import Data.Taskell.Lists (Lists)
 import Data.Time.LocalTime (TimeZone, getCurrentTimeZone)
 
+type ReaderTrelloToken a = ReaderT TrelloToken IO a
+
 type TrelloToken = Text
 type TrelloBoardID = Text
 type TrelloChecklistID = Text
@@ -27,10 +29,12 @@ key = "80dbcf6f88f62cc5639774e13342c20b"
 root :: Text
 root = "https://api.trello.com/1/"
 
-fullURL :: Text -> TrelloToken -> String
-fullURL uri token = unpack $ concat [root, uri, "&key=", key, "&token=", token]
+fullURL :: Text -> ReaderTrelloToken String
+fullURL uri = do
+    token <- ask
+    return . unpack $ concat [root, uri, "&key=", key, "&token=", token]
 
-boardURL :: TrelloBoardID -> TrelloToken -> String
+boardURL :: TrelloBoardID -> ReaderTrelloToken String
 boardURL board = fullURL $ concat [
         "boards/", board, "/lists",
         "?cards=open",
@@ -38,7 +42,7 @@ boardURL board = fullURL $ concat [
         "&fields=id,name,cards"
     ]
 
-checklistURL :: TrelloChecklistID -> TrelloToken -> String
+checklistURL :: TrelloChecklistID -> ReaderTrelloToken String
 checklistURL checklist = fullURL $ concat [
         "checklists/", checklist,
         "?fields=id",
@@ -54,9 +58,10 @@ fetch url = do
     response <- httpBS request
     return (getResponseStatusCode response, getResponseBody response)
 
-getChecklist :: TrelloToken -> TrelloChecklistID -> IO (Either Text [ChecklistItem])
-getChecklist token checklist = do
-    (status, body) <- fetch (checklistURL checklist token)
+getChecklist :: TrelloChecklistID -> ReaderTrelloToken (Either Text [ChecklistItem])
+getChecklist checklist = do
+    url <- checklistURL checklist
+    (status, body) <- lift $ fetch url
 
     return $ case status of
         200 -> case checkItems <$> decodeStrict body of
@@ -65,34 +70,35 @@ getChecklist token checklist = do
         429 -> Left "Too many checklists"
         _ -> Left $ tshow status ++ " error while fetching checklist " ++ checklist
 
-updateCard :: TrelloToken -> Card -> IO (Either Text Card)
-updateCard token card = do
+updateCard :: Card -> ReaderTrelloToken (Either Text Card)
+updateCard card = do
     let ids = idChecklists card
-    checklists <- sequence $ getChecklist token <$> ids
+    checklists <- sequence $ getChecklist <$> ids
     return $ setChecklists card . concat <$> sequence checklists
 
-updateList :: TrelloToken -> List -> IO (Either Text List)
-updateList token l = do
+updateList :: List -> ReaderTrelloToken (Either Text List)
+updateList l = do
     let set c = l { cards = c }
-    cs <- sequence $ updateCard token <$> cards l
+    cs <- sequence $ updateCard <$> cards l
     return $ set <$> sequence cs
 
-getChecklists :: TrelloToken -> [List] -> IO (Either Text [List])
-getChecklists token ls = do
-    lists <- sequence $ updateList token <$> ls
+getChecklists :: [List] -> ReaderTrelloToken (Either Text [List])
+getChecklists ls = do
+    lists <- sequence $ updateList <$> ls
     return $ sequence lists
 
-getCards :: TrelloToken -> TrelloBoardID -> IO (Either Text Lists)
-getCards token board = do
-    (status, body) <- fetch (boardURL board token)
-    timezone <- getCurrentTimeZone
+getCards :: TrelloBoardID -> ReaderTrelloToken (Either Text Lists)
+getCards board = do
+    url <- boardURL board
+    (status, body) <- lift $ fetch url
+    timezone <- lift getCurrentTimeZone
 
     putStrLn "Fetching from Trello..."
 
     case status of
         200 -> case decodeStrict body of
             Just raw -> do
-                lists <- getChecklists token raw
+                lists <- getChecklists raw
                 return $ trelloListsToLists timezone <$> lists
             Nothing -> return $ Left "Could not parse response. Please file an Issue on GitHub."
         404 -> return . Left $ "Could not find Trello board " ++ board ++ ". Make sure the ID is correct"

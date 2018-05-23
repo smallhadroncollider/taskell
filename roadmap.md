@@ -79,10 +79,6 @@
 
 ## In Progress
 
-- Improve Trello checklist import
-    * ~Take checklist fetch errors into account~
-    * ~Refactor code~
-    * Use Reader to pass around trello token?
 
 ## Done
 
@@ -218,3 +214,7 @@
     * ~Add due date support~
     * ~Add sub-tasks support~
     * ~Add card summary support~
+- Improve Trello checklist import
+    * ~Take checklist fetch errors into account~
+    * ~Refactor code~
+    * ~Use Reader to pass around trello token?~
