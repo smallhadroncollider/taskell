@@ -7,6 +7,7 @@ module UI.Draw (
 
 import ClassyPrelude
 
+import Data.Char (ord, chr)
 import Data.Sequence (mapWithIndex)
 import Control.Monad.Reader (runReader)
 
@@ -81,10 +82,17 @@ renderTask listIndex taskIndex task = do
         $ if selected && not eTitle then widget' else widget
 
 
--- | Gets the relevant column number for a list title
-columnNumber :: Int -> Text
-columnNumber i = if col >= 1 && col <= 9 then pack (show col) ++ ". " else ""
-    where col = i + 1
+-- | Gets the relevant column prefix - number in normal mode, letter in moveTo
+columnPrefix :: Int -> Int -> ReaderDrawState Text
+columnPrefix selectedList i = do
+    m <- dsMode <$> ask
+    if moveTo m
+        then do
+            let col = chr (i + ord 'a')
+            return $ if i /= selectedList && i >= 0 && i <= 26 then singleton col ++ ". " else ""
+        else do
+            let col = i + 1
+            return $ if col >= 1 && col <= 9 then tshow col ++ ". " else ""
 
 -- | Renders the title for a list
 renderTitle :: Int -> List -> ReaderDrawState (Widget ResourceName)
@@ -92,9 +100,9 @@ renderTitle listIndex list = do
     (selectedList, selectedTask) <- dsCurrent <$> ask
     editing <- (selectedList == listIndex &&) . dsEditingTitle <$> ask
     titleField <- dsField <$> ask
+    col <- txt <$> columnPrefix selectedList listIndex
 
     let text = title list
-        col = txt $ columnNumber listIndex
         attr = if selectedList == listIndex then titleCurrentAttr else titleAttr
         widget = textField text
         widget' = widgetFromMaybe widget titleField
@@ -148,6 +156,10 @@ getField _ = Nothing
 editingTitle :: Mode -> Bool
 editingTitle (Insert IList _ _) = True
 editingTitle _ = False
+
+moveTo :: Mode -> Bool
+moveTo (Modal MoveTo) = True
+moveTo _ = False
 
 -- draw
 draw :: LayoutConfig -> Day -> State -> [Widget ResourceName]

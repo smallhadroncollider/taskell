@@ -62,7 +62,6 @@
     > Use a `# Title` at top of file and display title somewhere in taskell
 - Add tags/labels with `t`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
-- Should change list numbering to letters when in move list mode
 - Redo functionality
 - Make trello token UX better
     * Open link automatically?
@@ -218,3 +217,4 @@
     * ~Take checklist fetch errors into account~
     * ~Refactor code~
     * ~Use Reader to pass around trello token?~
+- Should change list numbering to letters when in move list mode
