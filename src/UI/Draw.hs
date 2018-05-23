@@ -8,6 +8,7 @@ module UI.Draw (
 import ClassyPrelude
 
 import Data.Sequence (mapWithIndex)
+import Control.Monad.Reader (runReader)
 
 import Brick
 
@@ -33,98 +34,101 @@ data DrawState = DrawState {
   , dsEditingTitle :: Bool
 }
 
-renderDate :: Day -> Maybe Day -> Maybe (Widget ResourceName)
-renderDate today day = do
-    attr <- withAttr . dlToAttr . deadline today <$> day
-    widget <- txt . dayToText today <$> day
-    return $ attr widget
+type ReaderDrawState = ReaderT DrawState Identity
+
+renderDate :: Maybe Day -> ReaderDrawState (Maybe (Widget ResourceName))
+renderDate day = do
+    today <- dsToday <$> ask
+    let attr = withAttr . dlToAttr . deadline today <$> day
+        widget = txt . dayToText today <$> day
+    return $ attr <*> widget
 
 renderSubTaskCount :: Task -> Widget ResourceName
-renderSubTaskCount task = str $ concat [
-        "["
-      , show $ countCompleteSubTasks task
-      , "/"
-      , show $ countSubTasks task
-      , "]"
-    ]
+renderSubTaskCount task = str $ concat ["[" , show $ countCompleteSubTasks task , "/" , show $ countSubTasks task , "]"]
 
-indicators :: Day -> Task -> Widget ResourceName
-indicators today task = hBox $ padRight (Pad 1) <$> catMaybes [
-        const (txt "≡") <$> summary task
-      , bool Nothing (Just (renderSubTaskCount task)) (hasSubTasks task)
-      , renderDate today (due task)
-    ]
+indicators :: Task -> ReaderDrawState (Widget ResourceName)
+indicators task = do
+    dateWidget <- renderDate (due task)
+    return . hBox $ padRight (Pad 1) <$> catMaybes [
+            const (txt "≡") <$> summary task
+          , bool Nothing (Just (renderSubTaskCount task)) (hasSubTasks task)
+          , dateWidget
+        ]
 
-renderTask :: DrawState -> Int -> Int -> Task -> Widget ResourceName
-renderTask drawState listIndex taskIndex task =
-      cached name
-    . (if not eTitle && cur then visible else id)
-    . padBottom (Pad 1)
-    . (<=> withAttr disabledAttr after)
-    . withAttr (if cur then taskCurrentAttr else taskAttr)
-    $ if cur && not eTitle then widget' else widget
+renderTask :: Int -> Int -> Task -> ReaderDrawState (Widget ResourceName)
+renderTask listIndex taskIndex task = do
+    eTitle <- dsEditingTitle <$> ask
+    cur <- (== (listIndex, taskIndex)) . dsCurrent <$>ask
+    taskField <- dsField <$> ask
+    after <- indicators task
 
-    where eTitle = dsEditingTitle drawState
-          cur = (listIndex, taskIndex) == dsCurrent drawState
-          text = description task
-          after = indicators (dsToday drawState) task
-          name = RNTask (listIndex, taskIndex)
-          widget = textField text
-          widget' = widgetFromMaybe widget $ dsField drawState
+    let text = description task
+        name = RNTask (listIndex, taskIndex)
+        widget = textField text
+        widget' = widgetFromMaybe widget taskField
+
+    return $ cached name
+        . (if not eTitle && cur then visible else id)
+        . padBottom (Pad 1)
+        . (<=> withAttr disabledAttr after)
+        . withAttr (if cur then taskCurrentAttr else taskAttr)
+        $ if cur && not eTitle then widget' else widget
+
 
 columnNumber :: Int -> Text
 columnNumber i = if col >= 1 && col <= 9 then pack (show col) ++ ". " else ""
     where col = i + 1
 
-renderTitle :: DrawState -> Int -> List -> Widget ResourceName
-renderTitle drawState listIndex list =
-    if cur || p /= listIndex || i == 0 then visible title' else title'
+renderTitle :: Int -> List -> ReaderDrawState (Widget ResourceName)
+renderTitle listIndex list = do
+    (p, i) <- dsCurrent <$> ask
+    cur <- (p == listIndex &&) . dsEditingTitle <$> ask
+    titleField <- dsField <$> ask
 
-    where (p, i) = dsCurrent drawState
-          cur = p == listIndex && dsEditingTitle drawState
-          text = title list
-          col = txt $ columnNumber listIndex
-          attr = if p == listIndex then titleCurrentAttr else titleAttr
-          title' = padBottom (Pad 1) . withAttr attr . (col <+>) $ if cur then widget' else widget
-          widget = textField text
-          widget' = widgetFromMaybe widget $ dsField drawState
+    let text = title list
+        col = txt $ columnNumber listIndex
+        attr = if p == listIndex then titleCurrentAttr else titleAttr
+        widget = textField text
+        widget' = widgetFromMaybe widget titleField
+        title' = padBottom (Pad 1) . withAttr attr . (col <+>) $ if cur then widget' else widget
 
-renderList :: DrawState -> Int -> List -> Widget ResourceName
-renderList drawState listIndex list =
-    if fst (dsCurrent drawState) == listIndex then visible widget else widget
+    return $ if cur || p /= listIndex || i == 0 then visible title' else title'
 
-    where layout = dsLayout drawState
-          widget =
-              (if not (dsEditingTitle drawState) then cached (RNList listIndex) else id)
+renderList :: Int -> List -> ReaderDrawState (Widget ResourceName)
+renderList listIndex list = do
+    layout <- dsLayout <$> ask
+    eTitle <- dsEditingTitle <$> ask
+    titleWidget <- renderTitle listIndex list
+    (currentList, _) <- dsCurrent <$> ask
+    taskWidgets <- sequence $ renderTask listIndex `mapWithIndex` tasks list
+
+    let widget = (if not eTitle then cached (RNList listIndex) else id)
             . padLeftRight (columnPadding layout)
             . hLimit (columnWidth layout)
             . viewport (RNList listIndex) Vertical
             . vBox
-            . (renderTitle drawState listIndex list :)
-            . toList
-            $ renderTask drawState listIndex `mapWithIndex` tasks list
+            . (titleWidget :)
+            $ toList taskWidgets
 
-searchImage :: DrawState -> Widget ResourceName -> Widget ResourceName
-searchImage drawState mainWidget = case dsMode drawState of
-    Search editing searchField ->
-        let attr = if editing then taskCurrentAttr else taskAttr
-        in
-            mainWidget <=> (
-                  withAttr attr
-                . padTopBottom 1
-                . padLeftRight (columnPadding (dsLayout drawState))
-                $ txt "/" <+> field searchField
-            )
-    _ -> mainWidget
+    return $ if currentList == listIndex then visible widget else widget
 
-main :: DrawState -> Widget ResourceName
-main drawState =
-      searchImage drawState
-    . viewport RNLists Horizontal
-    . padTopBottom 1
-    . hBox
-    . toList
-    $ renderList drawState `mapWithIndex` dsLists drawState
+searchImage :: Widget ResourceName -> ReaderDrawState (Widget ResourceName)
+searchImage mainWidget = do
+    m <- dsMode <$> ask
+    case m of
+        Search editing searchField -> do
+            colPad <- columnPadding . dsLayout <$> ask
+            let attr = withAttr $ if editing then taskCurrentAttr else taskAttr
+            let widget = attr . padTopBottom 1 . padLeftRight colPad $ txt "/" <+> field searchField
+            return $ mainWidget <=> widget
+        _ -> return mainWidget
+
+main :: ReaderDrawState (Widget ResourceName)
+main = do
+    ls <- dsLists <$> ask
+    listWidgets <- toList <$> sequence (renderList `mapWithIndex` ls)
+    let mainWidget = viewport RNLists Horizontal . padTopBottom 1 $ hBox listWidgets
+    searchImage mainWidget
 
 getField :: Mode -> Maybe Field
 getField (Insert _ _ f) = Just f
@@ -137,7 +141,7 @@ editingTitle _ = False
 -- draw
 draw :: LayoutConfig -> Day -> State -> [Widget ResourceName]
 draw layout today state =
-    showModal normalisedState today [main DrawState {
+    showModal normalisedState today [runReader main DrawState {
         dsLists = lists normalisedState
       , dsMode = stateMode
       , dsLayout = layout
