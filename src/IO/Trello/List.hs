@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 module IO.Trello.List (
     List(..)
+  , setCards
   , trelloListToList
 ) where
 
@@ -17,6 +18,9 @@ data List = List {
   , name  :: Text
   , cards :: [Card]
 } deriving (Eq, Show, Generic, ToJSON, FromJSON)
+
+setCards :: List -> [Card] -> List
+setCards list cs = list { cards = cs }
 
 trelloListToList :: TimeZone -> List -> TL.List
 trelloListToList tz ls = TL.List {

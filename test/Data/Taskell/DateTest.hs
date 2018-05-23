@@ -26,12 +26,26 @@ test_date =
                 (Just "2018-05-18")
                 (dayToOutput <$> fromGregorianValid 2018 05 18)
         )
-      , testCase "dayToText" (
-            assertEqual
-                "Date in 18-May format"
-                (Just "18-May")
-                (dayToText <$> fromGregorianValid 2018 05 18)
-        )
+      , testGroup "dayToText" [
+           testCase "same year" (
+                assertEqual
+                    "Date in 18-May format"
+                    (Just "18-May")
+                    (dayToText <$> fromGregorianValid 2018 08 18 <*> fromGregorianValid 2018 05 18)
+           )
+         , testCase "different year" (
+                assertEqual
+                    "Date in 18-May 2019 format"
+                    (Just "18-May 2019")
+                    (dayToText <$> fromGregorianValid 2018 08 18 <*> fromGregorianValid 2019 05 18)
+           )
+         , testCase "different year" (
+                assertEqual
+                    "Date in 18-May 2017 format"
+                    (Just "18-May 2017")
+                    (dayToText <$> fromGregorianValid 2018 08 18 <*> fromGregorianValid 2017 05 18)
+           )
+        ]
       , testCase "textToDay" (
             assertEqual
                 "A valid Day"

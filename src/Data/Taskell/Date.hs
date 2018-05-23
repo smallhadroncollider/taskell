@@ -17,14 +17,17 @@ import ClassyPrelude
 import Data.Time (Day)
 import Data.Time.Clock (secondsToDiffTime)
 import Data.Time.Format (parseTimeM, formatTime)
-import Data.Time.Calendar (diffDays)
+import Data.Time.Calendar (toGregorian, diffDays)
 import Data.Time.LocalTime (TimeZone, utcToZonedTime, zonedTimeToLocalTime, localDay)
 
 data Deadline = Passed | Today | Tomorrow | ThisWeek | Plenty deriving (Show, Eq)
 type DeadlineFn = Day -> Deadline
 
-dayToText :: Day -> Text
-dayToText day = pack $ formatTime defaultTimeLocale "%d-%b" (UTCTime day (secondsToDiffTime 0))
+dayToText :: Day -> Day -> Text
+dayToText today day = pack $ formatTime defaultTimeLocale format (UTCTime day (secondsToDiffTime 0))
+    where (currentYear, _, _) = toGregorian today
+          (dateYear, _, _) = toGregorian day
+          format = if currentYear == dateYear then "%d-%b" else "%d-%b %Y"
 
 dayToOutput :: Day -> Text
 dayToOutput day = pack $ formatTime defaultTimeLocale "%Y-%m-%d" (UTCTime day (secondsToDiffTime 0))

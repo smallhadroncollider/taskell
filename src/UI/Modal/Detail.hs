@@ -10,7 +10,7 @@ import Data.Sequence (mapWithIndex)
 
 import Brick
 
-import Data.Taskell.Date (DeadlineFn, dayToOutput)
+import Data.Taskell.Date (Day, dayToOutput, deadline)
 import Data.Taskell.Task (Task, SubTask, description, subTasks, name, complete, summary, due)
 import Events.State (State, getCurrentTask)
 import Events.State.Types (DetailItem(..))
@@ -40,18 +40,18 @@ renderSummary f i task = padTop (Pad 1) $ padBottom (Pad 2) w'
             DetailDescription -> visible $ widgetFromMaybe w f
             _ -> w
 
-renderDate :: DeadlineFn -> Maybe Field -> DetailItem -> Task -> Widget ResourceName
-renderDate deadlineFn field item task = case item of
+renderDate :: Day -> Maybe Field -> DetailItem -> Task -> Widget ResourceName
+renderDate today field item task = case item of
     DetailDate -> visible $ prefix <+> widgetFromMaybe widget field
     _ -> case day of
-        Just d -> prefix <+> withAttr (dlToAttr (deadlineFn d)) widget
+        Just d -> prefix <+> withAttr (dlToAttr (deadline today d)) widget
         Nothing -> emptyWidget
     where day = due task
           prefix = txt "Due: "
           widget = textField $ maybe "" dayToOutput day
 
-detail :: State -> DeadlineFn -> (Text, Widget ResourceName)
-detail state deadlineFn = fromMaybe ("Error", txt "Oops") $ do
+detail :: State -> Day -> (Text, Widget ResourceName)
+detail state today = fromMaybe ("Error", txt "Oops") $ do
     task <- getCurrentTask state
     i <- getCurrentItem state
     let f = getField state
@@ -60,4 +60,4 @@ detail state deadlineFn = fromMaybe ("Error", txt "Oops") $ do
         w | null sts = withAttr disabledAttr $ txt "No sub-tasks"
           | otherwise = vBox . toList $ renderSubTask f i `mapWithIndex` sts
 
-    return (description task, renderDate deadlineFn f i task <=> renderSummary f i task <=> w)
+    return (description task, renderDate today f i task <=> renderSummary f i task <=> w)

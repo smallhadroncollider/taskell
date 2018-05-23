@@ -9,9 +9,9 @@ import Graphics.Vty (Mode(BracketedPaste), outputIface, supportsMode, setMode)
 import Graphics.Vty.Input.Events (Event(..))
 
 import Data.Taskell.Lists (Lists)
-import Data.Taskell.Date (currentDay, deadline)
+import Data.Taskell.Date (currentDay)
 import Events.Actions (event)
-import Events.State (State, Mode(..), continue, path, mode, io, current)
+import Events.State (State, Mode(..), ModalType(..), continue, path, mode, io, current, lists)
 import IO.Config (Config, layout, generateAttrMap)
 import IO.Taskell (writeData)
 import UI.Draw (draw, chooseCursor)
@@ -34,16 +34,25 @@ clearCache state = do
     invalidateCacheEntry (RNList li)
     invalidateCacheEntry (RNTask (li, ti))
 
+clearAllTitles :: State -> EventM ResourceName ()
+clearAllTitles state = do
+    let count = length (lists state)
+    let range = [0 .. (count - 1)]
+    void . sequence $ invalidateCacheEntry . RNList <$> range
+    void . sequence $ invalidateCacheEntry . (\x -> RNTask (x, -1)) <$> range
+
 handleVtyEvent :: Config -> State -> Event -> EventM ResourceName (Next State)
 handleVtyEvent config previousState e = do
     let state = event e previousState
 
     case mode previousState of
         Search _ _ -> invalidateCache
-        _ -> return  ()
+        (Modal MoveTo) -> clearAllTitles previousState
+        _ -> return ()
 
     case mode state of
         Shutdown -> Brick.halt state
+        (Modal MoveTo) -> clearAllTitles state >> next config state
         _ -> clearCache previousState >> clearCache state >> next config state
 
 -- App code
@@ -63,9 +72,9 @@ appStart state = do
 go :: Config -> State -> IO ()
 go config initial = do
     attrMap' <- const <$> generateAttrMap
-    deadlineFn <- deadline <$> currentDay
+    today <- currentDay
     let app = App {
-            appDraw = draw (layout config) deadlineFn
+            appDraw = draw (layout config) today
           , appChooseCursor = chooseCursor
           , appHandleEvent = handleEvent config
           , appStartEvent = appStart

@@ -7,11 +7,14 @@ module UI.Draw (
 
 import ClassyPrelude
 
+import Data.Char (ord, chr)
 import Data.Sequence (mapWithIndex)
+import Control.Monad.Reader (runReader)
 
 import Brick
 
-import Data.Taskell.Date (Day, DeadlineFn, dayToText)
+import Data.Taskell.Date (Day, dayToText, deadline)
+import Data.Taskell.Lists (Lists)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary, due)
 import Events.State (lists, current, mode, normalise)
@@ -22,114 +25,157 @@ import UI.Modal (showModal)
 import UI.Theme
 import UI.Types (ResourceName(..))
 
-renderDate :: DeadlineFn -> Maybe Day -> Maybe (Widget ResourceName)
-renderDate deadlineFn day = do
-    attr <- withAttr . dlToAttr . deadlineFn <$> day
-    widget <- txt . dayToText <$> day
-    return $ attr widget
+-- | Draw needs to know various pieces of information, so keep track of them in a record
+data DrawState = DrawState {
+    dsLists :: Lists
+  , dsMode :: Mode
+  , dsLayout :: LayoutConfig
+  , dsToday :: Day
+  , dsCurrent :: Pointer
+  , dsField :: Maybe Field
+  , dsEditingTitle :: Bool
+}
 
+-- | Use a Reader to pass around DrawState
+type ReaderDrawState = ReaderT DrawState Identity
+
+-- | Takes a task's 'due' property and renders a date with appropriate styling (e.g. red if overdue)
+renderDate :: Maybe Day -> ReaderDrawState (Maybe (Widget ResourceName))
+renderDate dueDay = do
+    today <- dsToday <$> ask -- get the value of `today` from DrawState
+    let attr = withAttr . dlToAttr . deadline today <$> dueDay -- create a `Maybe (Widget -> Widget)` attribute function
+        widget = txt . dayToText today <$> dueDay -- get the formatted due date `Maybe Text`
+    return $ attr <*> widget
+
+-- | Renders the appropriate completed sub task count e.g. "[2/3]"
 renderSubTaskCount :: Task -> Widget ResourceName
-renderSubTaskCount t = str $ concat [
-        "["
-      , show $ countCompleteSubTasks t
-      , "/"
-      , show $ countSubTasks t
-      , "]"
-    ]
+renderSubTaskCount task = txt $ concat ["[" , tshow $ countCompleteSubTasks task , "/" , tshow $ countSubTasks task , "]"]
 
-indicators :: DeadlineFn -> Task -> Widget ResourceName
-indicators deadlineFn t = hBox $ padRight (Pad 1) <$> catMaybes [
-        const (txt "≡") <$> summary t
-      , bool Nothing (Just (renderSubTaskCount t)) (hasSubTasks t)
-      , renderDate deadlineFn (due t)
-    ]
+-- | Renders the appropriate indicators: summary, sub task count, and due date
+indicators :: Task -> ReaderDrawState (Widget ResourceName)
+indicators task = do
+    dateWidget <- renderDate (due task) -- get the due date widget
+    return . hBox $ padRight (Pad 1) <$> catMaybes [
+            const (txt "≡") <$> summary task -- show the summary indicator if one is set
+          , bool Nothing (Just (renderSubTaskCount task)) (hasSubTasks task) -- if it has subtasks, render the sub task count
+          , dateWidget
+        ]
 
-renderTask :: DeadlineFn -> Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
-renderTask deadlineFn f eTitle p li ti t =
-      cached name
-    . (if not eTitle && cur then visible else id)
-    . padBottom (Pad 1)
-    . (<=> withAttr disabledAttr after)
-    . withAttr (if cur then taskCurrentAttr else taskAttr)
-    $ if cur && not eTitle then widget' else widget
+-- | Renders an individual task
+renderTask :: Int -> Int -> Task -> ReaderDrawState (Widget ResourceName)
+renderTask listIndex taskIndex task = do
+    eTitle <- dsEditingTitle <$> ask -- is the title being edited? (for visibility)
+    selected <- (== (listIndex, taskIndex)) . dsCurrent <$>ask -- is the current task selected?
+    taskField <- dsField <$> ask -- get the field, if it's being edited
+    after <- indicators task -- get the indicators widget
 
-    where cur = (li, ti) == p
-          text = description t
-          after = indicators deadlineFn t
-          name = RNTask (li, ti)
-          widget = textField text
-          widget' = widgetFromMaybe widget f
+    let text = description task
+        name = RNTask (listIndex, taskIndex)
+        widget = textField text
+        widget' = widgetFromMaybe widget taskField
 
-columnNumber :: Int -> Text
-columnNumber i = if col >= 1 && col <= 9 then pack (show col) ++ ". " else ""
-    where col = i + 1
+    return $ cached name
+        . (if selected && not eTitle then visible else id)
+        . padBottom (Pad 1)
+        . (<=> withAttr disabledAttr after)
+        . withAttr (if selected then taskCurrentAttr else taskAttr)
+        $ if selected && not eTitle then widget' else widget
 
-renderTitle :: Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
-renderTitle f eTitle (p, i) li l =
-    if cur || p /= li || i == 0
-        then visible title'
-        else title'
 
-    where cur = p == li && eTitle
-          text = title l
-          col = txt $ columnNumber li
-          attr = if p == li then titleCurrentAttr else titleAttr
-          title' = padBottom (Pad 1) . withAttr attr . (col <+>) $ if cur then widget' else widget
-          widget = textField text
-          widget' = widgetFromMaybe widget f
+-- | Gets the relevant column prefix - number in normal mode, letter in moveTo
+columnPrefix :: Int -> Int -> ReaderDrawState Text
+columnPrefix selectedList i = do
+    m <- dsMode <$> ask
+    if moveTo m
+        then do
+            let col = chr (i + ord 'a')
+            return $ if i /= selectedList && i >= 0 && i <= 26 then singleton col ++ ". " else ""
+        else do
+            let col = i + 1
+            return $ if col >= 1 && col <= 9 then tshow col ++ ". " else ""
 
-renderList :: LayoutConfig -> DeadlineFn -> Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
-renderList layout deadlineFn f eTitle p li l = if fst p == li then visible list else list
-    where list =
-              (if not eTitle then cached (RNList li) else id)
+-- | Renders the title for a list
+renderTitle :: Int -> List -> ReaderDrawState (Widget ResourceName)
+renderTitle listIndex list = do
+    (selectedList, selectedTask) <- dsCurrent <$> ask
+    editing <- (selectedList == listIndex &&) . dsEditingTitle <$> ask
+    titleField <- dsField <$> ask
+    col <- txt <$> columnPrefix selectedList listIndex
+
+    let text = title list
+        attr = if selectedList == listIndex then titleCurrentAttr else titleAttr
+        widget = textField text
+        widget' = widgetFromMaybe widget titleField
+        title' = padBottom (Pad 1) . withAttr attr . (col <+>) $ if editing then widget' else widget
+
+    return $ if editing || selectedList /= listIndex || selectedTask == 0 then visible title' else title'
+
+-- | Renders a list
+renderList :: Int -> List -> ReaderDrawState (Widget ResourceName)
+renderList listIndex list = do
+    layout <- dsLayout <$> ask
+    eTitle <- dsEditingTitle <$> ask
+    titleWidget <- renderTitle listIndex list
+    (currentList, _) <- dsCurrent <$> ask
+    taskWidgets <- sequence $ renderTask listIndex `mapWithIndex` tasks list
+
+    let widget = (if not eTitle then cached (RNList listIndex) else id)
             . padLeftRight (columnPadding layout)
             . hLimit (columnWidth layout)
-            . viewport (RNList li) Vertical
+            . viewport (RNList listIndex) Vertical
             . vBox
-            . (renderTitle f eTitle p li l :)
-            . toList
-            $ renderTask deadlineFn f eTitle p li `mapWithIndex` tasks l
+            . (titleWidget :)
+            $ toList taskWidgets
 
-searchImage :: LayoutConfig -> State -> Widget ResourceName -> Widget ResourceName
-searchImage layout s i = case mode s of
-    Search ent f ->
-        let attr = if ent then taskCurrentAttr else taskAttr
-        in
-            i <=> (
-                  withAttr attr
-                . padTopBottom 1
-                . padLeftRight (columnPadding layout)
-                $ txt "/" <+> field f
-            )
-    _ -> i
+    return $ if currentList == listIndex then visible widget else widget
 
-main :: LayoutConfig -> DeadlineFn -> State -> Widget ResourceName
-main layout deadlineFn s =
-      searchImage layout s
-    . viewport RNLists Horizontal
-    . padTopBottom 1
-    . hBox
-    . toList
-    $ renderList layout deadlineFn (getField s) (editingTitle s) (current s)  `mapWithIndex` ls
+-- | Renders the search area
+renderSearch :: Widget ResourceName -> ReaderDrawState (Widget ResourceName)
+renderSearch mainWidget = do
+    m <- dsMode <$> ask
+    case m of
+        Search editing searchField -> do
+            colPad <- columnPadding . dsLayout <$> ask
+            let attr = withAttr $ if editing then taskCurrentAttr else taskAttr
+            let widget = attr . padTopBottom 1 . padLeftRight colPad $ txt "/" <+> field searchField
+            return $ mainWidget <=> widget
+        _ -> return mainWidget
 
-    where ls = lists s
+-- | Renders the main widget
+main :: ReaderDrawState (Widget ResourceName)
+main = do
+    ls <- dsLists <$> ask
+    listWidgets <- toList <$> sequence (renderList `mapWithIndex` ls)
+    let mainWidget = viewport RNLists Horizontal . padTopBottom 1 $ hBox listWidgets
+    renderSearch mainWidget
 
-getField :: State -> Maybe Field
-getField state = case mode state of
-    Insert _ _ f -> Just f
-    _ -> Nothing
+getField :: Mode -> Maybe Field
+getField (Insert _ _ f) = Just f
+getField _ = Nothing
 
+editingTitle :: Mode -> Bool
+editingTitle (Insert IList _ _) = True
+editingTitle _ = False
 
-editingTitle :: State -> Bool
-editingTitle state = case mode state of
-    Insert IList _ _ -> True
-    _ -> False
+moveTo :: Mode -> Bool
+moveTo (Modal MoveTo) = True
+moveTo _ = False
 
 -- draw
-draw :: LayoutConfig -> DeadlineFn -> State -> [Widget ResourceName]
-draw layout deadlineFn state =
-    let s = normalise state in
-    showModal s deadlineFn [main layout deadlineFn s]
+draw :: LayoutConfig -> Day -> State -> [Widget ResourceName]
+draw layout today state =
+    showModal normalisedState today [runReader main DrawState {
+        dsLists = lists normalisedState
+      , dsMode = stateMode
+      , dsLayout = layout
+      , dsToday = today
+      , dsField = getField stateMode
+      , dsCurrent = current normalisedState
+      , dsEditingTitle = editingTitle stateMode
+    }]
+
+    where normalisedState = normalise state
+          stateMode = mode state
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)

@@ -57,7 +57,7 @@ createTrello boardID path = do
     case maybeToken of
         Nothing -> return $ Output $ decodeUtf8 $(embedFile "templates/token.txt")
         Just trelloToken -> do
-            lists <- lift $ getCards trelloToken boardID
+            lists <- lift $ runReaderT (getCards boardID) trelloToken
             case lists of
                 Left txt -> return $ Output txt
                 Right ls -> do

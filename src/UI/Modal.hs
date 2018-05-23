@@ -9,7 +9,7 @@ import Brick
 import Brick.Widgets.Center
 import Brick.Widgets.Border
 
-import Data.Taskell.Date (DeadlineFn)
+import Data.Taskell.Date (Day)
 import Events.State (State, Mode(..), ModalType(..), mode)
 import UI.Field (textField)
 import UI.Modal.Help (help)
@@ -32,9 +32,9 @@ surround (title, widget) =
 
     where t = padBottom (Pad 1) . withAttr titleAttr $ textField title
 
-showModal :: State -> DeadlineFn -> [Widget ResourceName] -> [Widget ResourceName]
-showModal s deadlineFn view = case mode s of
+showModal :: State -> Day -> [Widget ResourceName] -> [Widget ResourceName]
+showModal s today view = case mode s of
     Modal Help -> surround help : view
-    Modal Detail {} -> surround (detail s deadlineFn) : view
+    Modal Detail {} -> surround (detail s today) : view
     Modal MoveTo -> surround (moveTo s) : view
     _ -> view
