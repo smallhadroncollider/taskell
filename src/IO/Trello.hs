@@ -71,21 +71,15 @@ getChecklist checklist = do
         _ -> Left $ tshow status ++ " error while fetching checklist " ++ checklist
 
 updateCard :: Card -> ReaderTrelloToken (Either Text Card)
-updateCard card = do
-    let ids = idChecklists card
-    checklists <- sequence $ getChecklist <$> ids
-    return $ setChecklists card . concat <$> sequence checklists
+updateCard card = (setChecklists card . concat <$>) . sequence <$> checklists
+    where checklists = sequence $ getChecklist <$> idChecklists card
 
 updateList :: List -> ReaderTrelloToken (Either Text List)
-updateList l = do
-    let set c = l { cards = c }
-    cs <- sequence $ updateCard <$> cards l
-    return $ set <$> sequence cs
+updateList l = (set <$>) . sequence <$> sequence (updateCard <$> cards l)
+    where set c = l { cards = c }
 
 getChecklists :: [List] -> ReaderTrelloToken (Either Text [List])
-getChecklists ls = do
-    lists <- sequence $ updateList <$> ls
-    return $ sequence lists
+getChecklists ls = sequence <$> sequence (updateList <$> ls)
 
 getCards :: TrelloBoardID -> ReaderTrelloToken (Either Text Lists)
 getCards board = do
@@ -97,9 +91,7 @@ getCards board = do
 
     case status of
         200 -> case decodeStrict body of
-            Just raw -> do
-                lists <- getChecklists raw
-                return $ trelloListsToLists timezone <$> lists
+            Just raw -> fmap (trelloListsToLists timezone) <$> getChecklists raw
             Nothing -> return $ Left "Could not parse response. Please file an Issue on GitHub."
         404 -> return . Left $ "Could not find Trello board " ++ board ++ ". Make sure the ID is correct"
         401 -> return . Left $ "You do not have permission to view Trello board " ++ board
