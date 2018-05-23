@@ -11,7 +11,7 @@ import Data.Sequence (mapWithIndex)
 
 import Brick
 
-import Data.Taskell.Date (Day, DeadlineFn, dayToText)
+import Data.Taskell.Date (Day, dayToText, deadline)
 import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary, due)
 import Events.State (lists, current, mode, normalise)
@@ -22,10 +22,10 @@ import UI.Modal (showModal)
 import UI.Theme
 import UI.Types (ResourceName(..))
 
-renderDate :: DeadlineFn -> Maybe Day -> Maybe (Widget ResourceName)
-renderDate deadlineFn day = do
-    attr <- withAttr . dlToAttr . deadlineFn <$> day
-    widget <- txt . dayToText <$> day
+renderDate :: Day -> Maybe Day -> Maybe (Widget ResourceName)
+renderDate today day = do
+    attr <- withAttr . dlToAttr . deadline today <$> day
+    widget <- txt . dayToText today <$> day
     return $ attr widget
 
 renderSubTaskCount :: Task -> Widget ResourceName
@@ -37,15 +37,15 @@ renderSubTaskCount t = str $ concat [
       , "]"
     ]
 
-indicators :: DeadlineFn -> Task -> Widget ResourceName
-indicators deadlineFn t = hBox $ padRight (Pad 1) <$> catMaybes [
+indicators :: Day -> Task -> Widget ResourceName
+indicators today t = hBox $ padRight (Pad 1) <$> catMaybes [
         const (txt "≡") <$> summary t
       , bool Nothing (Just (renderSubTaskCount t)) (hasSubTasks t)
-      , renderDate deadlineFn (due t)
+      , renderDate today (due t)
     ]
 
-renderTask :: DeadlineFn -> Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
-renderTask deadlineFn f eTitle p li ti t =
+renderTask :: Day -> Maybe Field -> Bool -> Pointer -> Int -> Int -> Task -> Widget ResourceName
+renderTask today f eTitle p li ti t =
       cached name
     . (if not eTitle && cur then visible else id)
     . padBottom (Pad 1)
@@ -55,7 +55,7 @@ renderTask deadlineFn f eTitle p li ti t =
 
     where cur = (li, ti) == p
           text = description t
-          after = indicators deadlineFn t
+          after = indicators today t
           name = RNTask (li, ti)
           widget = textField text
           widget' = widgetFromMaybe widget f
@@ -78,8 +78,8 @@ renderTitle f eTitle (p, i) li l =
           widget = textField text
           widget' = widgetFromMaybe widget f
 
-renderList :: LayoutConfig -> DeadlineFn -> Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
-renderList layout deadlineFn f eTitle p li l = if fst p == li then visible list else list
+renderList :: LayoutConfig -> Day -> Maybe Field -> Bool -> Pointer -> Int -> List -> Widget ResourceName
+renderList layout today f eTitle p li l = if fst p == li then visible list else list
     where list =
               (if not eTitle then cached (RNList li) else id)
             . padLeftRight (columnPadding layout)
@@ -88,7 +88,7 @@ renderList layout deadlineFn f eTitle p li l = if fst p == li then visible list 
             . vBox
             . (renderTitle f eTitle p li l :)
             . toList
-            $ renderTask deadlineFn f eTitle p li `mapWithIndex` tasks l
+            $ renderTask today f eTitle p li `mapWithIndex` tasks l
 
 searchImage :: LayoutConfig -> State -> Widget ResourceName -> Widget ResourceName
 searchImage layout s i = case mode s of
@@ -103,14 +103,14 @@ searchImage layout s i = case mode s of
             )
     _ -> i
 
-main :: LayoutConfig -> DeadlineFn -> State -> Widget ResourceName
-main layout deadlineFn s =
+main :: LayoutConfig -> Day -> State -> Widget ResourceName
+main layout today s =
       searchImage layout s
     . viewport RNLists Horizontal
     . padTopBottom 1
     . hBox
     . toList
-    $ renderList layout deadlineFn (getField s) (editingTitle s) (current s)  `mapWithIndex` ls
+    $ renderList layout today (getField s) (editingTitle s) (current s)  `mapWithIndex` ls
 
     where ls = lists s
 
@@ -126,10 +126,10 @@ editingTitle state = case mode state of
     _ -> False
 
 -- draw
-draw :: LayoutConfig -> DeadlineFn -> State -> [Widget ResourceName]
-draw layout deadlineFn state =
+draw :: LayoutConfig -> Day -> State -> [Widget ResourceName]
+draw layout today state =
     let s = normalise state in
-    showModal s deadlineFn [main layout deadlineFn s]
+    showModal s today [main layout today s]
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
