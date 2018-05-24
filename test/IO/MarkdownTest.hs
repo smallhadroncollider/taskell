@@ -179,10 +179,24 @@ test_markdown =
                     assertEqual
                         "List item with Sub-Task"
                         (makeSubTask False, [])
-                        (start alternativeMarkdownConfig (listWithItem, []) ("- Blah", 1))
+                        (start alternativeMarkdownConfig (listWithItem, []) ("- [ ] Blah", 1))
                 )
 
               , testCase "Complete Sub-Task" (
+                    assertEqual
+                        "List item with Sub-Task"
+                        (makeSubTask True, [])
+                        (start alternativeMarkdownConfig (listWithItem, []) ("- [x] Blah", 1))
+                )
+
+              , testCase "Sub-Task (old style)" (
+                    assertEqual
+                        "List item with Sub-Task"
+                        (makeSubTask False, [])
+                        (start alternativeMarkdownConfig (listWithItem, []) ("- Blah", 1))
+                )
+
+              , testCase "Complete Sub-Task (old style)" (
                     assertEqual
                         "List item with Sub-Task"
                         (makeSubTask True, [])
@@ -247,7 +261,7 @@ test_markdown =
               , testCase "Standard list with sub-task" (
                     assertEqual
                         "Markdown formatted output"
-                        "## Test\n\n- Test Item\n    * ~Blah~\n"
+                        "## Test\n\n- Test Item\n    * [x] Blah\n"
                         (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask True))
                 )
             ],
@@ -263,7 +277,7 @@ test_markdown =
               , testCase "Standard list with sub-task" (
                     assertEqual
                         "Markdown formatted output"
-                        "## Test\n\n- Test Item\n    * Blah\n"
+                        "## Test\n\n- Test Item\n    * [ ] Blah\n"
                         (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask False))
                 )
             ]

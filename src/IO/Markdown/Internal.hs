@@ -25,7 +25,9 @@ trimTilde = strip . T.dropAround (== '~')
 addSubItem :: Text -> Lists -> Lists
 addSubItem t ls = adjust' updateList i ls
     where i = length ls - 1
-          st | "~" `isPrefixOf` t = subTask (trimTilde t) True
+          st | "[ ] " `isPrefixOf` t = subTask (trim 4 t) False
+             | "[x] " `isPrefixOf` t = subTask (trim 4 t) True
+             | "~" `isPrefixOf` t = subTask (trimTilde t) True
              | otherwise = subTask t False
           updateList l = updateFn j (addSubTask st) l
             where j = count l - 1
@@ -86,12 +88,12 @@ subTaskStringify :: MarkdownConfig -> Text -> SubTask -> Text
 subTaskStringify config t st = foldl' (++) t [
         subtaskOutput config,
         " ",
-        surround,
+        pre,
+        " ",
         name st,
-        surround,
         "\n"
     ]
-    where surround = if complete st then "~" else ""
+    where pre = if complete st then "[x]" else "[ ]"
 
 summaryStringify :: MarkdownConfig -> Text -> Text
 summaryStringify config sm = concat [summaryOutput config, " ", sm, "\n"]
