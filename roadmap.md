@@ -31,6 +31,8 @@
 - Use lenses for nested data?
 - Add a List widget for common actions between tasks and sub-tasks
 - Tidy up load functions in IO.Taskell
+- Remove `~` style sub-task complete parsing
+    @ 2018-12-10
 
 ## Bugs
 
@@ -55,7 +57,6 @@
     * Find someone to submit it
     * Use `install_cabal_package`
     * Use `depends_on "cabal-install" => :build`
-- GitHub checklist support - []/[x]
 - Add custom key support
 - Show filename somewhere
 - Editable title?
@@ -218,3 +219,4 @@
     * ~Refactor code~
     * ~Use Reader to pass around trello token?~
 - Should change list numbering to letters when in move list mode
+- GitHub checklist support - []/[x]
