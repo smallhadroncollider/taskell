@@ -22,16 +22,17 @@ data GeneralConfig = GeneralConfig {
     }
 
 data LayoutConfig = LayoutConfig {
-        columnWidth :: Int,
-        columnPadding :: Int
+        columnWidth :: Int
+      , columnPadding :: Int
+      , descriptionIndicator :: Text
     }
 
 data MarkdownConfig = MarkdownConfig {
-        titleOutput :: Text,
-        taskOutput :: Text,
-        summaryOutput :: Text,
-        dueOutput :: Text,
-        subtaskOutput :: Text
+        titleOutput :: Text
+      , taskOutput :: Text
+      , summaryOutput :: Text
+      , dueOutput :: Text
+      , subtaskOutput :: Text
     }
 
 data TrelloConfig = TrelloConfig {
@@ -39,10 +40,10 @@ data TrelloConfig = TrelloConfig {
     }
 
 data Config = Config {
-        general :: GeneralConfig,
-        layout :: LayoutConfig,
-        markdown :: MarkdownConfig,
-        trello :: TrelloConfig
+        general :: GeneralConfig
+      , layout :: LayoutConfig
+      , markdown :: MarkdownConfig
+      , trello :: TrelloConfig
     }
 
 defaultGeneralConfig :: GeneralConfig
@@ -52,17 +53,18 @@ defaultGeneralConfig = GeneralConfig {
 
 defaultLayoutConfig :: LayoutConfig
 defaultLayoutConfig = LayoutConfig {
-    columnWidth = 30,
-    columnPadding = 3
+    columnWidth = 30
+  , columnPadding = 3
+  , descriptionIndicator = "≡"
 }
 
 defaultMarkdownConfig :: MarkdownConfig
 defaultMarkdownConfig = MarkdownConfig {
-    titleOutput = "##",
-    taskOutput = "-",
-    summaryOutput = "    >",
-    dueOutput = "    @",
-    subtaskOutput = "    *"
+    titleOutput = "##"
+  , taskOutput = "-"
+  , summaryOutput = "    >"
+  , dueOutput = "    @"
+  , subtaskOutput = "    *"
 }
 
 defaultTrelloConfig :: TrelloConfig
@@ -72,10 +74,10 @@ defaultTrelloConfig = TrelloConfig {
 
 defaultConfig :: Config
 defaultConfig = Config {
-    general = defaultGeneralConfig,
-    layout = defaultLayoutConfig,
-    markdown = defaultMarkdownConfig,
-    trello = defaultTrelloConfig
+    general = defaultGeneralConfig
+  , layout = defaultLayoutConfig
+  , markdown = defaultMarkdownConfig
+  , trello = defaultTrelloConfig
 }
 
 getDir :: IO FilePath
@@ -130,7 +132,12 @@ configParser = do
         sectionMb "layout" (do
             columnWidthCf <- fromMaybe (columnWidth defaultLayoutConfig) <$> fieldMbOf "column_width" number
             columnPaddingCf <- fromMaybe (columnPadding defaultLayoutConfig) <$> fieldMbOf "column_padding" number
-            return LayoutConfig { columnWidth = columnWidthCf, columnPadding = columnPaddingCf }
+            descriptionIndicatorCf <- fromMaybe (descriptionIndicator defaultLayoutConfig) . (noEmpty . parseText =<<) <$> fieldMb "description_indicator"
+            return LayoutConfig {
+                columnWidth = columnWidthCf
+              , columnPadding = columnPaddingCf
+              , descriptionIndicator = descriptionIndicatorCf
+            }
         )
     markdownCf <-fromMaybe defaultMarkdownConfig <$>
         sectionMb "markdown" (do
@@ -140,11 +147,11 @@ configParser = do
             dueOutputCf <- fromMaybe (dueOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "due"
             subtaskOutputCf <- fromMaybe (subtaskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "subtask"
             return MarkdownConfig {
-                titleOutput = titleOutputCf,
-                taskOutput = taskOutputCf,
-                summaryOutput = summaryOutputCf,
-                dueOutput = dueOutputCf,
-                subtaskOutput = subtaskOutputCf
+                titleOutput = titleOutputCf
+              , taskOutput = taskOutputCf
+              , summaryOutput = summaryOutputCf
+              , dueOutput = dueOutputCf
+              , subtaskOutput = subtaskOutputCf
             }
         )
     trelloCf <- fromMaybe defaultTrelloConfig <$>
@@ -153,10 +160,10 @@ configParser = do
             return TrelloConfig { token = tokenCf }
         )
     return Config {
-        general = generalCf,
-        layout = layoutCf,
-        markdown = markdownCf,
-        trello = trelloCf
+        general = generalCf
+      , layout = layoutCf
+      , markdown = markdownCf
+      , trello = trelloCf
     }
 
 getConfig :: IO Config

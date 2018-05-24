@@ -138,6 +138,10 @@ column_width = 30
 ; for both sides, so 3 would give a gap of 6 between two columns
 column_padding = 3
 
+; the icon to use when a task has a description
+; the default icon may not display on all systems
+description_indicator = "≡"
+
 [markdown]
 ; the markdown to start a title line with
 title = "##"
