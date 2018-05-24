@@ -1,16 +1,7 @@
 ## Misc.
 
-- Add Twitter links
-    * [ ] Website
-    * [ ] Github
 - Automate website publishing when doing a new build
     > Should automatically update the `_config.yml` file, build the website, then deploy it
-- Move image to taskell.app
-    > The demo image should live on the taskell.app server, rather than being on an orphan branch on GitHub
-    * [ ] Move image
-    * [ ] Update site
-    * [ ] Update GitHub README.md
-    * [ ] Remove img branch
 - Add more information to taskell.app
     > Update taskell.app to have more than just README.md contents. Use cases, more images, examples, etc.
     * [ ] Use case example: checklist
@@ -224,3 +215,12 @@
 - Caching doesn't clear properly when using `o` and `O`
 - Add description status indicator option to config.ini
     > Part of the themeing should allow changing to different icon - might not work in all fonts
+- Add Twitter links
+    * [x] Website
+    * [x] Github
+- Move image to taskell.app
+    > The demo image should live on the taskell.app server, rather than being on an orphan branch on GitHub
+    * [x] Move image
+    * [x] Update site
+    * [x] Update GitHub README.md
+    * [x] Remove img branch
