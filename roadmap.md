@@ -39,15 +39,14 @@
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
 - Help modal needs to wrap and scroll
-- No obvious way to know if there are more items in a list off-screen
-    > Lowest item should be "..." if more items
-- Task description not visible on shorter screens
-    > Visibility only applies to scroll items, so description is often hidden if the screen height is small
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
-- Caching doesn't clear properly when using `o` and `O`
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
 - The isBlank check on tasks could potentially delete a task with no description but which does have sub-tasks
+- Task description should be visible by default in task detail
+    > Visibility should be on the description by default?
+- No obvious way to know if there are more items in a list off-screen
+    > Lowest item should be "..." if more items
 
 ## Features
 
@@ -220,3 +219,4 @@
     * ~Use Reader to pass around trello token?~
 - Should change list numbering to letters when in move list mode
 - GitHub checklist support - []/[x]
+- Caching doesn't clear properly when using `o` and `O`
