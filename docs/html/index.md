@@ -16,7 +16,7 @@ A CLI kanban board/task manager for Mac and Linux
 - Support for sub-tasks
 - Written in Haskell
 
-![Demo](https://github.com/smallhadroncollider/taskell/blob/img/demo.gif?raw=true)
+![Demo](/img/demo.gif)
 
 <a href="https://www.buymeacoffee.com/shc" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
@@ -31,6 +31,8 @@ brew install smallhadroncollider/taskell/taskell
 ```
 
 There are usually bottles (binaries) available for High Sierra and Sierra. If these are not available for your computer, Homebrew will build Taskell from scratch using [Stack](https://docs.haskellstack.org/), which can take a while, particularly on older machines. Occasionally the build fails the first time, but usually works on a second attempt.
+
+**Note**: Until taskell is [supported by `homebrew-core`](https://github.com/Homebrew/homebrew-core/pull/27703), the Homebrew formula will not be updated for patch updates (e.g. 1.1.0 to 1.1.1), only minor updates (e.g. 1.1.0 to 1.2.0).
 
 ### Debian/Ubuntu
 
@@ -90,11 +92,15 @@ Make sure you have permission to view the Trello board, otherwise you'll get an 
 ### Limitations
 
 - This is a one-off procedure: it effectively imports a Trello board to taskell
-- Only list and card titles are supported
+- Currently imports:
+    - Lists
+    - Cards
+    - Card descriptions
+    - Card due dates
+    - Card checklists (merged into one list per card)
 
 ### Plans
 
-- Better support for Card details (e.g. sub-tasks, due dates)
 - Full syncing with Trello: effectively using taskell as a CLI Trello front-end
 
 
@@ -136,6 +142,10 @@ column_width = 30
 ; the padding of a column
 ; for both sides, so 3 would give a gap of 6 between two columns
 column_padding = 3
+
+; the icon to use when a task has a description
+; the default icon may not display on all systems
+description_indicator = "≡"
 
 [markdown]
 ; the markdown to start a title line with
@@ -205,6 +215,8 @@ See [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roa
 ## Contributing
 
 Please check the [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) before adding any bugs/feature requests to Issues.
+
+Anyone is welcome to contribute to the project, but please read through [CONTRIBUTING.md](https://github.com/smallhadroncollider/taskell/blob/master/CONTRIBUTING.md) and make sure that you agree with the [Code of Conduct](https://github.com/smallhadroncollider/taskell/blob/master/CODE_OF_CONDUCT.md) before getting involved.
 
 ---
 
