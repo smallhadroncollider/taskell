@@ -1,28 +1,28 @@
 ## Misc.
 
 - Add Twitter links
-    * Website
-    * Github
+    * [ ] Website
+    * [ ] Github
 - Automate website publishing when doing a new build
     > Should automatically update the `_config.yml` file, build the website, then deploy it
 - Move image to taskell.app
     > The demo image should live on the taskell.app server, rather than being on an orphan branch on GitHub
-    * Move image
-    * Update site
-    * Update GitHub README.md
-    * Remove img branch
+    * [ ] Move image
+    * [ ] Update site
+    * [ ] Update GitHub README.md
+    * [ ] Remove img branch
 - Add more information to taskell.app
     > Update taskell.app to have more than just README.md contents. Use cases, more images, examples, etc.
-    * Use case example: checklist
-    * Use case example: Git controlled tasks
+    * [ ] Use case example: checklist
+    * [ ] Use case example: Git controlled tasks
 
 ## Refactoring
 
 - Use a Makefile instead of bash script
 - Update Task field naming
-    * Task: description -> name/title
-    * Task: summary -> description
-    * ~UI.Modal.SubTasks -> UI.Modal.Detail~
+    * [ ] Task: description -> name/title
+    * [ ] Task: summary -> description
+    * [x] UI.Modal.SubTasks -> UI.Modal.Detail
 - Break up State module
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
@@ -51,11 +51,6 @@
 ## Features
 
 - Check times work no matter what timezone
-- Sort out Homebrew forumula
-    > Make the necessary changes so that taskell can be put on the homebrew-core repository
-    * Find someone to submit it
-    * Use `install_cabal_package`
-    * Use `depends_on "cabal-install" => :build`
 - Add custom key support
 - Show filename somewhere
 - Editable title?
@@ -64,20 +59,27 @@
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Redo functionality
 - Make trello token UX better
-    * Open link automatically?
-    * Ask for token and save to ini file automatically
+    * [ ] Open link automatically?
+    * [ ] Ask for token and save to ini file automatically
 - Reordering sub-tasks
 - Add Trello syncing
 - Item count for lists?
     > Show the numbers of items in a list next to its title
 - Always show list title
     > Floating list titles - so you can always see what list you're in
-- Add description status indicator option to config.ini
-    > Part of the themeing should allow changing to different icon - might not work in all fonts
 - Duplicate task with `+`
+- Some way to just see tasks with due dates
+    * [ ] Sort by date or filter by urgency?
+- Ability to load a taskell file with custom config.ini settings
+    > Either command line arguments for settings or just a `-c other.ini` command
 
 ## In Progress
 
+- Sort out Homebrew forumula
+    > Make the necessary changes so that taskell can be put on the homebrew-core repository
+    * [ ] Find someone to submit it
+    * [x] Use `install_cabal_package`
+    * [x] Use `depends_on "cabal-install" => :build`
 
 ## Done
 
@@ -157,18 +159,18 @@
 - On `?` show keyboard commands
 - Remove size from state
 - Sub-lists
-    * ~Scrolling in sub-tasks~
-    * ~Press Enter to create next~
-    * ~Word wrapping~
-    * ~Searching~
-    * ~Delete items~
+    * [x] Scrolling in sub-tasks
+    * [x] Press Enter to create next
+    * [x] Word wrapping
+    * [x] Searching
+    * [x] Delete items
 - No cursor in sub-task view
-    * ~Single line~
-    * ~Multi-line~
+    * [x] Single line
+    * [x] Multi-line
 - Customisable Markdown format
-    * ~Change top level headers~
-    * ~Change top level list item: e.g. to H3 instead of li~
-    * ~Change sub-list: e.g. from "    *" to "-"~
+    * [x] Change top level headers
+    * [x] Change top level list item: e.g. to H3 instead of li
+    * [x] Change sub-list: e.g. from "    *" to "-"
 - Feels sluggish in sub-task view - cache main view?
 - Leaving search only refreshes current list
 - Display a warning if any line of the file could not be parsed - otherwise could lead to data loss
@@ -185,38 +187,40 @@
 - Editing list title doesn't always have visibility
 - Left/Right arrow keys in insert mode
 - Share code between tasks and sub-tasks lists?
-    * ~Move wrap into Field widget~
-    * ~Use Field for search~
-    * ~Use Field for sub-tasks~
-    * ~Use Field for titles~
-    * ~Use Field for tasks~
-    * ~Make sure `C` works~
+    * [x] Move wrap into Field widget
+    * [x] Use Field for search
+    * [x] Use Field for sub-tasks
+    * [x] Use Field for titles
+    * [x] Use Field for tasks
+    * [x] Make sure `C` works
 - Copy and paste
-    * ~List titles~
-    * ~Search~
+    * [x] List titles
+    * [x] Search
 - Multiple spaces at the beginning of a line can break cursor positioning
 - Task body - e.g. as well as sub lists, have a longer description
 - Indicator for when a task has a description
     > Use ≡?
 - Pressing `Esc` when entering task description shouldn't reset it
 - Better Trello import errors - e.g. auth vs. parsing issues
-    * ~Error on parse issues~
-    * ~Error on Auth issues~
+    * [x] Error on parse issues
+    * [x] Error on Auth issues
 - Add due dates to tasks with `@`
-    * ~Render due dates~
-    * ~Editable due dates~
+    * [x] Render due dates
+    * [x] Editable due dates
 - Trello dates need to take current timezone into account
     > Trello gives dates in UTC, but need to display them in the current timezone. Deadlines should also take timezones into account if necessary.
 - Move to column only works for columns before the one you're in
 - Add Trello import
-    * ~Basic trello import~
-    * ~Add due date support~
-    * ~Add sub-tasks support~
-    * ~Add card summary support~
+    * [x] Basic trello import
+    * [x] Add due date support
+    * [x] Add sub-tasks support
+    * [x] Add card summary support
 - Improve Trello checklist import
-    * ~Take checklist fetch errors into account~
-    * ~Refactor code~
-    * ~Use Reader to pass around trello token?~
+    * [x] Take checklist fetch errors into account
+    * [x] Refactor code
+    * [x] Use Reader to pass around trello token?
 - Should change list numbering to letters when in move list mode
 - GitHub checklist support - []/[x]
 - Caching doesn't clear properly when using `o` and `O`
+- Add description status indicator option to config.ini
+    > Part of the themeing should allow changing to different icon - might not work in all fonts
