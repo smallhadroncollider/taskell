@@ -11,7 +11,8 @@ import Graphics.Vty.Input.Events (Event(..))
 import Data.Taskell.Lists (Lists)
 import Data.Taskell.Date (currentDay)
 import Events.Actions (event)
-import Events.State (State, Mode(..), ModalType(..), continue, path, mode, io, current, lists)
+import Events.State (continue, path, mode, io, current, lists, countCurrent)
+import Events.State.Types (State, Mode(..), ModalType(..), InsertMode(..), InsertType(..))
 import IO.Config (Config, layout, generateAttrMap)
 import IO.Taskell (writeData)
 import UI.Draw (draw, chooseCursor)
@@ -28,6 +29,7 @@ next config s = case io s of
     Just ls -> invalidateCache >> liftIO (store config ls s) >>= Brick.continue
     Nothing -> Brick.continue s
 
+-- cache clearing
 clearCache :: State -> EventM ResourceName ()
 clearCache state = do
     let (li, ti) = current state
@@ -41,6 +43,15 @@ clearAllTitles state = do
     void . sequence $ invalidateCacheEntry . RNList <$> range
     void . sequence $ invalidateCacheEntry . (\x -> RNTask (x, -1)) <$> range
 
+clearList :: State -> EventM ResourceName ()
+clearList state = do
+    let (list, _) = current state
+    let count = countCurrent state
+    let range = [0 .. (count - 1)]
+    invalidateCacheEntry $ RNList list
+    void . sequence $ invalidateCacheEntry . (\x -> RNTask (list, x)) <$> range
+
+-- event handling
 handleVtyEvent :: Config -> State -> Event -> EventM ResourceName (Next State)
 handleVtyEvent config previousState e = do
     let state = event e previousState
@@ -48,19 +59,23 @@ handleVtyEvent config previousState e = do
     case mode previousState of
         Search _ _ -> invalidateCache
         (Modal MoveTo) -> clearAllTitles previousState
+        (Insert ITask ICreate _) -> clearList previousState
         _ -> return ()
 
     case mode state of
         Shutdown -> Brick.halt state
         (Modal MoveTo) -> clearAllTitles state >> next config state
+        (Insert ITask ICreate _) -> clearList state >> next config state
         _ -> clearCache previousState >> clearCache state >> next config state
 
--- App code
 handleEvent :: Config -> State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
 handleEvent _ state (VtyEvent (EvResize _ _ )) = invalidateCache >> Brick.continue state
 handleEvent config state (VtyEvent ev) = handleVtyEvent config state ev
 handleEvent _ state _ = Brick.continue state
 
+
+-- | Runs when the app starts
+--   Adds paste support
 appStart :: State -> EventM ResourceName State
 appStart state = do
     vty <- getVtyHandle
@@ -69,6 +84,7 @@ appStart state = do
         liftIO $ setMode output BracketedPaste True
     return state
 
+-- | Sets up Brick
 go :: Config -> State -> IO ()
 go config initial = do
     attrMap' <- const <$> generateAttrMap

@@ -19,7 +19,7 @@ import Data.Taskell.List (List, tasks, title)
 import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary, due)
 import Events.State (lists, current, mode, normalise)
 import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), DetailMode(..))
-import IO.Config (LayoutConfig, columnWidth, columnPadding)
+import IO.Config (LayoutConfig, columnWidth, columnPadding, descriptionIndicator)
 import UI.Field (Field, field, textField, widgetFromMaybe)
 import UI.Modal (showModal)
 import UI.Theme
@@ -55,8 +55,9 @@ renderSubTaskCount task = txt $ concat ["[" , tshow $ countCompleteSubTasks task
 indicators :: Task -> ReaderDrawState (Widget ResourceName)
 indicators task = do
     dateWidget <- renderDate (due task) -- get the due date widget
+    descIndicator <- descriptionIndicator . dsLayout <$> ask
     return . hBox $ padRight (Pad 1) <$> catMaybes [
-            const (txt "≡") <$> summary task -- show the summary indicator if one is set
+            const (txt descIndicator) <$> summary task -- show the summary indicator if one is set
           , bool Nothing (Just (renderSubTaskCount task)) (hasSubTasks task) -- if it has subtasks, render the sub task count
           , dateWidget
         ]

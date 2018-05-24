@@ -14,6 +14,7 @@ module Events.State (
     write,
     io,
     path,
+    countCurrent,
 
     -- record accesors
     mode,
