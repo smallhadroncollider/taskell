@@ -8,7 +8,6 @@ import ClassyPrelude hiding (delete)
 
 import Test.Tasty
 import Test.Tasty.HUnit
-import Test.Tasty.ExpectedFailure (ignoreTest)
 
 import Data.Taskell.Lists
 import qualified Data.Taskell.List as L

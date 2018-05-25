@@ -8,7 +8,6 @@ import ClassyPrelude as CP
 
 import Test.Tasty
 import Test.Tasty.HUnit
-import Test.Tasty.ExpectedFailure (ignoreTest)
 
 import Data.Taskell.List as L
 import qualified Data.Taskell.Task as T (Task, blank, new, description)

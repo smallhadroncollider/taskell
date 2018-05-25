@@ -8,11 +8,9 @@ import ClassyPrelude
 
 import Test.Tasty
 import Test.Tasty.HUnit
-import Test.Tasty.ExpectedFailure (ignoreTest)
 
 import Events.State
 import Events.State.Types
-import Data.Taskell.Lists
 import qualified Data.Sequence as S (lookup)
 import qualified Data.Taskell.List as L (empty, append)
 import qualified Data.Taskell.Task as T (new)
