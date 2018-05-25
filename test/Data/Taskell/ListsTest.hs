@@ -214,4 +214,11 @@ test_lists =
                     (appendToLast (T.new "Blah") empty)
             )
         ]
+
+      , testCase "analyse" (
+            assertEqual
+                "Returns an analysis"
+                "test.md\nLists: 3\nTasks: 9"
+                (analyse "test.md" testLists)
+        )
     ]

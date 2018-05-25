@@ -9,7 +9,7 @@ import System.Directory (getCurrentDirectory, doesFileExist)
 import Data.FileEmbed (embedFile)
 
 import Config (version, usage)
-import Data.Taskell.Lists (Lists, initial)
+import Data.Taskell.Lists (Lists, initial, analyse)
 import IO.Config (Config, general, filename, token, trello)
 import IO.Markdown (stringify, parse)
 import IO.Trello (TrelloBoardID, getCards)
@@ -23,6 +23,7 @@ parseArgs :: [Text] -> ReaderConfig Next
 parseArgs ["-v"] = return $ Output version
 parseArgs ["-h"] = return $ Output usage
 parseArgs ["-t", boardID, file] = loadTrello boardID file
+parseArgs ["-i", file] = fileInfo file
 parseArgs [file] = loadFile file
 parseArgs [] = (pack . filename . general <$> ask) >>= loadFile
 parseArgs  _ = return $ Output (unlines ["Invalid options", "", usage])
@@ -49,6 +50,18 @@ loadTrello boardID filepath = do
     if exists'
         then return $ Output (filepath ++ " already exists")
         else createTrello boardID path
+
+fileInfo :: Text -> ReaderConfig Next
+fileInfo filepath = do
+    let path = unpack filepath
+    exists' <- fileExists path
+    if exists'
+        then do
+            content <- readData path
+            return $ case content of
+                Right lists -> Output $ analyse filepath lists
+                Left err -> Output $ pack path ++ ": " ++ err
+        else return Exit
 
 createTrello :: TrelloBoardID -> FilePath -> ReaderConfig Next
 createTrello boardID path = do

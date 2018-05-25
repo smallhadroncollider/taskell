@@ -6,7 +6,7 @@ import ClassyPrelude hiding (empty)
 
 import Data.Sequence as S ((!?), (|>), update, deleteAt)
 
-import Data.Taskell.List (List(..), empty, extract, append, searchFor)
+import Data.Taskell.List as L (List(..), empty, extract, append, searchFor, count)
 import Data.Taskell.Task (Task)
 import qualified Data.Taskell.Seq as S
 
@@ -57,3 +57,10 @@ appendToLast t ls = fromMaybe ls $ do
     l <- ls !? i
     let l' = append l t
     return $ updateLists i ls l'
+
+analyse :: Text -> Lists -> Text
+analyse filepath ls = concat [
+        filepath , "\n"
+      , "Lists: ", tshow $ length ls, "\n"
+      , "Tasks: ", tshow $ foldl' (+) 0 (L.count <$> ls)
+    ]
