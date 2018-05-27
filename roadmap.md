@@ -66,11 +66,6 @@
 
 ## In Progress
 
-- Sort out Homebrew forumula
-    > Make the necessary changes so that taskell can be put on the homebrew-core repository
-    * [ ] Find someone to submit it
-    * [x] Use `install_cabal_package`
-    * [x] Use `depends_on "cabal-install" => :build`
 
 ## Done
 
@@ -224,3 +219,8 @@
     * [x] Update site
     * [x] Update GitHub README.md
     * [x] Remove img branch
+- Sort out Homebrew forumula
+    > Make the necessary changes so that taskell can be put on the homebrew-core repository
+    * [x] Find someone to submit it
+    * [x] Use `install_cabal_package`
+    * [x] Use `depends_on "cabal-install" => :build`
