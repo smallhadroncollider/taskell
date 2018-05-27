@@ -55,7 +55,7 @@ Release Template
 
 ### Installation
 
-- Mac (Homebrew): \`brew install smallhadroncollider/taskell/taskell\`
+- Mac (Homebrew): \`brew install taskell\`
 - Mac/Linux: download binary and place it in a directory in your \`\$PATH\` (e.g. \`/usr/local/bin\`)
 - Debian (including Ubuntu): download the \`.deb\` file and run \`dpkg -i taskell-$1_x86-64-linux.deb\`
 - Fedora: Run \`sudo dnf install ncurses-compat-libs\` then download and run binary as described above
@@ -63,4 +63,4 @@ Release Template
 ---------------------------------------------
 "
 
-printf "\n\nbrew install --build-bottle smallhadroncollider/taskell/taskell && brew bottle taskell\n"
+printf "\n\nrun brew bump-formula-pr --version=$1 --url=https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz taskell"

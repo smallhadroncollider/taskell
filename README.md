@@ -24,12 +24,10 @@ Follow [@taskellcli](https://twitter.com/taskellcli) on Twitter for updates
 You can install Taskell on your Mac using [Homebrew](https://brew.sh):
 
 ```bash
-brew install smallhadroncollider/taskell/taskell
+brew install taskell
 ```
 
-There are usually bottles (binaries) available for High Sierra and Sierra. If these are not available for your computer, Homebrew will build Taskell from scratch using [Stack](https://docs.haskellstack.org/), which can take a while, particularly on older machines. Occasionally the build fails the first time, but usually works on a second attempt.
-
-**Note**: Until taskell is [supported by `homebrew-core`](https://github.com/Homebrew/homebrew-core/pull/27703), the Homebrew formula will not be updated for patch updates (e.g. 1.1.0 to 1.1.1), only minor updates (e.g. 1.1.0 to 1.2.0).
+There are usually bottles (binaries) available. If these are not available for your computer, Homebrew will build Taskell from scratch, which can take a while, particularly on older machines. Occasionally the build fails the first time, but usually works on a second attempt.
 
 ### Debian/Ubuntu
 
