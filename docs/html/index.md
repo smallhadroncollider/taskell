@@ -222,4 +222,4 @@ Anyone is welcome to contribute to the project, but please read through [CONTRIB
 
 ## Acknowledgements
 
-Built using [Brick](https://github.com/jtdaugherty/brick). Thanks to [Jonathan Daugherty](https://github.com/jtdaugherty) for answering all my questions and pointing me in the right direction. Also thanks to [Jack Leigh](https://github.com/leighman) and [Thom Wright](https://github.com/ThomWright) for helping me get started.
+Built using [Brick](https://github.com/jtdaugherty/brick). Thanks to [Jonathan Daugherty](https://github.com/jtdaugherty) for answering all my questions and pointing me in the right direction. Also thanks to [Jack Leigh](https://github.com/leighman) and [Thom Wright](https://github.com/ThomWright) for helping me get started. Also thanks to [Katja Durrani](https://github.com/katjad) for submitting Taskell to [`homebrew-core`](https://github.com/Homebrew/homebrew-core).
