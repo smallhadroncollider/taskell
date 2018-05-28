@@ -25,14 +25,15 @@ library:
   exposed-modules:
   - App
   - Events.State
-  - IO.Taskell
   - IO.Config
+  - IO.Taskell
 
   # tests
   - Data.Taskell.Date
-  - Data.Taskell.Lists
   - Data.Taskell.List
+  - Data.Taskell.Lists
   - Data.Taskell.Seq
+  - Data.Taskell.Subtask
   - Data.Taskell.Task
   - Events.State.Types
   - IO.Markdown.Internal
@@ -40,18 +41,19 @@ library:
 
   dependencies:
   - base <=5
-  - vty
-  - text
-  - time
-  - mtl
-  - brick
   - aeson
+  - brick
   - bytestring
   - config-ini
   - containers
   - directory
   - file-embed
   - http-conduit
+  - lens
+  - mtl
+  - text
+  - time
+  - vty
 
 executables:
   taskell:
@@ -75,11 +77,11 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - base
-    - time
     - containers
-    - text
     - taskell
     - tasty
-    - tasty-hunit
     - tasty-discover
     - tasty-expected-failure
+    - tasty-hunit
+    - text
+    - time
