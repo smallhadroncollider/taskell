@@ -4,7 +4,7 @@ module Data.Taskell.List.Internal where
 
 import ClassyPrelude
 
-import Control.Lens (makeLenses, (&), (^.), (^?), (.~), (%~), ix)
+import Control.Lens (makeLenses, (&), (^.), (^?), (.~), (%~), (%%~), ix)
 
 import Data.Sequence as S ((|>), adjust', deleteAt, update, insertAt)
 
@@ -53,9 +53,7 @@ update :: Int -> T.Task -> Update
 update idx task = tasks %~ S.update idx task
 
 move :: Int -> Int -> List -> Maybe List
-move from dir list = do
-    ts' <- S.shiftBy from dir (list ^. tasks)
-    return $ list & tasks .~ ts'
+move from dir = tasks %%~ S.shiftBy from dir
 
 deleteTask :: Int -> Update
 deleteTask idx = tasks %~ deleteAt idx
