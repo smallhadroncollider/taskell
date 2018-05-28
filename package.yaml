@@ -35,6 +35,7 @@ library:
   - Data.Taskell.Lists
   - Data.Taskell.Seq
   - Data.Taskell.Subtask
+  - Data.Taskell.Subtask.Internal
   - Data.Taskell.Task
   - Events.State.Types
   - IO.Markdown.Internal
@@ -79,6 +80,7 @@ tests:
     dependencies:
     - base
     - containers
+    - lens
     - taskell
     - tasty
     - tasty-discover

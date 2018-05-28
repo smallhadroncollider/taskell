@@ -4,6 +4,8 @@ module IO.Markdown.Internal where
 
 import ClassyPrelude
 
+import Control.Lens ((^.))
+
 import Data.Sequence (adjust')
 import Data.Text as T (strip, dropAround)
 import Data.Text.Encoding (decodeUtf8With)
@@ -11,7 +13,8 @@ import Data.Text.Encoding (decodeUtf8With)
 import Data.Taskell.Date (dayToOutput)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks, updateFn, count)
-import Data.Taskell.Task (Task, SubTask, new, description, subTasks, addSubTask, setSummary, setDue, subTask, name, complete, due, summary)
+import qualified Data.Taskell.Subtask as ST (Subtask, new, name, complete)
+import Data.Taskell.Task (Task, new, description, subtasks, addSubtask, setSummary, setDue, due, summary)
 
 import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, summaryOutput, dueOutput, subtaskOutput)
 
@@ -25,11 +28,11 @@ trimTilde = strip . T.dropAround (== '~')
 addSubItem :: Text -> Lists -> Lists
 addSubItem t ls = adjust' updateList i ls
     where i = length ls - 1
-          st | "[ ] " `isPrefixOf` t = subTask (trim 4 t) False
-             | "[x] " `isPrefixOf` t = subTask (trim 4 t) True
-             | "~" `isPrefixOf` t = subTask (trimTilde t) True
-             | otherwise = subTask t False
-          updateList l = updateFn j (addSubTask st) l
+          st | "[ ] " `isPrefixOf` t = ST.new (trim 4 t) False
+             | "[x] " `isPrefixOf` t = ST.new (trim 4 t) True
+             | "~" `isPrefixOf` t = ST.new (trimTilde t) True
+             | otherwise = ST.new t False
+          updateList l = updateFn j (addSubtask st) l
             where j = count l - 1
 
 addSummary :: Text -> Lists -> Lists
@@ -84,16 +87,16 @@ parse config s = do
 
 
 -- stringify code
-subTaskStringify :: MarkdownConfig -> Text -> SubTask -> Text
-subTaskStringify config t st = foldl' (++) t [
+subtaskStringify :: MarkdownConfig -> Text -> ST.Subtask -> Text
+subtaskStringify config t st = foldl' (++) t [
         subtaskOutput config,
         " ",
         pre,
         " ",
-        name st,
+        st ^. ST.name,
         "\n"
     ]
-    where pre = if complete st then "[x]" else "[ ]"
+    where pre = if st ^. ST.complete then "[x]" else "[ ]"
 
 summaryStringify :: MarkdownConfig -> Text -> Text
 summaryStringify config sm = concat [summaryOutput config, " ", sm, "\n"]
@@ -109,7 +112,7 @@ taskStringify config s t = foldl' (++) s [
         descriptionStringify config (description t),
         maybe "" (dueStringify config) (due t),
         maybe "" (summaryStringify config) (summary t),
-        foldl' (subTaskStringify config) "" (subTasks t)
+        foldl' (subtaskStringify config) "" (subtasks t)
     ]
 
 listStringify :: MarkdownConfig -> Text -> List -> Text

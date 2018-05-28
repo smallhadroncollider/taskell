@@ -11,7 +11,7 @@ import ClassyPrelude
 
 import Data.Aeson
 
-import Data.Taskell.Task (SubTask, subTask)
+import qualified Data.Taskell.Subtask as ST (Subtask, new)
 
 data ChecklistItem = ChecklistItem {
     name :: Text
@@ -22,5 +22,5 @@ data ChecklistWrapper = ChecklistWrapper {
     checkItems :: [ChecklistItem]
 } deriving (Eq, Show, Generic, ToJSON, FromJSON)
 
-checklistItemToSubTask :: ChecklistItem -> SubTask
-checklistItemToSubTask cl = subTask (name cl) (state cl == "complete")
+checklistItemToSubTask :: ChecklistItem -> ST.Subtask
+checklistItemToSubTask cl = ST.new (name cl) (state cl == "complete")

@@ -9,7 +9,7 @@ import ClassyPrelude
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Data.Taskell.Subtask
+import Data.Taskell.Subtask.Internal
 
 -- tests
 test_subtask :: TestTree

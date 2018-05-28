@@ -11,7 +11,7 @@ module IO.Trello.Card (
 import ClassyPrelude
 
 import Data.Aeson
-import qualified Data.Taskell.Task as T (Task, new, setSummary, due, subTasks)
+import qualified Data.Taskell.Task as T (Task, new, setSummary, due, subtasks)
 import Data.Taskell.Date (utcToLocalDay)
 import Data.Time.Format (parseTimeM, iso8601DateFormat)
 import Data.Time.LocalTime (TimeZone)
@@ -32,7 +32,7 @@ textToTime tz text = utcToLocalDay tz <$> utc
 cardToTask :: TimeZone -> Card -> T.Task
 cardToTask tz card = task' { T.due = textToTime tz $ fromMaybe "" (due card) }
     where task = T.setSummary (desc card) $ T.new (name card)
-          task' = task { T.subTasks = fromList $ checklistItemToSubTask <$> fromMaybe [] (checklists card) }
+          task' = task { T.subtasks = fromList $ checklistItemToSubTask <$> fromMaybe [] (checklists card) }
 
 setChecklists :: Card -> [ChecklistItem] -> Card
 setChecklists card cls = card { checklists = Just cls }

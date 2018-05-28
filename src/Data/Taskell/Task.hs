@@ -4,19 +4,17 @@ module Data.Taskell.Task where
 
 import ClassyPrelude
 
+import Control.Lens ((^.))
+
 import Data.Sequence as S ((|>), (!?), adjust', deleteAt)
 import Data.Text (strip)
 import Data.Taskell.Date (Day, textToDay)
-
-data SubTask = SubTask {
-    name :: Text,
-    complete :: Bool
-} deriving (Show, Eq)
+import qualified Data.Taskell.Subtask as ST (Subtask, Update, name, complete)
 
 data Task = Task {
     description :: Text,
     summary :: Maybe Text,
-    subTasks :: Seq SubTask,
+    subtasks :: Seq ST.Subtask,
     due :: Maybe Day
 } deriving (Show, Eq)
 
@@ -24,7 +22,7 @@ blank :: Task
 blank = Task {
         description = "",
         summary = Nothing,
-        subTasks = empty,
+        subtasks = empty,
         due = Nothing
     }
 
@@ -40,43 +38,31 @@ setDue date task = case due' of
     Nothing -> task
     where due' = textToDay date
 
-blankSubTask :: SubTask
-blankSubTask = SubTask { name = "", complete = False }
+getSubtask :: Int -> Task -> Maybe ST.Subtask
+getSubtask i task = subtasks task !? i
 
-subTask :: Text -> Bool -> SubTask
-subTask n c = SubTask { name = n, complete = c }
+addSubtask :: ST.Subtask -> Task -> Task
+addSubtask s t = t { subtasks = subtasks t |> s }
 
-getSubTask :: Int -> Task -> Maybe SubTask
-getSubTask i task = subTasks task !? i
+hasSubtasks :: Task -> Bool
+hasSubtasks t = not (null (subtasks t))
 
-addSubTask :: SubTask -> Task -> Task
-addSubTask s t = t { subTasks = subTasks t |> s }
+updateSubtask :: Int -> ST.Update -> Task -> Task
+updateSubtask i fn task = task { subtasks = sts }
+    where sts = adjust' fn i (subtasks task)
 
-setSubTaskName :: Text -> SubTask -> SubTask
-setSubTaskName text subtask = subtask { name = text }
+removeSubtask :: Int -> Task -> Task
+removeSubtask i task = task { subtasks = S.deleteAt i (subtasks task) }
 
-hasSubTasks :: Task -> Bool
-hasSubTasks t = not (null (subTasks t))
+countSubtasks :: Task -> Int
+countSubtasks = length . subtasks
 
-updateSubTask :: Int -> (SubTask -> SubTask) -> Task -> Task
-updateSubTask i fn task = task { subTasks = sts }
-    where sts = adjust' fn i (subTasks task)
-
-removeSubTask :: Int -> Task -> Task
-removeSubTask i task = task { subTasks = S.deleteAt i (subTasks task) }
-
-toggleComplete :: SubTask -> SubTask
-toggleComplete st = st { complete = not (complete st) }
-
-countSubTasks :: Task -> Int
-countSubTasks = length . subTasks
-
-countCompleteSubTasks :: Task -> Int
-countCompleteSubTasks = length . filter complete . subTasks
+countCompleteSubtasks :: Task -> Int
+countCompleteSubtasks = length . filter (^. ST.complete) . subtasks
 
 contains :: Text -> Task -> Bool
 contains s t = s `isInfixOf` description t || not (null sts)
-    where sts = filter (isInfixOf s) $ name <$> subTasks t
+    where sts = filter (isInfixOf s) $ (^. ST.name) <$> subtasks t
 
 isBlank :: Task -> Bool
 isBlank t = null $ description t

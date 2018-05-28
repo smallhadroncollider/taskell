@@ -16,7 +16,7 @@ import Brick
 import Data.Taskell.Date (Day, dayToText, deadline)
 import Data.Taskell.Lists (Lists)
 import Data.Taskell.List (List, tasks, title)
-import Data.Taskell.Task (Task, description, hasSubTasks, countSubTasks, countCompleteSubTasks, summary, due)
+import Data.Taskell.Task (Task, description, hasSubtasks, countSubtasks, countCompleteSubtasks, summary, due)
 import Events.State (lists, current, mode, normalise)
 import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), DetailMode(..))
 import IO.Config (LayoutConfig, columnWidth, columnPadding, descriptionIndicator)
@@ -48,8 +48,8 @@ renderDate dueDay = do
     return $ attr <*> widget
 
 -- | Renders the appropriate completed sub task count e.g. "[2/3]"
-renderSubTaskCount :: Task -> Widget ResourceName
-renderSubTaskCount task = txt $ concat ["[" , tshow $ countCompleteSubTasks task , "/" , tshow $ countSubTasks task , "]"]
+renderSubtaskCount :: Task -> Widget ResourceName
+renderSubtaskCount task = txt $ concat ["[" , tshow $ countCompleteSubtasks task , "/" , tshow $ countSubtasks task , "]"]
 
 -- | Renders the appropriate indicators: summary, sub task count, and due date
 indicators :: Task -> ReaderDrawState (Widget ResourceName)
@@ -58,7 +58,7 @@ indicators task = do
     descIndicator <- descriptionIndicator . dsLayout <$> ask
     return . hBox $ padRight (Pad 1) <$> catMaybes [
             const (txt descIndicator) <$> summary task -- show the summary indicator if one is set
-          , bool Nothing (Just (renderSubTaskCount task)) (hasSubTasks task) -- if it has subtasks, render the sub task count
+          , bool Nothing (Just (renderSubtaskCount task)) (hasSubtasks task) -- if it has subtasks, render the sub task count
           , dateWidget
         ]
 

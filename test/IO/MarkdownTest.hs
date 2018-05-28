@@ -13,7 +13,8 @@ import Test.Tasty.ExpectedFailure (ignoreTest)
 import IO.Markdown.Internal (start, parse, listStringify)
 import IO.Config (MarkdownConfig(..), defaultMarkdownConfig, defaultConfig)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
-import Data.Taskell.Task (Task(..), new, subTask, addSubTask, setSummary, setDue)
+import Data.Taskell.Task (Task(..), new, addSubtask, setSummary, setDue)
+import qualified Data.Taskell.Subtask as ST (new)
 
 -- alternative markdown configs
 alternativeMarkdownConfig :: MarkdownConfig
@@ -36,7 +37,7 @@ listWithItem :: Lists
 listWithItem = appendToLast task list
 
 makeSubTask :: Bool -> Lists
-makeSubTask b = appendToLast (addSubTask (subTask "Blah" b) task) list
+makeSubTask b = appendToLast (addSubtask (ST.new "Blah" b) task) list
 
 taskWithSummary :: Task
 taskWithSummary = setSummary "Summary" task

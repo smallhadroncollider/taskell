@@ -14,9 +14,9 @@ normal (EvKey (KChar 'q') _) = quit
 normal (EvKey KEsc _) = normalMode
 normal (EvKey KEnter _) = (editSummary =<<) . store
 normal (EvKey (KChar ' ') _) = (write =<<) . (setComplete =<<) . store
-normal (EvKey (KChar 'k') _) = previousSubTask
-normal (EvKey (KChar 'j') _) = nextSubTask
-normal (EvKey (KChar 'a') _) = (Detail.insertMode =<<) . (Detail.lastSubTask =<<) . (Detail.newItem =<<) . store
+normal (EvKey (KChar 'k') _) = previousSubtask
+normal (EvKey (KChar 'j') _) = nextSubtask
+normal (EvKey (KChar 'a') _) = (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store
 normal (EvKey (KChar 'e') _) = (Detail.insertMode =<<) . store
 normal (EvKey (KChar 'D') _) = (write =<<) . (Detail.remove =<<) . store
 normal (EvKey (KChar 'u') _) = (write =<<) . undo
@@ -29,14 +29,14 @@ insert (EvKey KEsc _) s = do
     case item of
         DetailDescription -> (write =<<) $ finishSummary s
         DetailDate -> (write =<<) $ finishDue s
-        (DetailItem _) -> (write =<<) . (showDetail =<<) $ finishSubTask s
+        (DetailItem _) -> (write =<<) . (showDetail =<<) $ finishSubtask s
 
 insert (EvKey KEnter _) s = do
     item <- getCurrentItem s
     case item of
         DetailDescription -> (write =<<) $ finishSummary s
         DetailDate -> (write =<<) $ finishDue s
-        (DetailItem _) -> (Detail.lastSubTask =<<) . (Detail.newItem =<<) . (store =<<) . (write =<<) $ finishSubTask s
+        (DetailItem _) -> (Detail.lastSubtask =<<) . (Detail.newItem =<<) . (store =<<) . (write =<<) $ finishSubtask s
 
 insert e s = updateField (F.event e) s
 
