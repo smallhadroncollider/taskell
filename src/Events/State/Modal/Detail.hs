@@ -3,7 +3,7 @@
 module Events.State.Modal.Detail (
     updateField
   , finishSubtask
-  , finishSummary
+  , finishDescription
   , finishDue
   , showDetail
   , getCurrentItem
@@ -12,7 +12,7 @@ module Events.State.Modal.Detail (
   , setComplete
   , remove
   , insertMode
-  , editSummary
+  , editDescription
   , editDue
   , newItem
   , nextSubtask
@@ -27,7 +27,7 @@ import Control.Lens ((.~), (^.))
 import Data.Taskell.Date (dayToOutput)
 import Events.State.Types
 import Events.State (getCurrentTask, setCurrentTask, mode)
-import Data.Taskell.Task (Task, updateSubtask, addSubtask, countSubtasks, removeSubtask, getSubtask, summary, setSummary, due, setDue)
+import Data.Taskell.Task (Task, updateSubtask, addSubtask, countSubtasks, removeSubtask, getSubtask, description, setDescription, due, setDue)
 import qualified Data.Taskell.Subtask as ST (name, toggle, blank)
 import UI.Field (Field, blankField, getText, textToField)
 
@@ -51,8 +51,8 @@ finish fn state = do
     task <- fn text <$> getCurrentTask state
     setCurrentTask task $ state { mode = Modal (Detail (DetailItem 0) DetailNormal) }
 
-finishSummary :: Stateful
-finishSummary = finish setSummary
+finishDescription :: Stateful
+finishDescription = finish setDescription
 
 finishDue :: Stateful
 finishDue = finish setDue
@@ -105,15 +105,15 @@ insertMode state = do
         Modal (Detail (DetailItem i') _) -> Just state { mode = Modal (Detail (DetailItem i') (DetailInsert (textToField n))) }
         _ -> Nothing
 
-editSummary :: Stateful
-editSummary state = do
-    summ <- summary <$> getCurrentTask state
+editDescription :: Stateful
+editDescription state = do
+    summ <- (^. description) <$> getCurrentTask state
     let summ' = fromMaybe "" summ
     return $ state { mode = Modal (Detail DetailDescription (DetailInsert (textToField summ'))) }
 
 editDue :: Stateful
 editDue state = do
-    day <- due <$> getCurrentTask state
+    day <- (^. due) <$> getCurrentTask state
     let day' = maybe "" dayToOutput day
     return $ state { mode = Modal (Detail DetailDate (DetailInsert (textToField day'))) }
 

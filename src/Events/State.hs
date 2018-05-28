@@ -76,9 +76,11 @@ module Events.State (
 
 import ClassyPrelude hiding (delete)
 
+import Control.Lens ((&), (^.), (.~))
+
 import Data.Char (digitToInt, ord)
 
-import Data.Taskell.Task (Task, isBlank, description)
+import Data.Taskell.Task (Task, isBlank, name)
 import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, getTask, title)
 import qualified Data.Taskell.Lists as Lists
 
@@ -150,14 +152,14 @@ setCurrentTask task state = do
 setCurrentTaskText :: Text -> Stateful
 setCurrentTaskText text state = do
     task <- getCurrentTask state
-    setCurrentTask (task { description = text }) state
+    setCurrentTask (task & name .~ text) state
 
 startCreate :: Stateful
 startCreate s = return $ s { mode = Insert ITask ICreate blankField }
 
 startEdit :: Stateful
 startEdit state = do
-    field <- textToField . description <$> getCurrentTask state
+    field <- textToField . (^. name) <$> getCurrentTask state
     return state { mode = Insert ITask IEdit field }
 
 finishTask :: Stateful

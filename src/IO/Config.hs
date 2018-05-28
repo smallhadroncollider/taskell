@@ -30,7 +30,7 @@ data LayoutConfig = LayoutConfig {
 data MarkdownConfig = MarkdownConfig {
         titleOutput :: Text
       , taskOutput :: Text
-      , summaryOutput :: Text
+      , descriptionOutput :: Text
       , dueOutput :: Text
       , subtaskOutput :: Text
     }
@@ -62,7 +62,7 @@ defaultMarkdownConfig :: MarkdownConfig
 defaultMarkdownConfig = MarkdownConfig {
     titleOutput = "##"
   , taskOutput = "-"
-  , summaryOutput = "    >"
+  , descriptionOutput = "    >"
   , dueOutput = "    @"
   , subtaskOutput = "    *"
 }
@@ -143,13 +143,13 @@ configParser = do
         sectionMb "markdown" (do
             titleOutputCf <- fromMaybe (titleOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "title"
             taskOutputCf <- fromMaybe (taskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "task"
-            summaryOutputCf <- fromMaybe (summaryOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "summary"
+            descriptionOutputCf <- fromMaybe (descriptionOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "summary"
             dueOutputCf <- fromMaybe (dueOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "due"
             subtaskOutputCf <- fromMaybe (subtaskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "subtask"
             return MarkdownConfig {
                 titleOutput = titleOutputCf
               , taskOutput = taskOutputCf
-              , summaryOutput = summaryOutputCf
+              , descriptionOutput = descriptionOutputCf
               , dueOutput = dueOutputCf
               , subtaskOutput = subtaskOutputCf
             }

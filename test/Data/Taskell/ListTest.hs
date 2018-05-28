@@ -6,11 +6,13 @@ module Data.Taskell.ListTest (
 
 import ClassyPrelude as CP
 
+import Control.Lens ((.~))
+
 import Test.Tasty
 import Test.Tasty.HUnit
 
 import Data.Taskell.List as L
-import qualified Data.Taskell.Task as T (Task, blank, new, description)
+import qualified Data.Taskell.Task as T (Task, blank, new, name)
 
 emptyList :: List
 emptyList = L.empty "Test"
@@ -96,7 +98,7 @@ test_list =
             assertEqual
                 "List with updated item"
                 (List "Populated" (fromList [T.new "Hello", T.new "Monkey", T.new "Fish"]))
-                (updateFn 1 (\t -> t { T.description = "Monkey" }) populatedList)
+                (updateFn 1 (T.name .~ "Monkey") populatedList)
         )
 
       , testCase "update" (

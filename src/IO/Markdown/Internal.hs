@@ -14,9 +14,9 @@ import Data.Taskell.Date (dayToOutput)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks, updateFn, count)
 import qualified Data.Taskell.Subtask as ST (Subtask, new, name, complete)
-import Data.Taskell.Task (Task, new, description, subtasks, addSubtask, setSummary, setDue, due, summary)
+import qualified Data.Taskell.Task as T (Task, new, name, subtasks, addSubtask, setDescription, setDue, due, description)
 
-import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, summaryOutput, dueOutput, subtaskOutput)
+import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, descriptionOutput, dueOutput, subtaskOutput)
 
 -- parse code
 trim :: Int -> Text -> Text
@@ -32,19 +32,19 @@ addSubItem t ls = adjust' updateList i ls
              | "[x] " `isPrefixOf` t = ST.new (trim 4 t) True
              | "~" `isPrefixOf` t = ST.new (trimTilde t) True
              | otherwise = ST.new t False
-          updateList l = updateFn j (addSubtask st) l
+          updateList l = updateFn j (T.addSubtask st) l
             where j = count l - 1
 
-addSummary :: Text -> Lists -> Lists
-addSummary t ls = adjust' updateList i ls
+addDescription :: Text -> Lists -> Lists
+addDescription t ls = adjust' updateList i ls
     where i = length ls - 1
-          updateList l = updateFn j (setSummary t) l
+          updateList l = updateFn j (T.setDescription t) l
             where j = count l - 1
 
 addDue :: Text -> Lists -> Lists
 addDue t ls = adjust' updateList i ls
     where i = length ls - 1
-          updateList l = updateFn j (setDue t) l
+          updateList l = updateFn j (T.setDue t) l
             where j = count l - 1
 
 prefix :: MarkdownConfig -> Text -> (MarkdownConfig -> Text) -> (Text -> Lists -> Lists) -> Maybe (Lists -> Lists)
@@ -56,8 +56,8 @@ prefix config str get set
 matches :: [(MarkdownConfig -> Text, Text -> Lists -> Lists)]
 matches = [
         (titleOutput, newList)
-      , (taskOutput, appendToLast . new)
-      , (summaryOutput, addSummary)
+      , (taskOutput, appendToLast . T.new)
+      , (descriptionOutput, addDescription)
       , (dueOutput, addDue)
       , (subtaskOutput, addSubItem)
     ]
@@ -98,21 +98,21 @@ subtaskStringify config t st = foldl' (++) t [
     ]
     where pre = if st ^. ST.complete then "[x]" else "[ ]"
 
-summaryStringify :: MarkdownConfig -> Text -> Text
-summaryStringify config sm = concat [summaryOutput config, " ", sm, "\n"]
+descriptionStringify :: MarkdownConfig -> Text -> Text
+descriptionStringify config sm = concat [descriptionOutput config, " ", sm, "\n"]
 
 dueStringify :: MarkdownConfig -> Day -> Text
 dueStringify config day = concat [dueOutput config, " ", dayToOutput day, "\n"]
 
-descriptionStringify :: MarkdownConfig -> Text -> Text
-descriptionStringify config desc = concat [taskOutput config, " ", desc, "\n"]
+nameStringify :: MarkdownConfig -> Text -> Text
+nameStringify config desc = concat [taskOutput config, " ", desc, "\n"]
 
-taskStringify :: MarkdownConfig -> Text -> Task -> Text
+taskStringify :: MarkdownConfig -> Text -> T.Task -> Text
 taskStringify config s t = foldl' (++) s [
-        descriptionStringify config (description t),
-        maybe "" (dueStringify config) (due t),
-        maybe "" (summaryStringify config) (summary t),
-        foldl' (subtaskStringify config) "" (subtasks t)
+        nameStringify config (t ^. T.name),
+        maybe "" (dueStringify config) (t ^. T.due),
+        maybe "" (descriptionStringify config) (t ^. T.description),
+        foldl' (subtaskStringify config) "" (t ^. T.subtasks)
     ]
 
 listStringify :: MarkdownConfig -> Text -> List -> Text

@@ -13,7 +13,7 @@ import Test.Tasty.ExpectedFailure (ignoreTest)
 import IO.Markdown.Internal (start, parse, listStringify)
 import IO.Config (MarkdownConfig(..), defaultMarkdownConfig, defaultConfig)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
-import Data.Taskell.Task (Task(..), new, addSubtask, setSummary, setDue)
+import Data.Taskell.Task (Task, new, addSubtask, setDescription, setDue)
 import qualified Data.Taskell.Subtask as ST (new)
 
 -- alternative markdown configs
@@ -21,7 +21,7 @@ alternativeMarkdownConfig :: MarkdownConfig
 alternativeMarkdownConfig = MarkdownConfig {
     titleOutput = "##",
     taskOutput = "###",
-    summaryOutput = ">",
+    descriptionOutput = ">",
     dueOutput = "@",
     subtaskOutput = "-"
 }
@@ -40,7 +40,7 @@ makeSubTask :: Bool -> Lists
 makeSubTask b = appendToLast (addSubtask (ST.new "Blah" b) task) list
 
 taskWithSummary :: Task
-taskWithSummary = setSummary "Summary" task
+taskWithSummary = setDescription "Summary" task
 
 listWithSummaryItem :: Lists
 listWithSummaryItem = appendToLast taskWithSummary list

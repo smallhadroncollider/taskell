@@ -7,6 +7,8 @@ module UI.Draw (
 
 import ClassyPrelude
 
+import Control.Lens ((^.))
+
 import Data.Char (ord, chr)
 import Data.Sequence (mapWithIndex)
 import Control.Monad.Reader (runReader)
@@ -16,7 +18,7 @@ import Brick
 import Data.Taskell.Date (Day, dayToText, deadline)
 import Data.Taskell.Lists (Lists)
 import Data.Taskell.List (List, tasks, title)
-import Data.Taskell.Task (Task, description, hasSubtasks, countSubtasks, countCompleteSubtasks, summary, due)
+import qualified Data.Taskell.Task as T (Task, name, hasSubtasks, countSubtasks, countCompleteSubtasks, description, due)
 import Events.State (lists, current, mode, normalise)
 import Events.State.Types (State, Mode(..), InsertType(..), Pointer, ModalType(..), DetailMode(..))
 import IO.Config (LayoutConfig, columnWidth, columnPadding, descriptionIndicator)
@@ -48,29 +50,29 @@ renderDate dueDay = do
     return $ attr <*> widget
 
 -- | Renders the appropriate completed sub task count e.g. "[2/3]"
-renderSubtaskCount :: Task -> Widget ResourceName
-renderSubtaskCount task = txt $ concat ["[" , tshow $ countCompleteSubtasks task , "/" , tshow $ countSubtasks task , "]"]
+renderSubtaskCount :: T.Task -> Widget ResourceName
+renderSubtaskCount task = txt $ concat ["[" , tshow $ T.countCompleteSubtasks task , "/" , tshow $ T.countSubtasks task , "]"]
 
--- | Renders the appropriate indicators: summary, sub task count, and due date
-indicators :: Task -> ReaderDrawState (Widget ResourceName)
+-- | Renders the appropriate indicators: description, sub task count, and due date
+indicators :: T.Task -> ReaderDrawState (Widget ResourceName)
 indicators task = do
-    dateWidget <- renderDate (due task) -- get the due date widget
+    dateWidget <- renderDate (task ^. T.due) -- get the due date widget
     descIndicator <- descriptionIndicator . dsLayout <$> ask
     return . hBox $ padRight (Pad 1) <$> catMaybes [
-            const (txt descIndicator) <$> summary task -- show the summary indicator if one is set
-          , bool Nothing (Just (renderSubtaskCount task)) (hasSubtasks task) -- if it has subtasks, render the sub task count
+            const (txt descIndicator) <$> task ^. T.description -- show the description indicator if one is set
+          , bool Nothing (Just (renderSubtaskCount task)) (T.hasSubtasks task) -- if it has subtasks, render the sub task count
           , dateWidget
         ]
 
 -- | Renders an individual task
-renderTask :: Int -> Int -> Task -> ReaderDrawState (Widget ResourceName)
+renderTask :: Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
 renderTask listIndex taskIndex task = do
     eTitle <- dsEditingTitle <$> ask -- is the title being edited? (for visibility)
     selected <- (== (listIndex, taskIndex)) . dsCurrent <$>ask -- is the current task selected?
     taskField <- dsField <$> ask -- get the field, if it's being edited
     after <- indicators task -- get the indicators widget
 
-    let text = description task
+    let text = task ^. T.name
         name = RNTask (listIndex, taskIndex)
         widget = textField text
         widget' = widgetFromMaybe widget taskField

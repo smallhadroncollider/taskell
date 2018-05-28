@@ -11,19 +11,19 @@ import Control.Lens ((.~))
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Data.Taskell.Task
+import Data.Taskell.Task.Internal
 import qualified Data.Taskell.Subtask as ST (new, name)
 
 testTask :: Task
 testTask = Task {
-    description = "Test"
-  , summary = Nothing
-  , subtasks = fromList [
+    _name = "Test"
+  , _description = Nothing
+  , _subtasks = fromList [
         ST.new "One" True
       , ST.new "Two" False
       , ST.new "Three" False
     ]
-  , due = Nothing
+  , _due = Nothing
 }
 
 -- tests
@@ -60,25 +60,25 @@ test_task =
             )
         ]
 
-      , testGroup "setSummary" [
+      , testGroup "setDescription" [
             testCase "empty sub-tasks" (
                 assertEqual
-                    "Updates summary"
-                    (Task "Test" (Just "Summary") empty Nothing)
-                    (setSummary "Summary" (new "Test"))
+                    "Updates description"
+                    (Task "Test" (Just "Description") empty Nothing)
+                    (setDescription "Description" (new "Test"))
             )
           , testCase "empty" (
                 assertEqual
-                    "Keeps summary as Nothing"
+                    "Keeps description as Nothing"
                     (new "Test")
-                    (setSummary "" (new "Test"))
+                    (setDescription "" (new "Test"))
             )
 
           , testCase "blank" (
                 assertEqual
-                    "Keeps summary as Nothing"
+                    "Keeps description as Nothing"
                     (new "Test")
-                    (setSummary "   " (new "Test"))
+                    (setDescription "   " (new "Test"))
             )
         ]
 

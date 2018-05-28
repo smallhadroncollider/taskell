@@ -37,6 +37,7 @@ library:
   - Data.Taskell.Subtask
   - Data.Taskell.Subtask.Internal
   - Data.Taskell.Task
+  - Data.Taskell.Task.Internal
   - Events.State.Types
   - IO.Markdown.Internal
   - UI.Field

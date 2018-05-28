@@ -10,16 +10,11 @@
 ## Refactoring
 
 - Use a Makefile instead of bash script
-- Update Task field naming
-    * [ ] Task: description -> name/title
-    * [ ] Task: summary -> description
-    * [x] UI.Modal.SubTasks -> UI.Modal.Detail
 - Break up State module
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
 - Remove duplication of config - currently using ini and hard-coded defaults
 - Move Help modal creation into Template Haskell
-- Use lenses for nested data?
 - Add a List widget for common actions between tasks and sub-tasks
 - Tidy up load functions in IO.Taskell
 - Remove `~` style sub-task complete parsing
@@ -66,6 +61,7 @@
 
 ## In Progress
 
+- Use lenses for nested data
 
 ## Done
 
@@ -224,3 +220,7 @@
     * [x] Find someone to submit it
     * [x] Use `install_cabal_package`
     * [x] Use `depends_on "cabal-install" => :build`
+- Update Task field naming
+    * [x] Task: description -> name/title
+    * [x] Task: summary -> description
+    * [x] UI.Modal.SubTasks -> UI.Modal.Detail
