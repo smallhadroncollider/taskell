@@ -15,9 +15,9 @@ import qualified Data.Taskell.Task as T
 
 -- test data
 list1, list2, list3 :: L.List
-list1 = foldl' L.append (L.empty "List 1") [T.new "One", T.new "Two", T.new "Three"]
-list2 = foldl' L.append (L.empty "List 2") [T.new "1", T.new "2", T.new "3"]
-list3 = foldl' L.append (L.empty "List 3") [T.new "01", T.new "10", T.new "11"]
+list1 = foldl' (flip L.append) (L.empty "List 1") [T.new "One", T.new "Two", T.new "Three"]
+list2 = foldl' (flip L.append) (L.empty "List 2") [T.new "1", T.new "2", T.new "3"]
+list3 = foldl' (flip L.append) (L.empty "List 3") [T.new "01", T.new "10", T.new "11"]
 
 testLists :: Lists
 testLists = fromList [list1, list2, list3]
@@ -78,8 +78,8 @@ test_lists =
                     "Returns updated lists"
                     (Just  (fromList [
                         list1
-                      , foldl' L.append (L.empty "List 2") [T.new "1", T.new "3"]
-                      , foldl' L.append (L.empty "List 3") [T.new "01", T.new "10", T.new "11", T.new "2"]
+                      , foldl' (flip L.append) (L.empty "List 2") [T.new "1", T.new "3"]
+                      , foldl' (flip L.append) (L.empty "List 3") [T.new "01", T.new "10", T.new "11", T.new "2"]
                     ]))
                     (changeList (1, 1) testLists 1)
             )
@@ -88,8 +88,8 @@ test_lists =
                 assertEqual
                     "Returns updated lists"
                     (Just  (fromList [
-                        foldl' L.append (L.empty "List 1") [T.new "One", T.new "Two", T.new "Three", T.new "2"]
-                      , foldl' L.append (L.empty "List 2") [T.new "1", T.new "3"]
+                        foldl' (flip L.append) (L.empty "List 1") [T.new "One", T.new "Two", T.new "Three", T.new "2"]
+                      , foldl' (flip L.append) (L.empty "List 2") [T.new "1", T.new "3"]
                       , list3
                     ]))
                     (changeList (1, 1) testLists (-1))
@@ -175,7 +175,7 @@ test_lists =
                 assertEqual
                     "Returns filtered lists"
                     (fromList [
-                        foldl' L.append (L.empty "List 1") [T.new "One"]
+                        foldl' (flip L.append) (L.empty "List 1") [T.new "One"]
                       , L.empty "List 2"
                       , L.empty "List 3"
                     ])
@@ -201,7 +201,7 @@ test_lists =
                     (fromList [
                         list1
                       , list2
-                      , foldl' L.append (L.empty "List 3") [T.new "01", T.new "10", T.new "11", T.new "Blah"]
+                      , foldl' (flip L.append) (L.empty "List 3") [T.new "01", T.new "10", T.new "11", T.new "Blah"]
                     ])
                     (appendToLast (T.new "Blah") testLists)
             ),

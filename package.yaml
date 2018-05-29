@@ -32,6 +32,7 @@ library:
   # tests
   - Data.Taskell.Date
   - Data.Taskell.List
+  - Data.Taskell.List.Internal
   - Data.Taskell.Lists
   - Data.Taskell.Seq
   - Data.Taskell.Subtask

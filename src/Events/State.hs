@@ -134,7 +134,7 @@ createListStart s = return $ s { mode = Insert IList ICreate blankField }
 -- editList
 editListStart :: Stateful
 editListStart s = do
-    f <- textToField . title <$> getList s
+    f <- textToField . (^. title) <$> getList s
     return $ s { mode = Insert IList IEdit f }
 
 deleteCurrentList :: Stateful
@@ -294,7 +294,7 @@ setList s ts = setLists s (Lists.updateLists (getCurrentList s) (lists s) ts)
 setCurrentListTitle :: Text -> Stateful
 setCurrentListTitle text state = do
     list <- getList state
-    return . setList state $ list { title = text }
+    return . setList state $ list & title .~ text
 
 setLists :: State -> Lists.Lists -> State
 setLists s ts = s { lists = ts }

@@ -1,6 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 module Data.Taskell.Task (
     Task
+  , Update
   , name
   , description
   , due

@@ -6,7 +6,7 @@ import ClassyPrelude hiding (empty)
 
 import Data.Sequence as S ((!?), (|>), update, deleteAt)
 
-import Data.Taskell.List as L (List(..), empty, extract, append, searchFor, count)
+import Data.Taskell.List as L (List, empty, extract, append, searchFor, count)
 import Data.Taskell.Task (Task)
 import qualified Data.Taskell.Seq as S
 
@@ -19,9 +19,7 @@ updateLists :: Int -> Lists -> List -> Lists
 updateLists i ls l = S.update i l ls
 
 count :: Int -> Lists -> Int
-count i ts = case ts !? i of
-    Just (List _ ts') -> length ts'
-    Nothing -> 0
+count i ts = maybe 0 L.count (ts !? i)
 
 get :: Lists -> Int -> Maybe List
 get = (!?)
@@ -32,7 +30,7 @@ changeList (list, i) ts dir = do
     a <- ts !? list -- get current list
     b <- ts !? next -- get next list
     (a', task) <- extract i a -- extract selected task
-    let b' = append b task -- add selected task to next list
+    let b' = append task b -- add selected task to next list
     let list' = updateLists list ts a' -- update extracted list
     return $ updateLists next list' b' -- update next list
 
@@ -55,7 +53,7 @@ appendToLast :: Task -> Lists -> Lists
 appendToLast t ls = fromMaybe ls $ do
     let i = length ls - 1
     l <- ls !? i
-    let l' = append l t
+    let l' = append t l
     return $ updateLists i ls l'
 
 analyse :: Text -> Lists -> Text

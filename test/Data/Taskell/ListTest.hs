@@ -11,7 +11,7 @@ import Control.Lens ((.~))
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Data.Taskell.List as L
+import Data.Taskell.List.Internal as L
 import qualified Data.Taskell.Task as T (Task, blank, new, name)
 
 emptyList :: List
@@ -27,7 +27,14 @@ populatedList = List "Populated" taskSeq
 test_list :: TestTree
 test_list =
     testGroup "Data.Taskell.List" [
-        testCase "empty" (
+        testCase "create" (
+            assertEqual
+                "Empty list with title"
+                (List "Test" CP.empty)
+                (create "Test" CP.empty)
+        )
+
+      , testCase "empty" (
             assertEqual
                 "Empty list with title"
                 (List "Test" CP.empty)
@@ -57,13 +64,6 @@ test_list =
             )
         ]
 
-      , testCase "updateTitle" (
-            assertEqual
-                "List with new title"
-                (List "New Title" CP.empty)
-                (updateTitle emptyList "New Title")
-        )
-
       , testCase "newAt" (
             assertEqual
                 "List with new item second position"
@@ -76,14 +76,14 @@ test_list =
                 assertEqual
                     "List with new item"
                     (List "Populated" (fromList [T.new "Hello", T.new "Blah", T.new "Fish", T.new "Spoon"]))
-                    (append populatedList (T.new "Spoon"))
+                    (append (T.new "Spoon") populatedList)
             )
 
           , testCase "empty" (
                 assertEqual
                     "List with new item"
                     (List "Test" (fromList [T.new "Spoon"]))
-                    (append emptyList (T.new "Spoon"))
+                    (append (T.new "Spoon") emptyList)
             )
         ]
 

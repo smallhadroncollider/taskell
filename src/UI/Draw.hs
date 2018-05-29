@@ -105,7 +105,7 @@ renderTitle listIndex list = do
     titleField <- dsField <$> ask
     col <- txt <$> columnPrefix selectedList listIndex
 
-    let text = title list
+    let text = list ^. title
         attr = if selectedList == listIndex then titleCurrentAttr else titleAttr
         widget = textField text
         widget' = widgetFromMaybe widget titleField
@@ -120,7 +120,7 @@ renderList listIndex list = do
     eTitle <- dsEditingTitle <$> ask
     titleWidget <- renderTitle listIndex list
     (currentList, _) <- dsCurrent <$> ask
-    taskWidgets <- sequence $ renderTask listIndex `mapWithIndex` tasks list
+    taskWidgets <- sequence $ renderTask listIndex `mapWithIndex` (list ^. tasks)
 
     let widget = (if not eTitle then cached (RNList listIndex) else id)
             . padLeftRight (columnPadding layout)

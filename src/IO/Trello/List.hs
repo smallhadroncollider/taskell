@@ -10,7 +10,7 @@ import ClassyPrelude
 
 import Data.Aeson
 import IO.Trello.Card (Card, cardToTask)
-import qualified Data.Taskell.List as TL (List(..))
+import qualified Data.Taskell.List as L (List, create)
 import Data.Time.LocalTime (TimeZone)
 
 data List = List {
@@ -22,8 +22,5 @@ data List = List {
 setCards :: List -> [Card] -> List
 setCards list cs = list { cards = cs }
 
-trelloListToList :: TimeZone -> List -> TL.List
-trelloListToList tz ls = TL.List {
-        TL.title = name ls
-      , TL.tasks = fromList $ cardToTask tz <$> cards ls
-    }
+trelloListToList :: TimeZone -> List -> L.List
+trelloListToList tz ls = L.create (name ls) (fromList $ cardToTask tz <$> cards ls)

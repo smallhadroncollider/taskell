@@ -6,6 +6,8 @@ module UI.Modal.MoveTo (
 
 import ClassyPrelude
 
+import Control.Lens ((^.))
+
 import Brick
 
 import Data.Taskell.List (title)
@@ -18,7 +20,7 @@ moveTo :: State -> (Text, Widget ResourceName)
 moveTo state = ("Move To:", widget)
     where skip = getCurrentList state
           ls = toList $ lists state
-          titles = textField . title <$> ls
+          titles = textField . (^. title) <$> ls
 
           letter a = padRight (Pad 1) . hBox $ [txt "[", withAttr taskCurrentAttr $ txt (singleton a), txt "]"]
           letters = letter <$> ['a'..]

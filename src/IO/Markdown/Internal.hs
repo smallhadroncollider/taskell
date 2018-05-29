@@ -116,13 +116,13 @@ taskStringify config s t = foldl' (++) s [
     ]
 
 listStringify :: MarkdownConfig -> Text -> List -> Text
-listStringify config s l = foldl' (++) s [
-        if null s then "" else "\n"
+listStringify config text list = foldl' (++) text [
+        if null text then "" else "\n"
       , titleOutput config
       , " "
-      , title l
+      , list ^. title
       , "\n\n"
-      , foldl' (taskStringify config) "" (tasks l)
+      , foldl' (taskStringify config) "" (list ^. tasks)
     ]
 
 stringify :: Config -> Lists -> ByteString
