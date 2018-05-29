@@ -25,8 +25,8 @@ import ClassyPrelude
 import Control.Lens ((.~), (^.))
 
 import Data.Taskell.Date (dayToOutput)
-import Events.State.Types
-import Events.State (getCurrentTask, setCurrentTask, mode)
+import Events.State (getCurrentTask, setCurrentTask)
+import Events.State.Types (State, Stateful, Mode(Modal), ModalType(Detail), DetailMode(..), DetailItem(..), mode)
 import Data.Taskell.Task (Task, updateSubtask, addSubtask, countSubtasks, removeSubtask, getSubtask, description, setDescription, due, setDue)
 import qualified Data.Taskell.Subtask as ST (name, toggle, blank)
 import UI.Field (Field, blankField, getText, textToField)

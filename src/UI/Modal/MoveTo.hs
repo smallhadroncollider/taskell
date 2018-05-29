@@ -11,7 +11,8 @@ import Control.Lens ((^.))
 import Brick
 
 import Data.Taskell.List (title)
-import Events.State (State, lists, getCurrentList)
+import Events.State (getCurrentList)
+import Events.State.Types (State, lists)
 import UI.Field (textField)
 import UI.Theme (taskCurrentAttr)
 import UI.Types (ResourceName)

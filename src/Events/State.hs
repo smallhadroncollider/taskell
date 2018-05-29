@@ -1,25 +1,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Events.State (
-    -- types
-    State,
-    Stateful,
-    Pointer,
-    InsertMode(..),
-    Mode(..),
-    ModalType(..),
-
     -- App
     continue,
     write,
-    io,
-    path,
     countCurrent,
-
-    -- record accesors
-    mode,
-    current,
-    lists,
 
     -- UI.Main
     normalise,

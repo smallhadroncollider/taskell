@@ -5,7 +5,7 @@ import ClassyPrelude
 
 import Graphics.Vty.Input.Events (Event(..))
 
-import Events.State (State, Stateful, Mode(..), mode)
+import Events.State.Types (State, Stateful, Mode(..), mode)
 
 import qualified Events.Actions.Normal as Normal
 import qualified Events.Actions.Search as Search

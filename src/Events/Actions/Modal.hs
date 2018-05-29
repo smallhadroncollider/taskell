@@ -4,7 +4,7 @@ module Events.Actions.Modal (event) where
 import ClassyPrelude
 
 import Graphics.Vty.Input.Events
-import Events.State
+import Events.State.Types (Stateful, Mode(Modal), ModalType(..), mode)
 
 import qualified Events.Actions.Modal.Help as Help
 import qualified Events.Actions.Modal.MoveTo as MoveTo
