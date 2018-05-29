@@ -34,6 +34,7 @@ library:
   - Data.Taskell.List
   - Data.Taskell.List.Internal
   - Data.Taskell.Lists
+  - Data.Taskell.Lists.Internal
   - Data.Taskell.Seq
   - Data.Taskell.Subtask
   - Data.Taskell.Subtask.Internal

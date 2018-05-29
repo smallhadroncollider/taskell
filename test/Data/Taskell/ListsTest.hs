@@ -9,7 +9,7 @@ import ClassyPrelude hiding (delete)
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Data.Taskell.Lists
+import Data.Taskell.Lists.Internal
 import qualified Data.Taskell.List as L
 import qualified Data.Taskell.Task as T
 
@@ -37,7 +37,7 @@ test_lists =
             assertEqual
                 "Replaces the middle list"
                 (fromList [list1, list1, list3])
-                (updateLists 1 testLists list1)
+                (updateLists 1 list1 testLists)
         )
 
       , testGroup "count" [

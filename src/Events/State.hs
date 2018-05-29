@@ -289,7 +289,7 @@ getList :: State -> Maybe List
 getList s = Lists.get (lists s) (getCurrentList s)
 
 setList :: State -> List -> State
-setList s ts = setLists s (Lists.updateLists (getCurrentList s) (lists s) ts)
+setList s ts = setLists s (Lists.updateLists (getCurrentList s) ts (lists s))
 
 setCurrentListTitle :: Text -> Stateful
 setCurrentListTitle text state = do

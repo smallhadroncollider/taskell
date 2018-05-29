@@ -1,7 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 module Data.Taskell.List (
     List
-  , Update
   , title
   , tasks
   , create
