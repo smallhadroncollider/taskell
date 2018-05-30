@@ -65,7 +65,7 @@
 
 - Use lenses for nested data
 - Add more tests
-    * [ ] Trello response parsing
+    * [x] Trello response parsing
 
 ## Done
 

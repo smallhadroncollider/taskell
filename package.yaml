@@ -40,6 +40,8 @@ library:
   - Data.Taskell.Task.Internal
   - Events.State.Types
   - IO.Markdown.Internal
+  - IO.Trello.List
+  - IO.Trello.ChecklistItem
   - UI.Field
 
   dependencies:
@@ -80,7 +82,9 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - base
+    - aeson
     - containers
+    - file-embed
     - lens
     - taskell
     - tasty
