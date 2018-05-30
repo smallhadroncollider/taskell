@@ -20,8 +20,6 @@ dependencies:
 library:
   source-dirs: src
   ghc-options:
-  - -Wall
-  - -Werror
   - -O0
   exposed-modules:
   - App
