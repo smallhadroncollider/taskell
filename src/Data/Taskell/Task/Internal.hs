@@ -71,4 +71,8 @@ contains text task =
     where sts = filter (isInfixOf text) $ (^. ST.name) <$> (task ^. subtasks)
 
 isBlank :: Task -> Bool
-isBlank = null . (^. name)
+isBlank task =
+    null (task ^. name) &&
+    isNothing (task ^. description) &&
+    null (task ^. subtasks) &&
+    isNothing (task ^. due)

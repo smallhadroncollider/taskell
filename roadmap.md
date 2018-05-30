@@ -28,11 +28,12 @@
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
-- The isBlank check on tasks could potentially delete a task with no description but which does have sub-tasks
 - Task description should be visible by default in task detail
     > Visibility should be on the description by default?
 - No obvious way to know if there are more items in a list off-screen
     > Lowest item should be "..." if more items
+- Blank task names should appear as something
+- Can't remove a description
 
 ## Features
 
@@ -224,3 +225,4 @@
     * [x] Task: description -> name/title
     * [x] Task: summary -> description
     * [x] UI.Modal.SubTasks -> UI.Modal.Detail
+- The isBlank check on tasks could potentially delete a task with no description but which does have sub-tasks

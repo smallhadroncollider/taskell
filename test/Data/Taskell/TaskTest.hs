@@ -11,6 +11,8 @@ import Control.Lens ((.~))
 import Test.Tasty
 import Test.Tasty.HUnit
 
+import Data.Time (fromGregorianValid)
+
 import Data.Taskell.Task.Internal
 import qualified Data.Taskell.Subtask as ST (new, name)
 
@@ -212,11 +214,32 @@ test_task =
                     (isBlank (Task "" Nothing empty Nothing))
             )
 
-          , testCase "not blank" (
+          , testCase "name not blank" (
                 assertEqual
                     "Returns False"
                     False
                     (isBlank testTask)
+            )
+
+          , testCase "description not blank" (
+                assertEqual
+                    "Returns False"
+                    False
+                    (isBlank (Task "" (Just "Blah") empty Nothing))
+            )
+
+          , testCase "subtasks not blank" (
+                assertEqual
+                    "Returns False"
+                    False
+                    (isBlank (Task "" Nothing (fromList [ST.new "One" True]) Nothing))
+            )
+
+          , testCase "due date not blank" (
+                assertEqual
+                    "Returns False"
+                    False
+                    (isBlank (Task "" Nothing empty (fromGregorianValid 2018 05 18)))
             )
         ]
     ]
