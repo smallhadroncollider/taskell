@@ -35,6 +35,8 @@
     > Lowest item should be "..." if more items
 - Can't remove a description
 - Date should update if taskell is left open
+- Blank trello token should show info about setting it up rather than auth error
+    > Auth error should show setup info too?
 
 ## Features
 
