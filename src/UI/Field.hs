@@ -90,7 +90,7 @@ textField text = B.Widget B.Fixed B.Fixed $ do
     width <- B.availWidth <$> B.getContext
     let (wrapped, _) = wrap width text
     B.render $ if null text
-        then B.txt " "
+        then B.txt "---"
         else B.vBox $ B.txt <$> wrapped
 
 -- wrap

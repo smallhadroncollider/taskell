@@ -36,8 +36,8 @@ list = newList "Test" empty
 listWithItem :: Lists
 listWithItem = appendToLast task list
 
-makeSubTask :: Bool -> Lists
-makeSubTask b = appendToLast (addSubtask (ST.new "Blah" b) task) list
+makeSubTask :: Text -> Bool -> Lists
+makeSubTask t b = appendToLast (addSubtask (ST.new t b) task) list
 
 taskWithSummary :: Task
 taskWithSummary = setDescription "Summary" task
@@ -109,7 +109,7 @@ test_markdown =
               , testCase "Sub-Task" (
                     assertEqual
                         "List item with Sub-Task"
-                        (makeSubTask False, [])
+                        (makeSubTask "Blah" False, [])
                         (
                             start
                                 defaultMarkdownConfig
@@ -121,7 +121,7 @@ test_markdown =
               , testCase "Complete Sub-Task" (
                     assertEqual
                         "List item with Sub-Task"
-                        (makeSubTask True, [])
+                        (makeSubTask "Blah" True, [])
                         (start defaultMarkdownConfig (listWithItem, []) ("    * ~Blah~", 1))
                 )
 
@@ -179,28 +179,35 @@ test_markdown =
               , testCase "Sub-Task" (
                     assertEqual
                         "List item with Sub-Task"
-                        (makeSubTask False, [])
+                        (makeSubTask "Blah" False, [])
                         (start alternativeMarkdownConfig (listWithItem, []) ("- [ ] Blah", 1))
                 )
 
               , testCase "Complete Sub-Task" (
                     assertEqual
                         "List item with Sub-Task"
-                        (makeSubTask True, [])
+                        (makeSubTask "Blah" True, [])
                         (start alternativeMarkdownConfig (listWithItem, []) ("- [x] Blah", 1))
+                )
+
+              , testCase "Blank Sub-Task" (
+                    assertEqual
+                        "List item with blank Sub-Task"
+                        (makeSubTask "" True, [])
+                        (start alternativeMarkdownConfig (listWithItem, []) ("- [x] ", 1))
                 )
 
               , testCase "Sub-Task (old style)" (
                     assertEqual
                         "List item with Sub-Task"
-                        (makeSubTask False, [])
+                        (makeSubTask "Blah" False, [])
                         (start alternativeMarkdownConfig (listWithItem, []) ("- Blah", 1))
                 )
 
               , testCase "Complete Sub-Task (old style)" (
                     assertEqual
                         "List item with Sub-Task"
-                        (makeSubTask True, [])
+                        (makeSubTask "Blah" True, [])
                         (start alternativeMarkdownConfig (listWithItem, []) ("- ~Blah~", 1))
                 )
             ]
@@ -263,7 +270,7 @@ test_markdown =
                     assertEqual
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n    * [x] Blah\n"
-                        (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask True))
+                        (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask "Blah" True))
                 )
             ],
 
@@ -279,7 +286,7 @@ test_markdown =
                     assertEqual
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n    * [ ] Blah\n"
-                        (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask False))
+                        (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask "Blah" False))
                 )
             ]
         ]

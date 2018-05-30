@@ -19,17 +19,14 @@ import qualified Data.Taskell.Task as T (Task, new, name, subtasks, addSubtask, 
 import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, descriptionOutput, dueOutput, subtaskOutput)
 
 -- parse code
-trim :: Int -> Text -> Text
-trim i = strip . drop i
-
 trimTilde :: Text -> Text
 trimTilde = strip . T.dropAround (== '~')
 
 addSubItem :: Text -> Lists -> Lists
 addSubItem t ls = adjust' updateList i ls
     where i = length ls - 1
-          st | "[ ] " `isPrefixOf` t = ST.new (trim 4 t) False
-             | "[x] " `isPrefixOf` t = ST.new (trim 4 t) True
+          st | "[ ] " `isPrefixOf` t = ST.new (drop 4 t) False
+             | "[x] " `isPrefixOf` t = ST.new (drop 4 t) True
              | "~" `isPrefixOf` t = ST.new (trimTilde t) True
              | otherwise = ST.new t False
           updateList l = updateFn j (T.addSubtask st) l
@@ -49,7 +46,7 @@ addDue t ls = adjust' updateList i ls
 
 prefix :: MarkdownConfig -> Text -> (MarkdownConfig -> Text) -> (Text -> Lists -> Lists) -> Maybe (Lists -> Lists)
 prefix config str get set
-    | pre `isPrefixOf` str = Just $ set (trim (length pre) str)
+    | pre `isPrefixOf` str = Just $ set (drop (length pre) str)
     | otherwise = Nothing
     where pre = get config `snoc` ' '
 

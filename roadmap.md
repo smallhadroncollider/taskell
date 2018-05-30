@@ -32,8 +32,8 @@
     > Visibility should be on the description by default?
 - No obvious way to know if there are more items in a list off-screen
     > Lowest item should be "..." if more items
-- Blank task names should appear as something
 - Can't remove a description
+- Date should update if taskell is left open
 
 ## Features
 
@@ -226,3 +226,4 @@
     * [x] Task: summary -> description
     * [x] UI.Modal.SubTasks -> UI.Modal.Detail
 - The isBlank check on tasks could potentially delete a task with no description but which does have sub-tasks
+- Blank task names should appear as something
