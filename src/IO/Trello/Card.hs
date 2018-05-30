@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 module IO.Trello.Card (
     Card
@@ -10,7 +11,7 @@ module IO.Trello.Card (
 
 import ClassyPrelude
 
-import Control.Lens ((&), (.~))
+import Control.Lens (makeLenses, (^.), (&), (.~))
 
 import Data.Aeson
 import qualified Data.Taskell.Task as T (Task, new, setDescription, due, subtasks)
@@ -20,22 +21,31 @@ import Data.Time.LocalTime (TimeZone)
 import IO.Trello.ChecklistItem (ChecklistItem, checklistItemToSubTask)
 
 data Card = Card {
-    name :: Text
-  , desc :: Text
-  , due :: Maybe Text
-  , idChecklists :: [Text]
-  , checklists :: Maybe [ChecklistItem]
-} deriving (Eq, Show, Generic, ToJSON, FromJSON)
+    _name :: Text
+  , _desc :: Text
+  , _due :: Maybe Text
+  , _idChecklists :: [Text]
+  , _checklists :: Maybe [ChecklistItem]
+} deriving (Eq, Show, Generic)
 
+-- strip underscores from field labels
+instance FromJSON Card where
+    parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 }
+
+-- create lenses
+$(makeLenses ''Card)
+
+
+-- operations
 textToTime :: TimeZone -> Text -> Maybe Day
 textToTime tz text = utcToLocalDay tz <$> utc
     where utc = parseTimeM False defaultTimeLocale (iso8601DateFormat (Just "%H:%M:%S%Q%Z")) $ unpack text
 
 cardToTask :: TimeZone -> Card -> T.Task
 cardToTask tz card =
-    task & T.due .~ textToTime tz (fromMaybe "" (due card))
-         & T.subtasks .~ fromList (checklistItemToSubTask <$> fromMaybe [] (checklists card))
-    where task = T.setDescription (desc card) $ T.new (name card)
+    task & T.due .~ textToTime tz (fromMaybe "" (card ^. due))
+         & T.subtasks .~ fromList (checklistItemToSubTask <$> fromMaybe [] (card ^. checklists))
+    where task = T.setDescription (card ^. desc) $ T.new (card ^. name)
 
 setChecklists :: Card -> [ChecklistItem] -> Card
-setChecklists card cls = card { checklists = Just cls }
+setChecklists card cls = card & checklists .~ Just cls

@@ -11,6 +11,7 @@
 
 - Use a Makefile instead of bash script
 - Break up State module
+- Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
 - Remove duplication of config - currently using ini and hard-coded defaults
@@ -63,6 +64,8 @@
 ## In Progress
 
 - Use lenses for nested data
+- Add more tests
+    * [ ] Trello response parsing
 
 ## Done
 

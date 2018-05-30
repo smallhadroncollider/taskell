@@ -8,6 +8,8 @@ module IO.Trello (
 
 import ClassyPrelude
 
+import Control.Lens ((^.))
+
 import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody, getResponseStatusCode)
 import Data.Aeson
 
@@ -39,7 +41,7 @@ boardURL board = fullURL $ concat [
         "boards/", board, "/lists",
         "?cards=open",
         "&card_fields=name,due,desc,idChecklists",
-        "&fields=id,name,cards"
+        "&fields=name,cards"
     ]
 
 checklistURL :: TrelloChecklistID -> ReaderTrelloToken String
@@ -64,7 +66,7 @@ getChecklist checklist = do
     (status, body) <- lift $ fetch url
 
     return $ case status of
-        200 -> case checkItems <$> decodeStrict body of
+        200 -> case (^. checkItems) <$> decodeStrict body of
             Just ls -> Right ls
             Nothing -> Left "Could not parse response. Please file an Issue on GitHub."
         429 -> Left "Too many checklists"
@@ -72,10 +74,10 @@ getChecklist checklist = do
 
 updateCard :: Card -> ReaderTrelloToken (Either Text Card)
 updateCard card = (setChecklists card . concat <$>) . sequence <$> checklists
-    where checklists = sequence $ getChecklist <$> idChecklists card
+    where checklists = sequence $ getChecklist <$> (card ^. idChecklists)
 
 updateList :: List -> ReaderTrelloToken (Either Text List)
-updateList l = (setCards l <$>) . sequence <$> sequence (updateCard <$> cards l)
+updateList l = (setCards l <$>) . sequence <$> sequence (updateCard <$> (l ^. cards))
 
 getChecklists :: [List] -> ReaderTrelloToken (Either Text [List])
 getChecklists ls = sequence <$> sequence (updateList <$> ls)

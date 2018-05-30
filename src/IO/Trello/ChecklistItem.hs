@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 module IO.Trello.ChecklistItem (
     ChecklistItem
@@ -9,18 +10,36 @@ module IO.Trello.ChecklistItem (
 
 import ClassyPrelude
 
+import Control.Lens (makeLenses, (^.))
 import Data.Aeson
-
 import qualified Data.Taskell.Subtask as ST (Subtask, new)
 
 data ChecklistItem = ChecklistItem {
-    name :: Text
-  , state :: Text
-} deriving (Eq, Show, Generic, ToJSON, FromJSON)
+    _name :: Text
+  , _state :: Text
+} deriving (Eq, Show, Generic)
 
-data ChecklistWrapper = ChecklistWrapper {
-    checkItems :: [ChecklistItem]
-} deriving (Eq, Show, Generic, ToJSON, FromJSON)
+-- strip underscores from field labels
+instance FromJSON ChecklistItem where
+    parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 }
 
+-- create lenses
+$(makeLenses ''ChecklistItem)
+
+
+-- operations
 checklistItemToSubTask :: ChecklistItem -> ST.Subtask
-checklistItemToSubTask cl = ST.new (name cl) (state cl == "complete")
+checklistItemToSubTask cl = ST.new (cl ^. name) ((cl ^. state) == "complete")
+
+
+-- check list wrapper
+newtype ChecklistWrapper = ChecklistWrapper {
+    _checkItems :: [ChecklistItem]
+} deriving (Eq, Show, Generic)
+
+-- strip underscores from field labels
+instance FromJSON ChecklistWrapper where
+    parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 }
+
+-- create lenses
+$(makeLenses ''ChecklistWrapper)
