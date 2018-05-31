@@ -28,12 +28,9 @@ get = (!?)
 changeList :: (Int, Int) -> Lists -> Int -> Maybe Lists
 changeList (list, idx) tasks dir = do
     let next = list + dir
-    a <- tasks !? list -- get current list
-    b <- tasks !? next -- get next list
-    (a', task) <- extract idx a -- extract selected task
-    let b' = append task b -- add selected task to next list
-    let list' = updateLists list a' tasks -- update extracted list
-    return $ updateLists next b' list'-- update next list
+    (from, task) <- extract idx =<< tasks !? list -- extract current task
+    to <- append task <$> tasks !? next -- get next list and append task
+    return . updateLists next to $ updateLists list from tasks-- update lists
 
 newList :: Text -> Update
 newList title = (|> empty title)
@@ -53,9 +50,8 @@ search text = (searchFor text <$>)
 appendToLast :: Task -> Update
 appendToLast task lists = fromMaybe lists $ do
     let idx = length lists - 1
-    list <- lists !? idx
-    let list' = append task list
-    return $ updateLists idx list' lists
+    list <- append task <$> lists !? idx
+    return $ updateLists idx list lists
 
 analyse :: Text -> Lists -> Text
 analyse filepath lists = concat [

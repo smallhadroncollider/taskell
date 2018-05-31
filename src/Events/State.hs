@@ -61,7 +61,7 @@ module Events.State (
 
 import ClassyPrelude hiding (delete)
 
-import Control.Lens ((&), (^.), (.~))
+import Control.Lens ((^.), (.~))
 
 import Data.Char (digitToInt, ord)
 
@@ -123,21 +123,17 @@ editListStart s = do
     return $ s { mode = Insert IList IEdit f }
 
 deleteCurrentList :: Stateful
-deleteCurrentList s = return $ fixIndex $ setLists s $ Lists.delete (getCurrentList s) (lists s)
+deleteCurrentList s = return . fixIndex . setLists s $ Lists.delete (getCurrentList s) (lists s)
 
 -- insert
 getCurrentTask :: State -> Maybe Task
 getCurrentTask s = getList s >>= getTask (getIndex s)
 
 setCurrentTask :: Task -> Stateful
-setCurrentTask task state = do
-    list <- update (getIndex state) task <$> getList state
-    return $ setList state list
+setCurrentTask task state = setList state . update (getIndex state) task <$> getList state
 
 setCurrentTaskText :: Text -> Stateful
-setCurrentTaskText text state = do
-    task <- getCurrentTask state
-    setCurrentTask (task & name .~ text) state
+setCurrentTaskText text state = flip setCurrentTask state =<< (name .~ text) <$> getCurrentTask state
 
 startCreate :: Stateful
 startCreate s = return $ s { mode = Insert ITask ICreate blankField }
@@ -164,8 +160,7 @@ normalMode s = return $ s { mode = Normal }
 addToListAt :: Int -> Stateful
 addToListAt d s = do
     let i = getIndex s + d
-    ls <- newAt i <$> getList s
-    return . fixIndex $ setList (setIndex s i) ls
+    fixIndex . setList (setIndex s i) . newAt i <$> getList s
 
 above :: Stateful
 above = addToListAt 0
@@ -174,9 +169,7 @@ below :: Stateful
 below = addToListAt 1
 
 newItem :: Stateful
-newItem s = do
-    l <- new <$> getList s
-    return . selectLast $ setList s l
+newItem s = selectLast . setList s . new <$> getList s
 
 clearItem :: Stateful
 clearItem = setCurrentTaskText ""
@@ -194,19 +187,13 @@ removeBlank s = do
 
 -- moving
 up :: Stateful
-up s = do
-    l <- move (getIndex s) (-1) =<< getList s
-    previous $ setList s l
+up s = previous =<< setList s <$> (move (getIndex s) (-1) =<< getList s)
 
 down :: Stateful
-down s = do
-    l <- move (getIndex s) 1 =<< getList s
-    next $ setList s l
+down s = next =<< setList s <$> (move (getIndex s) 1 =<< getList s)
 
 move' :: Int -> State -> Maybe State
-move' i s = do
-    l <- Lists.changeList (current s) (lists s) i
-    return . fixIndex $ setLists s l
+move' i s = fixIndex . setLists s <$> Lists.changeList (current s) (lists s) i
 
 moveLeft :: Stateful
 moveLeft = move' (-1)
@@ -221,9 +208,7 @@ selectList i s = return $ if e then s { current = (list, 0) } else s
 
 -- removing
 delete :: Stateful
-delete s = do
-    ts <- getList s
-    return . fixIndex . setList s $ deleteTask (getIndex s) ts
+delete s = fixIndex . setList s . deleteTask (getIndex s) <$> getList s
 
 -- list and index
 countCurrent :: State -> Int
@@ -251,11 +236,11 @@ previous s = return $ setIndex s i'
           i' = if i > 0 then pred i else 0
 
 left :: Stateful
-left s = return $ fixIndex $ setCurrentList s $ if l > 0 then pred l else 0
+left s = return . fixIndex . setCurrentList s $ if l > 0 then pred l else 0
     where l = getCurrentList s
 
 right :: Stateful
-right s = return $ fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
+right s = return . fixIndex . setCurrentList s $ if l < (c - 1) then succ l else l
     where l = getCurrentList s
           c = length (lists s)
 
@@ -277,9 +262,7 @@ setList :: State -> List -> State
 setList s ts = setLists s (Lists.updateLists (getCurrentList s) ts (lists s))
 
 setCurrentListTitle :: Text -> Stateful
-setCurrentListTitle text state = do
-    list <- getList state
-    return . setList state $ list & title .~ text
+setCurrentListTitle text state = setList state . (title .~ text) <$> getList state
 
 setLists :: State -> Lists.Lists -> State
 setLists s ts = s { lists = ts }
@@ -303,9 +286,8 @@ listMove dir s = do
     if c + dir < 0 || c + dir >= length lists'
         then Nothing
         else do
-            ls <- Lists.shiftBy c dir lists'
             let s' = fixIndex $ setCurrentList s (c + dir)
-            return $ setLists s' ls
+            setLists s' <$> Lists.shiftBy c dir lists'
 
 listLeft :: Stateful
 listLeft = listMove (-1)
