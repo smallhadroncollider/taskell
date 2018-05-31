@@ -13,6 +13,7 @@ import ClassyPrelude
 import Control.Lens (makeLenses, (^.))
 import Data.Aeson
 import qualified Data.Taskell.Subtask as ST (Subtask, new)
+import IO.Trello.Aeson (stripLensPrefix)
 
 data ChecklistItem = ChecklistItem {
     _name :: Text
@@ -21,7 +22,7 @@ data ChecklistItem = ChecklistItem {
 
 -- strip underscores from field labels
 instance FromJSON ChecklistItem where
-    parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 }
+    parseJSON = stripLensPrefix
 
 -- create lenses
 $(makeLenses ''ChecklistItem)
@@ -39,7 +40,7 @@ newtype ChecklistWrapper = ChecklistWrapper {
 
 -- strip underscores from field labels
 instance FromJSON ChecklistWrapper where
-    parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 }
+    parseJSON = stripLensPrefix
 
 -- create lenses
 $(makeLenses ''ChecklistWrapper)

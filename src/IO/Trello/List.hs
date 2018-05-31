@@ -13,6 +13,7 @@ import ClassyPrelude
 import Control.Lens (makeLenses, (&), (^.), (.~))
 
 import Data.Aeson
+import IO.Trello.Aeson (stripLensPrefix)
 import IO.Trello.Card (Card, cardToTask)
 import qualified Data.Taskell.List as L (List, create)
 import Data.Time.LocalTime (TimeZone)
@@ -24,7 +25,7 @@ data List = List {
 
 -- strip underscores from field labels
 instance FromJSON List where
-    parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 }
+    parseJSON = stripLensPrefix
 
 -- create lenses
 $(makeLenses ''List)

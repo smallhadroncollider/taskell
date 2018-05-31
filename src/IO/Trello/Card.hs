@@ -18,6 +18,7 @@ import qualified Data.Taskell.Task as T (Task, new, setDescription, due, subtask
 import Data.Taskell.Date (utcToLocalDay)
 import Data.Time.Format (parseTimeM, iso8601DateFormat)
 import Data.Time.LocalTime (TimeZone)
+import IO.Trello.Aeson (stripLensPrefix)
 import IO.Trello.ChecklistItem (ChecklistItem, checklistItemToSubTask)
 
 data Card = Card {
@@ -30,7 +31,7 @@ data Card = Card {
 
 -- strip underscores from field labels
 instance FromJSON Card where
-    parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 }
+    parseJSON = stripLensPrefix
 
 -- create lenses
 $(makeLenses ''Card)
