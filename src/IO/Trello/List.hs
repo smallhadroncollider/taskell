@@ -1,6 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 module IO.Trello.List (
     List
   , cards
@@ -12,8 +11,7 @@ import ClassyPrelude
 
 import Control.Lens (makeLenses, (&), (^.), (.~))
 
-import Data.Aeson
-import IO.Trello.Aeson (stripLensPrefix)
+import IO.Trello.Aeson (deriveFromJSON)
 import IO.Trello.Card (Card, cardToTask)
 import qualified Data.Taskell.List as L (List, create)
 import Data.Time.LocalTime (TimeZone)
@@ -21,11 +19,10 @@ import Data.Time.LocalTime (TimeZone)
 data List = List {
     _name  :: Text
   , _cards :: [Card]
-} deriving (Eq, Show, Generic)
+} deriving (Eq, Show)
 
--- strip underscores from field labels
-instance FromJSON List where
-    parseJSON = stripLensPrefix
+-- create Aeson code
+$(deriveFromJSON ''List)
 
 -- create lenses
 $(makeLenses ''List)

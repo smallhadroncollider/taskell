@@ -1,7 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 module IO.Trello.Card (
     Card
   , idChecklists
@@ -13,12 +12,11 @@ import ClassyPrelude
 
 import Control.Lens (makeLenses, (^.), (&), (.~))
 
-import Data.Aeson
 import qualified Data.Taskell.Task as T (Task, new, setDescription, due, subtasks)
 import Data.Taskell.Date (utcToLocalDay)
 import Data.Time.Format (parseTimeM, iso8601DateFormat)
 import Data.Time.LocalTime (TimeZone)
-import IO.Trello.Aeson (stripLensPrefix)
+import IO.Trello.Aeson (deriveFromJSON)
 import IO.Trello.ChecklistItem (ChecklistItem, checklistItemToSubTask)
 
 data Card = Card {
@@ -27,11 +25,10 @@ data Card = Card {
   , _due :: Maybe Text
   , _idChecklists :: [Text]
   , _checklists :: Maybe [ChecklistItem]
-} deriving (Eq, Show, Generic)
+} deriving (Eq, Show)
 
 -- strip underscores from field labels
-instance FromJSON Card where
-    parseJSON = stripLensPrefix
+$(deriveFromJSON ''Card)
 
 -- create lenses
 $(makeLenses ''Card)
