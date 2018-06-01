@@ -9,7 +9,7 @@
 
 ## Refactoring
 
-- Use a Makefile instead of bash script
+- Use Shake instead of bash script
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Use a map in Actions to tidy things up/add custom key support
