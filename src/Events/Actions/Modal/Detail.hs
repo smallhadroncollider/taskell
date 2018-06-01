@@ -6,6 +6,7 @@ import ClassyPrelude
 import Graphics.Vty.Input.Events
 import Events.State
 import Events.State.Types
+import Events.State.Types.Mode (DetailMode(..), DetailItem(..))
 import Events.State.Modal.Detail as Detail
 import qualified UI.Field as F (event)
 

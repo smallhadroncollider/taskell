@@ -11,6 +11,7 @@ import Test.Tasty.HUnit
 
 import Events.State
 import Events.State.Types
+import Events.State.Types.Mode
 import qualified Data.Sequence as S (lookup)
 import qualified Data.Taskell.List as L (empty, append)
 import qualified Data.Taskell.Task as T (new)

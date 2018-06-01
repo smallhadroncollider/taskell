@@ -10,7 +10,8 @@ import Brick.Widgets.Center
 import Brick.Widgets.Border
 
 import Data.Taskell.Date (Day)
-import Events.State.Types (State, Mode(..), ModalType(..), mode)
+import Events.State.Types (State, mode)
+import Events.State.Types.Mode (Mode(..), ModalType(..))
 import UI.Field (textField)
 import UI.Modal.Help (help)
 import UI.Modal.MoveTo (moveTo)

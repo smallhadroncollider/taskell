@@ -70,6 +70,7 @@ import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, getTask,
 import qualified Data.Taskell.Lists as Lists
 
 import Events.State.Types
+import Events.State.Types.Mode (Mode(..), InsertMode(..), InsertType(..), ModalType(..))
 import UI.Field (getText, blankField, textToField)
 
 create :: FilePath -> Lists.Lists -> State

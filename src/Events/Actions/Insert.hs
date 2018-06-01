@@ -5,6 +5,7 @@ import ClassyPrelude
 
 import Events.State
 import Events.State.Types
+import Events.State.Types.Mode(Mode(Insert), InsertType(..), InsertMode(..))
 import Graphics.Vty.Input.Events (Event(EvKey), Key(KEnter, KEsc))
 import qualified UI.Field as F (event)
 
