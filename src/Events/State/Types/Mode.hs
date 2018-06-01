@@ -15,11 +15,7 @@ data InsertMode = IEdit | ICreate deriving (Eq, Show)
 
 data Mode =
     Normal
-  | Insert {
-    _type :: InsertType,
-    _mode :: InsertMode,
-    _field :: Field
-  }
+  | Insert InsertType InsertMode Field
   | Modal ModalType
   | Search Bool Field
   | Shutdown
