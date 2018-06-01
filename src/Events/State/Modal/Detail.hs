@@ -22,7 +22,7 @@ module Events.State.Modal.Detail (
 
 import ClassyPrelude
 
-import Control.Lens ((.~), (^.))
+import Control.Lens ((&), (.~), (^.))
 
 import Data.Taskell.Date (dayToOutput)
 import Events.State (getCurrentTask, setCurrentTask)
@@ -33,10 +33,9 @@ import qualified Data.Taskell.Subtask as ST (name, toggle, blank)
 import UI.Field (Field, blankField, getText, textToField)
 
 updateField :: (Field -> Field) -> Stateful
-updateField fieldEvent s = return $ case mode s of
-    Modal (Detail detailItem (DetailInsert field)) -> s {
-        mode = Modal (Detail detailItem (DetailInsert (fieldEvent field)))
-    }
+updateField fieldEvent s = return $ case s ^. mode of
+    Modal (Detail detailItem (DetailInsert field)) -> s &
+        mode .~ Modal (Detail detailItem (DetailInsert (fieldEvent field)))
     _ -> s
 
 finishSubtask :: Stateful
@@ -44,13 +43,13 @@ finishSubtask state = do
     text <- getText <$> getField state
     i <- getCurrentSubtask state
     task <- updateSubtask i (ST.name .~ text) <$> getCurrentTask state
-    setCurrentTask task $ state { mode = Modal (Detail (DetailItem i) (DetailInsert blankField)) }
+    setCurrentTask task $ state & mode .~ Modal (Detail (DetailItem i) (DetailInsert blankField))
 
 finish :: (Text -> Task -> Task) -> Stateful
 finish fn state = do
     text <- getText <$> getField state
     task <- fn text <$> getCurrentTask state
-    setCurrentTask task $ state { mode = Modal (Detail (DetailItem 0) DetailNormal) }
+    setCurrentTask task $ state & mode .~ Modal (Detail (DetailItem 0) DetailNormal)
 
 finishDescription :: Stateful
 finishDescription = finish setDescription
@@ -62,25 +61,25 @@ showDetail :: Stateful
 showDetail s = do
     _ <- getCurrentTask s
     let i = fromMaybe 0 $ getCurrentSubtask s
-    return $ s { mode = Modal (Detail (DetailItem i) DetailNormal) }
+    return $ s & mode .~ Modal (Detail (DetailItem i) DetailNormal)
 
 getCurrentSubtask :: State -> Maybe Int
-getCurrentSubtask state = case mode state of
+getCurrentSubtask state = case state ^. mode of
     Modal (Detail (DetailItem i) _) -> Just i
     _ -> Nothing
 
 getCurrentItem :: State -> Maybe DetailItem
-getCurrentItem state = case mode state of
+getCurrentItem state = case state ^. mode of
     Modal (Detail item _) -> Just item
     _ -> Nothing
 
 getCurrentMode :: State -> Maybe DetailMode
-getCurrentMode state = case mode state of
+getCurrentMode state = case state ^. mode of
     Modal (Detail _ m) -> Just m
     _ -> Nothing
 
 getField :: State -> Maybe Field
-getField state = case mode state of
+getField state = case state ^. mode of
     Modal (Detail _ (DetailInsert f)) -> Just f
     _ -> Nothing
 
@@ -102,21 +101,21 @@ insertMode state = do
     i <- getCurrentSubtask state
     task <- getCurrentTask state
     n <- (^. ST.name) <$> getSubtask i task
-    case mode state of
-        Modal (Detail (DetailItem i') _) -> Just state { mode = Modal (Detail (DetailItem i') (DetailInsert (textToField n))) }
+    case state ^. mode of
+        Modal (Detail (DetailItem i') _) -> Just (state & mode .~ Modal (Detail (DetailItem i') (DetailInsert (textToField n))))
         _ -> Nothing
 
 editDescription :: Stateful
 editDescription state = do
     summ <- (^. description) <$> getCurrentTask state
     let summ' = fromMaybe "" summ
-    return $ state { mode = Modal (Detail DetailDescription (DetailInsert (textToField summ'))) }
+    return $ state & mode .~ Modal (Detail DetailDescription (DetailInsert (textToField summ')))
 
 editDue :: Stateful
 editDue state = do
     day <- (^. due) <$> getCurrentTask state
     let day' = maybe "" dayToOutput day
-    return $ state { mode = Modal (Detail DetailDate (DetailInsert (textToField day'))) }
+    return $ state & mode .~ Modal (Detail DetailDate (DetailInsert (textToField day')))
 
 newItem :: Stateful
 newItem state = do
@@ -148,4 +147,4 @@ setIndex state i = do
     let newIndex | i > lst = lst
                  | i < 0 = 0
                  | otherwise = i
-    return $ state { mode = Modal (Detail (DetailItem newIndex) m) }
+    return $ state & mode .~ Modal (Detail (DetailItem newIndex) m)

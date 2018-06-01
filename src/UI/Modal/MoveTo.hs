@@ -20,7 +20,7 @@ import UI.Types (ResourceName)
 moveTo :: State -> (Text, Widget ResourceName)
 moveTo state = ("Move To:", widget)
     where skip = getCurrentList state
-          ls = toList $ lists state
+          ls = toList $ state ^. lists
           titles = textField . (^. title) <$> ls
 
           letter a = padRight (Pad 1) . hBox $ [txt "[", withAttr taskCurrentAttr $ txt (singleton a), txt "]"]

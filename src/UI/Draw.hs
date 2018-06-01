@@ -169,21 +169,21 @@ moveTo _ = False
 draw :: LayoutConfig -> Day -> State -> [Widget ResourceName]
 draw layout today state =
     showModal normalisedState today [runReader main DrawState {
-        dsLists = lists normalisedState
+        dsLists = normalisedState ^. lists
       , dsMode = stateMode
       , dsLayout = layout
       , dsToday = today
       , dsField = getField stateMode
-      , dsCurrent = current normalisedState
+      , dsCurrent = normalisedState ^. current
       , dsEditingTitle = editingTitle stateMode
     }]
 
     where normalisedState = normalise state
-          stateMode = mode state
+          stateMode = state ^. mode
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
-chooseCursor state = case mode (normalise state) of
+chooseCursor state = case normalise state ^. mode of
     Insert {} -> showCursorNamed RNCursor
     Search True _ -> showCursorNamed RNCursor
     Modal (Detail _ (DetailInsert _)) -> showCursorNamed RNCursor
