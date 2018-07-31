@@ -68,7 +68,7 @@ createTrello boardID path = do
     config <- ask
     let maybeToken = token $ trello config
     case maybeToken of
-        Nothing -> return $ Output $ decodeUtf8 $(embedFile "templates/token.txt")
+        Nothing -> return $ Output $ decodeUtf8 $(embedFile "templates/trello-token.txt")
         Just trelloToken -> do
             lists <- lift $ runReaderT (getCards boardID) trelloToken
             case lists of
