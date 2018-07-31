@@ -65,9 +65,10 @@
 
 ## In Progress
 
-- Use lenses for nested data
-- Add more tests
-    * [x] Trello response parsing
+- Add GitHub Project support
+- Should be able to have new-lines in task descriptions
+    * [ ] Trello import
+    * [ ] Regular input (Shift + Enter for new line?)
 
 ## Done
 
@@ -232,3 +233,6 @@
     * [x] UI.Modal.SubTasks -> UI.Modal.Detail
 - The isBlank check on tasks could potentially delete a task with no description but which does have sub-tasks
 - Blank task names should appear as something
+- Use lenses for nested data
+- Add more tests
+    * [x] Trello response parsing
