@@ -7,14 +7,14 @@ import ClassyPrelude
 import Control.Lens ((^.))
 
 import Data.Sequence (adjust')
-import Data.Text as T (strip, dropAround)
+import Data.Text as T (strip, dropAround, splitOn)
 import Data.Text.Encoding (decodeUtf8With)
 
 import Data.Taskell.Date (dayToOutput)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.List (List, title, tasks, updateFn, count)
 import qualified Data.Taskell.Subtask as ST (Subtask, new, name, complete)
-import qualified Data.Taskell.Task as T (Task, new, name, subtasks, addSubtask, setDescription, setDue, due, description)
+import qualified Data.Taskell.Task as T (Task, new, name, subtasks, addSubtask, appendDescription, setDue, due, description)
 
 import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, descriptionOutput, dueOutput, subtaskOutput)
 
@@ -35,7 +35,7 @@ addSubItem t ls = adjust' updateList i ls
 addDescription :: Text -> Lists -> Lists
 addDescription t ls = adjust' updateList i ls
     where i = length ls - 1
-          updateList l = updateFn j (T.setDescription t) l
+          updateList l = updateFn j (T.appendDescription t) l
             where j = count l - 1
 
 addDue :: Text -> Lists -> Lists
@@ -96,7 +96,8 @@ subtaskStringify config t st = foldl' (++) t [
     where pre = if st ^. ST.complete then "[x]" else "[ ]"
 
 descriptionStringify :: MarkdownConfig -> Text -> Text
-descriptionStringify config sm = concat [descriptionOutput config, " ", sm, "\n"]
+descriptionStringify config desc = concat $ add <$> splitOn "\n" desc
+    where add d = concat [descriptionOutput config, " ", d, "\n"]
 
 dueStringify :: MarkdownConfig -> Day -> Text
 dueStringify config day = concat [dueOutput config, " ", dayToOutput day, "\n"]

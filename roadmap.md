@@ -67,8 +67,10 @@
 
 - Add GitHub Project support
 - Should be able to have new-lines in task descriptions
-    * [ ] Trello import
+    * [x] Trello import
     * [ ] Regular input (Shift + Enter for new line?)
+    * [x] Markdown parsing
+    * [ ] Text line breaks go a bit funny with multi-line descriptions
 
 ## Done
 

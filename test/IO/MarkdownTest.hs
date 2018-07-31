@@ -42,8 +42,14 @@ makeSubTask t b = appendToLast (addSubtask (ST.new t b) task) list
 taskWithSummary :: Task
 taskWithSummary = setDescription "Summary" task
 
+taskWithMultiLineSummary :: Task
+taskWithMultiLineSummary = setDescription "Summary Line 1\nSummary Line 2" task
+
 listWithSummaryItem :: Lists
 listWithSummaryItem = appendToLast taskWithSummary list
+
+listWithMultiLineSummaryItem :: Lists
+listWithMultiLineSummaryItem = appendToLast taskWithMultiLineSummary list
 
 taskWithDueDate :: Task
 taskWithDueDate = setDue "2018-04-12" task
@@ -241,6 +247,13 @@ test_markdown =
                     (Left "could not parse line(s) 3, 5")
                     (parse defaultConfig (encodeUtf8 "## Test\n- Test Item\n* Spoon\n- Test Item\nCow"))
             )
+
+          , testCase "List Item with multi-line Summary" (
+                assertEqual
+                    "List item with a summary"
+                    (Right listWithMultiLineSummaryItem)
+                    (parse defaultConfig (encodeUtf8 "## Test\n- Test Item\n    > Summary Line 1\n    > Summary Line 2"))
+            )
         ]
 
       , testGroup "Stringification" [
@@ -272,6 +285,14 @@ test_markdown =
                         "## Test\n\n- Test Item\n    * [x] Blah\n"
                         (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask "Blah" True))
                 )
+
+              , testCase "Standard list with multi-line summary" (
+                    assertEqual
+                        "Markdown formatted output"
+                        "## Test\n\n- Test Item\n    > Summary Line 1\n    > Summary Line 2\n"
+                        (foldl' (listStringify defaultMarkdownConfig) "" listWithMultiLineSummaryItem)
+                )
+
             ],
 
             testGroup "Alternative Format" [

@@ -38,6 +38,16 @@ setDescription text =
         then id
         else description .~ Just text
 
+maybeAppend :: Text -> Maybe Text -> Maybe Text
+maybeAppend text (Just current) = Just (concat [current, "\n", text])
+maybeAppend text Nothing = Just text
+
+appendDescription :: Text -> Update
+appendDescription text =
+    if null (strip text)
+        then id
+        else description %~ maybeAppend text
+
 setDue :: Text -> Update
 setDue date =
     case textToDay date of
