@@ -68,12 +68,15 @@
 
 ## In Progress
 
+- Text editing issues
+    * [x] Line breaks break cursor movement
+    * [ ] Words should wrap (hyphenate?) if too long
+    * [x] Doesn't like more than one space in a row
+    * [ ] Cursor on wrong line with line breaks
 - Should be able to have new-lines in task descriptions
     * [x] Trello import
     * [ ] Regular input (Shift + Enter for new line?)
     * [x] Markdown parsing
-    * [ ] Text line breaks go a bit funny with multi-line descriptions
-- Add tests for IO.GitHub
 
 ## Done
 
