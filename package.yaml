@@ -42,6 +42,7 @@ library:
   - Events.State.Types.Mode
   - IO.Config.Markdown
   - IO.Markdown.Internal
+  - IO.HTTP.GitHub
   - IO.HTTP.Trello.List
   - IO.HTTP.Trello.ChecklistItem
   - UI.Field

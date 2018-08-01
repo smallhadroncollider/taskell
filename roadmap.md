@@ -65,7 +65,6 @@
 
 ## In Progress
 
-- GitHub import should take pagination into account
 - Should be able to have new-lines in task descriptions
     * [x] Trello import
     * [ ] Regular input (Shift + Enter for new line?)
@@ -244,3 +243,4 @@
     > Avoid repeating basically the same code for Trello and GitHub fetching
 - Add ability to list GitHub projects
     > Give an organisation or username and repo, list the possible projects to fetch - avoid having to look up the project ID manually first
+- GitHub import should take pagination into account
