@@ -47,23 +47,20 @@ loadFile filepath = do
                 Right lists -> Load path lists
                 Left err -> Output $ pack path ++ ": " ++ err
 
-loadTrello :: Trello.TrelloBoardID -> Text -> ReaderConfig Next
-loadTrello boardID filepath = do
+loadRemote :: (token -> FilePath -> ReaderConfig Next) -> token -> Text -> ReaderConfig Next
+loadRemote createFn identifier filepath = do
     let path = unpack filepath
     exists' <- fileExists path
 
     if exists'
         then return $ Output (filepath ++ " already exists")
-        else createTrello boardID path
+        else createFn identifier path
+
+loadTrello :: Trello.TrelloBoardID -> Text -> ReaderConfig Next
+loadTrello = loadRemote createTrello
 
 loadGitHub :: GitHub.GitHubProjectID -> Text -> ReaderConfig Next
-loadGitHub projectID filepath = do
-    let path = unpack filepath
-    exists' <- fileExists path
-
-    if exists'
-        then return $ Output (filepath ++ " already exists")
-        else createGitHub projectID path
+loadGitHub = loadRemote createGitHub
 
 fileInfo :: Text -> ReaderConfig Next
 fileInfo filepath = do
@@ -77,14 +74,14 @@ fileInfo filepath = do
                 Left err -> Output $ pack path ++ ": " ++ err
         else return Exit
 
-createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
-createTrello boardID path = do
+createRemote :: (Config -> Maybe token) -> Text -> (token -> ReaderT token IO (Either Text Lists)) -> token -> FilePath -> ReaderConfig Next
+createRemote tokenFn missingToken getFn identifier path = do
     config <- ask
-    let maybeToken = Trello.token $ trello config
+    let maybeToken = tokenFn config
     case maybeToken of
-        Nothing -> return $ Output $ decodeUtf8 $(embedFile "templates/trello-token.txt")
-        Just trelloToken -> do
-            lists <- lift $ runReaderT (Trello.getLists boardID) trelloToken
+        Nothing -> return $ Output missingToken
+        Just token -> do
+            lists <- lift $ runReaderT (getFn identifier) token
             case lists of
                 Left txt -> return $ Output txt
                 Right ls -> do
@@ -95,23 +92,12 @@ createTrello boardID path = do
                             return $ Load path ls
                         else return Exit
 
+
+createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
+createTrello = createRemote (Trello.token . trello) (decodeUtf8 $(embedFile "templates/trello-token.txt")) Trello.getLists
+
 createGitHub :: GitHub.GitHubProjectID -> FilePath -> ReaderConfig Next
-createGitHub projectID path = do
-    config <- ask
-    let maybeToken = GitHub.token $ github config
-    case maybeToken of
-        Nothing -> return $ Output $ decodeUtf8 $(embedFile "templates/trello-token.txt")
-        Just trelloToken -> do
-            lists <- lift $ runReaderT (GitHub.getLists projectID) trelloToken
-            case lists of
-                Left txt -> return $ Output txt
-                Right ls -> do
-                    create <- promptCreate path
-                    if create
-                        then do
-                            lift $ writeData config ls path
-                            return $ Load path ls
-                        else return Exit
+createGitHub = createRemote (GitHub.token . github) (decodeUtf8 $(embedFile "templates/trello-token.txt")) GitHub.getLists
 
 
 exists :: Text -> ReaderConfig (Maybe FilePath)
