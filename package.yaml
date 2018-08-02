@@ -55,6 +55,8 @@ library:
   - directory
   - file-embed
   - http-conduit
+  - http-client
+  - http-types
   - lens
   - mtl
   - template-haskell

@@ -12,7 +12,7 @@ import Config (version, usage)
 import Data.Taskell.Lists (Lists, initial, analyse)
 import IO.Config (Config, general, filename, token, trello)
 import IO.Markdown (stringify, parse)
-import IO.Trello (TrelloBoardID, getCards)
+import IO.Trello (TrelloBoardID, getLists)
 import UI.CLI (promptYN)
 
 type ReaderConfig a = ReaderT Config IO a
@@ -70,7 +70,7 @@ createTrello boardID path = do
     case maybeToken of
         Nothing -> return $ Output $ decodeUtf8 $(embedFile "templates/trello-token.txt")
         Just trelloToken -> do
-            lists <- lift $ runReaderT (getCards boardID) trelloToken
+            lists <- lift $ runReaderT (getLists boardID) trelloToken
             case lists of
                 Left txt -> return $ Output txt
                 Right ls -> do

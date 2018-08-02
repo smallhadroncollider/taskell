@@ -11,7 +11,7 @@ import ClassyPrelude
 
 import Control.Lens (makeLenses, (^.))
 import qualified Data.Taskell.Subtask as ST (Subtask, new)
-import IO.Trello.Aeson (deriveFromJSON)
+import IO.Aeson (deriveFromJSON)
 
 data ChecklistItem = ChecklistItem {
     _name :: Text

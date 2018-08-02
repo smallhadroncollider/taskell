@@ -4,14 +4,14 @@ module IO.Trello.List (
     List
   , cards
   , setCards
-  , trelloListToList
+  , listToList
 ) where
 
 import ClassyPrelude
 
 import Control.Lens (makeLenses, (&), (^.), (.~))
 
-import IO.Trello.Aeson (deriveFromJSON)
+import IO.Aeson (deriveFromJSON)
 import IO.Trello.Card (Card, cardToTask)
 import qualified Data.Taskell.List as L (List, create)
 import Data.Time.LocalTime (TimeZone)
@@ -32,5 +32,5 @@ $(makeLenses ''List)
 setCards :: List -> [Card] -> List
 setCards list cs = list & cards .~ cs
 
-trelloListToList :: TimeZone -> List -> L.List
-trelloListToList tz ls = L.create (ls ^. name) (fromList $ cardToTask tz <$> (ls ^. cards))
+listToList :: TimeZone -> List -> L.List
+listToList tz ls = L.create (ls ^. name) (fromList $ cardToTask tz <$> (ls ^. cards))

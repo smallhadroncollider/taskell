@@ -15,7 +15,7 @@ import Test.Tasty.HUnit
 import Data.FileEmbed (embedFile)
 import Data.Aeson (decodeStrict)
 import Data.Time.LocalTime (getCurrentTimeZone)
-import IO.Trello.List (List, trelloListToList)
+import IO.Trello.List (List, listToList)
 import IO.Trello.ChecklistItem (ChecklistItem, checkItems, checklistItemToSubTask)
 
 json :: Maybe [List]
@@ -34,7 +34,7 @@ test_trello = do
                 assertEqual
                     "Parses list JSON"
                     (Just 5)
-                    (length . (trelloListToList tz <$>) <$> json)
+                    (length . (listToList tz <$>) <$> json)
             )
 
           , testCase "Checklists" (

@@ -3,7 +3,7 @@
 module IO.Trello (
     TrelloToken
   , TrelloBoardID
-  , getCards
+  , getLists
 ) where
 
 import ClassyPrelude
@@ -13,11 +13,13 @@ import Control.Lens ((^.))
 import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody, getResponseStatusCode)
 import Data.Aeson
 
-import IO.Trello.List (List, trelloListToList, setCards, cards)
+import IO.Trello.List (List, listToList, setCards, cards)
 import IO.Trello.Card (Card, idChecklists, setChecklists)
 import IO.Trello.ChecklistItem (ChecklistItem, checkItems)
 import Data.Taskell.Lists (Lists)
 import Data.Time.LocalTime (TimeZone, getCurrentTimeZone)
+
+import IO.Aeson (parseError)
 
 type ReaderTrelloToken a = ReaderT TrelloToken IO a
 
@@ -52,7 +54,7 @@ checklistURL checklist = fullURL $ concat [
     ]
 
 trelloListsToLists :: TimeZone -> [List] -> Lists
-trelloListsToLists tz ls = fromList $ trelloListToList tz <$> ls
+trelloListsToLists tz ls = fromList $ listToList tz <$> ls
 
 fetch :: String -> IO (Int, ByteString)
 fetch url = do
@@ -68,7 +70,7 @@ getChecklist checklist = do
     return $ case status of
         200 -> case (^. checkItems) <$> decodeStrict body of
             Just ls -> Right ls
-            Nothing -> Left "Could not parse response. Please file an Issue on GitHub."
+            Nothing -> Left parseError
         429 -> Left "Too many checklists"
         _ -> Left $ tshow status ++ " error while fetching checklist " ++ checklist
 
@@ -82,8 +84,8 @@ updateList l = (setCards l <$>) . sequence <$> sequence (updateCard <$> (l ^. ca
 getChecklists :: [List] -> ReaderTrelloToken (Either Text [List])
 getChecklists ls = sequence <$> sequence (updateList <$> ls)
 
-getCards :: TrelloBoardID -> ReaderTrelloToken (Either Text Lists)
-getCards board = do
+getLists :: TrelloBoardID -> ReaderTrelloToken (Either Text Lists)
+getLists board = do
     url <- boardURL board
     (status, body) <- lift $ fetch url
     timezone <- lift getCurrentTimeZone
@@ -93,7 +95,7 @@ getCards board = do
     case status of
         200 -> case decodeStrict body of
             Just raw -> fmap (trelloListsToLists timezone) <$> getChecklists raw
-            Nothing -> return $ Left "Could not parse response. Please file an Issue on GitHub."
+            Nothing -> return $ Left parseError
         404 -> return . Left $ "Could not find Trello board " ++ board ++ ". Make sure the ID is correct"
         401 -> return . Left $ "You do not have permission to view Trello board " ++ board
         _ -> return . Left $ tshow status ++ " error. Cannot fetch from Trello."
