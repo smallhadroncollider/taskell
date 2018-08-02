@@ -5,7 +5,6 @@ module IO.Config where
 
 import ClassyPrelude
 
-import Data.Text as T (dropAround, strip)
 import qualified Data.Text.IO as T (readFile)
 import System.Directory (createDirectoryIfMissing, getHomeDirectory, doesFileExist)
 
@@ -13,71 +12,30 @@ import Brick (AttrMap)
 import Brick.Themes (themeToAttrMap, loadCustomizations)
 import Data.FileEmbed (embedFile)
 import Data.Ini.Config
-import IO.Trello (TrelloToken)
 
 import UI.Theme
 
-data GeneralConfig = GeneralConfig {
-        filename :: FilePath
-    }
-
-data LayoutConfig = LayoutConfig {
-        columnWidth :: Int
-      , columnPadding :: Int
-      , descriptionIndicator :: Text
-    }
-
-data MarkdownConfig = MarkdownConfig {
-        titleOutput :: Text
-      , taskOutput :: Text
-      , descriptionOutput :: Text
-      , dueOutput :: Text
-      , subtaskOutput :: Text
-    }
-
-data TrelloConfig = TrelloConfig {
-        token :: Maybe TrelloToken
-    }
+import qualified IO.Config.General as General
+import qualified IO.Config.Layout as Layout
+import qualified IO.Config.Markdown as Markdown
+import qualified IO.Config.Trello as Trello
+import qualified IO.Config.GitHub as GitHub
 
 data Config = Config {
-        general :: GeneralConfig
-      , layout :: LayoutConfig
-      , markdown :: MarkdownConfig
-      , trello :: TrelloConfig
+        general :: General.Config
+      , layout :: Layout.Config
+      , markdown :: Markdown.Config
+      , trello :: Trello.Config
+      , github :: GitHub.Config
     }
-
-defaultGeneralConfig :: GeneralConfig
-defaultGeneralConfig = GeneralConfig {
-    filename = "taskell.md"
-}
-
-defaultLayoutConfig :: LayoutConfig
-defaultLayoutConfig = LayoutConfig {
-    columnWidth = 30
-  , columnPadding = 3
-  , descriptionIndicator = "≡"
-}
-
-defaultMarkdownConfig :: MarkdownConfig
-defaultMarkdownConfig = MarkdownConfig {
-    titleOutput = "##"
-  , taskOutput = "-"
-  , descriptionOutput = "    >"
-  , dueOutput = "    @"
-  , subtaskOutput = "    *"
-}
-
-defaultTrelloConfig :: TrelloConfig
-defaultTrelloConfig = TrelloConfig {
-    token = Nothing
-}
 
 defaultConfig :: Config
 defaultConfig = Config {
-    general = defaultGeneralConfig
-  , layout = defaultLayoutConfig
-  , markdown = defaultMarkdownConfig
-  , trello = defaultTrelloConfig
+    general = General.defaultConfig
+  , layout = Layout.defaultConfig
+  , markdown = Markdown.defaultConfig
+  , trello = Trello.defaultConfig
+  , github = GitHub.defaultConfig
 }
 
 getDir :: IO FilePath
@@ -114,56 +72,21 @@ writeConfig path = writeFile path $(embedFile "templates/config.ini")
 createConfig :: IO ()
 createConfig = create getConfigPath writeConfig
 
-noEmpty :: Text -> Maybe Text
-noEmpty "" = Nothing
-noEmpty txt = Just txt
-
-parseText :: Text -> Text
-parseText = dropAround (== '"') . strip
-
 configParser :: IniParser Config
 configParser = do
-    generalCf <- fromMaybe defaultGeneralConfig <$>
-        sectionMb "general" (do
-            filenameCf <- maybe (filename defaultGeneralConfig) unpack . (noEmpty =<<) <$> fieldMb "filename"
-            return GeneralConfig { filename = filenameCf }
-        )
-    layoutCf <- fromMaybe defaultLayoutConfig <$>
-        sectionMb "layout" (do
-            columnWidthCf <- fromMaybe (columnWidth defaultLayoutConfig) <$> fieldMbOf "column_width" number
-            columnPaddingCf <- fromMaybe (columnPadding defaultLayoutConfig) <$> fieldMbOf "column_padding" number
-            descriptionIndicatorCf <- fromMaybe (descriptionIndicator defaultLayoutConfig) . (noEmpty . parseText =<<) <$> fieldMb "description_indicator"
-            return LayoutConfig {
-                columnWidth = columnWidthCf
-              , columnPadding = columnPaddingCf
-              , descriptionIndicator = descriptionIndicatorCf
-            }
-        )
-    markdownCf <-fromMaybe defaultMarkdownConfig <$>
-        sectionMb "markdown" (do
-            titleOutputCf <- fromMaybe (titleOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "title"
-            taskOutputCf <- fromMaybe (taskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "task"
-            descriptionOutputCf <- fromMaybe (descriptionOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "summary"
-            dueOutputCf <- fromMaybe (dueOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "due"
-            subtaskOutputCf <- fromMaybe (subtaskOutput defaultMarkdownConfig) .  (noEmpty . parseText =<<) <$> fieldMb "subtask"
-            return MarkdownConfig {
-                titleOutput = titleOutputCf
-              , taskOutput = taskOutputCf
-              , descriptionOutput = descriptionOutputCf
-              , dueOutput = dueOutputCf
-              , subtaskOutput = subtaskOutputCf
-            }
-        )
-    trelloCf <- fromMaybe defaultTrelloConfig <$>
-        sectionMb "trello" (do
-            tokenCf <- fieldMb "token"
-            return TrelloConfig { token = tokenCf }
-        )
+
+    generalCf <- General.parser
+    layoutCf <- Layout.parser
+    markdownCf <- Markdown.parser
+    trelloCf <- Trello.parser
+    githubCf <- GitHub.parser
+
     return Config {
         general = generalCf
       , layout = layoutCf
       , markdown = markdownCf
       , trello = trelloCf
+      , github = githubCf
     }
 
 getConfig :: IO Config

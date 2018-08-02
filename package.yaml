@@ -40,6 +40,7 @@ library:
   - Data.Taskell.Task.Internal
   - Events.State.Types
   - Events.State.Types.Mode
+  - IO.Config.Markdown
   - IO.Markdown.Internal
   - IO.Trello.List
   - IO.Trello.ChecklistItem

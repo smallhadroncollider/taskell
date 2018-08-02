@@ -1,6 +1,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module IO.GitHub where
+module IO.GitHub (
+    GitHubToken
+  , GitHubProjectID
+  , getLists
+) where
 
 import ClassyPrelude
 
@@ -21,7 +25,6 @@ import Data.Taskell.List (List)
 
 type GitHubToken = Text
 type GitHubProjectID = Text
-type GitHubColumnID = Text
 
 type ReaderGitHubToken a = ReaderT GitHubToken IO a
 
@@ -81,5 +84,5 @@ getLists project = do
             Just columns -> addCards columns
             Nothing -> return $ Left parseError
         404 -> return . Left $ "Could not find GitHub project " ++ project ++ ". Make sure the ID is correct"
-        401 -> return . Left $ "You do not have permission to view this GitHub project " ++ project
+        401 -> return . Left $ "You do not have permission to view GitHub project " ++ project
         _ -> return . Left $ tshow status ++ " error. Cannot fetch from GitHub."
