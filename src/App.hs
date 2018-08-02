@@ -2,6 +2,9 @@
 module App (go) where
 
 import ClassyPrelude
+
+import Control.Lens ((^.))
+
 import Control.Concurrent (forkIO)
 
 import Brick
@@ -11,8 +14,9 @@ import Graphics.Vty.Input.Events (Event(..))
 import Data.Taskell.Lists (Lists)
 import Data.Taskell.Date (currentDay)
 import Events.Actions (event)
-import Events.State (continue, path, mode, io, current, lists, countCurrent)
-import Events.State.Types (State, Mode(..), ModalType(..), InsertMode(..), InsertType(..))
+import Events.State (continue, countCurrent)
+import Events.State.Types (State, path, mode, io, current, lists)
+import Events.State.Types.Mode (Mode(..), ModalType(..), InsertMode(..), InsertType(..))
 import IO.Config (Config, layout, generateAttrMap)
 import IO.Taskell (writeData)
 import UI.Draw (draw, chooseCursor)
@@ -20,32 +24,32 @@ import UI.Types (ResourceName(..))
 
 -- store
 store :: Config -> Lists -> State -> IO State
-store config ls s = do
-    _ <- forkIO $ writeData config ls (path s)
-    return (Events.State.continue s)
+store config ls state = do
+    _ <- forkIO $ writeData config ls (state ^. path)
+    return (Events.State.continue state)
 
 next :: Config -> State -> EventM ResourceName (Next State)
-next config s = case io s of
-    Just ls -> invalidateCache >> liftIO (store config ls s) >>= Brick.continue
-    Nothing -> Brick.continue s
+next config state = case state ^. io of
+    Just ls -> invalidateCache >> liftIO (store config ls state) >>= Brick.continue
+    Nothing -> Brick.continue state
 
 -- cache clearing
 clearCache :: State -> EventM ResourceName ()
 clearCache state = do
-    let (li, ti) = current state
+    let (li, ti) = state ^. current
     invalidateCacheEntry (RNList li)
     invalidateCacheEntry (RNTask (li, ti))
 
 clearAllTitles :: State -> EventM ResourceName ()
 clearAllTitles state = do
-    let count = length (lists state)
+    let count = length (state ^. lists)
     let range = [0 .. (count - 1)]
     void . sequence $ invalidateCacheEntry . RNList <$> range
     void . sequence $ invalidateCacheEntry . (\x -> RNTask (x, -1)) <$> range
 
 clearList :: State -> EventM ResourceName ()
 clearList state = do
-    let (list, _) = current state
+    let (list, _) = state ^. current
     let count = countCurrent state
     let range = [0 .. (count - 1)]
     invalidateCacheEntry $ RNList list
@@ -56,13 +60,13 @@ handleVtyEvent :: Config -> State -> Event -> EventM ResourceName (Next State)
 handleVtyEvent config previousState e = do
     let state = event e previousState
 
-    case mode previousState of
+    case previousState ^. mode of
         Search _ _ -> invalidateCache
         (Modal MoveTo) -> clearAllTitles previousState
         (Insert ITask ICreate _) -> clearList previousState
         _ -> return ()
 
-    case mode state of
+    case state ^. mode of
         Shutdown -> Brick.halt state
         (Modal MoveTo) -> clearAllTitles state >> next config state
         (Insert ITask ICreate _) -> clearList state >> next config state

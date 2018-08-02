@@ -9,17 +9,13 @@
 
 ## Refactoring
 
-- Use a Makefile instead of bash script
-- Update Task field naming
-    * [ ] Task: description -> name/title
-    * [ ] Task: summary -> description
-    * [x] UI.Modal.SubTasks -> UI.Modal.Detail
+- Use Shake instead of bash script
 - Break up State module
+- Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
 - Remove duplication of config - currently using ini and hard-coded defaults
 - Move Help modal creation into Template Haskell
-- Use lenses for nested data?
 - Add a List widget for common actions between tasks and sub-tasks
 - Tidy up load functions in IO.Taskell
 - Remove `~` style sub-task complete parsing
@@ -33,11 +29,14 @@
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
-- The isBlank check on tasks could potentially delete a task with no description but which does have sub-tasks
 - Task description should be visible by default in task detail
     > Visibility should be on the description by default?
 - No obvious way to know if there are more items in a list off-screen
     > Lowest item should be "..." if more items
+- Can't remove a description
+- Date should update if taskell is left open
+- Blank trello token should show info about setting it up rather than auth error
+    > Auth error should show setup info too?
 
 ## Features
 
@@ -66,6 +65,16 @@
 
 ## In Progress
 
+- Add ability to list GitHub projects
+    > Give an organisation or username and repo, list the possible projects to fetch - avoid having to look up the project ID manually first
+- Refactor IO.Taskell
+    > Avoid repeating basically the same code for Trello and GitHub fetching
+- Should be able to have new-lines in task descriptions
+    * [x] Trello import
+    * [ ] Regular input (Shift + Enter for new line?)
+    * [x] Markdown parsing
+    * [ ] Text line breaks go a bit funny with multi-line descriptions
+- Add tests for IO.GitHub
 
 ## Done
 
@@ -224,3 +233,13 @@
     * [x] Find someone to submit it
     * [x] Use `install_cabal_package`
     * [x] Use `depends_on "cabal-install" => :build`
+- Update Task field naming
+    * [x] Task: description -> name/title
+    * [x] Task: summary -> description
+    * [x] UI.Modal.SubTasks -> UI.Modal.Detail
+- The isBlank check on tasks could potentially delete a task with no description but which does have sub-tasks
+- Blank task names should appear as something
+- Use lenses for nested data
+- Add more tests
+    * [x] Trello response parsing
+- Add GitHub Project support

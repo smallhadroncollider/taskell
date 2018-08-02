@@ -1,0 +1,10 @@
+Please visit:
+
+https://github.com/settings/tokens/new
+
+Make sure to tick the "repo" scope.
+
+When you have your personal access token, add it to ~/.taskell/config.ini:
+
+[github]
+token = <your-github-personal-access-token>

@@ -6,6 +6,7 @@ import ClassyPrelude hiding (delete)
 import Graphics.Vty.Input.Events
 import Data.Char (isDigit)
 import Events.State
+import Events.State.Types (Stateful)
 import Events.State.Modal.Detail (showDetail, editDue)
 
 -- Normal

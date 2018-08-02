@@ -11,11 +11,27 @@ A CLI kanban board/task manager for Mac and Linux
 - Support for sub-tasks and due dates
 - Trello board imports
 
+<a href="https://www.buymeacoffee.com/shc" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+
 Follow [@taskellcli](https://twitter.com/taskellcli) on Twitter for updates
 
 ![Demo](https://taskell.app/img/demo.gif)
 
-<a href="https://www.buymeacoffee.com/shc" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+---
+
+## Contents
+
+- [Installation](#installation)
+- [Running](#running)
+- [Options](#options)
+- [Trello](#trello)
+- [GitHub](#github)
+- [Controls](#controls)
+- [Storage](#storage)
+- [Configuration](#configuration)
+- [Theming](#theming)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
 
 ## Installation
 
@@ -54,7 +70,8 @@ If none of the above options work you can build taskell using [Stack](https://do
 
 - `-h`: show help
 - `-v`: show version number
-- `-t <trello-board-id>`: import a Trello board (see below)
+- `-t <trello-board-id>`: import a Trello board ([see below](#trello))
+- `-g <github-project-id>`: import a GitHub project ([see below](#github))
 
 ## Trello
 
@@ -94,9 +111,42 @@ Make sure you have permission to view the Trello board, otherwise you'll get an 
     - Card due dates
     - Card checklists (merged into one list per card)
 
-### Plans
 
-- Full syncing with Trello: effectively using taskell as a CLI Trello front-end
+## GitHub
+
+Taskell includes the ability to fetch a GitHub project and store it as local taskell file.
+
+### Authentication
+
+Before fetching a GitHub board, you'll need to create a person access token and store it in `~/.taskell/config.ini`.
+
+- First, [get a GitHub personal access token](https://github.com/settings/tokens/new)
+- Make sure to tick the `repo` scope
+- Then add it to `~/.taskell/config.ini`:
+
+    ```ini
+    [github]
+    token = <your-github-personal-access-token>
+    ```
+
+You can delete personal access tokens [on GitHub](https://github.com/settings/tokens/)
+
+### Fetching
+
+Running the following would pull down the GitHub project with the ID "1234567" into a file named `github.md` and then open taskell with that file.
+
+```bash
+taskell -g 1234567 github.md
+```
+
+Make sure you have permission to view the GitHub project, otherwise you'll get an error.
+
+### Limitations
+
+- This is a one-off procedure: it effectively imports a GitHub project to taskell
+- Currently imports:
+    - Columns
+    - Cards
 
 
 ## Controls

@@ -1,0 +1,2 @@
+Could not parse response. Please file an Issue on GitHub:
+https://github.com/smallhadroncollider/taskell/issues/new

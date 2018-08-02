@@ -6,10 +6,13 @@ module UI.Modal.MoveTo (
 
 import ClassyPrelude
 
+import Control.Lens ((^.))
+
 import Brick
 
 import Data.Taskell.List (title)
-import Events.State (State, lists, getCurrentList)
+import Events.State (getCurrentList)
+import Events.State.Types (State, lists)
 import UI.Field (textField)
 import UI.Theme (taskCurrentAttr)
 import UI.Types (ResourceName)
@@ -17,8 +20,8 @@ import UI.Types (ResourceName)
 moveTo :: State -> (Text, Widget ResourceName)
 moveTo state = ("Move To:", widget)
     where skip = getCurrentList state
-          ls = toList $ lists state
-          titles = textField . title <$> ls
+          ls = toList $ state ^. lists
+          titles = textField . (^. title) <$> ls
 
           letter a = padRight (Pad 1) . hBox $ [txt "[", withAttr taskCurrentAttr $ txt (singleton a), txt "]"]
           letters = letter <$> ['a'..]

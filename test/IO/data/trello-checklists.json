@@ -1,0 +1,35 @@
+{
+  "id": "5b04450ff88a64205bf04939",
+  "checkItems": [
+    {
+      "state": "incomplete",
+      "idChecklist": "5b04450ff88a64205bf04939",
+      "id": "5b044511abc222721a03a478",
+      "name": "Sub-item 1"
+    },
+    {
+      "state": "incomplete",
+      "idChecklist": "5b04450ff88a64205bf04939",
+      "id": "5b0445123561ce689e3827b4",
+      "name": "Sub-item 2"
+    },
+    {
+      "state": "incomplete",
+      "idChecklist": "5b04450ff88a64205bf04939",
+      "id": "5b044513fe0a46480d6bcc87",
+      "name": "Sub-item 3"
+    },
+    {
+      "state": "incomplete",
+      "idChecklist": "5b04450ff88a64205bf04939",
+      "id": "5b04451489b89cde3b7a3af1",
+      "name": "Sub-item 4"
+    },
+    {
+      "state": "incomplete",
+      "idChecklist": "5b04450ff88a64205bf04939",
+      "id": "5b044516152060b914e3fa2f",
+      "name": "Sub-item 5"
+    }
+  ]
+}

@@ -1,25 +1,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Events.State (
-    -- types
-    State,
-    Stateful,
-    Pointer,
-    InsertMode(..),
-    Mode(..),
-    ModalType(..),
-
     -- App
     continue,
     write,
-    io,
-    path,
     countCurrent,
-
-    -- record accesors
-    mode,
-    current,
-    lists,
 
     -- UI.Main
     normalise,
@@ -76,109 +61,105 @@ module Events.State (
 
 import ClassyPrelude hiding (delete)
 
+import Control.Lens ((&), (^.), (.~))
+
 import Data.Char (digitToInt, ord)
 
-import Data.Taskell.Task (Task, isBlank, description)
+import Data.Taskell.Task (Task, isBlank, name)
 import Data.Taskell.List (List(), update, move, new, deleteTask, newAt, getTask, title)
 import qualified Data.Taskell.Lists as Lists
 
 import Events.State.Types
+import Events.State.Types.Mode (Mode(..), InsertMode(..), InsertType(..), ModalType(..))
 import UI.Field (getText, blankField, textToField)
+
+type InternalStateful = State -> State
 
 create :: FilePath -> Lists.Lists -> State
 create p ls = State {
-    mode = Normal,
-    lists = ls,
-    history = [],
-    current = (0, 0),
-    path = p,
-    io = Nothing
+    _mode = Normal,
+    _lists = ls,
+    _history = [],
+    _current = (0, 0),
+    _path = p,
+    _io = Nothing
 }
 
 -- app state
 quit :: Stateful
-quit s = return $ s { mode = Shutdown }
+quit = Just . (mode .~ Shutdown)
 
 continue :: State -> State
-continue s = s { io = Nothing }
+continue = io .~ Nothing
 
 write :: Stateful
-write s = return $ s { io = Just (lists s) }
+write state = Just $ state & io .~ Just (state ^. lists)
 
 store :: Stateful
-store s = return $ s { history = (current s, lists s) : history s }
+store state = Just $ state & history .~ (state ^. current, state ^.lists) :  state ^. history
 
 undo :: Stateful
-undo s = return $ case history s of
-    [] -> s
-    ((c, l):xs) -> s {
-        current = c,
-        lists = l,
-        history = xs
-    }
+undo state = Just $ case state ^. history of
+    [] -> state
+    ((c, l):xs) -> state & current .~ c & lists .~ l & history .~ xs
 
 -- createList
 createList :: Stateful
-createList s = return $ case mode s of
-    Insert IList ICreate f -> updateListToLast . setLists s $ Lists.newList (getText f) $ lists s
-    _ -> s
+createList state = Just $ case state ^. mode of
+    Insert IList ICreate f -> updateListToLast . setLists state $ Lists.newList (getText f) $ state ^. lists
+    _ -> state
 
 updateListToLast :: InternalStateful
-updateListToLast s = setCurrentList s (length (lists s) - 1)
+updateListToLast state = setCurrentList state (length (state ^. lists) - 1)
 
 createListStart :: Stateful
-createListStart s = return $ s { mode = Insert IList ICreate blankField }
+createListStart = Just . (mode .~ Insert IList ICreate blankField)
 
 -- editList
 editListStart :: Stateful
-editListStart s = do
-    f <- textToField . title <$> getList s
-    return $ s { mode = Insert IList IEdit f }
+editListStart state = do
+    f <- textToField . (^. title) <$> getList state
+    return $ state & mode .~ Insert IList IEdit f
 
 deleteCurrentList :: Stateful
-deleteCurrentList s = return $ fixIndex $ setLists s $ Lists.delete (getCurrentList s) (lists s)
+deleteCurrentList state = Just . fixIndex . setLists state $ Lists.delete (getCurrentList state) (state ^. lists)
 
 -- insert
 getCurrentTask :: State -> Maybe Task
-getCurrentTask s = getList s >>= getTask (getIndex s)
+getCurrentTask state = getList state >>= getTask (getIndex state)
 
 setCurrentTask :: Task -> Stateful
-setCurrentTask task state = do
-    list <- update (getIndex state) task <$> getList state
-    return $ setList state list
+setCurrentTask task state = setList state . update (getIndex state) task <$> getList state
 
 setCurrentTaskText :: Text -> Stateful
-setCurrentTaskText text state = do
-    task <- getCurrentTask state
-    setCurrentTask (task { description = text }) state
+setCurrentTaskText text state = flip setCurrentTask state =<< (name .~ text) <$> getCurrentTask state
 
 startCreate :: Stateful
-startCreate s = return $ s { mode = Insert ITask ICreate blankField }
+startCreate = Just . (mode .~ Insert ITask ICreate blankField)
 
 startEdit :: Stateful
 startEdit state = do
-    field <- textToField . description <$> getCurrentTask state
-    return state { mode = Insert ITask IEdit field }
+    field <- textToField . (^. name) <$> getCurrentTask state
+    return $ state & mode .~ Insert ITask IEdit field
 
 finishTask :: Stateful
-finishTask s = case mode s of
-    Insert ITask iMode f -> setCurrentTaskText (getText f) $ s { mode = Insert ITask iMode blankField }
-    _ -> return s
+finishTask state = case state ^. mode of
+    Insert ITask iMode f -> setCurrentTaskText (getText f) $ state & (mode .~ Insert ITask iMode blankField)
+    _ -> Just state
 
 finishListTitle :: Stateful
-finishListTitle s = case mode s of
-    Insert IList iMode f -> setCurrentListTitle (getText f) $ s { mode = Insert IList iMode blankField }
-    _ -> return s
+finishListTitle state = case state ^. mode of
+    Insert IList iMode f -> setCurrentListTitle (getText f) $ state & (mode .~ Insert IList iMode blankField)
+    _ -> Just state
 
 
 normalMode :: Stateful
-normalMode s = return $ s { mode = Normal }
+normalMode = Just . (mode .~ Normal)
 
 addToListAt :: Int -> Stateful
-addToListAt d s = do
-    let i = getIndex s + d
-    ls <- newAt i <$> getList s
-    return . fixIndex $ setList (setIndex s i) ls
+addToListAt offset state = do
+    let idx = getIndex state + offset
+    fixIndex . setList (setIndex state idx) . newAt idx <$> getList state
 
 above :: Stateful
 above = addToListAt 0
@@ -187,9 +168,7 @@ below :: Stateful
 below = addToListAt 1
 
 newItem :: Stateful
-newItem s = do
-    l <- new <$> getList s
-    return . selectLast $ setList s l
+newItem state = selectLast . setList state . new <$> getList state
 
 clearItem :: Stateful
 clearItem = setCurrentTaskText ""
@@ -198,28 +177,22 @@ bottom :: Stateful
 bottom = return . selectLast
 
 selectLast :: InternalStateful
-selectLast s = setIndex s (countCurrent s - 1)
+selectLast state = setIndex state (countCurrent state - 1)
 
 removeBlank :: Stateful
-removeBlank s = do
-    c <- getCurrentTask s
-    (if isBlank c then delete else return) s
+removeBlank state = do
+    currentTask <- getCurrentTask state
+    (if isBlank currentTask then delete else return) state
 
 -- moving
 up :: Stateful
-up s = do
-    l <- move (getIndex s) (-1) =<< getList s
-    previous $ setList s l
+up state = previous =<< setList state <$> (move (getIndex state) (-1) =<< getList state)
 
 down :: Stateful
-down s = do
-    l <- move (getIndex s) 1 =<< getList s
-    next $ setList s l
+down state = next =<< setList state <$> (move (getIndex state) 1 =<< getList state)
 
 move' :: Int -> State -> Maybe State
-move' i s = do
-    l <- Lists.changeList (current s) (lists s) i
-    return . fixIndex $ setLists s l
+move' idx state = fixIndex . setLists state <$> Lists.changeList (state ^. current) (state ^. lists) idx
 
 moveLeft :: Stateful
 moveLeft = move' (-1)
@@ -228,81 +201,78 @@ moveRight :: Stateful
 moveRight = move' 1
 
 selectList :: Char -> Stateful
-selectList i s = return $ if e then s { current = (list, 0) } else s
-    where list = digitToInt i - 1
-          e = Lists.exists list (lists s)
+selectList idx state = Just $ (if exists then current .~ (list, 0) else id) state
+    where list = digitToInt idx - 1
+          exists = Lists.exists list (state ^. lists)
 
 -- removing
 delete :: Stateful
-delete s = do
-    ts <- getList s
-    return . fixIndex . setList s $ deleteTask (getIndex s) ts
+delete state = fixIndex . setList state . deleteTask (getIndex state) <$> getList state
 
 -- list and index
 countCurrent :: State -> Int
-countCurrent s = Lists.count (getCurrentList s) (lists s)
+countCurrent state = Lists.count (getCurrentList state) (state ^. lists)
 
 setIndex :: State -> Int -> State
-setIndex s i = s { current = (getCurrentList s, i) }
+setIndex state idx = state & current .~ (getCurrentList state, idx)
 
 setCurrentList :: State -> Int -> State
-setCurrentList s i = s { current = (i, getIndex s) }
+setCurrentList state idx = state & current .~ (idx, getIndex state)
 
 getIndex :: State -> Int
-getIndex = snd . current
+getIndex = snd . (^. current)
 
 next :: Stateful
-next s = return $ setIndex s i'
+next state = Just $ setIndex state idx'
     where
-        i = getIndex s
-        c = countCurrent s
-        i' = if i < (c - 1) then succ i else i
+        idx = getIndex state
+        count = countCurrent state
+        idx' = if idx < (count - 1) then succ idx else idx
 
 previous :: Stateful
-previous s = return $ setIndex s i'
-    where i = getIndex s
-          i' = if i > 0 then pred i else 0
+previous state = Just $ setIndex state idx'
+    where idx = getIndex state
+          idx' = if idx > 0 then pred idx else 0
 
 left :: Stateful
-left s = return $ fixIndex $ setCurrentList s $ if l > 0 then pred l else 0
-    where l = getCurrentList s
+left state = Just . fixIndex . setCurrentList state $ if list > 0 then pred list else 0
+    where list = getCurrentList state
 
 right :: Stateful
-right s = return $ fixIndex $ setCurrentList s $ if l < (c - 1) then succ l else l
-    where l = getCurrentList s
-          c = length (lists s)
+right state = Just . fixIndex . setCurrentList state $ if list < (count - 1) then succ list else list
+    where list = getCurrentList state
+          count = length (state ^. lists)
 
 fixIndex :: InternalStateful
-fixIndex s = if getIndex s' > c then setIndex s' c' else s'
-    where i = Lists.exists (getCurrentList s) (lists s)
-          s' = if i then s else setCurrentList s (length (lists s) - 1)
-          c = countCurrent s' - 1
-          c' = if c < 0 then 0 else c
+fixIndex state = if getIndex state' > count then setIndex state' count' else state'
+    where lists' = state ^. lists
+          idx = Lists.exists (getCurrentList state) lists'
+          state' = if idx then state else setCurrentList state (length lists' - 1)
+          count = countCurrent state' - 1
+          count' = if count < 0 then 0 else count
 
 -- tasks
 getCurrentList :: State -> Int
-getCurrentList = fst . current
+getCurrentList = fst . (^. current)
 
 getList :: State -> Maybe List
-getList s = Lists.get (lists s) (getCurrentList s)
+getList state = Lists.get (state ^. lists) (getCurrentList state)
 
 setList :: State -> List -> State
-setList s ts = setLists s (Lists.updateLists (getCurrentList s) (lists s) ts)
+setList state list = setLists state (Lists.updateLists (getCurrentList state) list (state ^. lists))
 
 setCurrentListTitle :: Text -> Stateful
-setCurrentListTitle text state = do
-    list <- getList state
-    return . setList state $ list { title = text }
+setCurrentListTitle text state = setList state . (title .~ text) <$> getList state
 
 setLists :: State -> Lists.Lists -> State
-setLists s ts = s { lists = ts }
+setLists state lists' = state & lists .~ lists'
 
 moveTo :: Char -> Stateful
 moveTo char state = do
     let li = ord char - ord 'a'
         cur = getCurrentList state
 
-    if li == cur || li < 0 || li >= length (lists state)
+    if li == cur || li < 0 || li >= length (state ^. lists)
         then Nothing
         else do
             s <- move' (li - cur) state
@@ -310,15 +280,14 @@ moveTo char state = do
 
 -- move lists
 listMove :: Int -> Stateful
-listMove dir s = do
-    let c = getCurrentList s
-    let lists' = lists s
-    if c + dir < 0 || c + dir >= length lists'
+listMove offset state = do
+    let currentList = getCurrentList state
+    let lists' = state ^. lists
+    if currentList + offset < 0 || currentList + offset >= length lists'
         then Nothing
         else do
-            ls <- Lists.shiftBy c dir lists'
-            let s' = fixIndex $ setCurrentList s (c + dir)
-            return $ setLists s' ls
+            let state' = fixIndex $ setCurrentList state (currentList + offset)
+            setLists state' <$> Lists.shiftBy currentList offset lists'
 
 listLeft :: Stateful
 listLeft = listMove (-1)
@@ -328,34 +297,34 @@ listRight = listMove 1
 
 -- search
 searchMode :: Stateful
-searchMode s = return $ case mode s of
-    Search _ field -> s { mode = Search True field }
-    _ -> s { mode = Search True blankField }
+searchMode state = Just $ case state ^. mode of
+    Search _ field -> state & mode .~ Search True field
+    _ -> state & mode .~ Search True blankField
 
 searchEntered :: Stateful
-searchEntered s = case mode s of
-    Search _ field -> return $ s { mode = Search False field }
+searchEntered state = case state ^. mode of
+    Search _ field -> Just $ state & mode .~ Search False field
     _ -> Nothing
 
 -- help
 showHelp :: Stateful
-showHelp s = return $ s { mode = Modal Help }
+showHelp = Just . (mode .~ Modal Help)
 
 showMoveTo :: Stateful
-showMoveTo s = return $ s { mode = Modal MoveTo }
+showMoveTo = Just . (mode .~ Modal MoveTo)
 
 -- view - maybe shouldn't be in here...
 search :: State -> State
-search s = case mode s of
-    Search _ field -> fixIndex $ setLists s $ Lists.search (getText field) (lists s)
-    _ -> s
+search state = case state ^. mode of
+    Search _ field -> fixIndex . setLists state $ Lists.search (getText field) (state ^. lists)
+    _ -> state
 
 newList :: State -> State
-newList s = case mode s of
+newList state = case state ^. mode of
     Insert IList ICreate f ->
-        let ls = lists s in
-        fixIndex $ setCurrentList (setLists s (Lists.newList (getText f) ls)) (length ls)
-    _ -> s
+        let ls = state ^. lists in
+        fixIndex $ setCurrentList (setLists state (Lists.newList (getText f) ls)) (length ls)
+    _ -> state
 
 normalise :: State -> State
 normalise = newList . search

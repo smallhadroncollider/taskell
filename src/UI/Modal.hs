@@ -5,12 +5,15 @@ module UI.Modal (
 
 import ClassyPrelude
 
+import Control.Lens ((^.))
+
 import Brick
 import Brick.Widgets.Center
 import Brick.Widgets.Border
 
 import Data.Taskell.Date (Day)
-import Events.State (State, Mode(..), ModalType(..), mode)
+import Events.State.Types (State, mode)
+import Events.State.Types.Mode (Mode(..), ModalType(..))
 import UI.Field (textField)
 import UI.Modal.Help (help)
 import UI.Modal.MoveTo (moveTo)
@@ -33,8 +36,8 @@ surround (title, widget) =
     where t = padBottom (Pad 1) . withAttr titleAttr $ textField title
 
 showModal :: State -> Day -> [Widget ResourceName] -> [Widget ResourceName]
-showModal s today view = case mode s of
+showModal state today view = case state ^. mode of
     Modal Help -> surround help : view
-    Modal Detail {} -> surround (detail s today) : view
-    Modal MoveTo -> surround (moveTo s) : view
+    Modal Detail {} -> surround (detail state today) : view
+    Modal MoveTo -> surround (moveTo state) : view
     _ -> view

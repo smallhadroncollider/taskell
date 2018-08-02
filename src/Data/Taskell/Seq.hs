@@ -6,13 +6,9 @@ import ClassyPrelude
 import Data.Sequence ((!?), insertAt, deleteAt)
 
 extract :: Int -> Seq a -> Maybe (Seq a, a)
-extract i xs = do
-    c <- xs !? i
-    let a = deleteAt i xs
-    return (a, c)
+extract idx xs = (,) (deleteAt idx xs) <$> xs !? idx
 
-shiftBy :: Int -> Int -> Seq a  -> Maybe (Seq a)
-shiftBy from dir xs = do
-    current <- xs !? from
-    let r = deleteAt from xs
-    return $ insertAt (from + dir) current r
+shiftBy :: Int -> Int -> Seq a -> Maybe (Seq a)
+shiftBy idx dir xs = do
+    (a, current) <- extract idx xs
+    return $ insertAt (idx + dir) current a

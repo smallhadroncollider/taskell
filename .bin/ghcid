@@ -1,0 +1,1 @@
+~/.local/bin/ghcid --command "stack ghci taskell:lib taskell:test:taskell-test --ghci-options=-fobject-code" --test "main"
