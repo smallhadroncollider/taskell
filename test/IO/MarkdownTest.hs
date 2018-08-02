@@ -11,14 +11,15 @@ import Test.Tasty.HUnit
 import Test.Tasty.ExpectedFailure (ignoreTest)
 
 import IO.Markdown.Internal (start, parse, listStringify)
-import IO.Config (MarkdownConfig(..), defaultMarkdownConfig, defaultConfig)
+import qualified IO.Config as C (defaultConfig)
+import IO.Config.Markdown (Config(..), defaultConfig)
 import Data.Taskell.Lists (Lists, newList, appendToLast)
 import Data.Taskell.Task (Task, new, addSubtask, setDescription, setDue)
 import qualified Data.Taskell.Subtask as ST (new)
 
 -- alternative markdown configs
-alternativeMarkdownConfig :: MarkdownConfig
-alternativeMarkdownConfig = MarkdownConfig {
+alternativeConfig :: Config
+alternativeConfig = Config {
     titleOutput = "##",
     taskOutput = "###",
     descriptionOutput = ">",
@@ -67,49 +68,49 @@ test_markdown =
                     assertEqual
                         "One list"
                         (list, [])
-                        (start defaultMarkdownConfig (empty, []) ("## Test", 1))
+                        (start defaultConfig (empty, []) ("## Test", 1))
                 )
 
               , testCase "Blank line" (
                     assertEqual
                         "Nothing"
                         (empty, [])
-                        (start defaultMarkdownConfig (empty, []) ("", 1))
+                        (start defaultConfig (empty, []) ("", 1))
                 )
 
               , testCase "Just spaces" (
                     assertEqual
                         "Nothing"
                         (empty, [])
-                        (start defaultMarkdownConfig (empty, []) ("        ", 1))
+                        (start defaultConfig (empty, []) ("        ", 1))
                 )
 
               , testCase "Error" (
                     assertEqual
                         "Error on line 1"
                         (empty, [1])
-                        (start defaultMarkdownConfig (empty, []) ("Test", 1))
+                        (start defaultConfig (empty, []) ("Test", 1))
                 )
 
               , testCase "List item" (
                     assertEqual
                         "List item"
                         (listWithItem, [])
-                        (start defaultMarkdownConfig (list, []) ("- Test Item", 1))
+                        (start defaultConfig (list, []) ("- Test Item", 1))
                 )
 
               , testCase "Summary" (
                     assertEqual
                         "Summary"
                         (listWithSummaryItem, [])
-                        (start defaultMarkdownConfig (listWithItem, []) ("    > Summary", 1))
+                        (start defaultConfig (listWithItem, []) ("    > Summary", 1))
                 )
 
               , testCase "Due Date" (
                     assertEqual
                         "Due Date"
                         (listWithDueDateItem, [])
-                        (start defaultMarkdownConfig (listWithItem, []) ("    @ 2018-04-12", 1))
+                        (start defaultConfig (listWithItem, []) ("    @ 2018-04-12", 1))
                 )
 
               , testCase "Sub-Task" (
@@ -118,7 +119,7 @@ test_markdown =
                         (makeSubTask "Blah" False, [])
                         (
                             start
-                                defaultMarkdownConfig
+                                defaultConfig
                                 (listWithItem, [])
                                 ("    * Blah", 1)
                         )
@@ -128,21 +129,21 @@ test_markdown =
                     assertEqual
                         "List item with Sub-Task"
                         (makeSubTask "Blah" True, [])
-                        (start defaultMarkdownConfig (listWithItem, []) ("    * ~Blah~", 1))
+                        (start defaultConfig (listWithItem, []) ("    * ~Blah~", 1))
                 )
 
               , ignoreTest $ testCase "List item without list" (
                     assertEqual
                         "Parse Error"
                         (empty, [1])
-                        (start defaultMarkdownConfig (empty, []) ("- Test Item", 1))
+                        (start defaultConfig (empty, []) ("- Test Item", 1))
                 )
 
               , ignoreTest $ testCase "Sub task without list item" (
                     assertEqual
                         "Parse Error"
                         (list, [1])
-                        (start defaultMarkdownConfig (list, []) ("    * Blah", 1))
+                        (start defaultConfig (list, []) ("    * Blah", 1))
                 )
             ]
 
@@ -151,70 +152,70 @@ test_markdown =
                     assertEqual
                         "One list"
                         (list, [])
-                        (start alternativeMarkdownConfig (empty, []) ("## Test", 1))
+                        (start alternativeConfig (empty, []) ("## Test", 1))
                 )
 
               , testCase "Blank line" (
                     assertEqual
                         "Nothing"
                         (empty, [])
-                        (start alternativeMarkdownConfig (empty, []) ("", 1))
+                        (start alternativeConfig (empty, []) ("", 1))
                 )
 
               , testCase "Just spaces" (
                     assertEqual
                         "Nothing"
                         (empty, [])
-                        (start alternativeMarkdownConfig (empty, []) ("        ", 1))
+                        (start alternativeConfig (empty, []) ("        ", 1))
                 )
 
               , testCase "Error" (
                     assertEqual
                         "Error on line 1"
                         (empty, [1])
-                        (start alternativeMarkdownConfig (empty, []) ("* Test", 1))
+                        (start alternativeConfig (empty, []) ("* Test", 1))
                 )
 
               , testCase "List item" (
                     assertEqual
                         "List item"
                         (listWithItem, [])
-                        (start alternativeMarkdownConfig (list, []) ("### Test Item", 1))
+                        (start alternativeConfig (list, []) ("### Test Item", 1))
                 )
 
               , testCase "Sub-Task" (
                     assertEqual
                         "List item with Sub-Task"
                         (makeSubTask "Blah" False, [])
-                        (start alternativeMarkdownConfig (listWithItem, []) ("- [ ] Blah", 1))
+                        (start alternativeConfig (listWithItem, []) ("- [ ] Blah", 1))
                 )
 
               , testCase "Complete Sub-Task" (
                     assertEqual
                         "List item with Sub-Task"
                         (makeSubTask "Blah" True, [])
-                        (start alternativeMarkdownConfig (listWithItem, []) ("- [x] Blah", 1))
+                        (start alternativeConfig (listWithItem, []) ("- [x] Blah", 1))
                 )
 
               , testCase "Blank Sub-Task" (
                     assertEqual
                         "List item with blank Sub-Task"
                         (makeSubTask "" True, [])
-                        (start alternativeMarkdownConfig (listWithItem, []) ("- [x] ", 1))
+                        (start alternativeConfig (listWithItem, []) ("- [x] ", 1))
                 )
 
               , testCase "Sub-Task (old style)" (
                     assertEqual
                         "List item with Sub-Task"
                         (makeSubTask "Blah" False, [])
-                        (start alternativeMarkdownConfig (listWithItem, []) ("- Blah", 1))
+                        (start alternativeConfig (listWithItem, []) ("- Blah", 1))
                 )
 
               , testCase "Complete Sub-Task (old style)" (
                     assertEqual
                         "List item with Sub-Task"
                         (makeSubTask "Blah" True, [])
-                        (start alternativeMarkdownConfig (listWithItem, []) ("- ~Blah~", 1))
+                        (start alternativeConfig (listWithItem, []) ("- ~Blah~", 1))
                 )
             ]
         ]
@@ -224,35 +225,35 @@ test_markdown =
                 assertEqual
                     "One empty list"
                     (Right list)
-                    (parse defaultConfig (encodeUtf8 "## Test"))
+                    (parse C.defaultConfig (encodeUtf8 "## Test"))
             )
 
           , testCase "List Items" (
                 assertEqual
                     "List with item"
                     (Right listWithItem)
-                    (parse defaultConfig (encodeUtf8 "## Test\n- Test Item"))
+                    (parse C.defaultConfig (encodeUtf8 "## Test\n- Test Item"))
             )
 
           , testCase "List Item with Summary" (
                 assertEqual
                     "List item with a summary"
                     (Right listWithSummaryItem)
-                    (parse defaultConfig (encodeUtf8 "## Test\n- Test Item\n    > Summary"))
+                    (parse C.defaultConfig (encodeUtf8 "## Test\n- Test Item\n    > Summary"))
             )
 
           , testCase "Parsing Errors" (
                 assertEqual
                     "Errors"
                     (Left "could not parse line(s) 3, 5")
-                    (parse defaultConfig (encodeUtf8 "## Test\n- Test Item\n* Spoon\n- Test Item\nCow"))
+                    (parse C.defaultConfig (encodeUtf8 "## Test\n- Test Item\n* Spoon\n- Test Item\nCow"))
             )
 
           , testCase "List Item with multi-line Summary" (
                 assertEqual
                     "List item with a summary"
                     (Right listWithMultiLineSummaryItem)
-                    (parse defaultConfig (encodeUtf8 "## Test\n- Test Item\n    > Summary Line 1\n    > Summary Line 2"))
+                    (parse C.defaultConfig (encodeUtf8 "## Test\n- Test Item\n    > Summary Line 1\n    > Summary Line 2"))
             )
         ]
 
@@ -262,35 +263,35 @@ test_markdown =
                     assertEqual
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n"
-                        (foldl' (listStringify defaultMarkdownConfig) "" listWithItem)
+                        (foldl' (listStringify defaultConfig) "" listWithItem)
                 )
 
               , testCase "Standard list with summary" (
                     assertEqual
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n    > Summary\n"
-                        (foldl' (listStringify defaultMarkdownConfig) "" listWithSummaryItem)
+                        (foldl' (listStringify defaultConfig) "" listWithSummaryItem)
                 )
 
               , testCase "Standard list with date" (
                     assertEqual
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n    @ 2018-04-12\n"
-                        (foldl' (listStringify defaultMarkdownConfig) "" listWithDueDateItem)
+                        (foldl' (listStringify defaultConfig) "" listWithDueDateItem)
                 )
 
               , testCase "Standard list with sub-task" (
                     assertEqual
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n    * [x] Blah\n"
-                        (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask "Blah" True))
+                        (foldl' (listStringify defaultConfig) "" (makeSubTask "Blah" True))
                 )
 
               , testCase "Standard list with multi-line summary" (
                     assertEqual
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n    > Summary Line 1\n    > Summary Line 2\n"
-                        (foldl' (listStringify defaultMarkdownConfig) "" listWithMultiLineSummaryItem)
+                        (foldl' (listStringify defaultConfig) "" listWithMultiLineSummaryItem)
                 )
 
             ],
@@ -300,14 +301,14 @@ test_markdown =
                     assertEqual
                         "Markdown formatted output"
                         "## Test\n\n### Test Item\n"
-                        (foldl' (listStringify alternativeMarkdownConfig) "" listWithItem)
+                        (foldl' (listStringify alternativeConfig) "" listWithItem)
                 )
 
               , testCase "Standard list with sub-task" (
                     assertEqual
                         "Markdown formatted output"
                         "## Test\n\n- Test Item\n    * [ ] Blah\n"
-                        (foldl' (listStringify defaultMarkdownConfig) "" (makeSubTask "Blah" False))
+                        (foldl' (listStringify defaultConfig) "" (makeSubTask "Blah" False))
                 )
             ]
         ]

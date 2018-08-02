@@ -16,7 +16,8 @@ import Data.Taskell.List (List, title, tasks, updateFn, count)
 import qualified Data.Taskell.Subtask as ST (Subtask, new, name, complete)
 import qualified Data.Taskell.Task as T (Task, new, name, subtasks, addSubtask, appendDescription, setDue, due, description)
 
-import IO.Config (Config, MarkdownConfig, markdown, titleOutput, taskOutput, descriptionOutput, dueOutput, subtaskOutput)
+import qualified IO.Config as C (Config, markdown)
+import IO.Config.Markdown (Config, titleOutput, taskOutput, descriptionOutput, dueOutput, subtaskOutput)
 
 -- parse code
 trimTilde :: Text -> Text
@@ -44,13 +45,13 @@ addDue t ls = adjust' updateList i ls
           updateList l = updateFn j (T.setDue t) l
             where j = count l - 1
 
-prefix :: MarkdownConfig -> Text -> (MarkdownConfig -> Text) -> (Text -> Lists -> Lists) -> Maybe (Lists -> Lists)
+prefix :: Config -> Text -> (Config -> Text) -> (Text -> Lists -> Lists) -> Maybe (Lists -> Lists)
 prefix config str get set
     | pre `isPrefixOf` str = Just $ set (drop (length pre) str)
     | otherwise = Nothing
     where pre = get config `snoc` ' '
 
-matches :: [(MarkdownConfig -> Text, Text -> Lists -> Lists)]
+matches :: [(Config -> Text, Text -> Lists -> Lists)]
 matches = [
         (titleOutput, newList)
       , (taskOutput, appendToLast . T.new)
@@ -59,7 +60,7 @@ matches = [
       , (subtaskOutput, addSubItem)
     ]
 
-start :: MarkdownConfig -> (Lists, [Int]) -> (Text, Int) -> (Lists, [Int])
+start :: Config -> (Lists, [Int]) -> (Text, Int) -> (Lists, [Int])
 start config (current, errs) (text, line) =
     case find isJust $ uncurry (prefix config text) <$> matches of
         Just (Just set) -> (set current, errs)
@@ -71,10 +72,10 @@ start config (current, errs) (text, line) =
 decodeError :: String -> Maybe Word8 -> Maybe Char
 decodeError _ _ = Just '\65533'
 
-parse :: Config -> ByteString -> Either Text Lists
+parse :: C.Config -> ByteString -> Either Text Lists
 parse config s = do
     let lns = lines $ decodeUtf8With decodeError s
-    let fn = start (markdown config)
+    let fn = start (C.markdown config)
     let acc = (empty, [])
     let (lists, errs) = foldl' fn acc $ zip lns [1..]
 
@@ -84,7 +85,7 @@ parse config s = do
 
 
 -- stringify code
-subtaskStringify :: MarkdownConfig -> Text -> ST.Subtask -> Text
+subtaskStringify :: Config -> Text -> ST.Subtask -> Text
 subtaskStringify config t st = foldl' (++) t [
         subtaskOutput config,
         " ",
@@ -95,17 +96,17 @@ subtaskStringify config t st = foldl' (++) t [
     ]
     where pre = if st ^. ST.complete then "[x]" else "[ ]"
 
-descriptionStringify :: MarkdownConfig -> Text -> Text
+descriptionStringify :: Config -> Text -> Text
 descriptionStringify config desc = concat $ add <$> splitOn "\n" desc
     where add d = concat [descriptionOutput config, " ", d, "\n"]
 
-dueStringify :: MarkdownConfig -> Day -> Text
+dueStringify :: Config -> Day -> Text
 dueStringify config day = concat [dueOutput config, " ", dayToOutput day, "\n"]
 
-nameStringify :: MarkdownConfig -> Text -> Text
+nameStringify :: Config -> Text -> Text
 nameStringify config desc = concat [taskOutput config, " ", desc, "\n"]
 
-taskStringify :: MarkdownConfig -> Text -> T.Task -> Text
+taskStringify :: Config -> Text -> T.Task -> Text
 taskStringify config s t = foldl' (++) s [
         nameStringify config (t ^. T.name),
         maybe "" (dueStringify config) (t ^. T.due),
@@ -113,7 +114,7 @@ taskStringify config s t = foldl' (++) s [
         foldl' (subtaskStringify config) "" (t ^. T.subtasks)
     ]
 
-listStringify :: MarkdownConfig -> Text -> List -> Text
+listStringify :: Config -> Text -> List -> Text
 listStringify config text list = foldl' (++) text [
         if null text then "" else "\n"
       , titleOutput config
@@ -123,5 +124,5 @@ listStringify config text list = foldl' (++) text [
       , foldl' (taskStringify config) "" (list ^. tasks)
     ]
 
-stringify :: Config -> Lists -> ByteString
-stringify config ls = encodeUtf8 $ foldl' (listStringify (markdown config)) "" ls
+stringify :: C.Config -> Lists -> ByteString
+stringify config ls = encodeUtf8 $ foldl' (listStringify (C.markdown config)) "" ls

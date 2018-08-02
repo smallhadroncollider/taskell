@@ -16,7 +16,7 @@ import qualified Data.Taskell.Task as T (Task, new, setDescription, due, subtask
 import Data.Taskell.Date (utcToLocalDay)
 import Data.Time.Format (parseTimeM, iso8601DateFormat)
 import Data.Time.LocalTime (TimeZone)
-import IO.Trello.Aeson (deriveFromJSON)
+import IO.Aeson (deriveFromJSON)
 import IO.Trello.ChecklistItem (ChecklistItem, checklistItemToSubTask)
 
 data Card = Card {

@@ -22,7 +22,7 @@ import qualified Data.Taskell.Task as T (Task, name, hasSubtasks, countSubtasks,
 import Events.State (normalise)
 import Events.State.Types (State, Pointer, lists, current, mode)
 import Events.State.Types.Mode (Mode(..), InsertType(..), ModalType(..), DetailMode(..))
-import IO.Config (LayoutConfig, columnWidth, columnPadding, descriptionIndicator)
+import IO.Config.Layout (Config, columnWidth, columnPadding, descriptionIndicator)
 import UI.Field (Field, field, textField, widgetFromMaybe)
 import UI.Modal (showModal)
 import UI.Theme
@@ -32,7 +32,7 @@ import UI.Types (ResourceName(..))
 data DrawState = DrawState {
     dsLists :: Lists
   , dsMode :: Mode
-  , dsLayout :: LayoutConfig
+  , dsLayout :: Config
   , dsToday :: Day
   , dsCurrent :: Pointer
   , dsField :: Maybe Field
@@ -166,7 +166,7 @@ moveTo (Modal MoveTo) = True
 moveTo _ = False
 
 -- draw
-draw :: LayoutConfig -> Day -> State -> [Widget ResourceName]
+draw :: Config -> Day -> State -> [Widget ResourceName]
 draw layout today state =
     showModal normalisedState today [runReader main DrawState {
         dsLists = normalisedState ^. lists

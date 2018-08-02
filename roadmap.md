@@ -65,12 +65,16 @@
 
 ## In Progress
 
-- Add GitHub Project support
+- Add ability to list GitHub projects
+    > Give an organisation or username and repo, list the possible projects to fetch - avoid having to look up the project ID manually first
+- Refactor IO.Taskell
+    > Avoid repeating basically the same code for Trello and GitHub fetching
 - Should be able to have new-lines in task descriptions
     * [x] Trello import
     * [ ] Regular input (Shift + Enter for new line?)
     * [x] Markdown parsing
     * [ ] Text line breaks go a bit funny with multi-line descriptions
+- Add tests for IO.GitHub
 
 ## Done
 
@@ -238,3 +242,4 @@
 - Use lenses for nested data
 - Add more tests
     * [x] Trello response parsing
+- Add GitHub Project support
