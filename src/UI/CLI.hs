@@ -1,7 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module UI.CLI (
-    promptYN
+    prompt
+  , promptYN
 ) where
 
 import ClassyPrelude

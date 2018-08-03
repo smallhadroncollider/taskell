@@ -155,13 +155,29 @@ You can delete personal access tokens [on GitHub](https://github.com/settings/to
 
 #### Fetching
 
-Running the following would pull down the GitHub project with the ID "1234567" into a file named `github.md` and then open taskell with that file.
-
-```bash
-taskell -g 1234567 github.md
-```
+Projects can belong to [organisations](#organisations) or to [individual repositories](#repositories).
 
 Make sure you have permission to view the GitHub project, otherwise you'll get an error.
+
+##### Organisations
+
+To import a project for an organisation called "test-org" you would use the following:
+
+```bash
+taskell -g orgs/test-org github.md
+```
+
+This would then show you a list of possible projects to import. Enter the number of the project you wish to import.
+
+##### Repositories
+
+To import a project for the repository "test-repo" for the user "test-user":
+
+```bash
+taskell -g repos/test-user/test-repo github.md
+```
+
+This would then show you a list of possible projects to import. Enter the number of the project you with to import.
 
 #### Limitations
 

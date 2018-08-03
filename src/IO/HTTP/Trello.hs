@@ -87,11 +87,11 @@ getChecklists ls = sequence <$> sequence (updateList <$> ls)
 
 getLists :: TrelloBoardID -> ReaderTrelloToken (Either Text Lists)
 getLists board = do
+    putStrLn "Fetching from Trello..."
+
     url <- boardURL board
     (status, body) <- lift $ fetch url
     timezone <- lift getCurrentTimeZone
-
-    putStrLn "Fetching from Trello..."
 
     case status of
         200 -> case decodeStrict body of

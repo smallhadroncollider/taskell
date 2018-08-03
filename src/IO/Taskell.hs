@@ -19,7 +19,7 @@ import qualified IO.Config.GitHub as GitHub (token)
 import IO.Markdown (stringify, parse)
 
 import qualified IO.HTTP.Trello as Trello (TrelloBoardID, getLists)
-import qualified IO.HTTP.GitHub as GitHub (GitHubProjectID, getLists)
+import qualified IO.HTTP.GitHub as GitHub (GitHubIdentifier, getLists)
 
 import UI.CLI (promptYN)
 
@@ -31,7 +31,7 @@ parseArgs :: [Text] -> ReaderConfig Next
 parseArgs ["-v"] = return $ Output version
 parseArgs ["-h"] = return $ Output usage
 parseArgs ["-t", boardID, file] = loadTrello boardID file
-parseArgs ["-g", projectID, file] = loadGitHub projectID file
+parseArgs ["-g", identifier, file] = loadGitHub identifier file
 parseArgs ["-i", file] = fileInfo file
 parseArgs [file] = loadFile file
 parseArgs [] = (pack . filename . general <$> ask) >>= loadFile
@@ -63,7 +63,7 @@ loadRemote createFn identifier filepath = do
 loadTrello :: Trello.TrelloBoardID -> Text -> ReaderConfig Next
 loadTrello = loadRemote createTrello
 
-loadGitHub :: GitHub.GitHubProjectID -> Text -> ReaderConfig Next
+loadGitHub :: GitHub.GitHubIdentifier -> Text -> ReaderConfig Next
 loadGitHub = loadRemote createGitHub
 
 fileInfo :: Text -> ReaderConfig Next
@@ -100,7 +100,7 @@ createRemote tokenFn missingToken getFn identifier path = do
 createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
 createTrello = createRemote (Trello.token . trello) (decodeUtf8 $(embedFile "templates/trello-token.txt")) Trello.getLists
 
-createGitHub :: GitHub.GitHubProjectID -> FilePath -> ReaderConfig Next
+createGitHub :: GitHub.GitHubIdentifier -> FilePath -> ReaderConfig Next
 createGitHub = createRemote (GitHub.token . github) (decodeUtf8 $(embedFile "templates/trello-token.txt")) GitHub.getLists
 
 
