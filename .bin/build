@@ -63,7 +63,8 @@ Release Template
 ---------------------------------------------
 "
 
+(cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core && git pull)
 brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
-$(cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core && git add Formula/taskell.rb && git commit -m "taskell $1" && git push -f smallhadroncollider && git reset --hard origin)
+(cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core && git add Formula/taskell.rb && git commit -m "taskell $1" && git push -f smallhadroncollider && git reset --hard origin)
 
-printf "\n\nStart a new pull-request: https://github.com/Homebrew/homebrew-core/pulls"
+printf "\n\nStart a new pull-request: https://github.com/Homebrew/homebrew-core/compare/master...smallhadroncollider:master"
