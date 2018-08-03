@@ -4,7 +4,7 @@ import ClassyPrelude
 
 import Data.Ini.Config
 
-import IO.Trello (TrelloToken)
+import IO.HTTP.Trello (TrelloToken)
 
 data Config = Config {
         token :: Maybe TrelloToken

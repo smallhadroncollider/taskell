@@ -4,7 +4,7 @@ import ClassyPrelude
 
 import Data.Ini.Config
 
-import IO.GitHub (GitHubToken)
+import IO.HTTP.GitHub (GitHubToken)
 
 data Config = Config {
         token :: Maybe GitHubToken

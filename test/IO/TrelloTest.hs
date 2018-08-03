@@ -15,8 +15,9 @@ import Test.Tasty.HUnit
 import Data.FileEmbed (embedFile)
 import Data.Aeson (decodeStrict)
 import Data.Time.LocalTime (getCurrentTimeZone)
-import IO.Trello.List (List, listToList)
-import IO.Trello.ChecklistItem (ChecklistItem, checkItems, checklistItemToSubTask)
+
+import IO.HTTP.Trello.List (List, listToList)
+import IO.HTTP.Trello.ChecklistItem (ChecklistItem, checkItems, checklistItemToSubTask)
 
 json :: Maybe [List]
 json = decodeStrict $(embedFile "test/IO/data/trello.json")

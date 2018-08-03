@@ -10,6 +10,7 @@ A CLI kanban board/task manager for Mac and Linux
 - Clean diffs for easy version control
 - Support for sub-tasks and due dates
 - Trello board imports
+- GitHub project imports
 
 <a href="https://www.buymeacoffee.com/shc" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
@@ -22,16 +23,15 @@ Follow [@taskellcli](https://twitter.com/taskellcli) on Twitter for updates
 ## Contents
 
 - [Installation](#installation)
-- [Running](#running)
-- [Options](#options)
-- [Trello](#trello)
-- [GitHub](#github)
-- [Controls](#controls)
-- [Storage](#storage)
+- [Using Taskell](#using-taskell)
+    - [Options](#options)
+    - [Controls](#controls)
+    - [Storage](#storage)
+    - [Importing Trello Boards](#importing-trello-boards)
+    - [Importing GitHub Projects](#importing-github-projects)
 - [Configuration](#configuration)
-- [Theming](#theming)
+    - [Theming](#theming)
 - [Roadmap](#roadmap)
-- [Contributing](#contributing)
 
 ## Installation
 
@@ -61,23 +61,45 @@ Run `sudo dnf install ncurses-compat-libs` then download and run binary as descr
 
 If none of the above options work you can build taskell using [Stack](https://docs.haskellstack.org/en/stable/README/). First [install Stack on your machine](https://docs.haskellstack.org/en/stable/README/#how-to-install). Then clone the repo and run `stack build && stack install`: this will build taskell and then install it in `~/.local/bin` (so make sure that directory is in your `$PATH`). Building from scratch can take a long time and occasionally doesn't work the first time (if this happens try running it again).
 
-## Running
+## Using Taskell
 
 - `taskell`: will use `taskell.md` in the pwd - offers to create if not found
 - `taskell filename.md`: will use `filename.md` in the pwd - offers to create if not found
 
-## Options
+### Options
 
 - `-h`: show help
 - `-v`: show version number
-- `-t <trello-board-id>`: import a Trello board ([see below](#trello))
-- `-g <github-project-id>`: import a GitHub project ([see below](#github))
+- `-t <trello-board-id>`: import a Trello board ([see below](#importing-trello-boards))
+- `-g <github-project-id>`: import a GitHub project ([see below](#importing-github-projects))
 
-## Trello
+### Controls
+
+Press `?` for a [list of controls](https://github.com/smallhadroncollider/taskell/blob/master/templates/controls.md)
+
+#### Tips
+
+- If you're using a simple two-column "To Do" and "Done" then use the space bar to mark an item as complete while staying in the "To Do" list. If you're using a more complicated column setup then you will want to use `H`/`L` to move tasks between columns.
+
+### Storage
+
+By default stores in a `taskell.md` file in the working directory:
+
+```md
+## To Do
+
+- Do this
+
+## Done
+
+- Do That
+```
+
+### Importing Trello Boards
 
 Taskell includes the ability to fetch a Trello board and store it as local taskell file.
 
-### Authentication
+#### Authentication
 
 Before fetching a Trello board, you'll need to create an access token and store it in `~/.taskell/config.ini`.
 
@@ -91,7 +113,7 @@ Before fetching a Trello board, you'll need to create an access token and store 
 
 You can revoke access tokens [on Trello](https://trello.com/my/account)
 
-### Fetching
+#### Fetching
 
 Running the following would pull down the Trello board with the ID "TRe1l0iD" into a file named `trello.md` and then open taskell with that file.
 
@@ -101,7 +123,7 @@ taskell -t TRe1l0iD trello.md
 
 Make sure you have permission to view the Trello board, otherwise you'll get an error.
 
-### Limitations
+#### Limitations
 
 - This is a one-off procedure: it effectively imports a Trello board to taskell
 - Currently imports:
@@ -112,11 +134,11 @@ Make sure you have permission to view the Trello board, otherwise you'll get an 
     - Card checklists (merged into one list per card)
 
 
-## GitHub
+### Importing GitHub Projects
 
 Taskell includes the ability to fetch a GitHub project and store it as local taskell file.
 
-### Authentication
+#### Authentication
 
 Before fetching a GitHub board, you'll need to create a person access token and store it in `~/.taskell/config.ini`.
 
@@ -131,17 +153,33 @@ Before fetching a GitHub board, you'll need to create a person access token and 
 
 You can delete personal access tokens [on GitHub](https://github.com/settings/tokens/)
 
-### Fetching
+#### Fetching
 
-Running the following would pull down the GitHub project with the ID "1234567" into a file named `github.md` and then open taskell with that file.
-
-```bash
-taskell -g 1234567 github.md
-```
+Projects can belong to [organisations](#organisations) or to [individual repositories](#repositories).
 
 Make sure you have permission to view the GitHub project, otherwise you'll get an error.
 
-### Limitations
+##### Organisations
+
+To import a project for an organisation called "test-org" you would use the following:
+
+```bash
+taskell -g orgs/test-org github.md
+```
+
+This would then show you a list of possible projects to import. Enter the number of the project you wish to import.
+
+##### Repositories
+
+To import a project for the repository "test-repo" for the user "test-user":
+
+```bash
+taskell -g repos/test-user/test-repo github.md
+```
+
+This would then show you a list of possible projects to import. Enter the number of the project you with to import.
+
+#### Limitations
 
 - This is a one-off procedure: it effectively imports a GitHub project to taskell
 - Currently imports:
@@ -149,27 +187,6 @@ Make sure you have permission to view the GitHub project, otherwise you'll get a
     - Cards
 
 
-## Controls
-
-Press `?` for a [list of controls](https://github.com/smallhadroncollider/taskell/blob/master/templates/controls.md)
-
-### Tips
-
-- If you're using a simple two-column "To Do" and "Done" then use the space bar to mark an item as complete while staying in the "To Do" list. If you're using a more complicated column setup then you will want to use `H`/`L` to move tasks between columns.
-
-## Storage
-
-By default stores in a `taskell.md` file in the working directory:
-
-```md
-## To Do
-
-- Do this
-
-## Done
-
-- Do That
-```
 
 ## Configuration
 
@@ -220,7 +237,7 @@ subtask = "-"
 
 **Warning**: currently if you change your `[markdown]` settings any older files stored with different settings will not be readable.
 
-## Theming
+### Theming
 
 You can edit Taskell's colour-scheme by editing `~/.taskell/theme.ini`:
 
@@ -257,7 +274,7 @@ The available colours are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`,
 
 See [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) for planned features
 
-## Contributing
+### Contributing
 
 Please check the [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) before adding any bugs/feature requests to Issues.
 
