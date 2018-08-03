@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
-module IO.Trello.List (
+module IO.HTTP.Trello.List (
     List
   , cards
   , setCards
@@ -11,8 +11,9 @@ import ClassyPrelude
 
 import Control.Lens (makeLenses, (&), (^.), (.~))
 
-import IO.Aeson (deriveFromJSON)
-import IO.Trello.Card (Card, cardToTask)
+import IO.HTTP.Aeson (deriveFromJSON)
+import IO.HTTP.Trello.Card (Card, cardToTask)
+
 import qualified Data.Taskell.List as L (List, create)
 import Data.Time.LocalTime (TimeZone)
 

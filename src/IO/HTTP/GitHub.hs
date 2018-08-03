@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module IO.GitHub (
+module IO.HTTP.GitHub (
     GitHubToken
   , GitHubProjectID
   , getLists
@@ -16,9 +16,9 @@ import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody, getResponseSt
 import Network.HTTP.Types.Header (HeaderName)
 import Network.HTTP.Client (requestHeaders)
 
-import IO.Aeson (parseError)
-import IO.GitHub.Column (Column, cardsURL, columnToList)
-import IO.GitHub.Card (Card)
+import IO.HTTP.Aeson (parseError)
+import IO.HTTP.GitHub.Column (Column, cardsURL, columnToList)
+import IO.HTTP.GitHub.Card (Card)
 
 import Data.Taskell.Lists (Lists)
 import Data.Taskell.List (List)

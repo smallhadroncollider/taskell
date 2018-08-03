@@ -10,13 +10,17 @@ import Data.FileEmbed (embedFile)
 
 import Config (version, usage)
 import Data.Taskell.Lists (Lists, initial, analyse)
+
 import IO.Config (Config, general, trello, github)
 import IO.Config.General (filename)
 import qualified IO.Config.Trello as Trello (token)
 import qualified IO.Config.GitHub as GitHub (token)
+
 import IO.Markdown (stringify, parse)
-import qualified IO.Trello as Trello (TrelloBoardID, getLists)
-import qualified IO.GitHub as GitHub (GitHubProjectID, getLists)
+
+import qualified IO.HTTP.Trello as Trello (TrelloBoardID, getLists)
+import qualified IO.HTTP.GitHub as GitHub (GitHubProjectID, getLists)
+
 import UI.CLI (promptYN)
 
 type ReaderConfig a = ReaderT Config IO a

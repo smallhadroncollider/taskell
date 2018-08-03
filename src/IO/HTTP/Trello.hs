@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module IO.Trello (
+module IO.HTTP.Trello (
     TrelloToken
   , TrelloBoardID
   , getLists
@@ -13,13 +13,14 @@ import Control.Lens ((^.))
 import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody, getResponseStatusCode)
 import Data.Aeson
 
-import IO.Trello.List (List, listToList, setCards, cards)
-import IO.Trello.Card (Card, idChecklists, setChecklists)
-import IO.Trello.ChecklistItem (ChecklistItem, checkItems)
+import IO.HTTP.Aeson (parseError)
+import IO.HTTP.Trello.List (List, listToList, setCards, cards)
+import IO.HTTP.Trello.Card (Card, idChecklists, setChecklists)
+import IO.HTTP.Trello.ChecklistItem (ChecklistItem, checkItems)
+
 import Data.Taskell.Lists (Lists)
 import Data.Time.LocalTime (TimeZone, getCurrentTimeZone)
 
-import IO.Aeson (parseError)
 
 type ReaderTrelloToken a = ReaderT TrelloToken IO a
 

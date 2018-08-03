@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-module IO.Trello.ChecklistItem (
+module IO.HTTP.Trello.ChecklistItem (
     ChecklistItem
   , checklistItemToSubTask
   , checkItems
@@ -11,7 +11,7 @@ import ClassyPrelude
 
 import Control.Lens (makeLenses, (^.))
 import qualified Data.Taskell.Subtask as ST (Subtask, new)
-import IO.Aeson (deriveFromJSON)
+import IO.HTTP.Aeson (deriveFromJSON)
 
 data ChecklistItem = ChecklistItem {
     _name :: Text

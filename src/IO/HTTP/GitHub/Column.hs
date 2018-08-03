@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
-module IO.GitHub.Column (
+module IO.HTTP.GitHub.Column (
     Column
   , columnToList
   , cardsURL
@@ -10,8 +10,9 @@ import ClassyPrelude
 
 import Control.Lens (Lens', makeLenses, (^.))
 
-import IO.Aeson (deriveFromJSON)
-import IO.GitHub.Card (Card, cardToTask)
+import IO.HTTP.Aeson (deriveFromJSON)
+import IO.HTTP.GitHub.Card (Card, cardToTask)
+
 import qualified Data.Taskell.List as L (List, create)
 
 data Column = Column {

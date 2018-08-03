@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-module IO.Trello.Card (
+module IO.HTTP.Trello.Card (
     Card
   , idChecklists
   , cardToTask
@@ -16,8 +16,9 @@ import qualified Data.Taskell.Task as T (Task, new, setDescription, due, subtask
 import Data.Taskell.Date (utcToLocalDay)
 import Data.Time.Format (parseTimeM, iso8601DateFormat)
 import Data.Time.LocalTime (TimeZone)
-import IO.Aeson (deriveFromJSON)
-import IO.Trello.ChecklistItem (ChecklistItem, checklistItemToSubTask)
+
+import IO.HTTP.Aeson (deriveFromJSON)
+import IO.HTTP.Trello.ChecklistItem (ChecklistItem, checklistItemToSubTask)
 
 data Card = Card {
     _name :: Text

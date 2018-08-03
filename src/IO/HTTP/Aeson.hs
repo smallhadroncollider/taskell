@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoImplicitPrelude #-}
-module IO.Aeson where
+module IO.HTTP.Aeson where
 
 import ClassyPrelude
 
