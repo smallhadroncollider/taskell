@@ -8,7 +8,7 @@ import Events.State
 import Events.State.Types
 import Events.State.Types.Mode (DetailMode(..), DetailItem(..))
 import Events.State.Modal.Detail as Detail
-import qualified UI.Field as F (event)
+import qualified UI.Field as F (event, insertNewLine)
 
 normal :: Event -> Stateful
 normal (EvKey (KChar 'q') _) = quit
@@ -32,10 +32,11 @@ insert (EvKey KEsc _) s = do
         DetailDate -> (write =<<) $ finishDue s
         (DetailItem _) -> (write =<<) . (showDetail =<<) $ finishSubtask s
 
+
 insert (EvKey KEnter _) s = do
     item <- getCurrentItem s
     case item of
-        DetailDescription -> (write =<<) $ finishDescription s
+        DetailDescription -> updateField F.insertNewLine s
         DetailDate -> (write =<<) $ finishDue s
         (DetailItem _) -> (Detail.lastSubtask =<<) . (Detail.newItem =<<) . (store =<<) . (write =<<) $ finishSubtask s
 
