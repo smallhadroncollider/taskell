@@ -57,6 +57,9 @@ insertText insert (Field text cursor) = Field newText newCursor
           newText = concat [start, insert, end]
           newCursor = cursor + length insert
 
+insertNewLine :: Field -> Field
+insertNewLine = insertText "\n"
+
 cursorPosition :: [Text] -> Int -> Int -> (Int, Int)
 cursorPosition text width cursor =
     if x == width then (0, y + 1) else (x, y)
