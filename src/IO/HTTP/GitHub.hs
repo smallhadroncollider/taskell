@@ -3,6 +3,7 @@
 module IO.HTTP.GitHub (
     GitHubToken
   , GitHubIdentifier
+  , getNextLink
   , getLists
 ) where
 
@@ -10,11 +11,12 @@ import ClassyPrelude
 
 import Control.Lens ((^.))
 import Data.Sequence ((!?), mapWithIndex)
+import Data.Text (strip, splitOn)
 
 import Data.Aeson
 import UI.CLI (prompt)
 
-import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody, getResponseStatusCode)
+import Network.HTTP.Simple (parseRequest, httpBS, getResponseBody, getResponseStatusCode, getResponseHeader)
 import Network.HTTP.Types.Header (HeaderName)
 import Network.HTTP.Client (requestHeaders)
 
@@ -43,24 +45,41 @@ headers = do
           , ("Authorization", encodeUtf8 ("token " ++ token))
         ]
 
-fetch :: Text -> ReaderGitHubToken (Int, ByteString)
-fetch url = do
+getNextLink :: [ByteString] -> Maybe Text
+getNextLink bs = do
+    lnks <- splitOn "," . decodeUtf8 <$> headMay bs
+    let rel = "rel=\"next\""
+    next <- find (isSuffixOf rel) lnks
+    stripPrefix "<" =<< stripSuffix (">; " ++ rel) (strip next)
+
+
+fetch' :: [ByteString] -> Text -> ReaderGitHubToken (Int, [ByteString])
+fetch' bs url = do
     initialRequest <- lift $ parseRequest (unpack url)
     rHeaders <- headers
     let request = initialRequest { requestHeaders = rHeaders }
-    response <- lift $ httpBS request
-    return (getResponseStatusCode response, getResponseBody response)
 
+    response <- lift $ httpBS request
+
+    let responses =  bs ++ [getResponseBody response]
+
+    case getNextLink (getResponseHeader "Link" response) of
+        Nothing -> return (getResponseStatusCode response, responses)
+        Just lnk -> fetch' responses lnk
+
+
+fetch :: Text -> ReaderGitHubToken (Int, [ByteString])
+fetch = fetch' []
 
 getCards :: Text -> ReaderGitHubToken (Either Text [Card])
 getCards url = do
     (status, body) <- fetch url
 
     return $ case status of
-        200 -> case decodeStrict body of
+        200 -> case concat (decodeStrict <$> body) of
             Just cards -> Right cards
             Nothing -> Left parseError
-        429 -> Left "Too many checklists"
+        429 -> Left "Too many cards"
         _ -> Left $ tshow status ++ " error while fetching " ++ url
 
 addCard :: Column -> ReaderGitHubToken (Either Text List)
@@ -82,7 +101,7 @@ getColumns url = do
     (status, body) <- fetch url
 
     case status of
-        200 -> case decodeStrict body of
+        200 -> case concat (decodeStrict <$> body) of
             Just columns -> addCards columns
             Nothing -> return $ Left parseError
         404 -> return . Left $ "Could not find GitHub project ."
@@ -118,7 +137,7 @@ getLists identifier = do
     (status, body) <- fetch url
 
     case status of
-        200 -> case decodeStrict body of
+        200 -> case concat (decodeStrict <$> body) of
             Just projects -> if null projects
                 then return . Left $ concat ["\nNo projects found for ", identifier, "\n"]
                 else chooseProject projects

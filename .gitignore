@@ -1,6 +1,7 @@
 taskell.json
 taskell.cabal
 taskell.md
+test.md
 .stack-work/
 releases/
 homebrew-taskell/

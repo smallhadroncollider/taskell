@@ -41,6 +41,7 @@
 ## Features
 
 - Check times work no matter what timezone
+- Import Issues from GitHub using  labels
 - Add custom key support
 - Show filename somewhere
 - Editable title?
@@ -48,7 +49,7 @@
 - Add tags/labels with `t`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Redo functionality
-- Make trello token UX better
+- Make token UX better
     * [ ] Open link automatically?
     * [ ] Ask for token and save to ini file automatically
 - Reordering sub-tasks
@@ -62,10 +63,11 @@
     * [ ] Sort by date or filter by urgency?
 - Ability to load a taskell file with custom config.ini settings
     > Either command line arguments for settings or just a `-c other.ini` command
+- Readline support?
+    > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
 
 ## In Progress
 
-- GitHub import should take pagination into account
 - Should be able to have new-lines in task descriptions
     * [x] Trello import
     * [ ] Regular input (Shift + Enter for new line?)
@@ -244,3 +246,4 @@
     > Avoid repeating basically the same code for Trello and GitHub fetching
 - Add ability to list GitHub projects
     > Give an organisation or username and repo, list the possible projects to fetch - avoid having to look up the project ID manually first
+- GitHub import should take pagination into account
