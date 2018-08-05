@@ -101,7 +101,7 @@ createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
 createTrello = createRemote (Trello.token . trello) (decodeUtf8 $(embedFile "templates/trello-token.txt")) Trello.getLists
 
 createGitHub :: GitHub.GitHubIdentifier -> FilePath -> ReaderConfig Next
-createGitHub = createRemote (GitHub.token . github) (decodeUtf8 $(embedFile "templates/trello-token.txt")) GitHub.getLists
+createGitHub = createRemote (GitHub.token . github) (decodeUtf8 $(embedFile "templates/github-token.txt")) GitHub.getLists
 
 
 exists :: Text -> ReaderConfig (Maybe FilePath)
