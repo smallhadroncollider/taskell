@@ -65,6 +65,9 @@
     > Either command line arguments for settings or just a `-c other.ini` command
 - Readline support?
     > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
+- Kanban principles
+    > See: http://www.djaa.com/principles-kanban-method-0
+    * [ ] WIP Limit
 
 ## In Progress
 
