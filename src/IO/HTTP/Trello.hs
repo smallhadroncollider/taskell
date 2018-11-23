@@ -69,9 +69,9 @@ getChecklist checklist = do
     (status, body) <- lift $ fetch url
 
     return $ case status of
-        200 -> case (^. checkItems) <$> decodeStrict body of
-            Just ls -> Right ls
-            Nothing -> Left parseError
+        200 -> case (^. checkItems) <$> eitherDecodeStrict body of
+            Right ls -> Right ls
+            Left err -> Left $ parseError err
         429 -> Left "Too many checklists"
         _ -> Left $ tshow status ++ " error while fetching checklist " ++ checklist
 
@@ -94,9 +94,9 @@ getLists board = do
     timezone <- lift getCurrentTimeZone
 
     case status of
-        200 -> case decodeStrict body of
-            Just raw -> fmap (trelloListsToLists timezone) <$> getChecklists raw
-            Nothing -> return $ Left parseError
+        200 -> case eitherDecodeStrict body of
+            Right raw -> fmap (trelloListsToLists timezone) <$> getChecklists raw
+            Left err -> return . Left $ parseError err
         404 -> return . Left $ "Could not find Trello board " ++ board ++ ". Make sure the ID is correct"
         401 -> return . Left $ "You do not have permission to view Trello board " ++ board
         _ -> return . Left $ tshow status ++ " error. Cannot fetch from Trello."
