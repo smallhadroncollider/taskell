@@ -46,6 +46,7 @@ library:
   - IO.HTTP.Trello.List
   - IO.HTTP.Trello.ChecklistItem
   - UI.Field
+  - UI.TextEdit
 
   dependencies:
   - base <=5
@@ -92,10 +93,12 @@ tests:
     - containers
     - file-embed
     - lens
+    - quickcheck-instances
     - taskell
     - tasty
     - tasty-discover
     - tasty-expected-failure
     - tasty-hunit
+    - tasty-quickcheck
     - text
     - time
