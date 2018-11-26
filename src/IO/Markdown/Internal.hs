@@ -58,6 +58,7 @@ matches = [
       , (descriptionOutput, addDescription)
       , (dueOutput, addDue)
       , (subtaskOutput, addSubItem)
+      , (const "<!--", const id)
     ]
 
 start :: Config -> (Lists, [Int]) -> (Text, Int) -> (Lists, [Int])
