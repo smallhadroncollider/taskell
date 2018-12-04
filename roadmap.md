@@ -23,6 +23,7 @@
 
 ## Bugs
 
+- Can't remove a description
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
 - Help modal needs to wrap and scroll
@@ -33,10 +34,10 @@
     > Visibility should be on the description by default?
 - No obvious way to know if there are more items in a list off-screen
     > Lowest item should be "..." if more items
-- Can't remove a description
 - Date should update if taskell is left open
 - Blank trello token should show info about setting it up rather than auth error
     > Auth error should show setup info too?
+- A single issue with config.ini reverts to defaultConfig?
 
 ## Features
 
@@ -65,9 +66,6 @@
     > Either command line arguments for settings or just a `-c other.ini` command
 - Readline support?
     > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
-- Kanban principles
-    > See: http://www.djaa.com/principles-kanban-method-0
-    * [ ] WIP Limit
 
 ## In Progress
 
