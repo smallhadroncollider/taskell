@@ -61,7 +61,7 @@ fetch' bs url = do
 
     response <- lift $ httpBS request
 
-    let responses =  bs ++ [getResponseBody response]
+    let responses = bs ++ [getResponseBody response]
 
     case getNextLink (getResponseHeader "Link" response) of
         Nothing -> return (getResponseStatusCode response, responses)
