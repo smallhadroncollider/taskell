@@ -13,7 +13,7 @@ import Brick.Themes (themeToAttrMap, loadCustomizations)
 import Data.FileEmbed (embedFile)
 import Data.Ini.Config
 
-import UI.Theme
+import UI.Theme (defaultTheme)
 
 import qualified IO.Config.General as General
 import qualified IO.Config.Layout as Layout
@@ -103,6 +103,9 @@ generateAttrMap :: IO AttrMap
 generateAttrMap = do
     path <- getThemePath
     customizedTheme <- loadCustomizations path defaultTheme
-    return . themeToAttrMap $ case customizedTheme of
-        Left _ -> defaultTheme
-        Right theme -> theme
+
+    case customizedTheme of
+        Right theme -> return $ themeToAttrMap theme
+        Left s -> do
+            putStrLn (pack $ "theme.ini: " ++ s)
+            return $ themeToAttrMap defaultTheme

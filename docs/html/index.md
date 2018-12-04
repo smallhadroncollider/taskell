@@ -164,6 +164,8 @@ Projects can belong to [organisations](#organisations) or to [individual reposit
 
 Make sure you have permission to view the GitHub project, otherwise you'll get an error.
 
+![GitHub Demo](https://taskell.app/img/github.gif)
+
 ##### Organisations
 
 To import a project for an organisation called "test-org" you would use the following:

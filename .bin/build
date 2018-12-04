@@ -20,16 +20,22 @@ fi
 
 rm -rf .stack-work/install
 
+
+# Mac
 stack build --ghc-options -O3
+
+tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory=".stack-work/install/x86_64-osx/$resolver/$ghcv/bin" "taskell"
+
+
+# Linux
 stack docker pull
 stack build --docker --ghc-options -O3
+
+tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" --directory=".stack-work/install/$LINUX_DIR/$resolver/$ghcv/bin" "taskell"
 
 mkdir -p "releases/$1/taskell/DEBIAN"
 mkdir -p "releases/$1/taskell/usr/local/bin"
 LINUX_DIR=$(ls .stack-work/install | grep linux)
-
-tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" --directory=".stack-work/install/$LINUX_DIR/$resolver/$ghcv/bin" "taskell"
-tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory=".stack-work/install/x86_64-osx/$resolver/$ghcv/bin" "taskell"
 
 cp ".stack-work/install/$LINUX_DIR/$resolver/$ghcv/bin/taskell" "releases/$1/taskell/usr/local/bin"
 
@@ -42,9 +48,22 @@ Description: A command line task manager written in Haskell" > "releases/$1/task
 docker run -v "$PWD/releases/$1":/usr/src/app -w /usr/src/app debian dpkg-deb --build taskell
 
 mv "releases/$1/taskell.deb" "releases/$1/taskell-$1_x86-64-linux.deb"
+
+
+# Homebrew Pull Request
+
+(cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core && git pull)
+brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
+(cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core && git add Formula/taskell.rb && git commit -m "taskell $1" && git push -f smallhadroncollider && git reset --hard origin)
+
+open "https://github.com/Homebrew/homebrew-core/compare/master...smallhadroncollider:master"
+
+
+# Release Template
 rm -rf "releases/$1/taskell"
 
 open "releases/$1"
+
 
 printf "
 Release Template
@@ -62,9 +81,3 @@ Release Template
 
 ---------------------------------------------
 "
-
-(cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core && git pull)
-brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
-(cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core && git add Formula/taskell.rb && git commit -m "taskell $1" && git push -f smallhadroncollider && git reset --hard origin)
-
-printf "\n\nStart a new pull-request: https://github.com/Homebrew/homebrew-core/compare/master...smallhadroncollider:master"

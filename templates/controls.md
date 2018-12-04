@@ -7,7 +7,7 @@
 - `e`, `i`, `A`: Edit a task
 - `C`: Change task
 - `Enter`: Show task details / Edit task description
-- `@`: Add/edit due date
+- `@`: Add/edit due date (yyyy-mm-dd)
 - `J` / `K`: Shift task down/up
 - `H` / `L`: Shift task left/right
 - `Space`: Shift task right
