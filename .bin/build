@@ -1,5 +1,5 @@
-resolver="lts-12.4"
-ghcv="8.4.3"
+resolver="lts-12.21"
+ghcv="8.4.4"
 
 branch=$(git rev-parse --abbrev-ref HEAD)
 
@@ -20,6 +20,9 @@ fi
 
 rm -rf .stack-work/install
 
+# sort out releases directory
+rm -rf "releases/$1/taskell"
+mkdir -p "releases/$1/taskell"
 
 # Mac
 stack build --ghc-options -O3
@@ -31,11 +34,12 @@ tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory=".stack-work/in
 stack docker pull
 stack build --docker --ghc-options -O3
 
+LINUX_DIR=$(ls .stack-work/install | grep linux)
+
 tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" --directory=".stack-work/install/$LINUX_DIR/$resolver/$ghcv/bin" "taskell"
 
 mkdir -p "releases/$1/taskell/DEBIAN"
 mkdir -p "releases/$1/taskell/usr/local/bin"
-LINUX_DIR=$(ls .stack-work/install | grep linux)
 
 cp ".stack-work/install/$LINUX_DIR/$resolver/$ghcv/bin/taskell" "releases/$1/taskell/usr/local/bin"
 
@@ -51,12 +55,7 @@ mv "releases/$1/taskell.deb" "releases/$1/taskell-$1_x86-64-linux.deb"
 
 
 # Homebrew Pull Request
-
-(cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core && git pull)
 brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
-(cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core && git add Formula/taskell.rb && git commit -m "taskell $1" && git push -f smallhadroncollider && git reset --hard origin)
-
-open "https://github.com/Homebrew/homebrew-core/compare/master...smallhadroncollider:master"
 
 
 # Release Template
