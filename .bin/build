@@ -55,6 +55,7 @@ mv "releases/$1/taskell.deb" "releases/$1/taskell-$1_x86-64-linux.deb"
 
 
 # Homebrew Pull Request
+brew update
 brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
 
 
