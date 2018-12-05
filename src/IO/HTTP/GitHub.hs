@@ -12,6 +12,7 @@ import ClassyPrelude
 import Control.Lens ((^.))
 import Data.Sequence ((!?), mapWithIndex)
 import Data.Text (strip, splitOn)
+import Data.Either (lefts, rights)
 
 import Data.Aeson
 import UI.CLI (prompt)
@@ -32,6 +33,12 @@ type GitHubToken = Text
 type GitHubIdentifier = Text
 
 type ReaderGitHubToken a = ReaderT GitHubToken IO a
+
+concatEithers :: [Either String [a]] -> Either String [a]
+concatEithers vals = if null ls
+    then Right $ concat (rights vals)
+    else Left $ concat ((++ "\n") <$> ls)
+    where ls = lefts vals
 
 root :: Text
 root = "https://api.github.com/"
@@ -76,9 +83,9 @@ getCards url = do
     (status, body) <- fetch url
 
     return $ case status of
-        200 -> case concat (decodeStrict <$> body) of
-            Just cards -> Right cards
-            Nothing -> Left parseError
+        200 -> case concatEithers (eitherDecodeStrict <$> body) of
+            Right cards -> Right cards
+            Left err -> Left (parseError err)
         429 -> Left "Too many cards"
         _ -> Left $ tshow status ++ " error while fetching " ++ url
 
@@ -101,9 +108,9 @@ getColumns url = do
     (status, body) <- fetch url
 
     case status of
-        200 -> case concat (decodeStrict <$> body) of
-            Just columns -> addCards columns
-            Nothing -> return $ Left parseError
+        200 -> case concatEithers (eitherDecodeStrict <$> body) of
+            Right columns -> addCards columns
+            Left err -> return $ Left (parseError err)
         404 -> return . Left $ "Could not find GitHub project ."
         401 -> return . Left $ "You do not have permission to view GitHub project " ++ url
         _ -> return . Left $ tshow status ++ " error. Cannot fetch columns from GitHub."
@@ -137,12 +144,12 @@ getLists identifier = do
     (status, body) <- fetch url
 
     case status of
-        200 -> case concat (decodeStrict <$> body) of
-            Just projects -> if null projects
+        200 -> case concatEithers (eitherDecodeStrict <$> body) of
+            Right projects -> if null projects
                 then return . Left $ concat ["\nNo projects found for ", identifier, "\n"]
                 else chooseProject projects
 
-            Nothing -> return $ Left parseError
+            Left err -> return $ Left (parseError err)
         404 -> return . Left $ "Could not find GitHub org/repo. For organisation make sure you use 'orgs/<org-name>' and for repos use 'repos/<username>/<repo-name>'"
         401 -> return . Left $ "You do not have permission to view the GitHub projects for " ++ identifier
         _ -> return . Left $ tshow status ++ " error. Cannot fetch projects from GitHub."
