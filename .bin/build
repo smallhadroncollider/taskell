@@ -18,6 +18,10 @@ if [ -z "$1" ]; then
     exit
 fi
 
+# make sure latest changes pushed to github
+git push --all && git push --tags
+
+# clean out previous build attempts
 rm -rf .stack-work/install
 
 # sort out releases directory
@@ -53,31 +57,24 @@ docker run -v "$PWD/releases/$1":/usr/src/app -w /usr/src/app debian dpkg-deb --
 
 mv "releases/$1/taskell.deb" "releases/$1/taskell-$1_x86-64-linux.deb"
 
-
-# Homebrew Pull Request
-brew update
-brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
-
-
 # Release Template
 rm -rf "releases/$1/taskell"
 
 open "releases/$1"
+open "https://github.com/smallhadroncollider/taskell/releases/new"
 
-
-printf "
-Release Template
-
----------------------------------------------
-
-- changes...
+echo "
+-
 
 ### Installation
 
 - Mac (Homebrew): \`brew install taskell\`
 - Mac/Linux: download binary and place it in a directory in your \`\$PATH\` (e.g. \`/usr/local/bin\`)
 - Debian (including Ubuntu): download the \`.deb\` file and run \`dpkg -i taskell-$1_x86-64-linux.deb\`
-- Fedora: Run \`sudo dnf install ncurses-compat-libs\` then download and run binary as described above
+- Fedora: Run \`sudo dnf install ncurses-compat-libs\` then download and run binary as described above" | pbcopy
 
----------------------------------------------
-"
+echo "Release info copied to clipboard"
+
+# Homebrew Pull Request
+brew update
+brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
