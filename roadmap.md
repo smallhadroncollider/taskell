@@ -9,6 +9,7 @@
 
 ## Refactoring
 
+- Add tests for IO.GitHub
 - Use Shake instead of bash script
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
@@ -41,6 +42,11 @@
 
 ## Features
 
+- Should be able to have new-lines in task descriptions
+    * [x] Trello import
+    * [ ] Regular input (Shift + Enter for new line?)
+    * [x] Markdown parsing
+    * [ ] Text line breaks go a bit funny with multi-line descriptions
 - Check times work no matter what timezone
 - Import Issues from GitHub using  labels
 - Add custom key support
@@ -69,12 +75,13 @@
 
 ## In Progress
 
-- Should be able to have new-lines in task descriptions
-    * [x] Trello import
-    * [ ] Regular input (Shift + Enter for new line?)
-    * [x] Markdown parsing
-    * [ ] Text line breaks go a bit funny with multi-line descriptions
-- Add tests for IO.GitHub
+- Performance with large files
+    > Becomes unusable with large files
+    * [x] Initially use debouncing to avoid writing too often
+    * [ ] Cache formatting results
+    * [ ] Invalidate layout cache less frequently
+    * [ ] Benchmarking tests
+    * [ ] Allow cancelling write to avoid trying to write the same file at the same time
 
 ## Done
 

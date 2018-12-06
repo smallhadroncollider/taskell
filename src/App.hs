@@ -5,11 +5,11 @@ import ClassyPrelude
 
 import Control.Lens ((^.))
 
-import Control.Concurrent (forkIO)
-
 import Brick
 import Graphics.Vty (Mode(BracketedPaste), outputIface, supportsMode, setMode)
 import Graphics.Vty.Input.Events (Event(..))
+
+import qualified Control.FoldDebounce as Debounce
 
 import Data.Taskell.Lists (Lists)
 import Data.Taskell.Date (currentDay)
@@ -22,16 +22,34 @@ import IO.Taskell (writeData)
 import UI.Draw (draw, chooseCursor)
 import UI.Types (ResourceName(..))
 
--- store
-store :: Config -> Lists -> State -> IO State
-store config ls state = do
-    _ <- forkIO $ writeData config ls (state ^. path)
-    return (Events.State.continue state)
+type DebouncedMessage = (Lists, FilePath)
+type DebouncedWrite = DebouncedMessage -> IO ()
+type Trigger = Debounce.Trigger DebouncedMessage DebouncedMessage
 
-next :: Config -> State -> EventM ResourceName (Next State)
-next config state = case state ^. io of
-    Just ls -> invalidateCache >> liftIO (store config ls state) >>= Brick.continue
+-- store
+store :: Config -> DebouncedMessage -> IO ()
+store config (ls, pth) = writeData config ls pth
+
+next :: DebouncedWrite -> State -> EventM ResourceName (Next State)
+next send state = case state ^. io of
+    Just ls -> do
+        invalidateCache
+        liftIO $ send (ls, state ^. path)
+        Brick.continue $ Events.State.continue state
     Nothing -> Brick.continue state
+
+
+-- debouncing
+debounce :: Config -> State -> IO (DebouncedWrite, Trigger)
+debounce config initial = do
+    trigger <- Debounce.new Debounce.Args {
+            Debounce.cb = store config,
+            Debounce.fold = \_ b -> b,
+            Debounce.init = (initial ^. lists, initial ^. path)
+        } Debounce.def
+    let send = Debounce.send trigger
+    return (send, trigger)
+
 
 -- cache clearing
 clearCache :: State -> EventM ResourceName ()
@@ -56,8 +74,8 @@ clearList state = do
     void . sequence $ invalidateCacheEntry . (\x -> RNTask (list, x)) <$> range
 
 -- event handling
-handleVtyEvent :: Config -> State -> Event -> EventM ResourceName (Next State)
-handleVtyEvent config previousState e = do
+handleVtyEvent :: (DebouncedWrite, Trigger) -> State -> Event -> EventM ResourceName (Next State)
+handleVtyEvent (send, trigger) previousState e = do
     let state = event e previousState
 
     case previousState ^. mode of
@@ -67,14 +85,14 @@ handleVtyEvent config previousState e = do
         _ -> return ()
 
     case state ^. mode of
-        Shutdown -> Brick.halt state
-        (Modal MoveTo) -> clearAllTitles state >> next config state
-        (Insert ITask ICreate _) -> clearList state >> next config state
-        _ -> clearCache previousState >> clearCache state >> next config state
+        Shutdown -> liftIO (Debounce.close trigger) >> Brick.halt state
+        (Modal MoveTo) -> clearAllTitles state >> next send state
+        (Insert ITask ICreate _) -> clearList state >> next send state
+        _ -> clearCache previousState >> clearCache state >> next send state
 
-handleEvent :: Config -> State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
+handleEvent :: (DebouncedWrite, Trigger) -> State -> BrickEvent ResourceName e -> EventM ResourceName (Next State)
 handleEvent _ state (VtyEvent (EvResize _ _ )) = invalidateCache >> Brick.continue state
-handleEvent config state (VtyEvent ev) = handleVtyEvent config state ev
+handleEvent db state (VtyEvent ev) = handleVtyEvent db state ev
 handleEvent _ state _ = Brick.continue state
 
 
@@ -93,10 +111,11 @@ go :: Config -> State -> IO ()
 go config initial = do
     attrMap' <- const <$> generateAttrMap
     today <- currentDay
+    db <- debounce config initial
     let app = App {
             appDraw = draw (layout config) today
           , appChooseCursor = chooseCursor
-          , appHandleEvent = handleEvent config
+          , appHandleEvent = handleEvent db
           , appStartEvent = appStart
           , appAttrMap = attrMap'
         }
