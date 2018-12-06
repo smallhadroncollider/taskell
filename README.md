@@ -1,7 +1,3 @@
-**Mark is on parental leave between August 12th and November 19th 2018, as such development on Taskell will likely slow to a trickle during this period.**
-
-**[Please continue to file Issues and Pull Requests](#contributing).**
-
 # Taskell
 
 [![Build Status](https://travis-ci.org/smallhadroncollider/taskell.svg?branch=master)](https://travis-ci.org/smallhadroncollider/taskell)
