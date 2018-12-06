@@ -35,10 +35,10 @@ type GitHubIdentifier = Text
 type ReaderGitHubToken a = ReaderT GitHubToken IO a
 
 concatEithers :: [Either String [a]] -> Either String [a]
-concatEithers vals = if null ls
+concatEithers vals = if null errors
     then Right $ concat (rights vals)
-    else Left $ concat ((++ "\n") <$> ls)
-    where ls = lefts vals
+    else Left $ unlines errors
+    where errors = lefts vals
 
 root :: Text
 root = "https://api.github.com/"
