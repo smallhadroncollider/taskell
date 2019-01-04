@@ -1,42 +1,44 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 module IO.Config where
 
 import ClassyPrelude
 
-import qualified Data.Text.IO as T (readFile)
-import System.Directory (createDirectoryIfMissing, getHomeDirectory, doesFileExist)
+import qualified Data.Text.IO     as T (readFile)
+import           System.Directory (createDirectoryIfMissing, doesFileExist, getHomeDirectory)
 
-import Brick (AttrMap)
-import Brick.Themes (themeToAttrMap, loadCustomizations)
-import Data.FileEmbed (embedFile)
+import Brick           (AttrMap)
+import Brick.Themes    (loadCustomizations, themeToAttrMap)
+import Data.FileEmbed  (embedFile)
 import Data.Ini.Config
 
 import UI.Theme (defaultTheme)
 
-import qualified IO.Config.General as General
-import qualified IO.Config.Layout as Layout
+import qualified IO.Config.General  as General
+import qualified IO.Config.GitHub   as GitHub
+import qualified IO.Config.Layout   as Layout
 import qualified IO.Config.Markdown as Markdown
-import qualified IO.Config.Trello as Trello
-import qualified IO.Config.GitHub as GitHub
+import qualified IO.Config.Trello   as Trello
 
-data Config = Config {
-        general :: General.Config
-      , layout :: Layout.Config
-      , markdown :: Markdown.Config
-      , trello :: Trello.Config
-      , github :: GitHub.Config
+data Config = Config
+    { general  :: General.Config
+    , layout   :: Layout.Config
+    , markdown :: Markdown.Config
+    , trello   :: Trello.Config
+    , github   :: GitHub.Config
     }
 
 defaultConfig :: Config
-defaultConfig = Config {
-    general = General.defaultConfig
-  , layout = Layout.defaultConfig
-  , markdown = Markdown.defaultConfig
-  , trello = Trello.defaultConfig
-  , github = GitHub.defaultConfig
-}
+defaultConfig =
+    Config
+    { general = General.defaultConfig
+    , layout = Layout.defaultConfig
+    , markdown = Markdown.defaultConfig
+    , trello = Trello.defaultConfig
+    , github = GitHub.defaultConfig
+    }
 
 getDir :: IO FilePath
 getDir = (++ "/.taskell") <$> getHomeDirectory
@@ -74,36 +76,33 @@ createConfig = create getConfigPath writeConfig
 
 configParser :: IniParser Config
 configParser = do
-
     generalCf <- General.parser
     layoutCf <- Layout.parser
     markdownCf <- Markdown.parser
     trelloCf <- Trello.parser
     githubCf <- GitHub.parser
-
-    return Config {
-        general = generalCf
-      , layout = layoutCf
-      , markdown = markdownCf
-      , trello = trelloCf
-      , github = githubCf
-    }
+    return
+        Config
+        { general = generalCf
+        , layout = layoutCf
+        , markdown = markdownCf
+        , trello = trelloCf
+        , github = githubCf
+        }
 
 getConfig :: IO Config
 getConfig = do
     content <- getConfigPath >>= T.readFile
     let config = parseIniFile content configParser
-
     case config of
         Right c -> return c
-        Left s -> putStrLn (pack $ "config.ini: " ++ s) >> return defaultConfig
+        Left s  -> putStrLn (pack $ "config.ini: " ++ s) >> return defaultConfig
 
 -- generate theme
 generateAttrMap :: IO AttrMap
 generateAttrMap = do
     path <- getThemePath
     customizedTheme <- loadCustomizations path defaultTheme
-
     case customizedTheme of
         Right theme -> return $ themeToAttrMap theme
         Left s -> do
