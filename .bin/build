@@ -1,4 +1,4 @@
-resolver="lts-12.21"
+resolver="lts-12.26"
 ghcv="8.4.4"
 
 branch=$(git rev-parse --abbrev-ref HEAD)
