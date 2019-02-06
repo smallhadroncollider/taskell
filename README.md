@@ -51,11 +51,11 @@ There are usually bottles (binaries) available. If these are not available for y
 
 ### Fedora
 
-Run `sudo dnf install ncurses-compat-libs` then download and run binary as described below.
+Not officially supported, but try running `sudo dnf install ncurses-compat-libs` then download and run the binary as described below. If that doesn't work you may need to build from scratch ([Cabal](#cabal)/[Stack](#stack)).
 
 ### Binaries
 
-[A binary is available for Mac and Linux](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`).
+[A binary is available for Mac and Debian/Ubuntu](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`).
 
 ### Cabal
 
