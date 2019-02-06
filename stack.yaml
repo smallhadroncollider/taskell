@@ -1,3 +1,4 @@
 resolver: lts-12.26
+pvp-bounds: both
 packages:
   - .

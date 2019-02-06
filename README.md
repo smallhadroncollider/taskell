@@ -57,6 +57,16 @@ Run `sudo dnf install ncurses-compat-libs` then download and run binary as descr
 
 [A binary is available for Mac and Linux](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`).
 
+### Cabal
+
+You can install Taskell with `cabal`:
+
+```bash
+cabal install taskell
+```
+
+Make sure you run `cabal update` if you haven't run it recently.
+
 ### Stack
 
 If none of the above options work you can build taskell using [Stack](https://docs.haskellstack.org/en/stable/README/). First [install Stack on your machine](https://docs.haskellstack.org/en/stable/README/#how-to-install). Then clone the repo and run `stack build && stack install`: this will build taskell and then install it in `~/.local/bin` (so make sure that directory is in your `$PATH`). Building from scratch can take a long time and occasionally doesn't work the first time (if this happens try running it again).
