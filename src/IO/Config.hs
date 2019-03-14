@@ -42,11 +42,15 @@ defaultConfig = Config {
 getDir :: IO FilePath
 getDir =
     let
-        directoryName = "/taskell"
+        directoryName = "taskell"
         oldConfigDir = (++ "/." ++ directoryName) <$> getHomeDirectory
-        xdgDefaultConfigDirectory = (++ "/.config" ++ directoryName) <$> getHomeDirectory
-        maybeXdgEnvironmentConfigDirectory = lookupEnv "XDG_CONFIG_HOME" -- this needs to be considered
-        xdgDirectory = xdgDefaultConfigDirectory
+        xdgDefaultConfigDirectory = (++ "/.config/" ++ directoryName) <$> getHomeDirectory
+        iOMaybeXdgEnvironmentConfigDirectory = lookupEnv "XDG_CONFIG_HOME"
+        xdgDirectory = do
+            maybeXdgEnvironmentConfigDirectory <- iOMaybeXdgEnvironmentConfigDirectory
+            case maybeXdgEnvironmentConfigDirectory  of
+                 Just xdgEnvironmentConfigDirectory -> pure $ xdgEnvironmentConfigDirectory ++ "/" ++ directoryName
+                 Nothing -> xdgDefaultConfigDirectory
     in
     oldConfigDir >>= doesDirectoryExist >>= (\oldconfigAvailable -> if oldconfigAvailable then oldConfigDir else xdgDirectory)
 
