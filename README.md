@@ -202,7 +202,9 @@ This would then show you a list of possible projects to import. Enter the number
 
 ## Configuration
 
-You can edit Taskell's settings by editing `~/.taskell/config.ini`:
+Taskell uses the [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html), so it will look for an `$XDG_CONFIG_HOME` environmental variable and create a directory named `taskell` inside it. If this variable is not found it will create the `taskell` directory in `~/.config/`.  (If you've been using Taskell since <= 1.3.5 then it will be in a `~/.taskell` directory, feel free to move this to the XDG directory.)
+
+Taskell has a `config.ini` file:
 
 ```ini
 [general]
@@ -251,7 +253,7 @@ subtask = "-"
 
 ### Theming
 
-You can edit Taskell's colour-scheme by editing `~/.taskell/theme.ini`:
+You can edit Taskell's colour-scheme by editing `theme.ini`:
 
 ```ini
 [other]
