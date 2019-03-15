@@ -6,8 +6,9 @@ module IO.Config where
 
 import ClassyPrelude
 
-import qualified Data.Text.IO     as T (readFile)
-import           System.Directory (createDirectoryIfMissing, doesFileExist, getHomeDirectory)
+import qualified Data.Text.IO as T (readFile)
+import System.Directory (createDirectoryIfMissing, getHomeDirectory, doesFileExist, doesDirectoryExist)
+import System.Environment (lookupEnv)
 
 import Brick           (AttrMap)
 import Brick.Themes    (loadCustomizations, themeToAttrMap)
@@ -40,8 +41,20 @@ defaultConfig =
     , github = GitHub.defaultConfig
     }
 
+directoryName :: FilePath
+directoryName = "taskell"
+
+legacyConfigPath :: IO FilePath
+legacyConfigPath = (</> "." ++ directoryName) <$> getHomeDirectory
+
+xdgDefaultConfig :: IO FilePath
+xdgDefaultConfig = (</> ".config" </> directoryName) <$> getHomeDirectory
+
+xdgConfigPath :: IO FilePath
+xdgConfigPath = fromMaybe <$> xdgDefaultConfig <*> lookupEnv "XDG_CONFIG_HOME"
+
 getDir :: IO FilePath
-getDir = (++ "/.taskell") <$> getHomeDirectory
+getDir = legacyConfigPath >>= doesDirectoryExist >>= bool xdgConfigPath legacyConfigPath
 
 getThemePath :: IO FilePath
 getThemePath = (++ "/theme.ini") <$> getDir
