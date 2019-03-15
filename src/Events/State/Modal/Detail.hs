@@ -1,42 +1,48 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Events.State.Modal.Detail (
-    updateField
-  , finishSubtask
-  , finishDescription
-  , finishDue
-  , showDetail
-  , getCurrentItem
-  , getCurrentMode
-  , getField
-  , setComplete
-  , remove
-  , insertMode
-  , editDescription
-  , editDue
-  , newItem
-  , nextSubtask
-  , previousSubtask
-  , lastSubtask
-) where
+
+module Events.State.Modal.Detail
+    ( updateField
+    , finishSubtask
+    , finishDescription
+    , finishDue
+    , showDetail
+    , getCurrentItem
+    , getCurrentMode
+    , getField
+    , setComplete
+    , remove
+    , insertMode
+    , editDescription
+    , editDue
+    , newItem
+    , nextSubtask
+    , previousSubtask
+    , lastSubtask
+    ) where
 
 import ClassyPrelude
 
 import Control.Lens ((&), (.~), (^.))
 
-import Data.Taskell.Date (dayToOutput)
-import Events.State (getCurrentTask, setCurrentTask)
-import Events.State.Types (State, Stateful, mode)
-import Events.State.Types.Mode (Mode(Modal), ModalType(Detail), DetailMode(..), DetailItem(..))
-import Data.Taskell.Task (Task, updateSubtask, addSubtask, countSubtasks, removeSubtask, getSubtask, description, setDescription, due, setDue)
-import qualified Data.Taskell.Subtask as ST (name, toggle, blank)
-import UI.Field (Field, blankField, getText, textToField)
+import           Data.Taskell.Date       (dayToOutput)
+import qualified Data.Taskell.Subtask    as ST (blank, name, toggle)
+import           Data.Taskell.Task       (Task, addSubtask, countSubtasks, description, due,
+                                          getSubtask, removeSubtask, setDescription, setDue,
+                                          updateSubtask)
+import           Events.State            (getCurrentTask, setCurrentTask)
+import           Events.State.Types      (State, Stateful, mode)
+import           Events.State.Types.Mode (DetailItem (..), DetailMode (..), ModalType (Detail),
+                                          Mode (Modal))
+import           UI.Field                (Field, blankField, getText, textToField)
 
 updateField :: (Field -> Field) -> Stateful
-updateField fieldEvent s = return $ case s ^. mode of
-    Modal (Detail detailItem (DetailInsert field)) -> s &
-        mode .~ Modal (Detail detailItem (DetailInsert (fieldEvent field)))
-    _ -> s
+updateField fieldEvent s =
+    pure $
+    case s ^. mode of
+        Modal (Detail detailItem (DetailInsert field)) ->
+            s & mode .~ Modal (Detail detailItem (DetailInsert (fieldEvent field)))
+        _ -> s
 
 finishSubtask :: Stateful
 finishSubtask state = do
@@ -61,27 +67,31 @@ showDetail :: Stateful
 showDetail s = do
     _ <- getCurrentTask s
     let i = fromMaybe 0 $ getCurrentSubtask s
-    return $ s & mode .~ Modal (Detail (DetailItem i) DetailNormal)
+    pure $ s & mode .~ Modal (Detail (DetailItem i) DetailNormal)
 
 getCurrentSubtask :: State -> Maybe Int
-getCurrentSubtask state = case state ^. mode of
-    Modal (Detail (DetailItem i) _) -> Just i
-    _ -> Nothing
+getCurrentSubtask state =
+    case state ^. mode of
+        Modal (Detail (DetailItem i) _) -> Just i
+        _                               -> Nothing
 
 getCurrentItem :: State -> Maybe DetailItem
-getCurrentItem state = case state ^. mode of
-    Modal (Detail item _) -> Just item
-    _ -> Nothing
+getCurrentItem state =
+    case state ^. mode of
+        Modal (Detail item _) -> Just item
+        _                     -> Nothing
 
 getCurrentMode :: State -> Maybe DetailMode
-getCurrentMode state = case state ^. mode of
-    Modal (Detail _ m) -> Just m
-    _ -> Nothing
+getCurrentMode state =
+    case state ^. mode of
+        Modal (Detail _ m) -> Just m
+        _                  -> Nothing
 
 getField :: State -> Maybe Field
-getField state = case state ^. mode of
-    Modal (Detail _ (DetailInsert f)) -> Just f
-    _ -> Nothing
+getField state =
+    case state ^. mode of
+        Modal (Detail _ (DetailInsert f)) -> Just f
+        _                                 -> Nothing
 
 setComplete :: Stateful
 setComplete state = do
@@ -102,20 +112,21 @@ insertMode state = do
     task <- getCurrentTask state
     n <- (^. ST.name) <$> getSubtask i task
     case state ^. mode of
-        Modal (Detail (DetailItem i') _) -> Just (state & mode .~ Modal (Detail (DetailItem i') (DetailInsert (textToField n))))
+        Modal (Detail (DetailItem i') _) ->
+            Just (state & mode .~ Modal (Detail (DetailItem i') (DetailInsert (textToField n))))
         _ -> Nothing
 
 editDescription :: Stateful
 editDescription state = do
     summ <- (^. description) <$> getCurrentTask state
     let summ' = fromMaybe "" summ
-    return $ state & mode .~ Modal (Detail DetailDescription (DetailInsert (textToField summ')))
+    pure $ state & mode .~ Modal (Detail DetailDescription (DetailInsert (textToField summ')))
 
 editDue :: Stateful
 editDue state = do
     day <- (^. due) <$> getCurrentTask state
     let day' = maybe "" dayToOutput day
-    return $ state & mode .~ Modal (Detail DetailDate (DetailInsert (textToField day')))
+    pure $ state & mode .~ Modal (Detail DetailDate (DetailInsert (textToField day')))
 
 newItem :: Stateful
 newItem state = do
@@ -144,7 +155,8 @@ setIndex :: State -> Int -> Maybe State
 setIndex state i = do
     lst <- lastIndex state
     m <- getCurrentMode state
-    let newIndex | i > lst = lst
-                 | i < 0 = 0
-                 | otherwise = i
-    return $ state & mode .~ Modal (Detail (DetailItem newIndex) m)
+    let newIndex
+            | i > lst = lst
+            | i < 0 = 0
+            | otherwise = i
+    pure $ state & mode .~ Modal (Detail (DetailItem newIndex) m)

@@ -1,0 +1,16 @@
+steps:
+  - simple_align:
+      cases: true
+      records: true
+
+  - imports:
+      align: group
+
+  - tabs:
+      spaces: 4
+
+columns: 100
+
+language_extensions:
+  - OverloadedStrings
+  - NoImplicitPrelude

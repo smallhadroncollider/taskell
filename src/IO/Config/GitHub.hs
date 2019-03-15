@@ -6,18 +6,17 @@ import Data.Ini.Config
 
 import IO.HTTP.GitHub (GitHubToken)
 
-data Config = Config {
-        token :: Maybe GitHubToken
+data Config = Config
+    { token :: Maybe GitHubToken
     }
 
 defaultConfig :: Config
-defaultConfig = Config {
-    token = Nothing
-}
+defaultConfig = Config {token = Nothing}
 
 parser :: IniParser Config
-parser = fromMaybe defaultConfig <$>
-    sectionMb "github" (do
-        tokenCf <- fieldMb "token"
-        return Config { token = tokenCf }
-    )
+parser =
+    fromMaybe defaultConfig <$>
+    sectionMb
+        "github"
+        (do tokenCf <- fieldMb "token"
+            pure Config {token = tokenCf})

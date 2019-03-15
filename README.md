@@ -51,11 +51,21 @@ There are usually bottles (binaries) available. If these are not available for y
 
 ### Fedora
 
-Run `sudo dnf install ncurses-compat-libs` then download and run binary as described below.
+Not officially supported, but try running `sudo dnf install ncurses-compat-libs` then download and run the binary as described below. If that doesn't work you may need to build from scratch ([Cabal](#cabal)/[Stack](#stack)).
 
 ### Binaries
 
-[A binary is available for Mac and Linux](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`).
+[A binary is available for Mac and Debian/Ubuntu](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`).
+
+### Cabal
+
+You can install Taskell with `cabal`:
+
+```bash
+cabal install taskell
+```
+
+Make sure you run `cabal update` if you haven't run it recently.
 
 ### Stack
 
@@ -192,7 +202,9 @@ This would then show you a list of possible projects to import. Enter the number
 
 ## Configuration
 
-You can edit Taskell's settings by editing `~/.taskell/config.ini`:
+Taskell uses the [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html), so it will look for an `$XDG_CONFIG_HOME` environmental variable and create a directory named `taskell` inside it. If this variable is not found it will create the `taskell` directory in `~/.config/`.  (If you've been using Taskell since <= 1.3.5 then it will be in a `~/.taskell` directory, feel free to move this to the XDG directory.)
+
+Taskell has a `config.ini` file:
 
 ```ini
 [general]
@@ -241,7 +253,7 @@ subtask = "-"
 
 ### Theming
 
-You can edit Taskell's colour-scheme by editing `~/.taskell/theme.ini`:
+You can edit Taskell's colour-scheme by editing `theme.ini`:
 
 ```ini
 [other]

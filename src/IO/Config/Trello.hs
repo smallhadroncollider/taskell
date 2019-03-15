@@ -6,19 +6,17 @@ import Data.Ini.Config
 
 import IO.HTTP.Trello (TrelloToken)
 
-data Config = Config {
-        token :: Maybe TrelloToken
+data Config = Config
+    { token :: Maybe TrelloToken
     }
 
 defaultConfig :: Config
-defaultConfig = Config {
-    token = Nothing
-}
+defaultConfig = Config {token = Nothing}
 
 parser :: IniParser Config
-parser = fromMaybe defaultConfig <$>
-    sectionMb "trello" (do
-        tokenCf <- fieldMb "token"
-        return Config { token = tokenCf }
-    )
-
+parser =
+    fromMaybe defaultConfig <$>
+    sectionMb
+        "trello"
+        (do tokenCf <- fieldMb "token"
+            pure Config {token = tokenCf})

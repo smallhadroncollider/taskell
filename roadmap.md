@@ -49,7 +49,6 @@
     * [ ] Text line breaks go a bit funny with multi-line descriptions
 - Check times work no matter what timezone
 - Import Issues from GitHub using  labels
-- Add custom key support
 - Show filename somewhere
 - Editable title?
     > Use a `# Title` at top of file and display title somewhere in taskell
@@ -75,6 +74,8 @@
 
 ## In Progress
 
+- Add custom key support
+- Use proper error codes
 - Performance with large files
     > Becomes unusable with large files
     * [x] Initially use debouncing to avoid writing too often
@@ -255,3 +256,4 @@
 - Add ability to list GitHub projects
     > Give an organisation or username and repo, list the possible projects to fetch - avoid having to look up the project ID manually first
 - GitHub import should take pagination into account
+- Use XDG spec for storing config files

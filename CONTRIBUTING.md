@@ -6,6 +6,8 @@ Please check the [roadmap.md](https://github.com/smallhadroncollider/taskell/blo
 
 ## Code
 
+*Please use the `develop` branch as the base for any pull requests*
+
 Anyone is welcome to contribute to the project. Check out [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) for bugs and planned features if you're not sure where to start.
 
 If you're planning on doing a big chunk of work it's probably best to [contact me](mailto:mark@smallhadroncollider.com) first to make sure someone isn't already working on it.
@@ -14,9 +16,9 @@ You'll probably want to get up to scratch with [Brick](https://github.com/jtdaug
 
 ### Style
 
-This is my first Haskell project, so the style is often a bit inconsistent. I'm also probably not doing things in the most Haskelly manner (I still haven't used an Applicative anywhere). So, feel free to use whatever style you prefer. We can always refactor.
+This was my first Haskell project, so the style has changed (improved?) as I've gone along.
 
-I'm also very bad at comments: but please don't follow my example on that.
+I'm now trying to use `pure` instead of `return`, `*>` instead of `>>`, and `<>` instead of `++`.
 
 ### Git
 

@@ -1,9 +1,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
-module IO.TrelloTest (
-    test_trello
-) where
+
+module IO.TrelloTest
+    ( test_trello
+    ) where
 
 import ClassyPrelude
 
@@ -12,12 +13,12 @@ import Control.Lens ((^.))
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Data.FileEmbed (embedFile)
-import Data.Aeson (decodeStrict)
+import Data.Aeson          (decodeStrict)
+import Data.FileEmbed      (embedFile)
 import Data.Time.LocalTime (getCurrentTimeZone)
 
-import IO.HTTP.Trello.List (List, listToList)
 import IO.HTTP.Trello.ChecklistItem (ChecklistItem, checkItems, checklistItemToSubTask)
+import IO.HTTP.Trello.List          (List, listToList)
 
 json :: Maybe [List]
 json = decodeStrict $(embedFile "test/IO/data/trello.json")
@@ -29,19 +30,16 @@ checklistJson = (^. checkItems) <$> decodeStrict $(embedFile "test/IO/data/trell
 test_trello :: IO TestTree
 test_trello = do
     tz <- getCurrentTimeZone
-
-    return $ testGroup "IO.Trello" [
-            testCase "Lists" (
-                assertEqual
-                    "Parses list JSON"
-                    (Just 5)
-                    (length . (listToList tz <$>) <$> json)
-            )
-
-          , testCase "Checklists" (
-                assertEqual
-                    "Parses checklist JSON"
-                    (Just 5)
-                    (length . (checklistItemToSubTask <$>) <$> checklistJson)
-            )
-        ]
+    return $
+        testGroup
+            "IO.Trello"
+            [ testCase
+                  "Lists"
+                  (assertEqual "Parses list JSON" (Just 5) (length . (listToList tz <$>) <$> json))
+            , testCase
+                  "Checklists"
+                  (assertEqual
+                       "Parses checklist JSON"
+                       (Just 5)
+                       (length . (checklistItemToSubTask <$>) <$> checklistJson))
+            ]

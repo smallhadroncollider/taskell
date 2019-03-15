@@ -1,14 +1,17 @@
 name: taskell
-version: '1.3.5.0'
-category: CLI
+version: '1.3.6.0'
+category: Command Line Tools
 author: Mark Wales
 maintainer: mark@smallhadroncollider.com
-copyright: 2017 Mark Wales
+copyright: 2019 Mark Wales
 license: BSD3
+synopsis: A command-line kanban board/task manager
+description: Please see the README on GitHub at <https://github.com/smallhadroncollider/taskell#readme>
 github: smallhadroncollider/taskell
 
 extra-source-files:
 - README.md
+- templates/*
 
 default-extensions:
 - OverloadedStrings
@@ -19,8 +22,6 @@ dependencies:
 
 library:
   source-dirs: src
-  ghc-options:
-  - -O0
   exposed-modules:
   - App
   - Events.State

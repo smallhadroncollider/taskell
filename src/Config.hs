@@ -1,6 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+
 module Config where
 
 import ClassyPrelude
@@ -8,7 +9,7 @@ import ClassyPrelude
 import Data.FileEmbed (embedFile)
 
 version :: Text
-version = "1.3.5"
+version = "1.3.6"
 
 usage :: Text
 usage = decodeUtf8 $(embedFile "templates/usage.txt")
