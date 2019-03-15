@@ -39,20 +39,20 @@ defaultConfig = Config {
   , github = GitHub.defaultConfig
 }
 
-getDir :: IO FilePath
-getDir = do
-    let directoryName = "taskell"
-    home <- getHomeDirectory
-    let oldConfigPath = home ++ "/." ++ directoryName
-    oldconfigAvailable <- doesDirectoryExist oldConfigPath
-    if oldconfigAvailable
-       then pure oldConfigPath
-       else do
-           xdgEnv <- lookupEnv "XDG_CONFIG_HOME"
-           pure $ case xdgEnv of
-               Just xdgConfigHome -> xdgConfigHome ++ "/" ++ directoryName
-               Nothing -> home ++ "/.config/" ++ directoryName
+directoryName :: FilePath
+directoryName = "taskell"
 
+legacyConfigPath :: IO FilePath
+legacyConfigPath = (</> "." ++ directoryName) <$> getHomeDirectory
+
+xdgDefaultConfig :: IO FilePath
+xdgDefaultConfig = (</> ".config" </> directoryName) <$> getHomeDirectory
+
+xdgConfigPath :: IO FilePath
+xdgConfigPath = fromMaybe <$> xdgDefaultConfig <*> lookupEnv "XDG_CONFIG_HOME"
+
+getDir :: IO FilePath
+getDir = legacyConfigPath >>= doesDirectoryExist >>= bool xdgConfigPath legacyConfigPath
 
 getThemePath :: IO FilePath
 getThemePath = (++ "/theme.ini") <$> getDir
