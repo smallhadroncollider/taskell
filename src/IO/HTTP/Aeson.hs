@@ -15,4 +15,4 @@ deriveFromJSON :: Name -> Q [Dec]
 deriveFromJSON = TH.deriveFromJSON defaultOptions {fieldLabelModifier = drop 1}
 
 parseError :: String -> Text
-parseError err = decodeUtf8 $(embedFile "templates/api-error.txt") ++ "\n\n" ++ pack err
+parseError err = decodeUtf8 $(embedFile "templates/api-error.txt") <> "\n\n" <> pack err

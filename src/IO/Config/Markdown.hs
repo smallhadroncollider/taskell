@@ -42,7 +42,7 @@ parser =
             subtaskOutputCf <-
                 fromMaybe (subtaskOutput defaultConfig) . (noEmpty . parseText =<<) <$>
                 fieldMb "subtask"
-            return
+            pure
                 Config
                 { titleOutput = titleOutputCf
                 , taskOutput = taskOutputCf

@@ -38,7 +38,7 @@ import           UI.Field                (Field, blankField, getText, textToFiel
 
 updateField :: (Field -> Field) -> Stateful
 updateField fieldEvent s =
-    return $
+    pure $
     case s ^. mode of
         Modal (Detail detailItem (DetailInsert field)) ->
             s & mode .~ Modal (Detail detailItem (DetailInsert (fieldEvent field)))
@@ -67,7 +67,7 @@ showDetail :: Stateful
 showDetail s = do
     _ <- getCurrentTask s
     let i = fromMaybe 0 $ getCurrentSubtask s
-    return $ s & mode .~ Modal (Detail (DetailItem i) DetailNormal)
+    pure $ s & mode .~ Modal (Detail (DetailItem i) DetailNormal)
 
 getCurrentSubtask :: State -> Maybe Int
 getCurrentSubtask state =
@@ -120,13 +120,13 @@ editDescription :: Stateful
 editDescription state = do
     summ <- (^. description) <$> getCurrentTask state
     let summ' = fromMaybe "" summ
-    return $ state & mode .~ Modal (Detail DetailDescription (DetailInsert (textToField summ')))
+    pure $ state & mode .~ Modal (Detail DetailDescription (DetailInsert (textToField summ')))
 
 editDue :: Stateful
 editDue state = do
     day <- (^. due) <$> getCurrentTask state
     let day' = maybe "" dayToOutput day
-    return $ state & mode .~ Modal (Detail DetailDate (DetailInsert (textToField day')))
+    pure $ state & mode .~ Modal (Detail DetailDate (DetailInsert (textToField day')))
 
 newItem :: Stateful
 newItem state = do
@@ -159,4 +159,4 @@ setIndex state i = do
             | i > lst = lst
             | i < 0 = 0
             | otherwise = i
-    return $ state & mode .~ Modal (Detail (DetailItem newIndex) m)
+    pure $ state & mode .~ Modal (Detail (DetailItem newIndex) m)

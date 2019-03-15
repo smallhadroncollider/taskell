@@ -27,7 +27,7 @@ parser =
             descriptionIndicatorCf <-
                 fromMaybe (descriptionIndicator defaultConfig) . (noEmpty . parseText =<<) <$>
                 fieldMb "description_indicator"
-            return
+            pure
                 Config
                 { columnWidth = columnWidthCf
                 , columnPadding = columnPaddingCf

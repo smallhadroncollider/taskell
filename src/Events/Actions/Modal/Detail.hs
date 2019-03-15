@@ -26,7 +26,7 @@ normal (EvKey (KChar 'e') _) = (Detail.insertMode =<<) . store
 normal (EvKey (KChar 'D') _) = (write =<<) . (Detail.remove =<<) . store
 normal (EvKey (KChar 'u') _) = (write =<<) . undo
 normal (EvKey (KChar '@') _) = (editDue =<<) . store
-normal _ = return
+normal _ = pure
 
 insert :: Event -> Stateful
 insert (EvKey KEsc _) s = do

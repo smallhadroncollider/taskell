@@ -32,7 +32,7 @@ changeList (list, idx) tasks dir = do
     let next = list + dir
     (from, task) <- extract idx =<< tasks !? list -- extract current task
     to <- append task <$> tasks !? next -- get next list and append task
-    return . updateLists next to $ updateLists list from tasks -- update lists
+    pure . updateLists next to $ updateLists list from tasks -- update lists
 
 newList :: Text -> Update
 newList title = (|> empty title)
@@ -54,7 +54,7 @@ appendToLast task lists =
     fromMaybe lists $ do
         let idx = length lists - 1
         list <- append task <$> lists !? idx
-        return $ updateLists idx list lists
+        pure $ updateLists idx list lists
 
 analyse :: Text -> Lists -> Text
 analyse filepath lists =

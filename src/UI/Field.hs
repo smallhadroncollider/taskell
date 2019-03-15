@@ -48,13 +48,13 @@ backspace (Field text cursor) =
     let (start, end) = T.splitAt cursor text
     in case fromNullable start of
            Nothing     -> Field end cursor
-           Just start' -> Field (init start' ++ end) (cursor - 1)
+           Just start' -> Field (init start' <> end) (cursor - 1)
 
 insertCharacter :: Char -> Field -> Field
 insertCharacter char (Field text cursor) = Field newText newCursor
   where
     (start, end) = T.splitAt cursor text
-    newText = snoc start char ++ end
+    newText = snoc start char <> end
     newCursor = cursor + 1
 
 insertText :: Text -> Field -> Field
@@ -112,10 +112,10 @@ wrap width = foldl' (combine width) ([""], 0) . spl
 
 spl' :: [Text] -> Char -> [Text]
 spl' ts c
-    | c == ' ' = ts ++ [" "] ++ [""]
+    | c == ' ' = ts <> [" "] <> [""]
     | otherwise =
         case fromNullable ts of
-            Just ts' -> init ts' ++ [snoc (last ts') c]
+            Just ts' -> init ts' <> [snoc (last ts') c]
             Nothing  -> [singleton c]
 
 spl :: Text -> [Text]
@@ -125,8 +125,8 @@ combine :: Int -> ([Text], Int) -> Text -> ([Text], Int)
 combine width (acc, offset) s
     | newline && s == " " = (acc, offset + 1)
     | T.takeEnd 1 l == " " && s == " " = (acc, offset + 1)
-    | newline = (acc ++ [s], offset)
-    | otherwise = (append (l ++ s) acc, offset)
+    | newline = (acc <> [s], offset)
+    | otherwise = (append (l <> s) acc, offset)
   where
     l = maybe "" last (fromNullable acc)
     newline = B.textWidth l + B.textWidth s > width
@@ -134,5 +134,5 @@ combine width (acc, offset) s
 append :: Text -> [Text] -> [Text]
 append s l =
     case fromNullable l of
-        Just l' -> init l' ++ [s]
-        Nothing -> l ++ [s]
+        Just l' -> init l' <> [s]
+        Nothing -> l <> [s]

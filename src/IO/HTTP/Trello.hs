@@ -39,7 +39,7 @@ root = "https://api.trello.com/1/"
 fullURL :: Text -> ReaderTrelloToken String
 fullURL uri = do
     token <- ask
-    return . unpack $ concat [root, uri, "&key=", key, "&token=", token]
+    pure . unpack $ concat [root, uri, "&key=", key, "&token=", token]
 
 boardURL :: TrelloBoardID -> ReaderTrelloToken String
 boardURL board =
@@ -64,20 +64,20 @@ fetch :: String -> IO (Int, ByteString)
 fetch url = do
     request <- parseRequest url
     response <- httpBS request
-    return (getResponseStatusCode response, getResponseBody response)
+    pure (getResponseStatusCode response, getResponseBody response)
 
 getChecklist :: TrelloChecklistID -> ReaderTrelloToken (Either Text [ChecklistItem])
 getChecklist checklist = do
     url <- checklistURL checklist
     (status, body) <- lift $ fetch url
-    return $
+    pure $
         case status of
             200 ->
                 case (^. checkItems) <$> eitherDecodeStrict body of
                     Right ls -> Right ls
                     Left err -> Left $ parseError err
             429 -> Left "Too many checklists"
-            _ -> Left $ tshow status ++ " error while fetching checklist " ++ checklist
+            _ -> Left $ tshow status <> " error while fetching checklist " <> checklist
 
 updateCard :: Card -> ReaderTrelloToken (Either Text Card)
 updateCard card = (setChecklists card . concat <$>) . sequence <$> checklists
@@ -100,9 +100,9 @@ getLists board = do
         200 ->
             case eitherDecodeStrict body of
                 Right raw -> fmap (trelloListsToLists timezone) <$> getChecklists raw
-                Left err  -> return . Left $ parseError err
+                Left err  -> pure . Left $ parseError err
         404 ->
-            return . Left $
-            "Could not find Trello board " ++ board ++ ". Make sure the ID is correct"
-        401 -> return . Left $ "You do not have permission to view Trello board " ++ board
-        _ -> return . Left $ tshow status ++ " error. Cannot fetch from Trello."
+            pure . Left $
+            "Could not find Trello board " <> board <> ". Make sure the ID is correct"
+        401 -> pure . Left $ "You do not have permission to view Trello board " <> board
+        _ -> pure . Left $ tshow status <> " error. Cannot fetch from Trello."

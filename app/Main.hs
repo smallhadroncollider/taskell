@@ -15,6 +15,6 @@ main = do
     config <- setup
     next <- runReaderT load config
     case next of
-        Exit            -> return ()
+        Exit            -> pure ()
         Output text     -> putStrLn text
         Load path lists -> go config $ create path lists

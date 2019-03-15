@@ -19,7 +19,7 @@ import qualified Events.Actions.Normal as Normal
 search :: Event -> Stateful
 search (EvKey KEnter _) s = searchEntered s
 search e s =
-    return $
+    pure $
     case s ^. mode of
         Search ent field -> s & mode .~ Search ent (F.event e field)
         _                -> s
@@ -34,4 +34,4 @@ event e s =
                  else Normal.event)
                 e
                 s
-        _ -> return s
+        _ -> pure s

@@ -27,6 +27,6 @@ moveTo state = ("Move To:", widget)
     letter a =
         padRight (Pad 1) . hBox $ [txt "[", withAttr taskCurrentAttr $ txt (singleton a), txt "]"]
     letters = letter <$> ['a' ..]
-    remove i l = take i l ++ drop (i + 1) l
+    remove i l = take i l <> drop (i + 1) l
     output (l, t) = l <+> t
     widget = vBox $ output <$> remove skip (zip letters titles)

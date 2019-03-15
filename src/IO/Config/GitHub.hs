@@ -19,4 +19,4 @@ parser =
     sectionMb
         "github"
         (do tokenCf <- fieldMb "token"
-            return Config {token = tokenCf})
+            pure Config {token = tokenCf})

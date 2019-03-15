@@ -44,7 +44,7 @@ append task = tasks %~ (|> task)
 extract :: Int -> List -> Maybe (List, T.Task)
 extract idx list = do
     (xs, x) <- S.extract idx (list ^. tasks)
-    return (list & tasks .~ xs, x)
+    pure (list & tasks .~ xs, x)
 
 updateFn :: Int -> T.Update -> Update
 updateFn idx fn = tasks %~ adjust' fn idx

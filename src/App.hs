@@ -56,7 +56,7 @@ debounce config initial = do
             }
             Debounce.def
     let send = Debounce.send trigger
-    return (send, trigger)
+    pure (send, trigger)
 
 -- cache clearing
 clearCache :: State -> EventM ResourceName ()
@@ -88,19 +88,19 @@ handleVtyEvent (send, trigger) previousState e = do
         Search _ _               -> invalidateCache
         (Modal MoveTo)           -> clearAllTitles previousState
         (Insert ITask ICreate _) -> clearList previousState
-        _                        -> return ()
+        _                        -> pure ()
     case state ^. mode of
-        Shutdown -> liftIO (Debounce.close trigger) >> Brick.halt state
-        (Modal MoveTo) -> clearAllTitles state >> next send state
-        (Insert ITask ICreate _) -> clearList state >> next send state
-        _ -> clearCache previousState >> clearCache state >> next send state
+        Shutdown -> liftIO (Debounce.close trigger) *> Brick.halt state
+        (Modal MoveTo) -> clearAllTitles state *> next send state
+        (Insert ITask ICreate _) -> clearList state *> next send state
+        _ -> clearCache previousState *> clearCache state *> next send state
 
 handleEvent ::
        (DebouncedWrite, Trigger)
     -> State
     -> BrickEvent ResourceName e
     -> EventM ResourceName (Next State)
-handleEvent _ state (VtyEvent (EvResize _ _)) = invalidateCache >> Brick.continue state
+handleEvent _ state (VtyEvent (EvResize _ _)) = invalidateCache *> Brick.continue state
 handleEvent db state (VtyEvent ev)            = handleVtyEvent db state ev
 handleEvent _ state _                         = Brick.continue state
 
@@ -111,7 +111,7 @@ appStart state = do
     vty <- getVtyHandle
     let output = outputIface vty
     when (supportsMode output BracketedPaste) $ liftIO $ setMode output BracketedPaste True
-    return state
+    pure state
 
 -- | Sets up Brick
 go :: Config -> State -> IO ()

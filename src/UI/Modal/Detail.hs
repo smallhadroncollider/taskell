@@ -81,4 +81,4 @@ detail state today =
             w
                 | null sts = withAttr disabledAttr $ txt "No sub-tasks"
                 | otherwise = vBox . toList $ renderSubtask f i `mapWithIndex` sts
-        return (task ^. name, renderDate today f i task <=> renderSummary f i task <=> w)
+        pure (task ^. name, renderDate today f i task <=> renderSummary f i task <=> w)

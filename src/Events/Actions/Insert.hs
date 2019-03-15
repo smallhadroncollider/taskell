@@ -24,15 +24,15 @@ event (EvKey KEnter _) state =
             (write =<<) . (below =<<) . (removeBlank =<<) . (store =<<) $ finishTask state
         Insert ITask IEdit _ ->
             (write =<<) . (removeBlank =<<) . (normalMode =<<) $ finishTask state
-        _ -> return state
+        _ -> pure state
 event (EvKey KEsc _) state =
     case state ^. mode of
         Insert IList ICreate _ -> (normalMode =<<) . (write =<<) $ createList state
         Insert IList IEdit _ -> (write =<<) . (normalMode =<<) $ finishListTitle state
         Insert ITask _ _ -> (write =<<) . (removeBlank =<<) . (normalMode =<<) $ finishTask state
-        _ -> return state
+        _ -> pure state
 event e state =
-    return $
+    pure $
     case state ^. mode of
         Insert iType iMode field -> state & mode .~ Insert iType iMode (F.event e field)
         _                        -> state

@@ -33,14 +33,14 @@ data Next
     | Exit
 
 parseArgs :: [Text] -> ReaderConfig Next
-parseArgs ["-v"]                   = return $ Output version
-parseArgs ["-h"]                   = return $ Output usage
+parseArgs ["-v"]                   = pure $ Output version
+parseArgs ["-h"]                   = pure $ Output usage
 parseArgs ["-t", boardID, file]    = loadTrello boardID file
 parseArgs ["-g", identifier, file] = loadGitHub identifier file
 parseArgs ["-i", file]             = fileInfo file
 parseArgs [file]                   = loadFile file
 parseArgs []                       = (pack . filename . general <$> ask) >>= loadFile
-parseArgs _                        = return $ Output (unlines ["Invalid options", "", usage])
+parseArgs _                        = pure $ Output (unlines ["Invalid options", "", usage])
 
 load :: ReaderConfig Next
 load = getArgs >>= parseArgs
@@ -49,20 +49,20 @@ loadFile :: Text -> ReaderConfig Next
 loadFile filepath = do
     mPath <- exists filepath
     case mPath of
-        Nothing -> return Exit
+        Nothing -> pure Exit
         Just path -> do
             content <- readData path
-            return $
+            pure $
                 case content of
                     Right lists -> Load path lists
-                    Left err    -> Output $ pack path ++ ": " ++ err
+                    Left err    -> Output $ pack path <> ": " <> err
 
 loadRemote :: (token -> FilePath -> ReaderConfig Next) -> token -> Text -> ReaderConfig Next
 loadRemote createFn identifier filepath = do
     let path = unpack filepath
     exists' <- fileExists path
     if exists'
-        then return $ Output (filepath ++ " already exists")
+        then pure $ Output (filepath <> " already exists")
         else createFn identifier path
 
 loadTrello :: Trello.TrelloBoardID -> Text -> ReaderConfig Next
@@ -78,11 +78,11 @@ fileInfo filepath = do
     if exists'
         then do
             content <- readData path
-            return $
+            pure $
                 case content of
                     Right lists -> Output $ analyse filepath lists
-                    Left err    -> Output $ pack path ++ ": " ++ err
-        else return Exit
+                    Left err    -> Output $ pack path <> ": " <> err
+        else pure Exit
 
 createRemote ::
        (Config -> Maybe token)
@@ -95,18 +95,18 @@ createRemote tokenFn missingToken getFn identifier path = do
     config <- ask
     let maybeToken = tokenFn config
     case maybeToken of
-        Nothing -> return $ Output missingToken
+        Nothing -> pure $ Output missingToken
         Just token -> do
             lists <- lift $ runReaderT (getFn identifier) token
             case lists of
-                Left txt -> return $ Output txt
+                Left txt -> pure $ Output txt
                 Right ls -> do
                     create <- promptCreate path
                     if create
                         then do
                             lift $ writeData config ls path
-                            return $ Load path ls
-                        else return Exit
+                            pure $ Load path ls
+                        else pure Exit
 
 createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
 createTrello =
@@ -127,14 +127,14 @@ exists filepath = do
     let path = unpack filepath
     exists' <- fileExists path
     if exists'
-        then return $ Just path
+        then pure $ Just path
         else do
             create <- promptCreate path
             if create
                 then do
                     createPath path
-                    return $ Just path
-                else return Nothing
+                    pure $ Just path
+                else pure Nothing
 
 fileExists :: FilePath -> ReaderConfig Bool
 fileExists path = lift $ doesFileExist path
@@ -159,4 +159,4 @@ readData :: FilePath -> ReaderConfig (Either Text Lists)
 readData path = do
     config <- ask
     content <- readFile path
-    return $ parse config content
+    pure $ parse config content

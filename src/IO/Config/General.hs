@@ -20,4 +20,4 @@ parser =
         "general"
         (do filenameCf <-
                 maybe (filename defaultConfig) unpack . (noEmpty =<<) <$> fieldMb "filename"
-            return Config {filename = filenameCf})
+            pure Config {filename = filenameCf})

@@ -22,4 +22,4 @@ event e s =
         Modal Help         -> Help.event e s
         Modal (Detail _ _) -> Detail.event e s
         Modal MoveTo       -> MoveTo.event e s
-        _                  -> return s
+        _                  -> pure s

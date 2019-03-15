@@ -27,7 +27,7 @@ event' e state =
         Search {} -> Search.event e state
         Insert {} -> Insert.event e state
         Modal {}  -> Modal.event e state
-        _         -> return state
+        _         -> pure state
 
 -- returns new state if successful
 event :: Event -> State -> State

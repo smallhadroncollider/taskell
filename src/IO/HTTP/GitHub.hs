@@ -51,10 +51,10 @@ root = "https://api.github.com/"
 headers :: ReaderGitHubToken [(HeaderName, ByteString)]
 headers = do
     token <- ask
-    return
+    pure
         [ ("User-Agent", "smallhadroncollider/taskell")
         , ("Accept", "application/vnd.github.inertia-preview+json")
-        , ("Authorization", encodeUtf8 ("token " ++ token))
+        , ("Authorization", encodeUtf8 ("token " <> token))
         ]
 
 getNextLink :: [ByteString] -> Maybe Text
@@ -62,7 +62,7 @@ getNextLink bs = do
     lnks <- splitOn "," . decodeUtf8 <$> headMay bs
     let rel = "rel=\"next\""
     next <- find (isSuffixOf rel) lnks
-    stripPrefix "<" =<< stripSuffix (">; " ++ rel) (strip next)
+    stripPrefix "<" =<< stripSuffix (">; " <> rel) (strip next)
 
 fetch' :: [ByteString] -> Text -> ReaderGitHubToken (Int, [ByteString])
 fetch' bs url = do
@@ -70,9 +70,9 @@ fetch' bs url = do
     rHeaders <- headers
     let request = initialRequest {requestHeaders = rHeaders}
     response <- lift $ httpBS request
-    let responses = bs ++ [getResponseBody response]
+    let responses = bs <> [getResponseBody response]
     case getNextLink (getResponseHeader "Link" response) of
-        Nothing  -> return (getResponseStatusCode response, responses)
+        Nothing  -> pure (getResponseStatusCode response, responses)
         Just lnk -> fetch' responses lnk
 
 fetch :: Text -> ReaderGitHubToken (Int, [ByteString])
@@ -81,24 +81,24 @@ fetch = fetch' []
 getCards :: Text -> ReaderGitHubToken (Either Text [Card])
 getCards url = do
     (status, body) <- fetch url
-    return $
+    pure $
         case status of
             200 ->
                 case concatEithers (eitherDecodeStrict <$> body) of
                     Right cards -> Right cards
                     Left err    -> Left (parseError err)
             429 -> Left "Too many cards"
-            _ -> Left $ tshow status ++ " error while fetching " ++ url
+            _ -> Left $ tshow status <> " error while fetching " <> url
 
 addCard :: Column -> ReaderGitHubToken (Either Text List)
 addCard column = do
     cards <- getCards $ column ^. cardsURL
-    return $ columnToList column <$> cards
+    pure $ columnToList column <$> cards
 
 addCards :: [Column] -> ReaderGitHubToken (Either Text Lists)
 addCards columns = do
     cols <- sequence (addCard <$> columns)
-    return $ fromList <$> sequence cols
+    pure $ fromList <$> sequence cols
 
 getColumns :: Text -> ReaderGitHubToken (Either Text Lists)
 getColumns url = do
@@ -108,10 +108,10 @@ getColumns url = do
         200 ->
             case concatEithers (eitherDecodeStrict <$> body) of
                 Right columns -> addCards columns
-                Left err      -> return $ Left (parseError err)
-        404 -> return . Left $ "Could not find GitHub project ."
-        401 -> return . Left $ "You do not have permission to view GitHub project " ++ url
-        _ -> return . Left $ tshow status ++ " error. Cannot fetch columns from GitHub."
+                Left err      -> pure $ Left (parseError err)
+        404 -> pure . Left $ "Could not find GitHub project ."
+        401 -> pure . Left $ "You do not have permission to view GitHub project " <> url
+        _ -> pure . Left $ tshow status <> " error. Cannot fetch columns from GitHub."
 
 printProjects :: Seq Project -> Text
 printProjects projects = unlines $ toList display
@@ -127,7 +127,7 @@ chooseProject projects = do
     chosen <- lift $ prompt "Import project"
     let project = (projects' !?) =<< (-) 1 <$> readMay chosen
     case project of
-        Nothing   -> return $ Left "Invalid project selected"
+        Nothing   -> pure $ Left "Invalid project selected"
         Just proj -> getColumns (proj ^. columnsURL)
 
 getLists :: GitHubIdentifier -> ReaderGitHubToken (Either Text Lists)
@@ -140,13 +140,13 @@ getLists identifier = do
             case concatEithers (eitherDecodeStrict <$> body) of
                 Right projects ->
                     if null projects
-                        then return . Left $ concat ["\nNo projects found for ", identifier, "\n"]
+                        then pure . Left $ concat ["\nNo projects found for ", identifier, "\n"]
                         else chooseProject projects
-                Left err -> return $ Left (parseError err)
+                Left err -> pure $ Left (parseError err)
         404 ->
-            return . Left $
+            pure . Left $
             "Could not find GitHub org/repo. For organisation make sure you use 'orgs/<org-name>' and for repos use 'repos/<username>/<repo-name>'"
         401 ->
-            return . Left $
-            "You do not have permission to view the GitHub projects for " ++ identifier
-        _ -> return . Left $ tshow status ++ " error. Cannot fetch projects from GitHub."
+            pure . Left $
+            "You do not have permission to view the GitHub projects for " <> identifier
+        _ -> pure . Left $ tshow status <> " error. Cannot fetch projects from GitHub."

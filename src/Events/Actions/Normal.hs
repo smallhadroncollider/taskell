@@ -58,6 +58,6 @@ event (EvKey (KChar '@') _) = (editDue =<<) . (store =<<) . showDetail
 -- selecting lists
 event (EvKey (KChar n) _)
     | isDigit n = selectList n
-    | otherwise = return
+    | otherwise = pure
 -- fallback
-event _ = return
+event _ = pure

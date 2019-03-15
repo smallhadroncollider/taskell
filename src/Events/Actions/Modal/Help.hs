@@ -12,4 +12,4 @@ import Graphics.Vty.Input.Events
 event :: Event -> Stateful
 event (EvKey (KChar 'q') _) = quit
 event (EvKey _ _)           = normalMode
-event _                     = return
+event _                     = pure

@@ -51,7 +51,7 @@ renderDate dueDay = do
     today <- dsToday <$> ask -- get the value of `today` from DrawState
     let attr = withAttr . dlToAttr . deadline today <$> dueDay -- create a `Maybe (Widget -> Widget)` attribute function
         widget = txt . dayToText today <$> dueDay -- get the formatted due date `Maybe Text`
-    return $ attr <*> widget
+    pure $ attr <*> widget
 
 -- | Renders the appropriate completed sub task count e.g. "[2/3]"
 renderSubtaskCount :: T.Task -> Widget ResourceName
@@ -63,7 +63,7 @@ indicators :: T.Task -> ReaderDrawState (Widget ResourceName)
 indicators task = do
     dateWidget <- renderDate (task ^. T.due) -- get the due date widget
     descIndicator <- descriptionIndicator . dsLayout <$> ask
-    return . hBox $
+    pure . hBox $
         padRight (Pad 1) <$>
         catMaybes
             [ const (txt descIndicator) <$> task ^. T.description -- show the description indicator if one is set
@@ -82,7 +82,7 @@ renderTask listIndex taskIndex task = do
         name = RNTask (listIndex, taskIndex)
         widget = textField text
         widget' = widgetFromMaybe widget taskField
-    return $
+    pure $
         cached name .
         (if selected && not eTitle
              then visible
@@ -104,15 +104,15 @@ columnPrefix selectedList i = do
     if moveTo m
         then do
             let col = chr (i + ord 'a')
-            return $
+            pure $
                 if i /= selectedList && i >= 0 && i <= 26
-                    then singleton col ++ ". "
+                    then singleton col <> ". "
                     else ""
         else do
             let col = i + 1
-            return $
+            pure $
                 if col >= 1 && col <= 9
-                    then tshow col ++ ". "
+                    then tshow col <> ". "
                     else ""
 
 -- | Renders the title for a list
@@ -134,7 +134,7 @@ renderTitle listIndex list = do
             if editing
                 then widget'
                 else widget
-    return $
+    pure $
         if editing || selectedList /= listIndex || selectedTask == 0
             then visible title'
             else title'
@@ -155,7 +155,7 @@ renderList listIndex list = do
             hLimit (columnWidth layout) .
             viewport (RNList listIndex) Vertical . vBox . (titleWidget :) $
             toList taskWidgets
-    return $
+    pure $
         if currentList == listIndex
             then visible widget
             else widget
@@ -173,8 +173,8 @@ renderSearch mainWidget = do
                         then taskCurrentAttr
                         else taskAttr
             let widget = attr . padTopBottom 1 . padLeftRight colPad $ txt "/" <+> field searchField
-            return $ mainWidget <=> widget
-        _ -> return mainWidget
+            pure $ mainWidget <=> widget
+        _ -> pure mainWidget
 
 -- | Renders the main widget
 main :: ReaderDrawState (Widget ResourceName)

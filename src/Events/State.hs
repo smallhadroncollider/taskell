@@ -113,7 +113,7 @@ createListStart = Just . (mode .~ Insert IList ICreate blankField)
 editListStart :: Stateful
 editListStart state = do
     f <- textToField . (^. title) <$> getList state
-    return $ state & mode .~ Insert IList IEdit f
+    pure $ state & mode .~ Insert IList IEdit f
 
 deleteCurrentList :: Stateful
 deleteCurrentList state =
@@ -136,7 +136,7 @@ startCreate = Just . (mode .~ Insert ITask ICreate blankField)
 startEdit :: Stateful
 startEdit state = do
     field <- textToField . (^. name) <$> getCurrentTask state
-    return $ state & mode .~ Insert ITask IEdit field
+    pure $ state & mode .~ Insert ITask IEdit field
 
 finishTask :: Stateful
 finishTask state =
@@ -173,7 +173,7 @@ clearItem :: Stateful
 clearItem = setCurrentTaskText ""
 
 bottom :: Stateful
-bottom = return . selectLast
+bottom = pure . selectLast
 
 selectLast :: InternalStateful
 selectLast state = setIndex state (countCurrent state - 1)
@@ -183,7 +183,7 @@ removeBlank state = do
     currentTask <- getCurrentTask state
     (if isBlank currentTask
          then delete
-         else return)
+         else pure)
         state
 
 -- moving
@@ -311,7 +311,7 @@ moveTo char state = do
         then Nothing
         else do
             s <- move' (li - cur) state
-            return . selectLast $ setCurrentList s li
+            pure . selectLast $ setCurrentList s li
 
 -- move lists
 listMove :: Int -> Stateful

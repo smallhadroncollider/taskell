@@ -77,7 +77,7 @@ start config (current, errs) (text, line) =
         Just (Just set) -> (set current, errs)
         _ ->
             if not (null (strip text))
-                then (current, errs ++ [line])
+                then (current, errs <> [line])
                 else (current, errs)
 
 decodeError :: String -> Maybe Word8 -> Maybe Char
@@ -91,12 +91,12 @@ parse config s = do
     let (lists, errs) = foldl' fn acc $ zip lns [1 ..]
     if null errs
         then Right lists
-        else Left $ "could not parse line(s) " ++ intercalate ", " (tshow <$> errs)
+        else Left $ "could not parse line(s) " <> intercalate ", " (tshow <$> errs)
 
 -- stringify code
 subtaskStringify :: Config -> Text -> ST.Subtask -> Text
 subtaskStringify config t st =
-    foldl' (++) t [subtaskOutput config, " ", pre, " ", st ^. ST.name, "\n"]
+    foldl' (<>) t [subtaskOutput config, " ", pre, " ", st ^. ST.name, "\n"]
   where
     pre =
         if st ^. ST.complete
@@ -117,7 +117,7 @@ nameStringify config desc = concat [taskOutput config, " ", desc, "\n"]
 taskStringify :: Config -> Text -> T.Task -> Text
 taskStringify config s t =
     foldl'
-        (++)
+        (<>)
         s
         [ nameStringify config (t ^. T.name)
         , maybe "" (dueStringify config) (t ^. T.due)
@@ -128,7 +128,7 @@ taskStringify config s t =
 listStringify :: Config -> Text -> List -> Text
 listStringify config text list =
     foldl'
-        (++)
+        (<>)
         text
         [ if null text
               then ""
