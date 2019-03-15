@@ -1,33 +1,45 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Data.Taskell.Date (
-    Day,
-    Deadline(..),
-    DeadlineFn,
-    dayToText,
-    dayToOutput,
-    textToDay,
-    utcToLocalDay,
-    currentDay,
-    deadline
-) where
+
+module Data.Taskell.Date
+    ( Day
+    , Deadline(..)
+    , DeadlineFn
+    , dayToText
+    , dayToOutput
+    , textToDay
+    , utcToLocalDay
+    , currentDay
+    , deadline
+    ) where
 
 import ClassyPrelude
 
-import Data.Time (Day)
-import Data.Time.Clock (secondsToDiffTime)
-import Data.Time.Format (parseTimeM, formatTime)
-import Data.Time.Calendar (toGregorian, diffDays)
-import Data.Time.LocalTime (TimeZone, utcToZonedTime, zonedTimeToLocalTime, localDay)
+import Data.Time           (Day)
+import Data.Time.Calendar  (diffDays, toGregorian)
+import Data.Time.Clock     (secondsToDiffTime)
+import Data.Time.Format    (formatTime, parseTimeM)
+import Data.Time.LocalTime (TimeZone, localDay, utcToZonedTime, zonedTimeToLocalTime)
 
-data Deadline = Passed | Today | Tomorrow | ThisWeek | Plenty deriving (Show, Eq)
+data Deadline
+    = Passed
+    | Today
+    | Tomorrow
+    | ThisWeek
+    | Plenty
+    deriving (Show, Eq)
+
 type DeadlineFn = Day -> Deadline
 
 dayToText :: Day -> Day -> Text
 dayToText today day = pack $ formatTime defaultTimeLocale format (UTCTime day (secondsToDiffTime 0))
-    where (currentYear, _, _) = toGregorian today
-          (dateYear, _, _) = toGregorian day
-          format = if currentYear == dateYear then "%d-%b" else "%d-%b %Y"
+  where
+    (currentYear, _, _) = toGregorian today
+    (dateYear, _, _) = toGregorian day
+    format =
+        if currentYear == dateYear
+            then "%d-%b"
+            else "%d-%b %Y"
 
 dayToOutput :: Day -> Text
 dayToOutput day = pack $ formatTime defaultTimeLocale "%Y-%m-%d" (UTCTime day (secondsToDiffTime 0))
@@ -52,4 +64,5 @@ deadline today date
     | days == 1 = Tomorrow
     | days < 7 = ThisWeek
     | otherwise = Plenty
-    where days = diffDays date today
+  where
+    days = diffDays date today

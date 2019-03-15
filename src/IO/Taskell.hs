@@ -1,41 +1,46 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+
 module IO.Taskell where
 
 import ClassyPrelude
 
-import System.Directory (getCurrentDirectory, doesFileExist)
-import Data.FileEmbed (embedFile)
+import Data.FileEmbed   (embedFile)
+import System.Directory (doesFileExist, getCurrentDirectory)
 
-import Config (version, usage)
-import Data.Taskell.Lists (Lists, initial, analyse)
+import Config             (usage, version)
+import Data.Taskell.Lists (Lists, analyse, initial)
 
-import IO.Config (Config, general, trello, github)
-import IO.Config.General (filename)
-import qualified IO.Config.Trello as Trello (token)
-import qualified IO.Config.GitHub as GitHub (token)
+import           IO.Config         (Config, general, github, trello)
+import           IO.Config.General (filename)
+import qualified IO.Config.GitHub  as GitHub (token)
+import qualified IO.Config.Trello  as Trello (token)
 
-import IO.Markdown (stringify, parse)
+import IO.Markdown (parse, stringify)
 
-import qualified IO.HTTP.Trello as Trello (TrelloBoardID, getLists)
 import qualified IO.HTTP.GitHub as GitHub (GitHubIdentifier, getLists)
+import qualified IO.HTTP.Trello as Trello (TrelloBoardID, getLists)
 
 import UI.CLI (promptYN)
 
 type ReaderConfig a = ReaderT Config IO a
 
-data Next = Output Text | Load FilePath Lists | Exit
+data Next
+    = Output Text
+    | Load FilePath
+           Lists
+    | Exit
 
 parseArgs :: [Text] -> ReaderConfig Next
-parseArgs ["-v"] = return $ Output version
-parseArgs ["-h"] = return $ Output usage
-parseArgs ["-t", boardID, file] = loadTrello boardID file
+parseArgs ["-v"]                   = return $ Output version
+parseArgs ["-h"]                   = return $ Output usage
+parseArgs ["-t", boardID, file]    = loadTrello boardID file
 parseArgs ["-g", identifier, file] = loadGitHub identifier file
-parseArgs ["-i", file] = fileInfo file
-parseArgs [file] = loadFile file
-parseArgs [] = (pack . filename . general <$> ask) >>= loadFile
-parseArgs  _ = return $ Output (unlines ["Invalid options", "", usage])
+parseArgs ["-i", file]             = fileInfo file
+parseArgs [file]                   = loadFile file
+parseArgs []                       = (pack . filename . general <$> ask) >>= loadFile
+parseArgs _                        = return $ Output (unlines ["Invalid options", "", usage])
 
 load :: ReaderConfig Next
 load = getArgs >>= parseArgs
@@ -47,15 +52,15 @@ loadFile filepath = do
         Nothing -> return Exit
         Just path -> do
             content <- readData path
-            return $ case content of
-                Right lists -> Load path lists
-                Left err -> Output $ pack path ++ ": " ++ err
+            return $
+                case content of
+                    Right lists -> Load path lists
+                    Left err    -> Output $ pack path ++ ": " ++ err
 
 loadRemote :: (token -> FilePath -> ReaderConfig Next) -> token -> Text -> ReaderConfig Next
 loadRemote createFn identifier filepath = do
     let path = unpack filepath
     exists' <- fileExists path
-
     if exists'
         then return $ Output (filepath ++ " already exists")
         else createFn identifier path
@@ -73,12 +78,19 @@ fileInfo filepath = do
     if exists'
         then do
             content <- readData path
-            return $ case content of
-                Right lists -> Output $ analyse filepath lists
-                Left err -> Output $ pack path ++ ": " ++ err
+            return $
+                case content of
+                    Right lists -> Output $ analyse filepath lists
+                    Left err    -> Output $ pack path ++ ": " ++ err
         else return Exit
 
-createRemote :: (Config -> Maybe token) -> Text -> (token -> ReaderT token IO (Either Text Lists)) -> token -> FilePath -> ReaderConfig Next
+createRemote ::
+       (Config -> Maybe token)
+    -> Text
+    -> (token -> ReaderT token IO (Either Text Lists))
+    -> token
+    -> FilePath
+    -> ReaderConfig Next
 createRemote tokenFn missingToken getFn identifier path = do
     config <- ask
     let maybeToken = tokenFn config
@@ -96,19 +108,24 @@ createRemote tokenFn missingToken getFn identifier path = do
                             return $ Load path ls
                         else return Exit
 
-
 createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
-createTrello = createRemote (Trello.token . trello) (decodeUtf8 $(embedFile "templates/trello-token.txt")) Trello.getLists
+createTrello =
+    createRemote
+        (Trello.token . trello)
+        (decodeUtf8 $(embedFile "templates/trello-token.txt"))
+        Trello.getLists
 
 createGitHub :: GitHub.GitHubIdentifier -> FilePath -> ReaderConfig Next
-createGitHub = createRemote (GitHub.token . github) (decodeUtf8 $(embedFile "templates/github-token.txt")) GitHub.getLists
-
+createGitHub =
+    createRemote
+        (GitHub.token . github)
+        (decodeUtf8 $(embedFile "templates/github-token.txt"))
+        GitHub.getLists
 
 exists :: Text -> ReaderConfig (Maybe FilePath)
 exists filepath = do
     let path = unpack filepath
     exists' <- fileExists path
-
     if exists'
         then return $ Just path
         else do

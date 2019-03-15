@@ -1,10 +1,11 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+
 module UI.Types where
 
-import ClassyPrelude (Int, Show, Eq, Ord)
+import ClassyPrelude (Eq, Int, Ord, Show)
 
-data ResourceName =
-      RNCursor
+data ResourceName
+    = RNCursor
     | RNTask (Int, Int)
     | RNList Int
     | RNLists

@@ -1,26 +1,26 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
+
 module Data.Taskell.List.Internal where
 
 import ClassyPrelude
 
-import Control.Lens (makeLenses, (&), (^.), (^?), (.~), (%~), (%%~), ix)
+import Control.Lens (ix, makeLenses, (%%~), (%~), (&), (.~), (^.), (^?))
 
-import Data.Sequence as S ((|>), adjust', deleteAt, update, insertAt)
+import Data.Sequence as S (adjust', deleteAt, insertAt, update, (|>))
 
-import qualified Data.Taskell.Seq as S
+import qualified Data.Taskell.Seq  as S
 import qualified Data.Taskell.Task as T (Task, Update, blank, contains)
 
-data List = List {
-    _title :: Text,
-    _tasks :: Seq T.Task
-} deriving (Show, Eq)
+data List = List
+    { _title :: Text
+    , _tasks :: Seq T.Task
+    } deriving (Show, Eq)
 
 type Update = List -> List
 
 -- create lenses
 $(makeLenses ''List)
-
 
 -- operations
 create :: Text -> Seq T.Task -> List
