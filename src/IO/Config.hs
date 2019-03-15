@@ -40,19 +40,19 @@ defaultConfig = Config {
 }
 
 getDir :: IO FilePath
-getDir =
-    let
-        directoryName = "taskell"
-        oldConfigDir = (++ "/." ++ directoryName) <$> getHomeDirectory
-        xdgDefaultConfigDirectory = (++ "/.config/" ++ directoryName) <$> getHomeDirectory
-        iOMaybeXdgEnvironmentConfigDirectory = lookupEnv "XDG_CONFIG_HOME"
-        xdgDirectory = do
-            maybeXdgEnvironmentConfigDirectory <- iOMaybeXdgEnvironmentConfigDirectory
-            case maybeXdgEnvironmentConfigDirectory  of
-                 Just xdgEnvironmentConfigDirectory -> pure $ xdgEnvironmentConfigDirectory ++ "/" ++ directoryName
-                 Nothing -> xdgDefaultConfigDirectory
-    in
-    oldConfigDir >>= doesDirectoryExist >>= (\oldconfigAvailable -> if oldconfigAvailable then oldConfigDir else xdgDirectory)
+getDir = do
+    let directoryName = "taskell"
+    home <- getHomeDirectory
+    let oldConfigPath = home ++ "/." ++ directoryName
+    oldconfigAvailable <- doesDirectoryExist oldConfigPath
+    if oldconfigAvailable
+       then pure oldConfigPath
+       else do
+           xdgEnv <- lookupEnv "XDG_CONFIG_HOME"
+           pure $ case xdgEnv of
+               Just xdgConfigHome -> xdgConfigHome ++ "/" ++ directoryName
+               Nothing -> home ++ "/.config/" ++ directoryName
+
 
 getThemePath :: IO FilePath
 getThemePath = (++ "/theme.ini") <$> getDir
