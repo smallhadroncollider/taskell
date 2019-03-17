@@ -69,8 +69,8 @@ clearAllTitles :: State -> EventM ResourceName ()
 clearAllTitles state = do
     let count = length (state ^. lists)
     let range = [0 .. (count - 1)]
-    void . sequence $ invalidateCacheEntry . RNList <$> range
-    void . sequence $ invalidateCacheEntry . (\x -> RNTask (x, -1)) <$> range
+    traverse_ (invalidateCacheEntry . RNList) range
+    traverse_ (invalidateCacheEntry . RNTask . flip (,) (-1)) range
 
 clearList :: State -> EventM ResourceName ()
 clearList state = do
@@ -78,7 +78,7 @@ clearList state = do
     let count = countCurrent state
     let range = [0 .. (count - 1)]
     invalidateCacheEntry $ RNList list
-    void . sequence $ invalidateCacheEntry . (\x -> RNTask (list, x)) <$> range
+    traverse_ (invalidateCacheEntry . RNTask . (,) list) range
 
 -- event handling
 handleVtyEvent :: (DebouncedWrite, Trigger) -> State -> Event -> EventM ResourceName (Next State)

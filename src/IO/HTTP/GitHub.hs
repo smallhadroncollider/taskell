@@ -96,9 +96,7 @@ addCard column = do
     pure $ columnToList column <$> cards
 
 addCards :: [Column] -> ReaderGitHubToken (Either Text Lists)
-addCards columns = do
-    cols <- sequence (addCard <$> columns)
-    pure $ fromList <$> sequence cols
+addCards columns = (fromList <$>) . sequence <$> traverse addCard columns
 
 getColumns :: Text -> ReaderGitHubToken (Either Text Lists)
 getColumns url = do
