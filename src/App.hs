@@ -51,7 +51,7 @@ debounce config initial = do
         Debounce.new
             Debounce.Args
             { Debounce.cb = store config
-            , Debounce.fold = \_ b -> b
+            , Debounce.fold = flip const
             , Debounce.init = (initial ^. lists, initial ^. path)
             }
             Debounce.def
