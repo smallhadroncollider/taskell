@@ -23,7 +23,7 @@ import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..)
 import IO.Config               (Config, generateAttrMap, layout)
 import IO.Taskell              (writeData)
 import UI.Draw                 (chooseCursor, draw)
-import UI.Types                (ResourceName (..))
+import UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
 
 type DebouncedMessage = (Lists, FilePath)
 
@@ -63,14 +63,14 @@ clearCache :: State -> EventM ResourceName ()
 clearCache state = do
     let (li, ti) = state ^. current
     invalidateCacheEntry (RNList li)
-    invalidateCacheEntry (RNTask (li, ti))
+    invalidateCacheEntry (RNTask (ListIndex li, TaskIndex ti))
 
 clearAllTitles :: State -> EventM ResourceName ()
 clearAllTitles state = do
     let count = length (state ^. lists)
     let range = [0 .. (count - 1)]
     traverse_ (invalidateCacheEntry . RNList) range
-    traverse_ (invalidateCacheEntry . RNTask . flip (,) (-1)) range
+    traverse_ (invalidateCacheEntry . RNTask . flip (,) (TaskIndex (-1)) . ListIndex) range
 
 clearList :: State -> EventM ResourceName ()
 clearList state = do
@@ -78,7 +78,7 @@ clearList state = do
     let count = countCurrent state
     let range = [0 .. (count - 1)]
     invalidateCacheEntry $ RNList list
-    traverse_ (invalidateCacheEntry . RNTask . (,) list) range
+    traverse_ (invalidateCacheEntry . RNTask . (,) (ListIndex list) . TaskIndex) range
 
 -- event handling
 handleVtyEvent :: (DebouncedWrite, Trigger) -> State -> Event -> EventM ResourceName (Next State)
