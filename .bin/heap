@@ -1,0 +1,5 @@
+stack build taskell --work-dir .stack-work-profile --profile
+stack exec taskell --work-dir .stack-work-profile --rts-options -hm
+hp2ps -s -m0 -c -M taskell.hp
+open taskell.ps
+rm taskell.hp
