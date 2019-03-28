@@ -64,7 +64,7 @@ iniResult =
     , (BChar 'H', "moveLeft")
     , (BChar 'L', "moveRight")
     , (BKey "Space", "moveRight")
-    , (BChar 'm', "moveToMenu")
+    , (BChar 'm', "moveMenu")
     , (BChar 'N', "listNew")
     , (BChar 'E', "listEdit")
     , (BChar 'X', "listDelete")

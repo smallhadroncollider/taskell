@@ -42,6 +42,16 @@
 
 ## Features
 
+- Use proper error codes
+- Performance with large files
+    > Becomes unusable with large files
+    * [x] Initially use debouncing to avoid writing too often
+    * [ ] Cache formatting results
+    * [ ] Invalidate layout cache less frequently
+    * [ ] Benchmarking tests
+    * [ ] Allow cancelling write to avoid trying to write the same file at the same time
+- Inifinite task depth?
+    > No reason, other than UX, that sub-tasks can't have sub-tasks.
 - Should be able to have new-lines in task descriptions
     * [x] Trello import
     * [ ] Regular input (Shift + Enter for new line?)
@@ -50,8 +60,6 @@
 - Check times work no matter what timezone
 - Import Issues from GitHub using  labels
 - Show filename somewhere
-- Editable title?
-    > Use a `# Title` at top of file and display title somewhere in taskell
 - Add tags/labels with `t`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Redo functionality
@@ -71,18 +79,19 @@
     > Either command line arguments for settings or just a `-c other.ini` command
 - Readline support?
     > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
+- Editable title?
+    > Use a `# Title` at top of file and display title somewhere in taskell
 
 ## In Progress
 
 - Add custom key support
-- Use proper error codes
-- Performance with large files
-    > Becomes unusable with large files
-    * [x] Initially use debouncing to avoid writing too often
-    * [ ] Cache formatting results
-    * [ ] Invalidate layout cache less frequently
-    * [ ] Benchmarking tests
-    * [ ] Allow cancelling write to avoid trying to write the same file at the same time
+    * [ ] Create controls.ini
+    * [ ] Update events to use Map from controls.ini
+    * [ ] Check for key conflicts: include keys not explicitly mapped (e.g. 1-9, Esc, Enter)
+    * [ ] Check for bits of functionality missing a mapping
+    * [ ] Update Help dialogue with key mappings
+- Add a List widget for common actions between tasks and sub-tasks
+- Can't remove a description
 
 ## Done
 
