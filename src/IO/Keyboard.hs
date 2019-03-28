@@ -13,7 +13,6 @@ noMaybes (Just a, Just b) = Just (a, b)
 noMaybes _                = Nothing
 
 generate :: Bindings -> Actions -> BoundActions
-generate bindings actions = mapFromList cleaned
+generate bindings actions = mapFromList . catMaybes $ noMaybes <$> swp
   where
     swp = bimap bindingToEvent (`lookup` actions) <$> mapToList bindings
-    cleaned = catMaybes $ noMaybes <$> swp
