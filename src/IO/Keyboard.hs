@@ -6,13 +6,10 @@ module IO.Keyboard
 
 import ClassyPrelude
 
+import Data.Bitraversable (bisequence)
+
 import IO.Keyboard.Types
 
-noMaybes :: (Maybe a, Maybe b) -> Maybe (a, b)
-noMaybes (Just a, Just b) = Just (a, b)
-noMaybes _                = Nothing
-
 generate :: Bindings -> Actions -> BoundActions
-generate bindings actions = mapFromList . catMaybes $ noMaybes <$> swp
-  where
-    swp = bimap bindingToEvent (`lookup` actions) <$> bindings
+generate bindings actions =
+    mapFromList . catMaybes $ bisequence <$> (bimap bindingToEvent (`lookup` actions) <$> bindings)
