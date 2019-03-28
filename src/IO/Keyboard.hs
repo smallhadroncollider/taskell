@@ -15,6 +15,5 @@ noMaybes _                = Nothing
 generate :: Bindings -> Actions -> BoundActions
 generate bindings actions = mapFromList cleaned
   where
-    bindEv = first bindingToEvent <$> mapToList bindings
-    swp = second (`lookup` actions) <$> bindEv
+    swp = bimap bindingToEvent (`lookup` actions) <$> mapToList bindings
     cleaned = catMaybes $ noMaybes <$> swp
