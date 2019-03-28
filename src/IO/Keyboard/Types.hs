@@ -15,7 +15,7 @@ data Binding
     | BKey Text
     deriving (Eq, Ord, Show)
 
-type Bindings = Map Binding Text
+type Bindings = [(Binding, Text)]
 
 type Actions = Map Text Stateful
 

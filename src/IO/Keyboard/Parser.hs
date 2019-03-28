@@ -42,7 +42,7 @@ line =
         pure $ (, name) <$> binds
 
 bindingsP :: Parser Bindings
-bindingsP = stripComments $ mapFromList . concat <$> many' line
+bindingsP = stripComments $ concat <$> many' line
 
 -- run parser
 bindings :: Text -> Either Text Bindings

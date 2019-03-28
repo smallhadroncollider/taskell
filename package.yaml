@@ -46,6 +46,7 @@ library:
   - IO.HTTP.GitHub
   - IO.HTTP.Trello.List
   - IO.HTTP.Trello.ChecklistItem
+  - IO.Keyboard
   - IO.Keyboard.Parser
   - IO.Keyboard.Types
   - UI.Field
@@ -105,3 +106,4 @@ tests:
     - tasty-hunit
     - text
     - time
+    - vty

@@ -1,8 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OverloadedLists #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE QuasiQuotes #-}
 
 module IO.KeyboardTest
     ( test_keyboard
@@ -22,6 +20,9 @@ import Graphics.Vty.Input.Events (Event (..), Key (..))
 import IO.Keyboard               (generate)
 import IO.Keyboard.Types
 
+tester :: BoundActions -> Event -> Stateful
+tester actions ev state = lookup ev actions >>= ($ state)
+
 cleanState :: State
 cleanState = create "taskell.md" []
 
@@ -33,11 +34,6 @@ basicActions = [("quit", quit)]
 
 basicResult :: Maybe State
 basicResult = Just $ (mode .~ Shutdown) cleanState
-
-tester :: BoundActions -> Event -> Stateful
-tester bactions ev state = do
-    fn <- lookup ev bactions
-    fn state
 
 test_keyboard :: TestTree
 test_keyboard =

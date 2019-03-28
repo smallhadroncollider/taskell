@@ -10,21 +10,19 @@
 ## Refactoring
 
 - Add tests for IO.GitHub
-- Use Shake instead of bash script
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
 - Remove duplication of config - currently using ini and hard-coded defaults
 - Move Help modal creation into Template Haskell
-- Add a List widget for common actions between tasks and sub-tasks
 - Tidy up load functions in IO.Taskell
 - Remove `~` style sub-task complete parsing
     @ 2018-12-10
+- Use Shake instead of bash script
 
 ## Bugs
 
-- Can't remove a description
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
 - Help modal needs to wrap and scroll

@@ -1,6 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE QuasiQuotes #-}
 
@@ -72,6 +71,12 @@ iniResult =
     , (BChar '<', "listLeft")
     ]
 
+comma :: Text
+comma = "quit = ,"
+
+commaResult :: Bindings
+commaResult = [(BChar ',', "quit")]
+
 test_parser :: TestTree
 test_parser =
     testGroup
@@ -81,4 +86,5 @@ test_parser =
               "basic multiline"
               (assertEqual "Parses both" (Right basicMultiResult) (bindings basicMulti))
         , testCase "full ini file" (assertEqual "Parses all" (Right iniResult) (bindings ini))
+        , testCase "comma" (assertEqual "Parses comma" (Right commaResult) (bindings comma))
         ]
