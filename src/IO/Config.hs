@@ -63,11 +63,15 @@ getThemePath = (<> "/theme.ini") <$> getDir
 getConfigPath :: IO FilePath
 getConfigPath = (<> "/config.ini") <$> getDir
 
+getBindingsPath :: IO FilePath
+getBindingsPath = (<> "/bindings.ini") <$> getDir
+
 setup :: IO Config
 setup = do
     getDir >>= createDirectoryIfMissing True
     createConfig
     createTheme
+    createBindings
     getConfig
 
 create :: IO FilePath -> (FilePath -> IO ()) -> IO ()
@@ -87,6 +91,12 @@ writeConfig path = writeFile path $(embedFile "templates/config.ini")
 
 createConfig :: IO ()
 createConfig = create getConfigPath writeConfig
+
+writeBindings :: FilePath -> IO ()
+writeBindings path = writeFile path $(embedFile "templates/bindings.ini")
+
+createBindings :: IO ()
+createBindings = create getBindingsPath writeBindings
 
 configParser :: IniParser Config
 configParser =
