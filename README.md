@@ -251,6 +251,58 @@ subtask = "-"
 
 **Warning**: currently if you change your `[markdown]` settings any older files stored with different settings will not be readable.
 
+### Controls
+
+You can edit keyboard bindings in the `bindings.ini` config file.
+
+The default bindings are as follows:
+
+```ini
+# general
+quit = q
+undo = u
+search = /
+help = ?
+
+# navigation
+previous = k
+next = j
+left = h
+right = l
+bottom = G
+
+# new tasks
+new = a
+newAbove = O
+newBelow = o
+
+# editing tasks
+edit = e, A, i
+clear = C
+delete = D
+detail = <Enter>
+dueDate = @
+
+# moving tasks
+moveUp = K
+moveDown = J
+moveLeft = H
+moveRight = L, <Space>
+moveMenu = m
+
+# lists
+listNew = N
+listEdit = E
+listDelete = X
+listRight = >
+listLeft = <
+```
+
+Available special keys: `<Space>`, `<Enter>`, `<Backspace>`, `<Left>`, `<Right>`, `<Up>`, `<Down>`
+
+You shouldn't try to assign the `1`-`9` keys, as it will not overwrite the default behaviour.
+
+
 ### Theming
 
 You can edit Taskell's colour-scheme by editing `theme.ini`:
