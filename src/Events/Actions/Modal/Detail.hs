@@ -1,7 +1,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedLists #-}
 
 module Events.Actions.Modal.Detail
     ( event
+    , events
     ) where
 
 import ClassyPrelude
@@ -13,20 +16,25 @@ import           Events.State.Types.Mode   (DetailItem (..), DetailMode (..))
 import           Graphics.Vty.Input.Events
 import qualified UI.Field                  as F (event)
 
+events :: Map Text Stateful
+events
+    -- general
+ =
+    [ ("quit", quit)
+    , ("undo", (write =<<) . undo)
+    , ("previous", previousSubtask)
+    , ("next", nextSubtask)
+    , ("new", (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store)
+    , ("edit", (Detail.insertMode =<<) . store)
+    , ("moveRight", (write =<<) . (setComplete =<<) . store)
+    , ("delete", (write =<<) . (Detail.remove =<<) . store)
+    , ("dueDate", (editDue =<<) . store)
+    ]
+
 normal :: Event -> Stateful
-normal (EvKey (KChar 'q') _) = quit
-normal (EvKey KEsc _) = normalMode
+normal (EvKey KEsc _)   = normalMode
 normal (EvKey KEnter _) = (editDescription =<<) . store
-normal (EvKey (KChar ' ') _) = (write =<<) . (setComplete =<<) . store
-normal (EvKey (KChar 'k') _) = previousSubtask
-normal (EvKey (KChar 'j') _) = nextSubtask
-normal (EvKey (KChar 'a') _) =
-    (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store
-normal (EvKey (KChar 'e') _) = (Detail.insertMode =<<) . store
-normal (EvKey (KChar 'D') _) = (write =<<) . (Detail.remove =<<) . store
-normal (EvKey (KChar 'u') _) = (write =<<) . undo
-normal (EvKey (KChar '@') _) = (editDue =<<) . store
-normal _ = pure
+normal _                = pure
 
 insert :: Event -> Stateful
 insert (EvKey KEsc _) s = do

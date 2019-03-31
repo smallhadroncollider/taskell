@@ -16,14 +16,11 @@ import qualified Control.FoldDebounce as Debounce
 
 import Data.Taskell.Date       (currentDay)
 import Data.Taskell.Lists      (Lists)
-import Events.Actions          (event)
-import Events.Actions.Normal   (events)
+import Events.Actions          (ActionSets, event, generateActions)
 import Events.State            (continue, countCurrent)
 import Events.State.Types      (State, current, io, lists, mode, path)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
 import IO.Config               (Config, generateAttrMap, getBindings, layout)
-import IO.Keyboard             (generate)
-import IO.Keyboard.Types       (BoundActions)
 import IO.Taskell              (writeData)
 import UI.Draw                 (chooseCursor, draw)
 import UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
@@ -85,11 +82,7 @@ clearList state = do
 
 -- event handling
 handleVtyEvent ::
-       (DebouncedWrite, Trigger)
-    -> BoundActions
-    -> State
-    -> Event
-    -> EventM ResourceName (Next State)
+       (DebouncedWrite, Trigger) -> ActionSets -> State -> Event -> EventM ResourceName (Next State)
 handleVtyEvent (send, trigger) actions previousState e = do
     let state = event actions e previousState
     case previousState ^. mode of
@@ -105,7 +98,7 @@ handleVtyEvent (send, trigger) actions previousState e = do
 
 handleEvent ::
        (DebouncedWrite, Trigger)
-    -> BoundActions
+    -> ActionSets
     -> State
     -> BrickEvent ResourceName e
     -> EventM ResourceName (Next State)
@@ -127,8 +120,7 @@ go config initial = do
     attrMap' <- const <$> generateAttrMap
     today <- currentDay
     db <- debounce config initial
-    bindings <- getBindings
-    let actions = generate bindings events
+    actions <- generateActions <$> getBindings
     let app =
             App
             { appDraw = draw (layout config) today
