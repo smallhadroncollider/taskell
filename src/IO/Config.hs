@@ -80,9 +80,7 @@ setup
     getConfig
 
 create :: FilePath -> ByteString -> IO ()
-create path contents = do
-    exists <- doesFileExist path
-    unless exists $ writeFile path contents
+create path contents = doesFileExist path >>= flip unless (writeFile path contents)
 
 configParser :: IniParser Config
 configParser =
