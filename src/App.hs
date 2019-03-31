@@ -17,10 +17,13 @@ import qualified Control.FoldDebounce as Debounce
 import Data.Taskell.Date       (currentDay)
 import Data.Taskell.Lists      (Lists)
 import Events.Actions          (event)
+import Events.Actions.Normal   (events)
 import Events.State            (continue, countCurrent)
 import Events.State.Types      (State, current, io, lists, mode, path)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
-import IO.Config               (Config, generateAttrMap, layout)
+import IO.Config               (Config, generateAttrMap, getBindings, layout)
+import IO.Keyboard             (generate)
+import IO.Keyboard.Types       (BoundActions)
 import IO.Taskell              (writeData)
 import UI.Draw                 (chooseCursor, draw)
 import UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
@@ -81,9 +84,14 @@ clearList state = do
     traverse_ (invalidateCacheEntry . RNTask . (,) (ListIndex list) . TaskIndex) range
 
 -- event handling
-handleVtyEvent :: (DebouncedWrite, Trigger) -> State -> Event -> EventM ResourceName (Next State)
-handleVtyEvent (send, trigger) previousState e = do
-    let state = event e previousState
+handleVtyEvent ::
+       (DebouncedWrite, Trigger)
+    -> BoundActions
+    -> State
+    -> Event
+    -> EventM ResourceName (Next State)
+handleVtyEvent (send, trigger) actions previousState e = do
+    let state = event actions e previousState
     case previousState ^. mode of
         Search _ _               -> invalidateCache
         (Modal MoveTo)           -> clearAllTitles previousState
@@ -97,20 +105,20 @@ handleVtyEvent (send, trigger) previousState e = do
 
 handleEvent ::
        (DebouncedWrite, Trigger)
+    -> BoundActions
     -> State
     -> BrickEvent ResourceName e
     -> EventM ResourceName (Next State)
-handleEvent _ state (VtyEvent (EvResize _ _)) = invalidateCache *> Brick.continue state
-handleEvent db state (VtyEvent ev)            = handleVtyEvent db state ev
-handleEvent _ state _                         = Brick.continue state
+handleEvent _ _ state (VtyEvent (EvResize _ _)) = invalidateCache *> Brick.continue state
+handleEvent db actions state (VtyEvent ev)      = handleVtyEvent db actions state ev
+handleEvent _ _ state _                         = Brick.continue state
 
 -- | Runs when the app starts
 --   Adds paste support
 appStart :: State -> EventM ResourceName State
 appStart state = do
-    vty <- getVtyHandle
-    let output = outputIface vty
-    when (supportsMode output BracketedPaste) $ liftIO $ setMode output BracketedPaste True
+    output <- outputIface <$> getVtyHandle
+    when (supportsMode output BracketedPaste) . liftIO $ setMode output BracketedPaste True
     pure state
 
 -- | Sets up Brick
@@ -119,11 +127,13 @@ go config initial = do
     attrMap' <- const <$> generateAttrMap
     today <- currentDay
     db <- debounce config initial
+    bindings <- getBindings
+    let actions = generate bindings events
     let app =
             App
             { appDraw = draw (layout config) today
             , appChooseCursor = chooseCursor
-            , appHandleEvent = handleEvent db
+            , appHandleEvent = handleEvent db actions
             , appStartEvent = appStart
             , appAttrMap = attrMap'
             }

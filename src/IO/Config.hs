@@ -1,11 +1,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedLists #-}
 
 module IO.Config where
 
 import ClassyPrelude
 
+import           Data.Either        (fromRight)
 import qualified Data.Text.IO       as T (readFile)
 import           System.Directory   (createDirectoryIfMissing, doesDirectoryExist, doesFileExist,
                                      getHomeDirectory)
@@ -16,7 +18,9 @@ import Brick.Themes    (loadCustomizations, themeToAttrMap)
 import Data.FileEmbed  (embedFile)
 import Data.Ini.Config
 
-import UI.Theme (defaultTheme)
+import IO.Keyboard.Parser (bindings)
+import IO.Keyboard.Types  (Bindings)
+import UI.Theme           (defaultTheme)
 
 import qualified IO.Config.General  as General
 import qualified IO.Config.GitHub   as GitHub
@@ -89,11 +93,13 @@ configParser =
 
 getConfig :: IO Config
 getConfig = do
-    dir <- getDir
-    content <- T.readFile (configPath dir)
+    content <- T.readFile =<< (configPath <$> getDir)
     case parseIniFile content configParser of
         Right config -> pure config
         Left s       -> putStrLn (pack $ "config.ini: " <> s) $> defaultConfig
+
+getBindings :: IO Bindings
+getBindings = fromRight [] . bindings <$> (T.readFile =<< (bindingsPath <$> getDir))
 
 -- generate theme
 generateAttrMap :: IO AttrMap
