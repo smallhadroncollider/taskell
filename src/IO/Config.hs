@@ -48,10 +48,11 @@ legacyConfigPath :: IO FilePath
 legacyConfigPath = (</> "." <> directoryName) <$> getHomeDirectory
 
 xdgDefaultConfig :: IO FilePath
-xdgDefaultConfig = (</> ".config" </> directoryName) <$> getHomeDirectory
+xdgDefaultConfig = (</> ".config") <$> getHomeDirectory
 
 xdgConfigPath :: IO FilePath
-xdgConfigPath = fromMaybe <$> xdgDefaultConfig <*> lookupEnv "XDG_CONFIG_HOME"
+xdgConfigPath =
+    (</> directoryName) <$> (fromMaybe <$> xdgDefaultConfig <*> lookupEnv "XDG_CONFIG_HOME")
 
 getDir :: IO FilePath
 getDir = legacyConfigPath >>= doesDirectoryExist >>= bool xdgConfigPath legacyConfigPath
@@ -97,7 +98,7 @@ getConfig = do
     content <- getConfigPath >>= T.readFile
     case parseIniFile content configParser of
         Right config -> pure config
-        Left s       -> putStrLn (pack $ "config.ini: " <> s) *> pure defaultConfig
+        Left s       -> putStrLn (pack $ "config.ini: " <> s) $> defaultConfig
 
 -- generate theme
 generateAttrMap :: IO AttrMap
