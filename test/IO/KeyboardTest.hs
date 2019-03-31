@@ -13,18 +13,19 @@ import Test.Tasty.HUnit
 
 import Control.Lens ((.~))
 
-import Events.State              (create, quit)
-import Events.State.Types        (State, Stateful, mode)
-import Events.State.Types.Mode   (Mode (Shutdown))
-import Graphics.Vty.Input.Events (Event (..), Key (..))
-import IO.Keyboard               (generate)
+import Data.Taskell.Lists.Internal (initial)
+import Events.State                (create, quit)
+import Events.State.Types          (State, Stateful, mode)
+import Events.State.Types.Mode     (Mode (Shutdown))
+import Graphics.Vty.Input.Events   (Event (..), Key (..))
+import IO.Keyboard                 (generate)
 import IO.Keyboard.Types
 
 tester :: BoundActions -> Event -> Stateful
 tester actions ev state = lookup ev actions >>= ($ state)
 
 cleanState :: State
-cleanState = create "taskell.md" []
+cleanState = create "taskell.md" initial
 
 basicBindings :: Bindings
 basicBindings = [(BChar 'q', "quit")]
