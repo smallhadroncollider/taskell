@@ -29,12 +29,12 @@ events
     , ("moveRight", (write =<<) . (setComplete =<<) . store)
     , ("delete", (write =<<) . (Detail.remove =<<) . store)
     , ("dueDate", (editDue =<<) . store)
+    , ("detail", (editDescription =<<) . store)
     ]
 
 normal :: Event -> Stateful
-normal (EvKey KEsc _)   = normalMode
-normal (EvKey KEnter _) = (editDescription =<<) . store
-normal _                = pure
+normal (EvKey KEsc _) = normalMode
+normal _              = pure
 
 insert :: Event -> Stateful
 insert (EvKey KEsc _) s = do
