@@ -21,6 +21,7 @@ import IO.Keyboard.Types (Bindings, BoundActions)
 import qualified Events.Actions.Insert       as Insert
 import qualified Events.Actions.Modal        as Modal
 import qualified Events.Actions.Modal.Detail as Detail
+import qualified Events.Actions.Modal.Help   as Help
 import qualified Events.Actions.Normal       as Normal
 import qualified Events.Actions.Search       as Search
 
@@ -42,6 +43,7 @@ event actions e state = do
             case state ^. mode of
                 Normal                        -> lookup e $ normal actions
                 Modal (Detail _ DetailNormal) -> lookup e $ detail actions
+                Modal Help                    -> lookup e $ help actions
                 _                             -> Nothing
     fromMaybe state $
         case mEv of
@@ -51,8 +53,13 @@ event actions e state = do
 data ActionSets = ActionSets
     { normal :: BoundActions
     , detail :: BoundActions
+    , help   :: BoundActions
     }
 
 generateActions :: Bindings -> ActionSets
 generateActions bindings =
-    ActionSets {normal = generate bindings Normal.events, detail = generate bindings Detail.events}
+    ActionSets
+    { normal = generate bindings Normal.events
+    , detail = generate bindings Detail.events
+    , help = generate bindings Help.events
+    }
