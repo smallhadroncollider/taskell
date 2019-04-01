@@ -120,12 +120,12 @@ go config initial = do
     attrMap' <- const <$> generateAttrMap
     today <- currentDay
     db <- debounce config initial
-    actions <- generateActions <$> getBindings
+    bindings <- getBindings
     let app =
             App
-            { appDraw = draw (layout config) today
+            { appDraw = draw (layout config) bindings today
             , appChooseCursor = chooseCursor
-            , appHandleEvent = handleEvent db actions
+            , appHandleEvent = handleEvent db (generateActions bindings)
             , appStartEvent = appStart
             , appAttrMap = attrMap'
             }

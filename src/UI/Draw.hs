@@ -26,6 +26,7 @@ import           Events.State.Types      (Pointer, State, current, lists, mode)
 import           Events.State.Types.Mode (DetailMode (..), InsertType (..), ModalType (..),
                                           Mode (..))
 import           IO.Config.Layout        (Config, columnPadding, columnWidth, descriptionIndicator)
+import           IO.Keyboard.Types       (Bindings)
 import           UI.Field                (Field, field, textField, widgetFromMaybe)
 import           UI.Modal                (showModal)
 import           UI.Theme
@@ -197,9 +198,10 @@ moveTo (Modal MoveTo) = True
 moveTo _              = False
 
 -- draw
-draw :: Config -> Day -> State -> [Widget ResourceName]
-draw layout today state =
+draw :: Config -> Bindings -> Day -> State -> [Widget ResourceName]
+draw layout bindings today state =
     showModal
+        bindings
         normalisedState
         today
         [ runReader

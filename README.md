@@ -25,11 +25,11 @@ Follow [@taskellcli](https://twitter.com/taskellcli) on Twitter for updates
 - [Installation](#installation)
 - [Using Taskell](#using-taskell)
     - [Options](#options)
-    - [Controls](#controls)
     - [Storage](#storage)
     - [Importing Trello Boards](#importing-trello-boards)
     - [Importing GitHub Projects](#importing-github-projects)
 - [Configuration](#configuration)
+    - [Controls](#controls)
     - [Theming](#theming)
 - [Roadmap](#roadmap)
 
@@ -82,10 +82,6 @@ If none of the above options work you can build taskell using [Stack](https://do
 - `-v`: show version number
 - `-t <trello-board-id>`: import a Trello board ([see below](#importing-trello-boards))
 - `-g <github-project-id>`: import a GitHub project ([see below](#importing-github-projects))
-
-### Controls
-
-Press `?` for a [list of controls](https://github.com/smallhadroncollider/taskell/blob/master/templates/controls.md)
 
 #### Tips
 

@@ -21,6 +21,13 @@ type Actions = Map Text Stateful
 
 type BoundActions = Map Event Stateful
 
+bindingToText :: Binding -> Text
+bindingToText (BChar c)   = singleton c
+bindingToText (BKey name) = "<" <> name <> ">"
+
+bindingsToText :: Bindings -> Text -> [Text]
+bindingsToText bindings key = bindingToText . fst <$> toList (filterMap (== key) bindings)
+
 bindingToEvent :: Binding -> Maybe Event
 bindingToEvent (BChar char)       = pure $ EvKey (KChar char) []
 bindingToEvent (BKey "Space")     = pure $ EvKey (KChar ' ') []

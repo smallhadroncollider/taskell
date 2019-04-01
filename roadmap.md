@@ -83,11 +83,13 @@
 ## In Progress
 
 - Add custom key support
-    * [ ] Create controls.ini
-    * [ ] Update events to use Map from controls.ini
+    * [x] Create bindings.ini
+    * [x] Update events to use Map from bindings.ini
     * [ ] Check for key conflicts: include keys not explicitly mapped (e.g. 1-9, Esc, Enter)
     * [ ] Check for bits of functionality missing a mapping
-    * [ ] Update Help dialogue with key mappings
+    * [x] Update Help dialogue with key mappings
+    * [ ] Needs to support merging with default options so that it's easy to add new default keys in the future
+    * [ ] Add keys to Help which aren't in bindings
 - Add a List widget for common actions between tasks and sub-tasks
 - Can't remove a description
 
