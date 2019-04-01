@@ -1,4 +1,4 @@
-resolver: lts-13.13
+resolver: lts-13.15
 pvp-bounds: both
 packages:
   - .
@@ -7,4 +7,4 @@ extra-deps:
   - data-clist-0.1.2.2
   - text-zipper-0.10.1
   - word-wrap-0.4.1
-  - brick-0.46
+  - brick-0.47
