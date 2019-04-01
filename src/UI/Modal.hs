@@ -15,6 +15,7 @@ import Brick.Widgets.Center
 import Data.Taskell.Date       (Day)
 import Events.State.Types      (State, mode)
 import Events.State.Types.Mode (ModalType (..), Mode (..))
+import IO.Keyboard.Types       (Bindings)
 import UI.Field                (textField)
 import UI.Modal.Detail         (detail)
 import UI.Modal.Help           (help)
@@ -31,10 +32,10 @@ surround (title, widget) =
   where
     t = padBottom (Pad 1) . withAttr titleAttr $ textField title
 
-showModal :: State -> Day -> [Widget ResourceName] -> [Widget ResourceName]
-showModal state today view =
+showModal :: Bindings -> State -> Day -> [Widget ResourceName] -> [Widget ResourceName]
+showModal bindings state today view =
     case state ^. mode of
-        Modal Help      -> surround help : view
+        Modal Help      -> surround (help bindings) : view
         Modal Detail {} -> surround (detail state today) : view
         Modal MoveTo    -> surround (moveTo state) : view
         _               -> view

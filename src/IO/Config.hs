@@ -1,11 +1,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedLists #-}
 
 module IO.Config where
 
 import ClassyPrelude
 
+import           Data.Either        (fromRight)
 import qualified Data.Text.IO       as T (readFile)
 import           System.Directory   (createDirectoryIfMissing, doesDirectoryExist, doesFileExist,
                                      getHomeDirectory)
@@ -16,7 +18,9 @@ import Brick.Themes    (loadCustomizations, themeToAttrMap)
 import Data.FileEmbed  (embedFile)
 import Data.Ini.Config
 
-import UI.Theme (defaultTheme)
+import IO.Keyboard.Parser (bindings)
+import IO.Keyboard.Types  (Bindings)
+import UI.Theme           (defaultTheme)
 
 import qualified IO.Config.General  as General
 import qualified IO.Config.GitHub   as GitHub
@@ -57,36 +61,30 @@ xdgConfigPath =
 getDir :: IO FilePath
 getDir = legacyConfigPath >>= doesDirectoryExist >>= bool xdgConfigPath legacyConfigPath
 
-getThemePath :: IO FilePath
-getThemePath = (<> "/theme.ini") <$> getDir
+themePath :: FilePath -> FilePath
+themePath = (</> "theme.ini")
 
-getConfigPath :: IO FilePath
-getConfigPath = (<> "/config.ini") <$> getDir
+configPath :: FilePath -> FilePath
+configPath = (</> "config.ini")
+
+bindingsPath :: FilePath -> FilePath
+bindingsPath = (</> "bindings.ini")
 
 setup :: IO Config
-setup = do
-    getDir >>= createDirectoryIfMissing True
-    createConfig
-    createTheme
+setup
+    -- create config dir
+ = do
+    dir <- getDir
+    createDirectoryIfMissing True dir
+    -- create config files
+    create (configPath dir) $(embedFile "templates/config.ini")
+    create (themePath dir) $(embedFile "templates/theme.ini")
+    create (bindingsPath dir) $(embedFile "templates/bindings.ini")
+    -- get config
     getConfig
 
-create :: IO FilePath -> (FilePath -> IO ()) -> IO ()
-create getPath write = do
-    path <- getPath
-    exists <- doesFileExist path
-    unless exists $ write path
-
-writeTheme :: FilePath -> IO ()
-writeTheme path = writeFile path $(embedFile "templates/theme.ini")
-
-createTheme :: IO ()
-createTheme = create getThemePath writeTheme
-
-writeConfig :: FilePath -> IO ()
-writeConfig path = writeFile path $(embedFile "templates/config.ini")
-
-createConfig :: IO ()
-createConfig = create getConfigPath writeConfig
+create :: FilePath -> ByteString -> IO ()
+create path contents = doesFileExist path >>= flip unless (writeFile path contents)
 
 configParser :: IniParser Config
 configParser =
@@ -95,15 +93,19 @@ configParser =
 
 getConfig :: IO Config
 getConfig = do
-    content <- getConfigPath >>= T.readFile
+    content <- T.readFile =<< (configPath <$> getDir)
     case parseIniFile content configParser of
         Right config -> pure config
         Left s       -> putStrLn (pack $ "config.ini: " <> s) $> defaultConfig
 
+getBindings :: IO Bindings
+getBindings = fromRight [] . bindings <$> (T.readFile =<< (bindingsPath <$> getDir))
+
 -- generate theme
 generateAttrMap :: IO AttrMap
 generateAttrMap = do
-    customizedTheme <- flip loadCustomizations defaultTheme =<< getThemePath
+    dir <- getDir
+    customizedTheme <- loadCustomizations (themePath dir) defaultTheme
     case customizedTheme of
         Right theme -> pure $ themeToAttrMap theme
         Left s      -> putStrLn (pack $ "theme.ini: " <> s) $> themeToAttrMap defaultTheme

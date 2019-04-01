@@ -10,21 +10,19 @@
 ## Refactoring
 
 - Add tests for IO.GitHub
-- Use Shake instead of bash script
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
 - Remove duplication of config - currently using ini and hard-coded defaults
 - Move Help modal creation into Template Haskell
-- Add a List widget for common actions between tasks and sub-tasks
 - Tidy up load functions in IO.Taskell
 - Remove `~` style sub-task complete parsing
     @ 2018-12-10
+- Use Shake instead of bash script
 
 ## Bugs
 
-- Can't remove a description
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
 - Help modal needs to wrap and scroll
@@ -42,6 +40,16 @@
 
 ## Features
 
+- Use proper error codes
+- Performance with large files
+    > Becomes unusable with large files
+    * [x] Initially use debouncing to avoid writing too often
+    * [ ] Cache formatting results
+    * [ ] Invalidate layout cache less frequently
+    * [ ] Benchmarking tests
+    * [ ] Allow cancelling write to avoid trying to write the same file at the same time
+- Inifinite task depth?
+    > No reason, other than UX, that sub-tasks can't have sub-tasks.
 - Should be able to have new-lines in task descriptions
     * [x] Trello import
     * [ ] Regular input (Shift + Enter for new line?)
@@ -50,8 +58,6 @@
 - Check times work no matter what timezone
 - Import Issues from GitHub using  labels
 - Show filename somewhere
-- Editable title?
-    > Use a `# Title` at top of file and display title somewhere in taskell
 - Add tags/labels with `t`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Redo functionality
@@ -71,18 +77,21 @@
     > Either command line arguments for settings or just a `-c other.ini` command
 - Readline support?
     > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
+- Editable title?
+    > Use a `# Title` at top of file and display title somewhere in taskell
 
 ## In Progress
 
 - Add custom key support
-- Use proper error codes
-- Performance with large files
-    > Becomes unusable with large files
-    * [x] Initially use debouncing to avoid writing too often
-    * [ ] Cache formatting results
-    * [ ] Invalidate layout cache less frequently
-    * [ ] Benchmarking tests
-    * [ ] Allow cancelling write to avoid trying to write the same file at the same time
+    * [x] Create bindings.ini
+    * [x] Update events to use Map from bindings.ini
+    * [ ] Check for key conflicts: include keys not explicitly mapped (e.g. 1-9, Esc, Enter)
+    * [ ] Check for bits of functionality missing a mapping
+    * [x] Update Help dialogue with key mappings
+    * [ ] Needs to support merging with default options so that it's easy to add new default keys in the future
+    * [ ] Add keys to Help which aren't in bindings
+- Add a List widget for common actions between tasks and sub-tasks
+- Can't remove a description
 
 ## Done
 

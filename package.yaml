@@ -46,11 +46,15 @@ library:
   - IO.HTTP.GitHub
   - IO.HTTP.Trello.List
   - IO.HTTP.Trello.ChecklistItem
+  - IO.Keyboard
+  - IO.Keyboard.Parser
+  - IO.Keyboard.Types
   - UI.Field
 
   dependencies:
   - base <=5
   - aeson
+  - attoparsec
   - brick
   - bytestring
   - config-ini
@@ -94,6 +98,7 @@ tests:
     - containers
     - file-embed
     - lens
+    - raw-strings-qq
     - taskell
     - tasty
     - tasty-discover
@@ -101,3 +106,4 @@ tests:
     - tasty-hunit
     - text
     - time
+    - vty
