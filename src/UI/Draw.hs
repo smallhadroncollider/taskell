@@ -26,10 +26,11 @@ import           Events.State.Types      (Pointer, State, current, lists, mode)
 import           Events.State.Types.Mode (DetailMode (..), InsertType (..), ModalType (..),
                                           Mode (..))
 import           IO.Config.Layout        (Config, columnPadding, columnWidth, descriptionIndicator)
+import           IO.Keyboard.Types       (Bindings)
 import           UI.Field                (Field, field, textField, widgetFromMaybe)
 import           UI.Modal                (showModal)
 import           UI.Theme
-import           UI.Types                (ResourceName (..))
+import           UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
 
 -- | Draw needs to know various pieces of information, so keep track of them in a record
 data DrawState = DrawState
@@ -79,7 +80,7 @@ renderTask listIndex taskIndex task = do
     taskField <- dsField <$> ask -- get the field, if it's being edited
     after <- indicators task -- get the indicators widget
     let text = task ^. T.name
-        name = RNTask (listIndex, taskIndex)
+        name = RNTask (ListIndex listIndex, TaskIndex taskIndex)
         widget = textField text
         widget' = widgetFromMaybe widget taskField
     pure $
@@ -197,9 +198,10 @@ moveTo (Modal MoveTo) = True
 moveTo _              = False
 
 -- draw
-draw :: Config -> Day -> State -> [Widget ResourceName]
-draw layout today state =
+draw :: Config -> Bindings -> Day -> State -> [Widget ResourceName]
+draw layout bindings today state =
     showModal
+        bindings
         normalisedState
         today
         [ runReader

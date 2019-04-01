@@ -82,13 +82,13 @@ getChecklist checklist = do
 updateCard :: Card -> ReaderTrelloToken (Either Text Card)
 updateCard card = (setChecklists card . concat <$>) . sequence <$> checklists
   where
-    checklists = sequence $ getChecklist <$> (card ^. idChecklists)
+    checklists = traverse getChecklist (card ^. idChecklists)
 
 updateList :: List -> ReaderTrelloToken (Either Text List)
-updateList l = (setCards l <$>) . sequence <$> sequence (updateCard <$> (l ^. cards))
+updateList l = (setCards l <$>) . sequence <$> traverse updateCard (l ^. cards)
 
 getChecklists :: [List] -> ReaderTrelloToken (Either Text [List])
-getChecklists ls = sequence <$> sequence (updateList <$> ls)
+getChecklists ls = sequence <$> traverse updateList ls
 
 getLists :: TrelloBoardID -> ReaderTrelloToken (Either Text Lists)
 getLists board = do
@@ -102,7 +102,6 @@ getLists board = do
                 Right raw -> fmap (trelloListsToLists timezone) <$> getChecklists raw
                 Left err  -> pure . Left $ parseError err
         404 ->
-            pure . Left $
-            "Could not find Trello board " <> board <> ". Make sure the ID is correct"
+            pure . Left $ "Could not find Trello board " <> board <> ". Make sure the ID is correct"
         401 -> pure . Left $ "You do not have permission to view Trello board " <> board
         _ -> pure . Left $ tshow status <> " error. Cannot fetch from Trello."

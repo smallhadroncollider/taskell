@@ -1,7 +1,11 @@
 taskell.json
 taskell.cabal
 taskell.md
+taskell.aux
+taskell.ps
 test.md
+large.md
 .stack-work/
+.stack-work-profile/
 releases/
 homebrew-taskell/

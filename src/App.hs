@@ -16,14 +16,14 @@ import qualified Control.FoldDebounce as Debounce
 
 import Data.Taskell.Date       (currentDay)
 import Data.Taskell.Lists      (Lists)
-import Events.Actions          (event)
+import Events.Actions          (ActionSets, event, generateActions)
 import Events.State            (continue, countCurrent)
 import Events.State.Types      (State, current, io, lists, mode, path)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
-import IO.Config               (Config, generateAttrMap, layout)
+import IO.Config               (Config, generateAttrMap, getBindings, layout)
 import IO.Taskell              (writeData)
 import UI.Draw                 (chooseCursor, draw)
-import UI.Types                (ResourceName (..))
+import UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
 
 type DebouncedMessage = (Lists, FilePath)
 
@@ -51,7 +51,7 @@ debounce config initial = do
         Debounce.new
             Debounce.Args
             { Debounce.cb = store config
-            , Debounce.fold = \_ b -> b
+            , Debounce.fold = flip const
             , Debounce.init = (initial ^. lists, initial ^. path)
             }
             Debounce.def
@@ -63,14 +63,14 @@ clearCache :: State -> EventM ResourceName ()
 clearCache state = do
     let (li, ti) = state ^. current
     invalidateCacheEntry (RNList li)
-    invalidateCacheEntry (RNTask (li, ti))
+    invalidateCacheEntry (RNTask (ListIndex li, TaskIndex ti))
 
 clearAllTitles :: State -> EventM ResourceName ()
 clearAllTitles state = do
     let count = length (state ^. lists)
     let range = [0 .. (count - 1)]
-    void . sequence $ invalidateCacheEntry . RNList <$> range
-    void . sequence $ invalidateCacheEntry . (\x -> RNTask (x, -1)) <$> range
+    traverse_ (invalidateCacheEntry . RNList) range
+    traverse_ (invalidateCacheEntry . RNTask . flip (,) (TaskIndex (-1)) . ListIndex) range
 
 clearList :: State -> EventM ResourceName ()
 clearList state = do
@@ -78,12 +78,13 @@ clearList state = do
     let count = countCurrent state
     let range = [0 .. (count - 1)]
     invalidateCacheEntry $ RNList list
-    void . sequence $ invalidateCacheEntry . (\x -> RNTask (list, x)) <$> range
+    traverse_ (invalidateCacheEntry . RNTask . (,) (ListIndex list) . TaskIndex) range
 
 -- event handling
-handleVtyEvent :: (DebouncedWrite, Trigger) -> State -> Event -> EventM ResourceName (Next State)
-handleVtyEvent (send, trigger) previousState e = do
-    let state = event e previousState
+handleVtyEvent ::
+       (DebouncedWrite, Trigger) -> ActionSets -> State -> Event -> EventM ResourceName (Next State)
+handleVtyEvent (send, trigger) actions previousState e = do
+    let state = event actions e previousState
     case previousState ^. mode of
         Search _ _               -> invalidateCache
         (Modal MoveTo)           -> clearAllTitles previousState
@@ -97,20 +98,20 @@ handleVtyEvent (send, trigger) previousState e = do
 
 handleEvent ::
        (DebouncedWrite, Trigger)
+    -> ActionSets
     -> State
     -> BrickEvent ResourceName e
     -> EventM ResourceName (Next State)
-handleEvent _ state (VtyEvent (EvResize _ _)) = invalidateCache *> Brick.continue state
-handleEvent db state (VtyEvent ev)            = handleVtyEvent db state ev
-handleEvent _ state _                         = Brick.continue state
+handleEvent _ _ state (VtyEvent (EvResize _ _)) = invalidateCache *> Brick.continue state
+handleEvent db actions state (VtyEvent ev)      = handleVtyEvent db actions state ev
+handleEvent _ _ state _                         = Brick.continue state
 
 -- | Runs when the app starts
 --   Adds paste support
 appStart :: State -> EventM ResourceName State
 appStart state = do
-    vty <- getVtyHandle
-    let output = outputIface vty
-    when (supportsMode output BracketedPaste) $ liftIO $ setMode output BracketedPaste True
+    output <- outputIface <$> getVtyHandle
+    when (supportsMode output BracketedPaste) . liftIO $ setMode output BracketedPaste True
     pure state
 
 -- | Sets up Brick
@@ -119,11 +120,12 @@ go config initial = do
     attrMap' <- const <$> generateAttrMap
     today <- currentDay
     db <- debounce config initial
+    bindings <- getBindings
     let app =
             App
-            { appDraw = draw (layout config) today
+            { appDraw = draw (layout config) bindings today
             , appChooseCursor = chooseCursor
-            , appHandleEvent = handleEvent db
+            , appHandleEvent = handleEvent db (generateActions bindings)
             , appStartEvent = appStart
             , appAttrMap = attrMap'
             }
