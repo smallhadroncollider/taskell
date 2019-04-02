@@ -8,16 +8,17 @@ import ClassyPrelude
 import Data.Map.Strict           (Map)
 import Graphics.Vty.Input.Events (Event (..), Key (..))
 
-import Events.State.Types (Stateful)
+import Events.Actions.Types (ActionType)
+import Events.State.Types   (Stateful)
 
 data Binding
     = BChar Char
     | BKey Text
     deriving (Eq, Ord)
 
-type Bindings = [(Binding, Text)]
+type Bindings = [(Binding, ActionType)]
 
-type Actions = Map Text Stateful
+type Actions = Map ActionType Stateful
 
 type BoundActions = Map Event Stateful
 
@@ -25,7 +26,7 @@ instance Show Binding where
     show (BChar c)   = singleton c
     show (BKey name) = "<" <> unpack name <> ">"
 
-bindingsToText :: Bindings -> Text -> [Text]
+bindingsToText :: Bindings -> ActionType -> [Text]
 bindingsToText bindings key = tshow . fst <$> toList (filterMap (== key) bindings)
 
 bindingToEvent :: Binding -> Maybe Event

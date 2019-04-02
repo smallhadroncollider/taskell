@@ -8,6 +8,7 @@ import ClassyPrelude
 
 import Data.Attoparsec.Text
 
+import Events.Actions.Types (ActionType, read)
 import IO.Keyboard.Types
 
 -- utility functions
@@ -33,10 +34,10 @@ charP = lexeme $ BChar <$> anyChar
 bindingP :: Parser [Binding]
 bindingP = lexeme $ (keyP <|> charP) `sepBy` char ','
 
-line :: Parser [(Binding, Text)]
+line :: Parser [(Binding, ActionType)]
 line =
     stripComments $ do
-        name <- word
+        name <- read <$> word
         _ <- lexeme $ char '='
         binds <- bindingP
         pure $ (, name) <$> binds

@@ -9,48 +9,49 @@ module Events.Actions.Normal
 import ClassyPrelude hiding (delete)
 
 import Data.Char                 (isDigit)
-import Data.Map.Strict           (Map)
+import Events.Actions.Types      (ActionType (..))
 import Events.State
 import Events.State.Modal.Detail (editDue, showDetail)
 import Events.State.Types        (Stateful)
 import Graphics.Vty.Input.Events
+import IO.Keyboard.Types         (Actions)
 
-events :: Map Text Stateful
+events :: Actions
 events
     -- general
  =
-    [ ("quit", quit)
-    , ("undo", (write =<<) . undo)
-    , ("search", searchMode)
-    , ("help", showHelp)
+    [ (AQuit, quit)
+    , (AUndo, (write =<<) . undo)
+    , (ASearch, searchMode)
+    , (AHelp, showHelp)
         -- navigation
-    , ("previous", previous)
-    , ("next", next)
-    , ("left", left)
-    , ("right", right)
-    , ("bottom", bottom)
+    , (APrevious, previous)
+    , (ANext, next)
+    , (ALeft, left)
+    , (ARight, right)
+    , (ABottom, bottom)
     -- new tasks
-    , ("new", (startCreate =<<) . (newItem =<<) . store)
-    , ("newAbove", (startCreate =<<) . (above =<<) . store)
-    , ("newBelow", (startCreate =<<) . (below =<<) . store)
+    , (ANew, (startCreate =<<) . (newItem =<<) . store)
+    , (ANewAbove, (startCreate =<<) . (above =<<) . store)
+    , (ANewBelow, (startCreate =<<) . (below =<<) . store)
     -- editing tasks
-    , ("edit", (startEdit =<<) . store)
-    , ("clear", (startEdit =<<) . (clearItem =<<) . store)
-    , ("delete", (write =<<) . (delete =<<) . store)
-    , ("detail", showDetail)
-    , ("dueDate", (editDue =<<) . (store =<<) . showDetail)
+    , (AEdit, (startEdit =<<) . store)
+    , (AClear, (startEdit =<<) . (clearItem =<<) . store)
+    , (ADelete, (write =<<) . (delete =<<) . store)
+    , (ADetail, showDetail)
+    , (ADueDate, (editDue =<<) . (store =<<) . showDetail)
     -- moving tasks
-    , ("moveUp", (write =<<) . (up =<<) . store)
-    , ("moveDown", (write =<<) . (down =<<) . store)
-    , ("moveLeft", (write =<<) . (bottom =<<) . (left =<<) . (moveLeft =<<) . store)
-    , ("moveRight", (write =<<) . (bottom =<<) . (right =<<) . (moveRight =<<) . store)
-    , ("moveMenu", showMoveTo)
+    , (AMoveUp, (write =<<) . (up =<<) . store)
+    , (AMoveDown, (write =<<) . (down =<<) . store)
+    , (AMoveLeft, (write =<<) . (bottom =<<) . (left =<<) . (moveLeft =<<) . store)
+    , (AMoveRight, (write =<<) . (bottom =<<) . (right =<<) . (moveRight =<<) . store)
+    , (AMoveMenu, showMoveTo)
     -- lists
-    , ("listNew", (createListStart =<<) . store)
-    , ("listEdit", (editListStart =<<) . store)
-    , ("listDelete", (write =<<) . (deleteCurrentList =<<) . store)
-    , ("listRight", (write =<<) . (listRight =<<) . store)
-    , ("listLeft", (write =<<) . (listLeft =<<) . store)
+    , (AListNew, (createListStart =<<) . store)
+    , (AListEdit, (editListStart =<<) . store)
+    , (AListDelete, (write =<<) . (deleteCurrentList =<<) . store)
+    , (AListRight, (write =<<) . (listRight =<<) . store)
+    , (AListLeft, (write =<<) . (listLeft =<<) . store)
     ]
 
 -- Normal

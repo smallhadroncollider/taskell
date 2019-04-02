@@ -9,27 +9,29 @@ module Events.Actions.Modal.Detail
 
 import ClassyPrelude
 
+import           Events.Actions.Types      (ActionType (..))
 import           Events.State
 import           Events.State.Modal.Detail as Detail
 import           Events.State.Types
 import           Events.State.Types.Mode   (DetailItem (..), DetailMode (..))
 import           Graphics.Vty.Input.Events
+import           IO.Keyboard.Types         (Actions)
 import qualified UI.Field                  as F (event)
 
-events :: Map Text Stateful
+events :: Actions
 events
     -- general
  =
-    [ ("quit", quit)
-    , ("undo", (write =<<) . undo)
-    , ("previous", previousSubtask)
-    , ("next", nextSubtask)
-    , ("new", (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store)
-    , ("edit", (Detail.insertMode =<<) . store)
-    , ("moveRight", (write =<<) . (setComplete =<<) . store)
-    , ("delete", (write =<<) . (Detail.remove =<<) . store)
-    , ("dueDate", (editDue =<<) . store)
-    , ("detail", (editDescription =<<) . store)
+    [ (AQuit, quit)
+    , (AUndo, (write =<<) . undo)
+    , (APrevious, previousSubtask)
+    , (ANext, nextSubtask)
+    , (ANew, (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store)
+    , (AEdit, (Detail.insertMode =<<) . store)
+    , (AMoveRight, (write =<<) . (setComplete =<<) . store)
+    , (ADelete, (write =<<) . (Detail.remove =<<) . store)
+    , (ADueDate, (editDue =<<) . store)
+    , (ADetail, (editDescription =<<) . store)
     ]
 
 normal :: Event -> Stateful

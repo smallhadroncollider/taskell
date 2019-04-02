@@ -11,34 +11,35 @@ import ClassyPrelude
 import Brick
 import Data.Text as T (justifyRight)
 
-import IO.Keyboard.Types (Bindings, bindingsToText)
+import Events.Actions.Types (ActionType (..))
+import IO.Keyboard.Types    (Bindings, bindingsToText)
 
 import UI.Field (textField)
 import UI.Theme (taskCurrentAttr)
 import UI.Types (ResourceName)
 
-descriptions :: [([Text], Text)]
+descriptions :: [([ActionType], Text)]
 descriptions =
-    [ (["help"], "Show this list of controls")
-    , (["previous", "next", "left", "right"], "Move down/up/left/right")
-    , (["bottom"], "Go to bottom of list")
-    , (["new"], "Add a task")
-    , (["newAbove", "newBelow"], "Add a task above/below")
-    , (["edit"], "Edit a task")
-    , (["clear"], "Change task")
-    , (["detail"], "Show task details / Edit task description")
-    , (["dueDate"], "Add/edit due date (yyyy-mm-dd)")
-    , (["moveUp", "moveDown"], "Shift task down/up")
-    , (["moveLeft", "moveRight"], "Shift task left/right")
-    , (["moveMenu"], "Move task to specific list")
-    , (["delete"], "Delete task")
-    , (["undo"], "Undo")
-    , (["listNew"], "New list")
-    , (["listEdit"], "Edit list title")
-    , (["listDelete"], "Delete list")
-    , (["listLeft", "listRight"], "Move list left/right")
-    , (["search"], "Search")
-    , (["quit"], "Quit")
+    [ ([AHelp], "Show this list of controls")
+    , ([APrevious, ANext, ALeft, ARight], "Move down/up/left/right")
+    , ([ABottom], "Go to bottom of list")
+    , ([ANew], "Add a task")
+    , ([ANewAbove, ANewBelow], "Add a task above/below")
+    , ([AEdit], "Edit a task")
+    , ([AClear], "Change task")
+    , ([ADetail], "Show task details / Edit task description")
+    , ([ADueDate], "Add/edit due date (yyyy-mm-dd)")
+    , ([AMoveUp, AMoveDown], "Shift task down/up")
+    , ([AMoveLeft, AMoveRight], "Shift task left/right")
+    , ([AMoveMenu], "Move task to specific list")
+    , ([ADelete], "Delete task")
+    , ([AUndo], "Undo")
+    , ([AListNew], "New list")
+    , ([AListEdit], "Edit list title")
+    , ([AListDelete], "Delete list")
+    , ([AListLeft, AListRight], "Move list left/right")
+    , ([ASearch], "Search")
+    , ([AQuit], "Quit")
     ]
 
 generate :: Bindings -> [([Text], Text)]
