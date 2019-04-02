@@ -13,7 +13,7 @@ import Events.State.Types (Stateful)
 data Binding
     = BChar Char
     | BKey Text
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord)
 
 type Bindings = [(Binding, Text)]
 
@@ -21,12 +21,12 @@ type Actions = Map Text Stateful
 
 type BoundActions = Map Event Stateful
 
-bindingToText :: Binding -> Text
-bindingToText (BChar c)   = singleton c
-bindingToText (BKey name) = "<" <> name <> ">"
+instance Show Binding where
+    show (BChar c)   = singleton c
+    show (BKey name) = "<" <> unpack name <> ">"
 
 bindingsToText :: Bindings -> Text -> [Text]
-bindingsToText bindings key = bindingToText . fst <$> toList (filterMap (== key) bindings)
+bindingsToText bindings key = tshow . fst <$> toList (filterMap (== key) bindings)
 
 bindingToEvent :: Binding -> Maybe Event
 bindingToEvent (BChar char)       = pure $ EvKey (KChar char) []
