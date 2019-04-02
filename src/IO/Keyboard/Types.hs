@@ -3,30 +3,49 @@
 
 module IO.Keyboard.Types where
 
-import ClassyPrelude
+import ClassyPrelude hiding ((\\))
 
+import Data.List                 ((\\))
 import Data.Map.Strict           (Map)
 import Graphics.Vty.Input.Events (Event (..), Key (..))
 
-import Events.State.Types (Stateful)
+import Events.Actions.Types (ActionType (ANothing), allActions)
+import Events.State.Types   (Stateful)
 
 data Binding
     = BChar Char
     | BKey Text
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord)
 
-type Bindings = [(Binding, Text)]
+type Bindings = [(Binding, ActionType)]
 
-type Actions = Map Text Stateful
+type Actions = Map ActionType Stateful
 
 type BoundActions = Map Event Stateful
 
-bindingToText :: Binding -> Text
-bindingToText (BChar c)   = singleton c
-bindingToText (BKey name) = "<" <> name <> ">"
+instance Show Binding where
+    show (BChar c)   = singleton c
+    show (BKey name) = "<" <> unpack name <> ">"
 
-bindingsToText :: Bindings -> Text -> [Text]
-bindingsToText bindings key = bindingToText . fst <$> toList (filterMap (== key) bindings)
+badMapping :: Bindings -> Either Text Bindings
+badMapping bindings =
+    if null result
+        then Right bindings
+        else Left "invalid mapping"
+  where
+    result = filter ((== ANothing) . snd) bindings
+
+missing :: Bindings -> Either Text Bindings
+missing bindings =
+    if null result
+        then Right bindings
+        else Left "missing mapping"
+  where
+    bnd = ANothing : (snd <$> bindings)
+    result = allActions \\ bnd
+
+bindingsToText :: Bindings -> ActionType -> [Text]
+bindingsToText bindings key = tshow . fst <$> toList (filterMap (== key) bindings)
 
 bindingToEvent :: Binding -> Maybe Event
 bindingToEvent (BChar char)       = pure $ EvKey (KChar char) []

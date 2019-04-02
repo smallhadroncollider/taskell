@@ -15,14 +15,15 @@ import Test.Tasty.HUnit
 import Data.FileEmbed    (embedFile)
 import Text.RawString.QQ (r)
 
-import IO.Keyboard.Parser (bindings)
+import Events.Actions.Types
+import IO.Keyboard.Parser   (bindings)
 import IO.Keyboard.Types
 
 basic :: Text
 basic = "quit = q"
 
 basicResult :: Bindings
-basicResult = [(BChar 'q', "quit")]
+basicResult = [(BChar 'q', AQuit)]
 
 basicMulti :: Text
 basicMulti =
@@ -32,50 +33,50 @@ basicMulti =
     |]
 
 basicMultiResult :: Bindings
-basicMultiResult = [(BChar 'q', "quit"), (BKey "Enter", "detail")]
+basicMultiResult = [(BChar 'q', AQuit), (BKey "Enter", ADetail)]
 
 ini :: Text
 ini = decodeUtf8 $(embedFile "test/IO/Keyboard/data/bindings.ini")
 
 iniResult :: Bindings
 iniResult =
-    [ (BChar 'q', "quit")
-    , (BChar 'u', "undo")
-    , (BChar '/', "search")
-    , (BChar '?', "help")
-    , (BChar 'k', "previous")
-    , (BChar 'j', "next")
-    , (BChar 'h', "left")
-    , (BChar 'l', "right")
-    , (BChar 'g', "bottom")
-    , (BChar 'a', "new")
-    , (BChar 'O', "newAbove")
-    , (BChar 'o', "newBelow")
-    , (BChar 'e', "edit")
-    , (BChar 'A', "edit")
-    , (BChar 'i', "edit")
-    , (BChar 'C', "clear")
-    , (BChar 'D', "delete")
-    , (BKey "Enter", "detail")
-    , (BChar '@', "dueDate")
-    , (BChar 'K', "moveUp")
-    , (BChar 'J', "moveDown")
-    , (BChar 'H', "moveLeft")
-    , (BChar 'L', "moveRight")
-    , (BKey "Space", "moveRight")
-    , (BChar 'm', "moveMenu")
-    , (BChar 'N', "listNew")
-    , (BChar 'E', "listEdit")
-    , (BChar 'X', "listDelete")
-    , (BChar '>', "listRight")
-    , (BChar '<', "listLeft")
+    [ (BChar 'q', AQuit)
+    , (BChar 'u', AUndo)
+    , (BChar '/', ASearch)
+    , (BChar '?', AHelp)
+    , (BChar 'k', APrevious)
+    , (BChar 'j', ANext)
+    , (BChar 'h', ALeft)
+    , (BChar 'l', ARight)
+    , (BChar 'g', ABottom)
+    , (BChar 'a', ANew)
+    , (BChar 'O', ANewAbove)
+    , (BChar 'o', ANewBelow)
+    , (BChar 'e', AEdit)
+    , (BChar 'A', AEdit)
+    , (BChar 'i', AEdit)
+    , (BChar 'C', AClear)
+    , (BChar 'D', ADelete)
+    , (BKey "Enter", ADetail)
+    , (BChar '@', ADueDate)
+    , (BChar 'K', AMoveUp)
+    , (BChar 'J', AMoveDown)
+    , (BChar 'H', AMoveLeft)
+    , (BChar 'L', AMoveRight)
+    , (BKey "Space", AMoveRight)
+    , (BChar 'm', AMoveMenu)
+    , (BChar 'N', AListNew)
+    , (BChar 'E', AListEdit)
+    , (BChar 'X', AListDelete)
+    , (BChar '>', AListRight)
+    , (BChar '<', AListLeft)
     ]
 
 comma :: Text
 comma = "quit = ,"
 
 commaResult :: Bindings
-commaResult = [(BChar ',', "quit")]
+commaResult = [(BChar ',', AQuit)]
 
 test_parser :: TestTree
 test_parser =

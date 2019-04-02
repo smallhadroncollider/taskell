@@ -7,7 +7,6 @@ module IO.Config where
 
 import ClassyPrelude
 
-import           Data.Either        (fromRight)
 import qualified Data.Text.IO       as T (readFile)
 import           System.Directory   (createDirectoryIfMissing, doesDirectoryExist, doesFileExist,
                                      getHomeDirectory)
@@ -18,8 +17,9 @@ import Brick.Themes    (loadCustomizations, themeToAttrMap)
 import Data.FileEmbed  (embedFile)
 import Data.Ini.Config
 
+import IO.Keyboard        (defaultBindings)
 import IO.Keyboard.Parser (bindings)
-import IO.Keyboard.Types  (Bindings)
+import IO.Keyboard.Types  (Bindings, badMapping, missing)
 import UI.Theme           (defaultTheme)
 
 import qualified IO.Config.General  as General
@@ -99,7 +99,12 @@ getConfig = do
         Left s       -> putStrLn (pack $ "config.ini: " <> s) $> defaultConfig
 
 getBindings :: IO Bindings
-getBindings = fromRight [] . bindings <$> (T.readFile =<< (bindingsPath <$> getDir))
+getBindings = do
+    bnds <- bindings <$> (T.readFile =<< (bindingsPath <$> getDir))
+    case missing =<< badMapping =<< bnds of
+        Right b -> pure b
+        Left err ->
+            putStrLn ("bindings.ini: " <> err <> " - using default bindings") $> defaultBindings
 
 -- generate theme
 generateAttrMap :: IO AttrMap

@@ -8,12 +8,14 @@ module Events.Actions.Modal.Help
     ) where
 
 import ClassyPrelude
+import Events.Actions.Types      (ActionType (..))
 import Events.State
 import Events.State.Types        (Stateful)
 import Graphics.Vty.Input.Events
+import IO.Keyboard.Types         (Actions)
 
-events :: Map Text Stateful
-events = [("quit", quit)]
+events :: Actions
+events = [(AQuit, quit)]
 
 event :: Event -> Stateful
 event (EvKey _ _) = normalMode
