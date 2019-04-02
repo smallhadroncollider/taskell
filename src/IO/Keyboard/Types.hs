@@ -27,19 +27,19 @@ instance Show Binding where
     show (BChar c)   = singleton c
     show (BKey name) = "<" <> unpack name <> ">"
 
-badMapping :: Bindings -> Maybe [Binding]
+badMapping :: Bindings -> Either Text Bindings
 badMapping bindings =
     if null result
-        then Nothing
-        else Just (fst <$> result)
+        then Right bindings
+        else Left "invalid mapping"
   where
     result = filter ((== ANothing) . snd) bindings
 
-missing :: Bindings -> Maybe [ActionType]
+missing :: Bindings -> Either Text Bindings
 missing bindings =
     if null result
-        then Nothing
-        else Just result
+        then Right bindings
+        else Left "missing mapping"
   where
     bnd = ANothing : (snd <$> bindings)
     result = allActions \\ bnd

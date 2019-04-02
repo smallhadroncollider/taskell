@@ -56,7 +56,6 @@
     * [x] Markdown parsing
     * [ ] Text line breaks go a bit funny with multi-line descriptions
 - Check times work no matter what timezone
-- Import Issues from GitHub using  labels
 - Show filename somewhere
 - Add tags/labels with `t`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
@@ -75,6 +74,7 @@
     * [ ] Sort by date or filter by urgency?
 - Ability to load a taskell file with custom config.ini settings
     > Either command line arguments for settings or just a `-c other.ini` command
+- Import Issues from GitHub using  labels
 - Readline support?
     > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
 - Editable title?
@@ -86,10 +86,12 @@
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
     * [ ] Check for key conflicts: include keys not explicitly mapped (e.g. 1-9, Esc, Enter)
-    * [ ] Check for bits of functionality missing a mapping
+    * [x] Check for bits of functionality missing a mapping
     * [x] Update Help dialogue with key mappings
     * [ ] Needs to support merging with default options so that it's easy to add new default keys in the future
     * [ ] Add keys to Help which aren't in bindings
+    * [ ] Check for duplicate keys
+    * [ ] More detailed error messages for missing/invalid mappings
 - Add a List widget for common actions between tasks and sub-tasks
 - Can't remove a description
 
