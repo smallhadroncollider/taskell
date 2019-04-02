@@ -3,12 +3,13 @@
 
 module IO.Keyboard.Types where
 
-import ClassyPrelude
+import ClassyPrelude hiding ((\\))
 
+import Data.List                 ((\\))
 import Data.Map.Strict           (Map)
 import Graphics.Vty.Input.Events (Event (..), Key (..))
 
-import Events.Actions.Types (ActionType)
+import Events.Actions.Types (ActionType (ANothing), allActions)
 import Events.State.Types   (Stateful)
 
 data Binding
@@ -25,6 +26,23 @@ type BoundActions = Map Event Stateful
 instance Show Binding where
     show (BChar c)   = singleton c
     show (BKey name) = "<" <> unpack name <> ">"
+
+badMapping :: Bindings -> Maybe [Binding]
+badMapping bindings =
+    if null result
+        then Nothing
+        else Just (fst <$> result)
+  where
+    result = filter ((== ANothing) . snd) bindings
+
+missing :: Bindings -> Maybe [ActionType]
+missing bindings =
+    if null result
+        then Nothing
+        else Just result
+  where
+    bnd = ANothing : (snd <$> bindings)
+    result = allActions \\ bnd
 
 bindingsToText :: Bindings -> ActionType -> [Text]
 bindingsToText bindings key = tshow . fst <$> toList (filterMap (== key) bindings)

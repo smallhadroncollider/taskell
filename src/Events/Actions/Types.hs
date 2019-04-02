@@ -36,8 +36,8 @@ data ActionType
     | ANothing
     deriving (Show, Eq, Ord, Enum)
 
-all :: [ActionType]
-all = [toEnum 0 ..]
+allActions :: [ActionType]
+allActions = [toEnum 0 ..]
 
 read :: Text -> ActionType
 read "quit"       = AQuit
