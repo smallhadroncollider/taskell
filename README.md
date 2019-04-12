@@ -47,7 +47,7 @@ There are usually bottles (binaries) available. If these are not available for y
 
 ### Debian/Ubuntu
 
-[A `.deb` package is available for Debian/Ubuntu](https://github.com/smallhadroncollider/taskell/releases). Download it and install with `dpkg -i <package-name>`.
+[A `.deb` package is available for Debian/Ubuntu](https://github.com/smallhadroncollider/taskell/releases). Download it and install with `dpkg -i <package-name>`. You may also need to install the `libtinfo5` package (`sudo apt install libtinfo5`).
 
 ### Fedora
 
