@@ -24,8 +24,12 @@ type Actions = Map A.ActionType Stateful
 type BoundActions = Map Event Stateful
 
 instance Show Binding where
-    show (BChar c)   = singleton c
-    show (BKey name) = "<" <> unpack name <> ">"
+    show (BChar c)      = singleton c
+    show (BKey "Up")    = "↑"
+    show (BKey "Down")  = "↓"
+    show (BKey "Left")  = "←"
+    show (BKey "Right") = "→"
+    show (BKey name)    = "<" <> unpack name <> ">"
 
 badMapping :: Bindings -> Either Text Bindings
 badMapping bindings =
