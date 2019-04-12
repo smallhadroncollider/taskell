@@ -78,3 +78,12 @@ echo "Release info copied to clipboard"
 # Homebrew Pull Request
 brew update
 brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
+
+# Update taskell.app website
+(cd docs/html && echo "---
+layout: default
+title: {{ site.name }}
+---
+" > index.md && cat ../../README.md >> index.md && jekyll build)
+(cd docs/html/_site && git add . && git commit -m "Latest Build" && git push)
+(cd docs/html && cap production deploy)

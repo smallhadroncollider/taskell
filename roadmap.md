@@ -1,7 +1,5 @@
 ## Misc.
 
-- Automate website publishing when doing a new build
-    > Should automatically update the `_config.yml` file, build the website, then deploy it
 - Add more information to taskell.app
     > Update taskell.app to have more than just README.md contents. Use cases, more images, examples, etc.
     * [ ] Use case example: checklist
@@ -268,3 +266,5 @@
     > Give an organisation or username and repo, list the possible projects to fetch - avoid having to look up the project ID manually first
 - GitHub import should take pagination into account
 - Use XDG spec for storing config files
+- Automate website publishing when doing a new build
+    > Should automatically update the `_config.yml` file, build the website, then deploy it
