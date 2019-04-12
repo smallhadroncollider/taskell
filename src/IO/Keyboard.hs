@@ -31,6 +31,8 @@ defaultBindings =
     , (BChar 'a', ANew)
     , (BChar 'O', ANewAbove)
     , (BChar 'o', ANewBelow)
+    , (BChar 'e', AEdit)
+    , (BChar 'A', AEdit)
     , (BChar 'i', AEdit)
     , (BChar 'C', AClear)
     , (BChar 'D', ADelete)
