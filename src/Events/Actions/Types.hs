@@ -3,68 +3,68 @@
 
 module Events.Actions.Types where
 
-import ClassyPrelude
+import ClassyPrelude hiding (Left, Nothing, Right)
 
 data ActionType
-    = AQuit
-    | AUndo
-    | ASearch
-    | AHelp
-    | APrevious
-    | ANext
-    | ALeft
-    | ARight
-    | ABottom
-    | ANew
-    | ANewAbove
-    | ANewBelow
-    | AEdit
-    | AClear
-    | ADelete
-    | ADetail
-    | ADueDate
-    | AMoveUp
-    | AMoveDown
-    | AMoveLeft
-    | AMoveRight
-    | AMoveMenu
-    | AListNew
-    | AListEdit
-    | AListDelete
-    | AListRight
-    | AListLeft
-    | ANothing
+    = Quit
+    | Undo
+    | Search
+    | Help
+    | Previous
+    | Next
+    | Left
+    | Right
+    | Bottom
+    | New
+    | NewAbove
+    | NewBelow
+    | Edit
+    | Clear
+    | Delete
+    | Detail
+    | DueDate
+    | MoveUp
+    | MoveDown
+    | MoveLeft
+    | MoveRight
+    | MoveMenu
+    | ListNew
+    | ListEdit
+    | ListDelete
+    | ListRight
+    | ListLeft
+    | Nothing
     deriving (Show, Eq, Ord, Enum)
 
 allActions :: [ActionType]
 allActions = [toEnum 0 ..]
 
 read :: Text -> ActionType
-read "quit"       = AQuit
-read "undo"       = AUndo
-read "search"     = ASearch
-read "help"       = AHelp
-read "previous"   = APrevious
-read "next"       = ANext
-read "left"       = ALeft
-read "right"      = ARight
-read "bottom"     = ABottom
-read "new"        = ANew
-read "newAbove"   = ANewAbove
-read "newBelow"   = ANewBelow
-read "edit"       = AEdit
-read "clear"      = AClear
-read "delete"     = ADelete
-read "detail"     = ADetail
-read "dueDate"    = ADueDate
-read "moveUp"     = AMoveUp
-read "moveDown"   = AMoveDown
-read "moveLeft"   = AMoveLeft
-read "moveRight"  = AMoveRight
-read "moveMenu"   = AMoveMenu
-read "listNew"    = AListNew
-read "listEdit"   = AListEdit
-read "listDelete" = AListDelete
-read "listRight"  = AListRight
-read "listLeft"   = AListLeft
-read _            = ANothing
+read "quit"       = Quit
+read "undo"       = Undo
+read "search"     = Search
+read "help"       = Help
+read "previous"   = Previous
+read "next"       = Next
+read "left"       = Left
+read "right"      = Right
+read "bottom"     = Bottom
+read "new"        = New
+read "newAbove"   = NewAbove
+read "newBelow"   = NewBelow
+read "edit"       = Edit
+read "clear"      = Clear
+read "delete"     = Delete
+read "detail"     = Detail
+read "dueDate"    = DueDate
+read "moveUp"     = MoveUp
+read "moveDown"   = MoveDown
+read "moveLeft"   = MoveLeft
+read "moveRight"  = MoveRight
+read "moveMenu"   = MoveMenu
+read "listNew"    = ListNew
+read "listEdit"   = ListEdit
+read "listDelete" = ListDelete
+read "listRight"  = ListRight
+read "listLeft"   = ListLeft
+read _            = Nothing

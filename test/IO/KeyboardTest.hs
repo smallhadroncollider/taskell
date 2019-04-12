@@ -14,7 +14,7 @@ import Test.Tasty.HUnit
 import Control.Lens ((.~))
 
 import Data.Taskell.Lists.Internal (initial)
-import Events.Actions.Types
+import Events.Actions.Types        as A
 import Events.State                (create, quit)
 import Events.State.Types          (State, Stateful, mode)
 import Events.State.Types.Mode     (Mode (Shutdown))
@@ -29,10 +29,10 @@ cleanState :: State
 cleanState = create "taskell.md" initial
 
 basicBindings :: Bindings
-basicBindings = [(BChar 'q', AQuit)]
+basicBindings = [(BChar 'q', A.Quit)]
 
 basicActions :: Actions
-basicActions = [(AQuit, quit)]
+basicActions = [(A.Quit, quit)]
 
 basicResult :: Maybe State
 basicResult = Just $ (mode .~ Shutdown) cleanState
