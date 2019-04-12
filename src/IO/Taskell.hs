@@ -22,7 +22,7 @@ import IO.Markdown (parse, stringify)
 import qualified IO.HTTP.GitHub as GitHub (GitHubIdentifier, getLists)
 import qualified IO.HTTP.Trello as Trello (TrelloBoardID, getLists)
 
-import UI.CLI (promptYN)
+import UI.CLI (PromptYN (PromptYes), promptYN)
 
 type ReaderConfig a = ReaderT Config IO a
 
@@ -142,7 +142,7 @@ fileExists path = lift $ doesFileExist path
 promptCreate :: FilePath -> ReaderConfig Bool
 promptCreate path = do
     cwd <- lift $ pack <$> getCurrentDirectory
-    lift $ promptYN $ concat ["Create ", cwd, "/", pack path, "?"]
+    lift $ promptYN PromptYes $ concat ["Create ", cwd, "/", pack path, "?"]
 
 -- creates taskell file
 createPath :: FilePath -> ReaderConfig ()

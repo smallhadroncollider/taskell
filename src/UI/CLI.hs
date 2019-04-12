@@ -4,6 +4,7 @@
 module UI.CLI
     ( prompt
     , promptYN
+    , PromptYN(PromptYes)
     ) where
 
 import ClassyPrelude
@@ -14,5 +15,10 @@ prompt s = do
     hFlush stdout -- prevents buffering
     getLine
 
-promptYN :: Text -> IO Bool
-promptYN s = (==) "y" <$> prompt (s <> " (y/n)")
+data PromptYN
+    = PromptYes
+    | PromptNo
+
+promptYN :: PromptYN -> Text -> IO Bool
+promptYN PromptYes s = not . flip elem ["n", "no"] . toLower <$> prompt (s <> " (Y/n)")
+promptYN PromptNo s  = not . flip elem ["y", "yes"] . toLower <$> prompt (s <> " (y/N)")
