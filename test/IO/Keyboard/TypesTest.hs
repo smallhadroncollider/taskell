@@ -10,41 +10,41 @@ import ClassyPrelude
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Events.Actions.Types (ActionType (..))
-import IO.Keyboard          (defaultBindings)
-import IO.Keyboard.Types    (Binding (..), Bindings, badMapping, missing)
+import qualified Events.Actions.Types as A (ActionType (..))
+import           IO.Keyboard          (defaultBindings)
+import           IO.Keyboard.Types    (Binding (..), Bindings, badMapping, missing)
 
 notFull :: Bindings
 notFull =
-    [ (BChar 'q', AQuit)
-    , (BChar 'u', AUndo)
-    , (BChar '/', ASearch)
-    , (BChar '?', AHelp)
-    , (BChar 'k', APrevious)
-    , (BChar 'j', ANext)
-    , (BChar 'h', ALeft)
-    , (BChar 'l', ARight)
-    , (BChar 'g', ABottom)
-    , (BChar 'i', AEdit)
-    , (BChar 'C', AClear)
-    , (BChar 'D', ADelete)
-    , (BKey "Enter", ADetail)
-    , (BChar '@', ADueDate)
-    , (BChar 'K', AMoveUp)
-    , (BChar 'J', AMoveDown)
-    , (BChar 'H', AMoveLeft)
-    , (BChar 'L', AMoveRight)
-    , (BKey "Space", AMoveRight)
-    , (BChar 'm', AMoveMenu)
-    , (BChar 'N', AListNew)
-    , (BChar 'E', AListEdit)
-    , (BChar 'X', AListDelete)
-    , (BChar '>', AListRight)
-    , (BChar '<', AListLeft)
+    [ (BChar 'q', A.Quit)
+    , (BChar 'u', A.Undo)
+    , (BChar '/', A.Search)
+    , (BChar '?', A.Help)
+    , (BChar 'k', A.Previous)
+    , (BChar 'j', A.Next)
+    , (BChar 'h', A.Left)
+    , (BChar 'l', A.Right)
+    , (BChar 'g', A.Bottom)
+    , (BChar 'i', A.Edit)
+    , (BChar 'C', A.Clear)
+    , (BChar 'D', A.Delete)
+    , (BKey "Enter", A.Detail)
+    , (BChar '@', A.DueDate)
+    , (BChar 'K', A.MoveUp)
+    , (BChar 'J', A.MoveDown)
+    , (BChar 'H', A.MoveLeft)
+    , (BChar 'L', A.MoveRight)
+    , (BKey "Space", A.MoveRight)
+    , (BChar 'm', A.MoveMenu)
+    , (BChar 'N', A.ListNew)
+    , (BChar 'E', A.ListEdit)
+    , (BChar 'X', A.ListDelete)
+    , (BChar '>', A.ListRight)
+    , (BChar '<', A.ListLeft)
     ]
 
 bad :: Bindings
-bad = [(BChar 'q', AQuit), (BChar 'u', ANothing), (BChar '>', ANothing), (BChar '<', AListLeft)]
+bad = [(BChar 'q', A.Quit), (BChar 'u', A.Nothing), (BChar '>', A.Nothing), (BChar '<', A.ListLeft)]
 
 -- tests
 test_types :: TestTree

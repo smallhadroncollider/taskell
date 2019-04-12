@@ -9,17 +9,17 @@ import Data.List                 ((\\))
 import Data.Map.Strict           (Map)
 import Graphics.Vty.Input.Events (Event (..), Key (..))
 
-import Events.Actions.Types (ActionType (ANothing), allActions)
-import Events.State.Types   (Stateful)
+import qualified Events.Actions.Types as A (ActionType (Nothing), allActions)
+import           Events.State.Types   (Stateful)
 
 data Binding
     = BChar Char
     | BKey Text
     deriving (Eq, Ord)
 
-type Bindings = [(Binding, ActionType)]
+type Bindings = [(Binding, A.ActionType)]
 
-type Actions = Map ActionType Stateful
+type Actions = Map A.ActionType Stateful
 
 type BoundActions = Map Event Stateful
 
@@ -33,7 +33,7 @@ badMapping bindings =
         then Right bindings
         else Left "invalid mapping"
   where
-    result = filter ((== ANothing) . snd) bindings
+    result = filter ((== A.Nothing) . snd) bindings
 
 missing :: Bindings -> Either Text Bindings
 missing bindings =
@@ -41,10 +41,10 @@ missing bindings =
         then Right bindings
         else Left "missing mapping"
   where
-    bnd = ANothing : (snd <$> bindings)
-    result = allActions \\ bnd
+    bnd = A.Nothing : (snd <$> bindings)
+    result = A.allActions \\ bnd
 
-bindingsToText :: Bindings -> ActionType -> [Text]
+bindingsToText :: Bindings -> A.ActionType -> [Text]
 bindingsToText bindings key = tshow . fst <$> toList (filterMap (== key) bindings)
 
 bindingToEvent :: Binding -> Maybe Event

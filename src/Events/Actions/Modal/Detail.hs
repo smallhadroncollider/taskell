@@ -9,7 +9,7 @@ module Events.Actions.Modal.Detail
 
 import ClassyPrelude
 
-import           Events.Actions.Types      (ActionType (..))
+import           Events.Actions.Types      as A (ActionType (..))
 import           Events.State
 import           Events.State.Modal.Detail as Detail
 import           Events.State.Types
@@ -22,16 +22,16 @@ events :: Actions
 events
     -- general
  =
-    [ (AQuit, quit)
-    , (AUndo, (write =<<) . undo)
-    , (APrevious, previousSubtask)
-    , (ANext, nextSubtask)
-    , (ANew, (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store)
-    , (AEdit, (Detail.insertMode =<<) . store)
-    , (AMoveRight, (write =<<) . (setComplete =<<) . store)
-    , (ADelete, (write =<<) . (Detail.remove =<<) . store)
-    , (ADueDate, (editDue =<<) . store)
-    , (ADetail, (editDescription =<<) . store)
+    [ (A.Quit, quit)
+    , (A.Undo, (write =<<) . undo)
+    , (A.Previous, previousSubtask)
+    , (A.Next, nextSubtask)
+    , (A.New, (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store)
+    , (A.Edit, (Detail.insertMode =<<) . store)
+    , (A.MoveRight, (write =<<) . (setComplete =<<) . store)
+    , (A.Delete, (write =<<) . (Detail.remove =<<) . store)
+    , (A.DueDate, (editDue =<<) . store)
+    , (A.Detail, (editDescription =<<) . store)
     ]
 
 normal :: Event -> Stateful
