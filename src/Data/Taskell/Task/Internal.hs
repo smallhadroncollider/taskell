@@ -34,9 +34,10 @@ new text = blank & (name .~ text)
 
 setDescription :: Text -> Update
 setDescription text =
+    description .~
     if null (strip text)
-        then id
-        else description .~ Just text
+        then Nothing
+        else Just text
 
 maybeAppend :: Text -> Maybe Text -> Maybe Text
 maybeAppend text (Just current) = Just (concat [current, "\n", text])

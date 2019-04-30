@@ -91,7 +91,6 @@
     * [ ] Check for duplicate keys
     * [ ] More detailed error messages for missing/invalid mappings
 - Add a List widget for common actions between tasks and sub-tasks
-- Can't remove a description
 
 ## Done
 
@@ -268,3 +267,4 @@
 - Use XDG spec for storing config files
 - Automate website publishing when doing a new build
     > Should automatically update the `_config.yml` file, build the website, then deploy it
+- Can't remove a description
