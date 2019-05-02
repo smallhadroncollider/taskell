@@ -1,7 +1,5 @@
 ## Misc.
 
-- Automate website publishing when doing a new build
-    > Should automatically update the `_config.yml` file, build the website, then deploy it
 - Add more information to taskell.app
     > Update taskell.app to have more than just README.md contents. Use cases, more images, examples, etc.
     * [ ] Use case example: checklist
@@ -93,7 +91,6 @@
     * [ ] Check for duplicate keys
     * [ ] More detailed error messages for missing/invalid mappings
 - Add a List widget for common actions between tasks and sub-tasks
-- Can't remove a description
 
 ## Done
 
@@ -268,3 +265,6 @@
     > Give an organisation or username and repo, list the possible projects to fetch - avoid having to look up the project ID manually first
 - GitHub import should take pagination into account
 - Use XDG spec for storing config files
+- Automate website publishing when doing a new build
+    > Should automatically update the `_config.yml` file, build the website, then deploy it
+- Can't remove a description

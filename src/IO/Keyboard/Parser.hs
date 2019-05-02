@@ -16,7 +16,7 @@ lexeme :: Parser a -> Parser a
 lexeme p = skipSpace *> p <* skipSpace
 
 commentP :: Parser ()
-commentP = lexeme $ skipMany (char '#' *> manyTill anyChar endOfLine)
+commentP = lexeme $ skipMany ((char '#' <|> char ';') *> manyTill anyChar endOfLine)
 
 stripComments :: Parser a -> Parser a
 stripComments p = lexeme $ commentP *> p <* commentP
