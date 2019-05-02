@@ -10,7 +10,6 @@
 - Add tests for IO.GitHub
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
-- Use a map in Actions to tidy things up/add custom key support
 - Avoid having to normalise the state?
 - Remove duplication of config - currently using ini and hard-coded defaults
 - Move Help modal creation into Template Haskell
@@ -23,6 +22,7 @@
 
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
+- No longer a difference between <Space> and move right
 - Help modal needs to wrap and scroll
 - Modal boxes shouldn't be full height unless they need to be
 - Up and down in search gets a bit lost
@@ -77,6 +77,7 @@
     > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
 - Editable title?
     > Use a `# Title` at top of file and display title somewhere in taskell
+- Keep undo between sessions?
 
 ## In Progress
 
