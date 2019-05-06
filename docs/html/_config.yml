@@ -1,6 +1,6 @@
 # Setup
 title:        taskell
-tagline:      Command-line Kanban board/task managment
+tagline:      Command-line Kanban board/task management
 baseurl:      ""
 locale:       "en"
 version:      1.4.3
