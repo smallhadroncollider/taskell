@@ -19,11 +19,13 @@ module Events.State.Modal.Detail
     , nextSubtask
     , previousSubtask
     , lastSubtask
+    , startCorrectPomodoroPhase
+    , stopPomodoro
     ) where
 
 import ClassyPrelude
 
-import Control.Lens ((&), (.~), (^.))
+import Control.Lens ((&), (.~), (%~), (^.))
 
 import           Data.Taskell.Date       (dayToOutput)
 import qualified Data.Taskell.Subtask    as ST (blank, name, toggle)
@@ -31,7 +33,8 @@ import           Data.Taskell.Task       (Task, addSubtask, countSubtasks, descr
                                           getSubtask, removeSubtask, setDescription, setDue,
                                           updateSubtask)
 import           Events.State            (getCurrentTask, setCurrentTask)
-import           Events.State.Types      (State, Stateful, mode)
+import           Events.State.Types      (State, Stateful, mode, current, pomodoro, time, PomodoroPhase(..),
+                                          Pomodoro(..)) 
 import           Events.State.Types.Mode (DetailItem (..), DetailMode (..), ModalType (Detail),
                                           Mode (Modal))
 import           UI.Field                (Field, blankField, getText, textToField)
@@ -160,3 +163,20 @@ setIndex state i = do
             | i < 0 = 0
             | otherwise = i
     pure $ state & mode .~ Modal (Detail (DetailItem newIndex) m)
+
+startCorrectPomodoroPhase :: Stateful
+startCorrectPomodoroPhase state = pure $ state & pomodoro %~ Just . pickAPhase
+    where
+        initialCycle     = 1
+        timeForLongBreak = 4
+
+        pickAPhase Nothing                                   = Pomodoro Task (state ^. current) (state ^. time) initialCycle
+        pickAPhase (Just (Pomodoro Task task _ cycle))
+           | cycle <  timeForLongBreak                       = Pomodoro ShortBreak task (state ^. time) cycle
+           | cycle >= timeForLongBreak                       = Pomodoro LongBreak  task (state ^. time) initialCycle
+        pickAPhase (Just (Pomodoro ShortBreak task _ cycle)) = Pomodoro Task       task (state ^. time) (cycle + 1)
+        pickAPhase (Just (Pomodoro LongBreak task _ cycle))  = Pomodoro Task       task (state ^. time) initialCycle
+
+
+stopPomodoro :: Stateful
+stopPomodoro state = pure $ state & pomodoro .~ Nothing

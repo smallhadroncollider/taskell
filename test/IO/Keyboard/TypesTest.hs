@@ -49,6 +49,8 @@ notFullResult =
     , (BChar 'X', A.ListDelete)
     , (BChar '>', A.ListRight)
     , (BChar '<', A.ListLeft)
+    , (BChar 't', A.PomodoroStart)
+    , (BChar 's', A.PomodoroStop)
     ]
 
 bad :: Bindings

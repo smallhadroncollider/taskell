@@ -70,9 +70,17 @@ import UI.Field                (blankField, getText, textToField)
 
 type InternalStateful = State -> State
 
-create :: FilePath -> Lists.Lists -> State
-create p ls =
-    State {_mode = Normal, _lists = ls, _history = [], _current = (0, 0), _path = p, _io = Nothing}
+create :: FilePath -> Lists.Lists -> UTCTime -> State
+create p ls t =
+    State { _mode = Normal
+          , _lists = ls
+          , _history = []
+          , _current = (0, 0)
+          , _path = p
+          , _io = Nothing
+          , _pomodoro = Nothing
+          , _time = t
+          }
 
 -- app state
 quit :: Stateful

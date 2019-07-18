@@ -11,7 +11,8 @@ import ClassyPrelude hiding (delete)
 import Data.Char                 (isDigit)
 import Events.Actions.Types      as A (ActionType (..))
 import Events.State
-import Events.State.Modal.Detail (editDue, showDetail)
+import Events.State.Modal.Detail (editDue, showDetail, startCorrectPomodoroPhase,
+                                  stopPomodoro)
 import Events.State.Types        (Stateful)
 import Graphics.Vty.Input.Events
 import IO.Keyboard.Types         (Actions)
@@ -52,6 +53,9 @@ events
     , (A.ListDelete, (write =<<) . (deleteCurrentList =<<) . store)
     , (A.ListRight, (write =<<) . (listRight =<<) . store)
     , (A.ListLeft, (write =<<) . (listLeft =<<) . store)
+    -- pomodoro
+    , (A.PomodoroStart, startCorrectPomodoroPhase)
+    , (A.PomodoroStop, stopPomodoro)
     ]
 
 -- Normal

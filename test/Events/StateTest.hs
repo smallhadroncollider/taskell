@@ -11,6 +11,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Control.Lens ((&), (.~), (^.))
+import Data.Time    (UTCTime(UTCTime), Day(ModifiedJulianDay), secondsToDiffTime)
 
 import qualified Data.Sequence           as S (lookup)
 import qualified Data.Taskell.List       as L (append, empty)
@@ -28,7 +29,11 @@ testState =
     , _current = (0, 0)
     , _path = "test.md"
     , _io = Nothing
+    , _pomodoro = Nothing
+    , _time = zeroTime
     }
+    where
+        zeroTime = UTCTime (ModifiedJulianDay 0) (secondsToDiffTime 0)
 
 moveToState :: State
 moveToState =

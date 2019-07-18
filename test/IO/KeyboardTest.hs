@@ -12,6 +12,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Control.Lens ((.~))
+import Data.Time    (UTCTime(UTCTime), Day(ModifiedJulianDay), secondsToDiffTime)
 
 import Data.Taskell.Lists.Internal (initial)
 import Events.Actions.Types        as A
@@ -26,7 +27,9 @@ tester :: BoundActions -> Event -> Stateful
 tester actions ev state = lookup ev actions >>= ($ state)
 
 cleanState :: State
-cleanState = create "taskell.md" initial
+cleanState = create "taskell.md" initial zeroTime
+    where
+        zeroTime = UTCTime (ModifiedJulianDay 0) (secondsToDiffTime 0)
 
 basicBindings :: Bindings
 basicBindings = [(BChar 'q', A.Quit)]

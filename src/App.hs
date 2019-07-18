@@ -6,19 +6,22 @@ module App
 
 import ClassyPrelude
 
-import Control.Lens ((^.))
+import Control.Lens ((^.), (.~))
 
 import Brick
-import Graphics.Vty              (Mode (BracketedPaste), outputIface, setMode, supportsMode)
+import Brick.BChan               (BChan, newBChan, writeBChan)
+import Graphics.Vty              (Mode (BracketedPaste), outputIface, setMode, supportsMode, mkVty, defaultConfig)
 import Graphics.Vty.Input.Events (Event (..))
 
 import qualified Control.FoldDebounce as Debounce
 
+import Control.Concurrent      (threadDelay, forkIO)
+import Data.Time               (UTCTime, getCurrentTime, diffUTCTime)
 import Data.Taskell.Date       (currentDay)
 import Data.Taskell.Lists      (Lists)
 import Events.Actions          (ActionSets, event, generateActions)
 import Events.State            (continue, countCurrent)
-import Events.State.Types      (State, current, io, lists, mode, path)
+import Events.State.Types      (State, current, io, lists, mode, path, time)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
 import IO.Config               (Config, generateAttrMap, getBindings, layout)
 import IO.Taskell              (writeData)
@@ -96,14 +99,25 @@ handleVtyEvent (send, trigger) actions previousState e = do
         (Insert ITask ICreate _) -> clearList state *> next send state
         _ -> clearCache previousState *> clearCache state *> next send state
 
+handleAppEvent :: State -> UTCTime -> EventM ResourceName (Next State)
+handleAppEvent state t = do
+    -- | Pseudo for firing shell commands when phases change in pomodoro
+    --let remainingTime = diffUTCTime (s ^. pomodoro.startTime) (s ^. time)
+    --when( remainingTime < 0 && shellCommandNotFired) $ do
+    --    fireOffShellCmd
+    --    flagShellCommandFired
+    invalidateCache
+    Brick.continue (time .~ t $ state)
+
 handleEvent ::
        (DebouncedWrite, Trigger)
     -> ActionSets
     -> State
-    -> BrickEvent ResourceName e
+    -> BrickEvent ResourceName UTCTime
     -> EventM ResourceName (Next State)
 handleEvent _ _ state (VtyEvent (EvResize _ _)) = invalidateCache *> Brick.continue state
 handleEvent db actions state (VtyEvent ev)      = handleVtyEvent db actions state ev
+handleEvent _ _ state (AppEvent t)              = handleAppEvent state t
 handleEvent _ _ state _                         = Brick.continue state
 
 -- | Runs when the app starts
@@ -117,6 +131,8 @@ appStart state = do
 -- | Sets up Brick
 go :: Config -> State -> IO ()
 go config initial = do
+    timeChan <- newBChan 1
+    loop timeChan
     attrMap' <- const <$> generateAttrMap
     today <- currentDay
     db <- debounce config initial
@@ -129,4 +145,13 @@ go config initial = do
             , appStartEvent = appStart
             , appAttrMap = attrMap'
             }
-    void (defaultMain app initial)
+    initialHandle <- mkVty defaultConfig
+    void $ customMain initialHandle (mkVty defaultConfig) (Just timeChan) app initial
+
+
+-- | Pumps ticks into Brick as AppEvent every 1/2 second
+loop :: BChan UTCTime -> IO ()
+loop chan = void . forkIO . forever $ do
+    getCurrentTime >>= writeBChan chan
+    threadDelay 500000 -- update two times a second, to avoid timer sometimes jumping 2 seconds
+

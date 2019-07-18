@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
 module UI.Draw
     ( draw
@@ -13,8 +14,11 @@ import Control.Lens ((^.))
 import Control.Monad.Reader (runReader)
 import Data.Char            (chr, ord)
 import Data.Sequence        (mapWithIndex)
+import Data.Time            (NominalDiffTime, diffUTCTime, addUTCTime)
 
 import Brick
+import Brick.Widgets.Core      (txt)
+import Brick.Widgets.Center    (hCenter)
 
 import           Data.Taskell.Date       (Day, dayToText, deadline)
 import           Data.Taskell.List       (List, tasks, title)
@@ -22,7 +26,8 @@ import           Data.Taskell.Lists      (Lists)
 import qualified Data.Taskell.Task       as T (Task, countCompleteSubtasks, countSubtasks,
                                                description, due, hasSubtasks, name)
 import           Events.State            (normalise)
-import           Events.State.Types      (Pointer, State, current, lists, mode)
+import           Events.State.Types      (Pointer, State, current, lists, mode, PomodoroPhase(..),
+                                          pomodoro, time, Pomodoro(..))
 import           Events.State.Types.Mode (DetailMode (..), InsertType (..), ModalType (..),
                                           Mode (..))
 import           IO.Config.Layout        (Config, columnPadding, columnWidth, descriptionIndicator)
@@ -41,6 +46,9 @@ data DrawState = DrawState
     , dsCurrent      :: Pointer
     , dsField        :: Maybe Field
     , dsEditingTitle :: Bool
+    -- Why not just passing a State into ReaderDrawState?
+    , dsTime         :: UTCTime
+    , dsPomodoro     :: Maybe Pomodoro
     }
 
 -- | Use a Reader to pass around DrawState
@@ -177,13 +185,56 @@ renderSearch mainWidget = do
             pure $ mainWidget <=> widget
         _ -> pure mainWidget
 
+renderPomodoro :: ReaderDrawState (Widget ResourceName)
+renderPomodoro = asks dsPomodoro >>= \case
+    Nothing -> pure (str "No pomodoro running.")
+    Just pomodoro  -> do
+        currTime <- asks dsTime
+        let nominalTime = timeLeft (phaseMinutes (_phase pomodoro)) (_startTime pomodoro) currTime
+        pure $ withAttr (phaseAttr (_phase pomodoro) nominalTime)
+             $ phaseWidget (_phase pomodoro) nominalTime
+    where
+        -- Config
+        phaseMinutes Task       = 25
+        phaseMinutes ShortBreak = 5
+        phaseMinutes LongBreak  = 15
+
+        phaseText Task       = "Work: "
+        phaseText ShortBreak = "Short break: "
+        phaseText LongBreak  = "Long break: "
+
+        phaseAttr Task t
+            | t >= 0    = dlPomodoroTask
+            | otherwise = dlPomodoroTaskOvertime
+        phaseAttr ShortBreak t 
+            | t >= 0    = dlPomodoroShortBreak
+            | otherwise = dlPomodoroShortBreakOvertime
+        phaseAttr LongBreak t
+            | t >= 0    = dlPomodoroLongBreak
+            | otherwise = dlPomodoroLongBreakOvertime
+
+        phaseWidget phase nominalTime = str $ phaseText phase <> formatNominalTime nominalTime
+        timeLeft phaseTime startTime currTime = diffUTCTime (addUTCTime (phaseTime * 60) startTime) currTime
+
+        -- NominalDiffTime doesn't instance TimeFormat :-(
+        -- (at least I didn't figure out how to do it)
+        formatNominalTime :: NominalDiffTime -> String
+        formatNominalTime t
+            | t >= 0    = let mins = floor t `div` (60 :: Int)
+                              secs = floor t `mod` (60 :: Int)
+                          in  show mins <> ":" <> show secs
+            | otherwise = "0:0"
+
 -- | Renders the main widget
 main :: ReaderDrawState (Widget ResourceName)
 main = do
     ls <- dsLists <$> ask
     listWidgets <- toList <$> sequence (renderList `mapWithIndex` ls)
     let mainWidget = viewport RNLists Horizontal . padTopBottom 1 $ hBox listWidgets
-    renderSearch mainWidget
+    -- Can't decide what looks best: left aligned, center, or right aligned
+    -- (<=>) <$> fmap (padLeft Max) renderPomodoro
+    (<=>) <$> fmap hCenter renderPomodoro
+          <*> renderSearch mainWidget
 
 getField :: Mode -> Maybe Field
 getField (Insert _ _ f) = Just f
@@ -214,6 +265,8 @@ draw layout bindings today state =
               , dsField = getField stateMode
               , dsCurrent = normalisedState ^. current
               , dsEditingTitle = editingTitle stateMode
+              , dsPomodoro = normalisedState ^. pomodoro
+              , dsTime = normalisedState ^. time
               }
         ]
   where

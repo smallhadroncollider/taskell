@@ -14,7 +14,8 @@ main :: IO ()
 main = do
     config <- setup
     next <- runReaderT load config
+    t <- getCurrentTime
     case next of
         Exit            -> pure ()
         Output text     -> putStrLn text
-        Load path lists -> go config $ create path lists
+        Load path lists -> go config $ create path lists t
