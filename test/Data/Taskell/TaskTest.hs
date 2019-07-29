@@ -17,11 +17,14 @@ import Data.Time (fromGregorianValid)
 import qualified Data.Taskell.Subtask       as ST (name, new)
 import           Data.Taskell.Task.Internal
 
+desc :: Maybe Text
+desc = Just "A very boring description"
+
 testTask :: Task
 testTask =
     Task
     { _name = "Test"
-    , _description = Nothing
+    , _description = desc
     , _subtasks = fromList [ST.new "One" True, ST.new "Two" False, ST.new "Three" False]
     , _due = Nothing
     }
@@ -76,7 +79,7 @@ test_task =
                          "Returns the task with added subtask"
                          (Task
                               "Test"
-                              Nothing
+                              desc
                               (fromList
                                    [ ST.new "One" True
                                    , ST.new "Two" False
@@ -107,7 +110,7 @@ test_task =
                          "Returns updated task"
                          (Task
                               "Test"
-                              Nothing
+                              desc
                               (fromList
                                    [ST.new "One" True, ST.new "Cow" False, ST.new "Three" False])
                               Nothing)
@@ -118,7 +121,7 @@ test_task =
                          "Returns task"
                          (Task
                               "Test"
-                              Nothing
+                              desc
                               (fromList
                                    [ST.new "One" True, ST.new "Two" False, ST.new "Three" False])
                               Nothing)
@@ -132,7 +135,7 @@ test_task =
                          "Returns updated task"
                          (Task
                               "Test"
-                              Nothing
+                              desc
                               (fromList [ST.new "One" True, ST.new "Three" False])
                               Nothing)
                          (removeSubtask 1 testTask))
@@ -142,7 +145,7 @@ test_task =
                          "Returns task"
                          (Task
                               "Test"
-                              Nothing
+                              desc
                               (fromList
                                    [ST.new "One" True, ST.new "Two" False, ST.new "Three" False])
                               Nothing)
@@ -163,6 +166,12 @@ test_task =
                     "case-insensitive"
                     (assertEqual "Find sub-task" True (contains "two" testTask))
               , testCase "missing" (assertEqual "Find sub-task" False (contains "Fish" testTask))
+              , testCase
+                    "description"
+                    (assertEqual "Finds in description" True (contains "boring" testTask))
+              , testCase
+                    "not in description"
+                    (assertEqual "Doesn't find" False (contains "escapades" testTask))
               ]
         , testGroup
               "isBlank"

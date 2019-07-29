@@ -77,7 +77,8 @@ countCompleteSubtasks :: Task -> Int
 countCompleteSubtasks = length . filter (^. ST.complete) . (^. subtasks)
 
 contains :: Text -> Task -> Bool
-contains text task = check (task ^. name) || not (null sts)
+contains text task =
+    check (task ^. name) || maybe False check (task ^. description) || not (null sts)
   where
     check = isInfixOf (toLower text) . toLower
     sts = filter check $ (^. ST.name) <$> (task ^. subtasks)
