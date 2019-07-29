@@ -14,8 +14,6 @@ import           Events.State.Types.Mode   (Mode (Search))
 import           Graphics.Vty.Input.Events
 import qualified UI.Field                  as F (event)
 
-import qualified Events.Actions.Normal as Normal
-
 search :: Event -> Stateful
 search (EvKey KEnter _) s = searchEntered s
 search e s =
@@ -24,14 +22,10 @@ search e s =
         Search ent field -> s & mode .~ Search ent (F.event e field)
         _                -> s
 
-event :: Event -> Stateful
-event (EvKey KEsc _) s = normalMode s
-event e s =
+event :: (Event -> Stateful) -> Event -> Stateful
+event _ (EvKey KEsc _) s = normalMode s
+event fb e s =
     case s ^. mode of
-        Search ent _ ->
-            (if ent
-                 then search
-                 else Normal.event)
-                e
-                s
-        _ -> pure s
+        Search True _  -> search e s
+        Search False _ -> fb e s
+        _              -> pure s

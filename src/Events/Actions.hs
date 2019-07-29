@@ -25,13 +25,19 @@ import qualified Events.Actions.Modal.Help   as Help
 import qualified Events.Actions.Normal       as Normal
 import qualified Events.Actions.Search       as Search
 
+fallback :: BoundActions -> Event -> Stateful
+fallback norm e state =
+    case lookup e norm of
+        Just ev -> ev state
+        Nothing -> Normal.event e state
+
 -- takes an event and returns a Maybe State
-event' :: Event -> Stateful
+event' :: Event -> BoundActions -> Stateful
 -- for other events pass through to relevant modules
-event' e state =
+event' e norm state =
     case state ^. mode of
         Normal    -> Normal.event e state
-        Search {} -> Search.event e state
+        Search {} -> Search.event (fallback norm) e state
         Insert {} -> Insert.event e state
         Modal {}  -> Modal.event e state
         _         -> pure state
@@ -39,15 +45,16 @@ event' e state =
 -- returns new state if successful
 event :: ActionSets -> Event -> State -> State
 event actions e state = do
+    let norm = normal actions
     let mEv =
             case state ^. mode of
-                Normal                        -> lookup e $ normal actions
+                Normal                        -> lookup e norm
                 Modal (Detail _ DetailNormal) -> lookup e $ detail actions
                 Modal Help                    -> lookup e $ help actions
                 _                             -> Nothing
     fromMaybe state $
         case mEv of
-            Nothing -> event' e state
+            Nothing -> event' e norm state
             Just ev -> ev state
 
 data ActionSets = ActionSets
