@@ -18,11 +18,11 @@ import Brick
 
 import           Data.Taskell.Date       (Day, dayToText, deadline)
 import           Data.Taskell.List       (List, tasks, title)
-import           Data.Taskell.Lists      (Lists)
+import           Data.Taskell.Lists      (Lists, count)
 import qualified Data.Taskell.Task       as T (Task, countCompleteSubtasks, countSubtasks,
                                                description, due, hasSubtasks, name)
 import           Events.State            (normalise)
-import           Events.State.Types      (Pointer, State, current, lists, mode)
+import           Events.State.Types      (Pointer, State, current, lists, mode, path)
 import           Events.State.Types.Mode (DetailMode (..), InsertType (..), ModalType (..),
                                           Mode (..))
 import           IO.Config.Layout        (Config, columnPadding, columnWidth, descriptionIndicator)
@@ -37,6 +37,7 @@ data DrawState = DrawState
     { dsLists        :: Lists
     , dsMode         :: Mode
     , dsLayout       :: Config
+    , dsPath         :: FilePath
     , dsToday        :: Day
     , dsCurrent      :: Pointer
     , dsField        :: Maybe Field
@@ -173,9 +174,30 @@ renderSearch mainWidget = do
                     if editing
                         then taskCurrentAttr
                         else taskAttr
-            let widget = attr . padTopBottom 1 . padLeftRight colPad $ txt "/" <+> field searchField
+            let widget = attr . padLeftRight colPad $ txt "/" <+> field searchField
             pure $ mainWidget <=> widget
         _ -> pure mainWidget
+
+-- | Render the status bar
+getPosition :: ReaderDrawState Text
+getPosition = do
+    (col, pos) <- asks dsCurrent
+    len <- count col <$> asks dsLists
+    let posNorm =
+            if len > 0
+                then pos + 1
+                else 0
+    pure $ tshow posNorm <> "/" <> tshow len
+
+renderStatusBar :: ReaderDrawState (Widget ResourceName)
+renderStatusBar = do
+    topPath <- pack <$> asks dsPath
+    colPad <- columnPadding <$> asks dsLayout
+    posTxt <- getPosition
+    let titl = padRight Max . padLeft (Pad colPad) $ txt topPath
+    let pos = padRight (Pad colPad) $ txt posTxt
+    let bar = titl <+> pos
+    pure . padTop (Pad 1) $ withAttr statusBarAttr bar
 
 -- | Renders the main widget
 main :: ReaderDrawState (Widget ResourceName)
@@ -183,7 +205,8 @@ main = do
     ls <- dsLists <$> ask
     listWidgets <- toList <$> sequence (renderList `mapWithIndex` ls)
     let mainWidget = viewport RNLists Horizontal . padTopBottom 1 $ hBox listWidgets
-    renderSearch mainWidget
+    statusBar <- renderStatusBar
+    renderSearch (mainWidget <=> statusBar)
 
 getField :: Mode -> Maybe Field
 getField (Insert _ _ f) = Just f
@@ -210,6 +233,7 @@ draw layout bindings today state =
               { dsLists = normalisedState ^. lists
               , dsMode = stateMode
               , dsLayout = layout
+              , dsPath = normalisedState ^. path
               , dsToday = today
               , dsField = getField stateMode
               , dsCurrent = normalisedState ^. current

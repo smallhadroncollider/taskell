@@ -38,6 +38,7 @@
 
 ## Features
 
+- Add a List widget for common actions between tasks and sub-tasks
 - Use proper error codes
 - Performance with large files
     > Becomes unusable with large files
@@ -81,6 +82,8 @@
 
 ## In Progress
 
+- Search should be case insensitive
+- Can't remove dates
 - Add custom key support
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
@@ -90,7 +93,6 @@
     * [x] Needs to support merging with default options so that it's easy to add new default keys in the future
     * [ ] Add keys to Help which aren't in bindings
     * [ ] More detailed error messages for missing/invalid mappings
-- Add a List widget for common actions between tasks and sub-tasks
 
 ## Done
 
@@ -268,3 +270,6 @@
 - Automate website publishing when doing a new build
     > Should automatically update the `_config.yml` file, build the website, then deploy it
 - Can't remove a description
+- Title bar for extra info
+    * [x] File path
+    * [x] Current position

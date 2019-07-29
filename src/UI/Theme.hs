@@ -2,6 +2,7 @@
 
 module UI.Theme
     ( titleAttr
+    , statusBarAttr
     , titleCurrentAttr
     , taskCurrentAttr
     , taskAttr
@@ -12,12 +13,15 @@ module UI.Theme
 
 import Brick        (AttrName, attrName)
 import Brick.Themes (Theme, newTheme)
-import Brick.Util   (fg)
-import Graphics.Vty (blue, defAttr, green, magenta, red, yellow)
+import Brick.Util   (fg, on)
+import Graphics.Vty
 
 import Data.Taskell.Date (Deadline (..))
 
 -- attrs
+statusBarAttr :: AttrName
+statusBarAttr = attrName "statusBar"
+
 titleAttr :: AttrName
 titleAttr = attrName "title"
 
@@ -55,7 +59,8 @@ defaultTheme :: Theme
 defaultTheme =
     newTheme
         defAttr
-        [ (titleAttr, fg green)
+        [ (statusBarAttr, black `on` green)
+        , (titleAttr, fg green)
         , (titleCurrentAttr, fg blue)
         , (taskCurrentAttr, fg magenta)
         , (disabledAttr, fg yellow)

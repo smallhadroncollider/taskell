@@ -270,6 +270,10 @@ You can edit Taskell's colour-scheme by editing `theme.ini`:
 ; list title
 title.fg = green
 
+; status bar
+statusBar.bg = magenta
+statusBar.fg = black
+
 ; current list title
 titleCurrent.fg = blue
 
