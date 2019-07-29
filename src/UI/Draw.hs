@@ -189,14 +189,29 @@ getPosition = do
                 else 0
     pure $ tshow posNorm <> "/" <> tshow len
 
+getMode :: ReaderDrawState Text
+getMode = do
+    md <- asks dsMode
+    pure $
+        case md of
+            Normal            -> "NORMAL"
+            Insert {}         -> "INSERT"
+            Modal Help        -> "HELP"
+            Modal MoveTo      -> "MOVE"
+            Modal (Detail {}) -> "DETAIL"
+            Search {}         -> "SEARCH"
+            _                 -> ""
+
 renderStatusBar :: ReaderDrawState (Widget ResourceName)
 renderStatusBar = do
     topPath <- pack <$> asks dsPath
     colPad <- columnPadding <$> asks dsLayout
     posTxt <- getPosition
-    let titl = padRight Max . padLeft (Pad colPad) $ txt topPath
+    modeTxt <- getMode
+    let titl = padLeftRight colPad $ txt topPath
     let pos = padRight (Pad colPad) $ txt posTxt
-    let bar = titl <+> pos
+    let md = txt modeTxt
+    let bar = padRight Max (titl <+> md) <+> pos
     pure . padTop (Pad 1) $ withAttr statusBarAttr bar
 
 -- | Renders the main widget

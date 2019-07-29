@@ -82,8 +82,10 @@
 
 ## In Progress
 
-- Search should be case insensitive
 - Can't remove dates
+- Modals interfere with status bar
+- Showing a specific task in search mode shows wrong task
+    > Based on the index in the full list, rather than the filtered one. So will show the task from the full list if the indexes don't happen to match.
 - Add custom key support
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
@@ -273,3 +275,5 @@
 - Title bar for extra info
     * [x] File path
     * [x] Current position
+- Search should be case insensitive
+- Add Mode to status bar
