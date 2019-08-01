@@ -156,6 +156,12 @@ test_task =
               "contains"
               [ testCase "in task" (assertEqual "Finds in task" True (contains "Test" testTask))
               , testCase "in sub-task" (assertEqual "Find sub-task" True (contains "One" testTask))
+              , testCase
+                    "case-insensitive"
+                    (assertEqual "Find sub-task" True (contains "ONE" testTask))
+              , testCase
+                    "case-insensitive"
+                    (assertEqual "Find sub-task" True (contains "two" testTask))
               , testCase "missing" (assertEqual "Find sub-task" False (contains "Fish" testTask))
               ]
         , testGroup
