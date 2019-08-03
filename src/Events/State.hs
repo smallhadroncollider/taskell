@@ -61,7 +61,7 @@ import Control.Lens ((&), (.~), (^.))
 
 import Data.Char (digitToInt, ord)
 
-import           Data.Taskell.List  (List, deleteTask, getTask, move, new, newAt, nextTask,
+import           Data.Taskell.List  (List, deleteTask, getTask, move, nearest, new, newAt, nextTask,
                                      prevTask, title, update)
 import qualified Data.Taskell.Lists as Lists
 import           Data.Taskell.Task  (Task, isBlank, name)
@@ -276,21 +276,12 @@ right state =
 
 fixIndex :: InternalStateful
 fixIndex state =
-    if getIndex state' > count
-        then setIndex state' count'
-        else state'
+    case getList state of
+        Just list -> setIndex state (nearest idx trm list)
+        Nothing   -> state
   where
-    lists' = state ^. lists
-    idx = Lists.exists (getCurrentList state) lists'
-    state' =
-        if idx
-            then state
-            else setCurrentList state (length lists' - 1)
-    count = countCurrent state' - 1
-    count' =
-        if count < 0
-            then 0
-            else count
+    trm = getText <$> state ^. searchTerm
+    idx = getIndex state
 
 -- tasks
 getCurrentList :: State -> Int
@@ -337,7 +328,7 @@ listRight = listMove 1
 
 -- search
 searchMode :: Stateful
-searchMode state = pure $ (state & mode .~ Search) & searchTerm .~ sTerm
+searchMode state = pure . fixIndex $ (state & mode .~ Search) & searchTerm .~ sTerm
   where
     sTerm = Just (fromMaybe blankField (state ^. searchTerm))
 
@@ -347,7 +338,7 @@ clearSearch state = pure $ state & searchTerm .~ Nothing
 appendSearch :: (Field -> Field) -> Stateful
 appendSearch genField state = do
     let field = fromMaybe blankField (state ^. searchTerm)
-    pure $ state & searchTerm .~ Just (genField field)
+    pure . fixIndex $ state & searchTerm .~ Just (genField field)
 
 -- help
 showHelp :: Stateful

@@ -83,9 +83,9 @@
 - Search navigation issues
     > Issues with navigation when in NORMAL + SEARCH mode
     * [x] Navigating up and down
-    * [ ] Navigating between lists
+    * [x] Navigating between lists
     * [ ] Moving task up and down
-    * [ ] Often nothing is selected when first entering search mode
+    * [x] Often nothing is selected when first entering search mode
 - Add custom key support
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
