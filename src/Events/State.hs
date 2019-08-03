@@ -60,7 +60,8 @@ import Control.Lens ((&), (.~), (^.))
 
 import Data.Char (digitToInt, ord)
 
-import           Data.Taskell.List  (List, deleteTask, getTask, move, new, newAt, title, update)
+import           Data.Taskell.List  (List, deleteTask, getTask, move, new, newAt, nextTask,
+                                     prevTask, title, update)
 import qualified Data.Taskell.Lists as Lists
 import           Data.Taskell.Task  (Task, isBlank, name)
 
@@ -240,24 +241,18 @@ setCurrentList state idx = state & current .~ (idx, getIndex state)
 getIndex :: State -> Int
 getIndex = snd . (^. current)
 
+changeTask :: (Int -> Maybe Text -> List -> Int) -> Stateful
+changeTask fn state = do
+    list <- getList state
+    let idx = getIndex state
+    let term = getText <$> state ^. searchTerm
+    Just $ setIndex state (fn idx term list)
+
 next :: Stateful
-next state = Just $ setIndex state idx'
-  where
-    idx = getIndex state
-    count = countCurrent state
-    idx' =
-        if idx < (count - 1)
-            then succ idx
-            else idx
+next = changeTask nextTask
 
 previous :: Stateful
-previous state = Just $ setIndex state idx'
-  where
-    idx = getIndex state
-    idx' =
-        if idx > 0
-            then pred idx
-            else 0
+previous = changeTask prevTask
 
 left :: Stateful
 left state =

@@ -5,7 +5,7 @@ module Data.Taskell.List.Internal where
 
 import ClassyPrelude
 
-import Control.Lens (ix, makeLenses, (%%~), (%~), (&), (.~), (^.), (^?))
+import Control.Lens (element, makeLenses, (%%~), (%~), (&), (.~), (^.), (^?))
 
 import Data.Sequence as S (adjust', deleteAt, insertAt, update, (|>))
 
@@ -59,7 +59,28 @@ deleteTask :: Int -> Update
 deleteTask idx = tasks %~ deleteAt idx
 
 getTask :: Int -> List -> Maybe T.Task
-getTask idx = (^? tasks . ix idx)
+getTask idx = (^? tasks . element idx)
 
 searchFor :: Text -> Update
 searchFor text = tasks %~ filter (T.contains text)
+
+changeTask :: Int -> Int -> Int -> Maybe Text -> List -> Int
+changeTask dir original current term list =
+    case task of
+        Nothing -> original
+        Just tsk ->
+            case term of
+                Nothing -> next
+                Just trm ->
+                    if T.contains trm tsk
+                        then next
+                        else changeTask dir original next term list
+  where
+    next = current + dir
+    task = getTask next list
+
+nextTask :: Int -> Maybe Text -> List -> Int
+nextTask idx = changeTask 1 idx idx
+
+prevTask :: Int -> Maybe Text -> List -> Int
+prevTask idx = changeTask (-1) idx idx
