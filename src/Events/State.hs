@@ -6,6 +6,7 @@ module Events.State
     ( continue
     , write
     , countCurrent
+    , setHeight
     -- UI.Main
     , normalise
     -- Main
@@ -72,7 +73,15 @@ type InternalStateful = State -> State
 
 create :: FilePath -> Lists.Lists -> State
 create p ls =
-    State {_mode = Normal, _lists = ls, _history = [], _current = (0, 0), _path = p, _io = Nothing}
+    State
+    { _mode = Normal
+    , _lists = ls
+    , _history = []
+    , _current = (0, 0)
+    , _path = p
+    , _io = Nothing
+    , _height = 0
+    }
 
 -- app state
 quit :: Stateful
@@ -351,7 +360,11 @@ showHelp = Just . (mode .~ Modal Help)
 showMoveTo :: Stateful
 showMoveTo = Just . (mode .~ Modal MoveTo)
 
--- view - maybe shouldn't be in here...
+-- view
+setHeight :: Int -> State -> State
+setHeight i = height .~ i
+
+-- more view - maybe shouldn't be in here...
 search :: State -> State
 search state =
     case state ^. mode of

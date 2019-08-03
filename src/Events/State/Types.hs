@@ -20,6 +20,7 @@ data State = State
     , _current :: Pointer
     , _path    :: FilePath
     , _io      :: Maybe Lists
+    , _height  :: Int
     } deriving (Eq, Show)
 
 -- create lenses

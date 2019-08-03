@@ -23,19 +23,21 @@ import UI.Modal.MoveTo         (moveTo)
 import UI.Theme                (titleAttr)
 import UI.Types                (ResourceName (..))
 
-surround :: (Text, Widget ResourceName) -> Widget ResourceName
-surround (title, widget) =
+surround :: Int -> (Text, Widget ResourceName) -> Widget ResourceName
+surround ht (title, widget) =
     padTopBottom 1 .
     centerLayer .
-    border . padTopBottom 1 . padLeftRight 4 . hLimit 50 . (t <=>) . viewport RNModal Vertical $
+    border .
+    padTopBottom 1 .
+    padLeftRight 4 . vLimit (ht - 9) . hLimit 50 . (t <=>) . viewport RNModal Vertical $
     widget
   where
     t = padBottom (Pad 1) . withAttr titleAttr $ textField title
 
-showModal :: Bindings -> State -> Day -> [Widget ResourceName] -> [Widget ResourceName]
-showModal bindings state today view =
+showModal :: Int -> Bindings -> State -> Day -> Widget ResourceName
+showModal ht bindings state today =
     case state ^. mode of
-        Modal Help      -> surround (help bindings) : view
-        Modal Detail {} -> surround (detail state today) : view
-        Modal MoveTo    -> surround (moveTo state) : view
-        _               -> view
+        Modal Help      -> surround ht (help bindings)
+        Modal Detail {} -> surround ht (detail state today)
+        Modal MoveTo    -> surround ht (moveTo state)
+        _               -> emptyWidget

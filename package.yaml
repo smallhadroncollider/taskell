@@ -69,6 +69,7 @@ library:
   - lens
   - mtl
   - template-haskell
+  - terminal-size
   - text
   - time
   - vty

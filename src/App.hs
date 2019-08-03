@@ -9,15 +9,16 @@ import ClassyPrelude
 import Control.Lens ((^.))
 
 import Brick
-import Graphics.Vty              (Mode (BracketedPaste), outputIface, setMode, supportsMode)
-import Graphics.Vty.Input.Events (Event (..))
+import Graphics.Vty                 (Mode (BracketedPaste), outputIface, setMode, supportsMode)
+import Graphics.Vty.Input.Events    (Event (..))
+import System.Console.Terminal.Size (height, size)
 
 import qualified Control.FoldDebounce as Debounce
 
 import Data.Taskell.Date       (currentDay)
 import Data.Taskell.Lists      (Lists)
 import Events.Actions          (ActionSets, event, generateActions)
-import Events.State            (continue, countCurrent)
+import Events.State            (continue, countCurrent, setHeight)
 import Events.State.Types      (State, current, io, lists, mode, path)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
 import IO.Config               (Config, generateAttrMap, getBindings, layout)
@@ -96,15 +97,21 @@ handleVtyEvent (send, trigger) actions previousState e = do
         (Insert ITask ICreate _) -> clearList state *> next send state
         _ -> clearCache previousState *> clearCache state *> next send state
 
+getHeight :: EventM ResourceName Int
+getHeight = maybe 1000 height <$> liftIO size
+
 handleEvent ::
        (DebouncedWrite, Trigger)
     -> ActionSets
     -> State
     -> BrickEvent ResourceName e
     -> EventM ResourceName (Next State)
-handleEvent _ _ state (VtyEvent (EvResize _ _)) = invalidateCache *> Brick.continue state
-handleEvent db actions state (VtyEvent ev)      = handleVtyEvent db actions state ev
-handleEvent _ _ state _                         = Brick.continue state
+handleEvent _ _ state (VtyEvent (EvResize _ _)) = do
+    invalidateCache
+    h <- getHeight
+    Brick.continue (setHeight h state)
+handleEvent db actions state (VtyEvent ev) = handleVtyEvent db actions state ev
+handleEvent _ _ state _ = Brick.continue state
 
 -- | Runs when the app starts
 --   Adds paste support
@@ -112,7 +119,8 @@ appStart :: State -> EventM ResourceName State
 appStart state = do
     output <- outputIface <$> getVtyHandle
     when (supportsMode output BracketedPaste) . liftIO $ setMode output BracketedPaste True
-    pure state
+    h <- getHeight
+    pure (setHeight h state)
 
 -- | Sets up Brick
 go :: Config -> State -> IO ()

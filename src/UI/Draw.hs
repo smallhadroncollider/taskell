@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
 module UI.Draw
     ( draw
@@ -22,7 +23,7 @@ import           Data.Taskell.Lists      (Lists, count)
 import qualified Data.Taskell.Task       as T (Task, countCompleteSubtasks, countSubtasks,
                                                description, due, hasSubtasks, name)
 import           Events.State            (normalise)
-import           Events.State.Types      (Pointer, State, current, lists, mode, path)
+import           Events.State.Types      (Pointer, State, current, height, lists, mode, path)
 import           Events.State.Types.Mode (DetailMode (..), InsertType (..), ModalType (..),
                                           Mode (..))
 import           IO.Config.Layout        (Config, columnPadding, columnWidth, descriptionIndicator)
@@ -189,18 +190,19 @@ getPosition = do
                 else 0
     pure $ tshow posNorm <> "/" <> tshow len
 
+modeToText :: Mode -> Text
+modeToText =
+    \case
+        Normal -> "NORMAL"
+        Insert {} -> "INSERT"
+        Modal Help -> "HELP"
+        Modal MoveTo -> "MOVE"
+        Modal Detail {} -> "DETAIL"
+        Search {} -> "SEARCH"
+        _ -> ""
+
 getMode :: ReaderDrawState Text
-getMode = do
-    md <- asks dsMode
-    pure $
-        case md of
-            Normal            -> "NORMAL"
-            Insert {}         -> "INSERT"
-            Modal Help        -> "HELP"
-            Modal MoveTo      -> "MOVE"
-            Modal (Detail {}) -> "DETAIL"
-            Search {}         -> "SEARCH"
-            _                 -> ""
+getMode = modeToText <$> asks dsMode
 
 renderStatusBar :: ReaderDrawState (Widget ResourceName)
 renderStatusBar = do
@@ -236,28 +238,29 @@ moveTo (Modal MoveTo) = True
 moveTo _              = False
 
 -- draw
+drawR :: Int -> State -> Bindings -> ReaderDrawState [Widget ResourceName]
+drawR ht normalisedState bindings = do
+    modal <- showModal ht bindings normalisedState <$> asks dsToday
+    mn <- main
+    pure [modal, mn]
+
 draw :: Config -> Bindings -> Day -> State -> [Widget ResourceName]
-draw layout bindings today state =
-    showModal
-        bindings
-        normalisedState
-        today
-        [ runReader
-              main
-              DrawState
-              { dsLists = normalisedState ^. lists
-              , dsMode = stateMode
-              , dsLayout = layout
-              , dsPath = normalisedState ^. path
-              , dsToday = today
-              , dsField = getField stateMode
-              , dsCurrent = normalisedState ^. current
-              , dsEditingTitle = editingTitle stateMode
-              }
-        ]
+draw layout bindings today state = runReader (drawR ht normalisedState bindings) drawState
   where
     normalisedState = normalise state
     stateMode = state ^. mode
+    ht = state ^. height
+    drawState =
+        DrawState
+        { dsLists = normalisedState ^. lists
+        , dsMode = stateMode
+        , dsLayout = layout
+        , dsPath = normalisedState ^. path
+        , dsToday = today
+        , dsField = getField stateMode
+        , dsCurrent = normalisedState ^. current
+        , dsEditingTitle = editingTitle stateMode
+        }
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
