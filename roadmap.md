@@ -25,7 +25,6 @@
 - No longer a difference between <Space> and move right
 - Help modal needs to wrap and scroll
 - Modal boxes shouldn't be full height unless they need to be
-- Up and down in search gets a bit lost
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
 - Task description should be visible by default in task detail
     > Visibility should be on the description by default?
@@ -82,9 +81,13 @@
 
 ## In Progress
 
+- Search navigation issues
+    > Issues with navigation when in NORMAL + SEARCH mode
+    * [x] Navigating up and down
+    * [ ] Navigating between lists
+    * [ ] Moving task up and down
+    * [ ] Often nothing is selected when first entering search mode
 - Can't remove dates
-- Showing a specific task in search mode shows wrong task
-    > Based on the index in the full list, rather than the filtered one. So will show the task from the full list if the indexes don't happen to match.
 - Add custom key support
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
@@ -277,3 +280,5 @@
 - Search should be case insensitive
 - Add Mode to status bar
 - Modals interfere with status bar
+- Showing a specific task in search mode shows wrong task
+    > Based on the index in the full list, rather than the filtered one. So will show the task from the full list if the indexes don't happen to match.
