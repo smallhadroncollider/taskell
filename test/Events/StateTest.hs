@@ -29,6 +29,7 @@ testState =
     , _path = "test.md"
     , _io = Nothing
     , _height = 0
+    , _searchTerm = Nothing
     }
 
 moveToState :: State
@@ -52,6 +53,7 @@ moveToState =
     , _path = "test.md"
     , _io = Nothing
     , _height = 0
+    , _searchTerm = Nothing
     }
 
 -- tests

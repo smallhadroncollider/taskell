@@ -37,8 +37,7 @@ module Events.State
     , undo
     , store
     , searchMode
-    -- Events.Actions.Search
-    , searchEntered
+    , clearSearch
     -- Events.Actions.Insert
     , createList
     , removeBlank
@@ -81,6 +80,7 @@ create p ls =
     , _path = p
     , _io = Nothing
     , _height = 0
+    , _searchTerm = Nothing
     }
 
 -- app state
@@ -341,17 +341,10 @@ listRight = listMove 1
 
 -- search
 searchMode :: Stateful
-searchMode state =
-    Just $
-    case state ^. mode of
-        Search _ field -> state & mode .~ Search True field
-        _              -> state & mode .~ Search True blankField
+searchMode state = Just $ (state & mode .~ Search) & searchTerm .~ Just blankField
 
-searchEntered :: Stateful
-searchEntered state =
-    case state ^. mode of
-        Search _ field -> Just $ state & mode .~ Search False field
-        _              -> Nothing
+clearSearch :: Stateful
+clearSearch state = pure $ state & searchTerm .~ Nothing
 
 -- help
 showHelp :: Stateful
@@ -367,9 +360,9 @@ setHeight i = height .~ i
 -- more view - maybe shouldn't be in here...
 search :: State -> State
 search state =
-    case state ^. mode of
-        Search _ field -> fixIndex . setLists state $ Lists.search (getText field) (state ^. lists)
-        _ -> state
+    case state ^. searchTerm of
+        Just field -> fixIndex . setLists state $ Lists.search (getText field) (state ^. lists)
+        Nothing    -> state
 
 newList :: State -> State
 newList state =

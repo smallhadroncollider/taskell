@@ -19,7 +19,7 @@ import Data.Taskell.Date       (currentDay)
 import Data.Taskell.Lists      (Lists)
 import Events.Actions          (ActionSets, event, generateActions)
 import Events.State            (continue, countCurrent, setHeight)
-import Events.State.Types      (State, current, io, lists, mode, path)
+import Events.State.Types      (State, current, io, lists, mode, path, searchTerm)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
 import IO.Config               (Config, generateAttrMap, getBindings, layout)
 import IO.Taskell              (writeData)
@@ -86,8 +86,9 @@ handleVtyEvent ::
        (DebouncedWrite, Trigger) -> ActionSets -> State -> Event -> EventM ResourceName (Next State)
 handleVtyEvent (send, trigger) actions previousState e = do
     let state = event actions e previousState
+    when (isJust (previousState ^. searchTerm) && isNothing (state ^. searchTerm)) invalidateCache
     case previousState ^. mode of
-        Search _ _               -> invalidateCache
+        Search                   -> invalidateCache
         (Modal MoveTo)           -> clearAllTitles previousState
         (Insert ITask ICreate _) -> clearList previousState
         _                        -> pure ()

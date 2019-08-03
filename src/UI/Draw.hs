@@ -23,7 +23,8 @@ import           Data.Taskell.Lists      (Lists, count)
 import qualified Data.Taskell.Task       as T (Task, countCompleteSubtasks, countSubtasks,
                                                description, due, hasSubtasks, name)
 import           Events.State            (normalise)
-import           Events.State.Types      (Pointer, State, current, height, lists, mode, path)
+import           Events.State.Types      (Pointer, State, current, height, lists, mode, path,
+                                          searchTerm)
 import           Events.State.Types.Mode (DetailMode (..), InsertType (..), ModalType (..),
                                           Mode (..))
 import           IO.Config.Layout        (Config, columnPadding, columnWidth, descriptionIndicator)
@@ -43,6 +44,7 @@ data DrawState = DrawState
     , dsCurrent      :: Pointer
     , dsField        :: Maybe Field
     , dsEditingTitle :: Bool
+    , dsSearchTerm   :: Maybe Field
     }
 
 -- | Use a Reader to pass around DrawState
@@ -166,15 +168,16 @@ renderList listIndex list = do
 -- | Renders the search area
 renderSearch :: Widget ResourceName -> ReaderDrawState (Widget ResourceName)
 renderSearch mainWidget = do
-    m <- dsMode <$> ask
-    case m of
-        Search editing searchField -> do
+    m <- asks dsMode
+    term <- asks dsSearchTerm
+    case term of
+        Just searchField -> do
             colPad <- columnPadding . dsLayout <$> ask
             let attr =
                     withAttr $
-                    if editing
-                        then taskCurrentAttr
-                        else taskAttr
+                    case m of
+                        Search -> taskCurrentAttr
+                        _      -> taskAttr
             let widget = attr . padLeftRight colPad $ txt "/" <+> field searchField
             pure $ mainWidget <=> widget
         _ -> pure mainWidget
@@ -260,6 +263,7 @@ draw layout bindings today state = runReader (drawR ht normalisedState bindings)
         , dsField = getField stateMode
         , dsCurrent = normalisedState ^. current
         , dsEditingTitle = editingTitle stateMode
+        , dsSearchTerm = normalisedState ^. searchTerm
         }
 
 -- cursors
@@ -267,6 +271,6 @@ chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation 
 chooseCursor state =
     case normalise state ^. mode of
         Insert {}                         -> showCursorNamed RNCursor
-        Search True _                     -> showCursorNamed RNCursor
+        Search                            -> showCursorNamed RNCursor
         Modal (Detail _ (DetailInsert _)) -> showCursorNamed RNCursor
         _                                 -> neverShowCursor state
