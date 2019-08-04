@@ -358,12 +358,6 @@ setHeight :: Int -> State -> State
 setHeight i = height .~ i
 
 -- more view - maybe shouldn't be in here...
-search :: State -> State
-search state =
-    case state ^. searchTerm of
-        Just field -> fixIndex . setLists state $ Lists.search (getText field) (state ^. lists)
-        Nothing    -> state
-
 newList :: State -> State
 newList state =
     case state ^. mode of
@@ -373,4 +367,4 @@ newList state =
         _ -> state
 
 normalise :: State -> State
-normalise = newList . search
+normalise = newList

@@ -20,7 +20,7 @@ import Brick
 import           Data.Taskell.Date       (Day, dayToText, deadline)
 import           Data.Taskell.List       (List, tasks, title)
 import           Data.Taskell.Lists      (Lists, count)
-import qualified Data.Taskell.Task       as T (Task, countCompleteSubtasks, countSubtasks,
+import qualified Data.Taskell.Task       as T (Task, contains, countCompleteSubtasks, countSubtasks,
                                                description, due, hasSubtasks, name)
 import           Events.State            (normalise)
 import           Events.State.Types      (Pointer, State, current, height, lists, mode, path,
@@ -29,7 +29,7 @@ import           Events.State.Types.Mode (DetailMode (..), InsertType (..), Moda
                                           Mode (..))
 import           IO.Config.Layout        (Config, columnPadding, columnWidth, descriptionIndicator)
 import           IO.Keyboard.Types       (Bindings)
-import           UI.Field                (Field, field, textField, widgetFromMaybe)
+import           UI.Field                (Field, field, getText, textField, widgetFromMaybe)
 import           UI.Modal                (showModal)
 import           UI.Theme
 import           UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
@@ -77,8 +77,8 @@ indicators task = do
             ]
 
 -- | Renders an individual task
-renderTask :: Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
-renderTask listIndex taskIndex task = do
+renderTask' :: Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
+renderTask' listIndex taskIndex task = do
     eTitle <- dsEditingTitle <$> ask -- is the title being edited? (for visibility)
     selected <- (== (listIndex, taskIndex)) . dsCurrent <$> ask -- is the current task selected?
     taskField <- dsField <$> ask -- get the field, if it's being edited
@@ -101,6 +101,16 @@ renderTask listIndex taskIndex task = do
         if selected && not eTitle
             then widget'
             else widget
+
+renderTask :: Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
+renderTask listIndex taskIndex task = do
+    searchT <- asks dsSearchTerm
+    case searchT of
+        Nothing -> renderTask' listIndex taskIndex task
+        Just term ->
+            if T.contains (getText term) task
+                then renderTask' listIndex taskIndex task
+                else pure emptyWidget
 
 -- | Gets the relevant column prefix - number in normal mode, letter in moveTo
 columnPrefix :: Int -> Int -> ReaderDrawState Text
