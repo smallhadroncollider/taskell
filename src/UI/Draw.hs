@@ -203,10 +203,13 @@ getPosition = do
                 else 0
     pure $ tshow posNorm <> "/" <> tshow len
 
-modeToText :: Mode -> Text
-modeToText =
+modeToText :: Maybe Field -> Mode -> Text
+modeToText fld =
     \case
-        Normal -> "NORMAL"
+        Normal ->
+            case fld of
+                Nothing -> "NORMAL"
+                Just _  -> "NORMAL + SEARCH"
         Insert {} -> "INSERT"
         Modal Help -> "HELP"
         Modal MoveTo -> "MOVE"
@@ -215,7 +218,7 @@ modeToText =
         _ -> ""
 
 getMode :: ReaderDrawState Text
-getMode = modeToText <$> asks dsMode
+getMode = modeToText <$> asks dsSearchTerm <*> asks dsMode
 
 renderStatusBar :: ReaderDrawState (Widget ResourceName)
 renderStatusBar = do
