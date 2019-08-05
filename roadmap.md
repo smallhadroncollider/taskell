@@ -4,16 +4,16 @@
     > Update taskell.app to have more than just README.md contents. Use cases, more images, examples, etc.
     * [ ] Use case example: checklist
     * [ ] Use case example: Git controlled tasks
+    * [ ] Blog posts for updates
 
 ## Refactoring
 
+- Use Attoparsec for parsing
 - Add tests for IO.GitHub
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
-- Avoid having to normalise the state?
 - Remove duplication of config - currently using ini and hard-coded defaults
 - Move Help modal creation into Template Haskell
-- Tidy up load functions in IO.Taskell
 - Remove `~` style sub-task complete parsing
     @ 2018-12-10
 - Use Shake instead of bash script
@@ -24,7 +24,7 @@
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
 - No longer a difference between <Space> and move right
 - Help modal needs to wrap and scroll
-- Modal boxes shouldn't be full height unless they need to be
+- Limit modal height based on content
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
 - Task description should be visible by default in task detail
     > Visibility should be on the description by default?
@@ -37,7 +37,12 @@
 
 ## Features
 
+- Some way to just see tasks with due dates
+    * [ ] Sort by date or filter by urgency?
 - Add a List widget for common actions between tasks and sub-tasks
+    * [ ] Re-ordering subtasks
+- Duplicate task with `+`
+- Add tags/labels with `t`
 - Use proper error codes
 - Performance with large files
     > Becomes unusable with large files
@@ -46,38 +51,30 @@
     * [ ] Invalidate layout cache less frequently
     * [ ] Benchmarking tests
     * [ ] Allow cancelling write to avoid trying to write the same file at the same time
-- Inifinite task depth?
-    > No reason, other than UX, that sub-tasks can't have sub-tasks.
 - Should be able to have new-lines in task descriptions
     * [x] Trello import
     * [ ] Regular input (Shift + Enter for new line?)
     * [x] Markdown parsing
     * [ ] Text line breaks go a bit funny with multi-line descriptions
 - Check times work no matter what timezone
-- Show filename somewhere
-- Add tags/labels with `t`
 - URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Redo functionality
+- Always show list title
+    > Floating list titles - so you can always see what list you're in
 - Make token UX better
     * [ ] Open link automatically?
     * [ ] Ask for token and save to ini file automatically
-- Reordering sub-tasks
-- Add Trello syncing
-- Item count for lists?
-    > Show the numbers of items in a list next to its title
-- Always show list title
-    > Floating list titles - so you can always see what list you're in
-- Duplicate task with `+`
-- Some way to just see tasks with due dates
-    * [ ] Sort by date or filter by urgency?
-- Ability to load a taskell file with custom config.ini settings
-    > Either command line arguments for settings or just a `-c other.ini` command
 - Import Issues from GitHub using  labels
 - Readline support?
     > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
 - Editable title?
     > Use a `# Title` at top of file and display title somewhere in taskell
 - Keep undo between sessions?
+- Ability to load a taskell file with custom config.ini settings
+    > Either command line arguments for settings or just a `-c other.ini` command
+- Inifinite task depth?
+    > No reason, other than UX, that sub-tasks can't have sub-tasks.
+- Add Trello syncing
 
 ## In Progress
 
@@ -282,3 +279,4 @@
 - Showing a specific task in search mode shows wrong task
     > Based on the index in the full list, rather than the filtered one. So will show the task from the full list if the indexes don't happen to match.
 - Can't remove dates
+- Tidy up load functions in IO.Taskell
