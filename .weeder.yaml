@@ -5,8 +5,3 @@
     - message:
       - name: Redundant build-depends entry
       - depends: tasty-discover
-  - section:
-    - name: library
-    - message:
-      - name: Redundant build-depends entry
-      - depends: terminal-size

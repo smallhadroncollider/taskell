@@ -9,9 +9,9 @@ import ClassyPrelude
 import Control.Lens ((^.))
 
 import Brick
-import Graphics.Vty                 (Mode (BracketedPaste), outputIface, setMode, supportsMode)
-import Graphics.Vty.Input.Events    (Event (..))
-import System.Console.Terminal.Size (height, size)
+import Graphics.Vty              (Mode (BracketedPaste), displayBounds, outputIface, setMode,
+                                  supportsMode)
+import Graphics.Vty.Input.Events (Event (..))
 
 import qualified Control.FoldDebounce as Debounce
 
@@ -99,7 +99,7 @@ handleVtyEvent (send, trigger) actions previousState e = do
         _ -> clearCache previousState *> clearCache state *> next send state
 
 getHeight :: EventM ResourceName Int
-getHeight = maybe 1000 height <$> liftIO size
+getHeight = snd <$> (displayBounds =<< outputIface <$> getVtyHandle)
 
 handleEvent ::
        (DebouncedWrite, Trigger)
