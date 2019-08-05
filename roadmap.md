@@ -87,7 +87,6 @@
     * [ ] Navigating between lists
     * [ ] Moving task up and down
     * [ ] Often nothing is selected when first entering search mode
-- Can't remove dates
 - Add custom key support
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
@@ -282,3 +281,4 @@
 - Modals interfere with status bar
 - Showing a specific task in search mode shows wrong task
     > Based on the index in the full list, rather than the filtered one. So will show the task from the full list if the indexes don't happen to match.
+- Can't remove dates

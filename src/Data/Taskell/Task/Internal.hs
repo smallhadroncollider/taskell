@@ -50,10 +50,12 @@ appendDescription text =
         else description %~ maybeAppend text
 
 setDue :: Text -> Update
-setDue date =
-    case textToDay date of
-        Just day -> due .~ Just day
-        Nothing  -> id
+setDue date task =
+    if null date
+        then task & due .~ Nothing
+        else case textToDay date of
+                 Just day -> task & due .~ Just day
+                 Nothing  -> task
 
 getSubtask :: Int -> Task -> Maybe ST.Subtask
 getSubtask idx = (^? subtasks . ix idx)
