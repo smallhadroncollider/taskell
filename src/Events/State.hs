@@ -38,6 +38,7 @@ module Events.State
     , store
     , searchMode
     , clearSearch
+    , appendSearch
     -- Events.Actions.Insert
     , createList
     , removeBlank
@@ -67,7 +68,7 @@ import           Data.Taskell.Task  (Task, isBlank, name)
 
 import Events.State.Types
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
-import UI.Field                (blankField, getText, textToField)
+import UI.Field                (Field, blankField, getText, textToField)
 
 type InternalStateful = State -> State
 
@@ -340,6 +341,11 @@ searchMode state = Just $ (state & mode .~ Search) & searchTerm .~ Just blankFie
 
 clearSearch :: Stateful
 clearSearch state = pure $ state & searchTerm .~ Nothing
+
+appendSearch :: (Field -> Field) -> Stateful
+appendSearch genField state = do
+    let field = fromMaybe blankField (state ^. searchTerm)
+    pure $ state & searchTerm .~ Just (genField field)
 
 -- help
 showHelp :: Stateful
