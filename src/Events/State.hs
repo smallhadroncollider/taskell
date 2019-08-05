@@ -337,7 +337,9 @@ listRight = listMove 1
 
 -- search
 searchMode :: Stateful
-searchMode state = Just $ (state & mode .~ Search) & searchTerm .~ Just blankField
+searchMode state = pure $ (state & mode .~ Search) & searchTerm .~ sTerm
+  where
+    sTerm = Just (fromMaybe blankField (state ^. searchTerm))
 
 clearSearch :: Stateful
 clearSearch state = pure $ state & searchTerm .~ Nothing
