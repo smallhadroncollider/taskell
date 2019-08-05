@@ -86,9 +86,8 @@ handleVtyEvent ::
        (DebouncedWrite, Trigger) -> ActionSets -> State -> Event -> EventM ResourceName (Next State)
 handleVtyEvent (send, trigger) actions previousState e = do
     let state = event actions e previousState
-    when (isJust (previousState ^. searchTerm) && isNothing (state ^. searchTerm)) invalidateCache
+    when (previousState ^. searchTerm /= state ^. searchTerm) invalidateCache
     case previousState ^. mode of
-        Search                   -> invalidateCache
         (Modal MoveTo)           -> clearAllTitles previousState
         (Insert ITask ICreate _) -> clearList previousState
         _                        -> pure ()
