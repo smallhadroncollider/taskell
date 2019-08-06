@@ -1,1 +1,1 @@
-stack test --test-arguments --hide-successes
+stack test
