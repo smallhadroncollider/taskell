@@ -45,17 +45,15 @@ parseArgs _                        = pure $ Output (unlines ["Invalid options", 
 load :: ReaderConfig Next
 load = getArgs >>= parseArgs
 
+colonic :: FilePath -> Text -> Text
+colonic path = ((pack path <> ": ") <>)
+
 loadFile :: Text -> ReaderConfig Next
 loadFile filepath = do
     mPath <- exists filepath
     case mPath of
-        Nothing -> pure Exit
-        Just path -> do
-            content <- readData path
-            pure $
-                case content of
-                    Right lists -> Load path lists
-                    Left err    -> Output $ pack path <> ": " <> err
+        Nothing   -> pure Exit
+        Just path -> either (Output . colonic path) (Load path) <$> readData path
 
 loadRemote :: (token -> FilePath -> ReaderConfig Next) -> token -> Text -> ReaderConfig Next
 loadRemote createFn identifier filepath = do
@@ -76,12 +74,7 @@ fileInfo filepath = do
     let path = unpack filepath
     exists' <- fileExists path
     if exists'
-        then do
-            content <- readData path
-            pure $
-                case content of
-                    Right lists -> Output $ analyse filepath lists
-                    Left err    -> Output $ pack path <> ": " <> err
+        then Output . either (colonic path) (analyse filepath) <$> readData path
         else pure Exit
 
 createRemote ::
@@ -93,20 +86,15 @@ createRemote ::
     -> ReaderConfig Next
 createRemote tokenFn missingToken getFn identifier path = do
     config <- ask
-    let maybeToken = tokenFn config
-    case maybeToken of
+    case tokenFn config of
         Nothing -> pure $ Output missingToken
         Just token -> do
             lists <- lift $ runReaderT (getFn identifier) token
             case lists of
                 Left txt -> pure $ Output txt
-                Right ls -> do
-                    create <- promptCreate path
-                    if create
-                        then do
-                            lift $ writeData config ls path
-                            pure $ Load path ls
-                        else pure Exit
+                Right ls ->
+                    promptCreate path >>=
+                    bool (pure Exit) (Load path ls <$ lift (writeData config ls path))
 
 createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
 createTrello =
@@ -128,13 +116,7 @@ exists filepath = do
     exists' <- fileExists path
     if exists'
         then pure $ Just path
-        else do
-            create <- promptCreate path
-            if create
-                then do
-                    createPath path
-                    pure $ Just path
-                else pure Nothing
+        else promptCreate path >>= bool (pure Nothing) (Just path <$ createPath path)
 
 fileExists :: FilePath -> ReaderConfig Bool
 fileExists path = lift $ doesFileExist path
@@ -156,7 +138,4 @@ writeData config tasks path = void (writeFile path $ stringify config tasks)
 
 -- reads json file
 readData :: FilePath -> ReaderConfig (Either Text Lists)
-readData path = do
-    config <- ask
-    content <- readFile path
-    pure $ parse config content
+readData path = parse <$> ask <*> readFile path

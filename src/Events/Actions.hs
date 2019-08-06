@@ -31,7 +31,7 @@ event' :: Event -> Stateful
 event' e state =
     case state ^. mode of
         Normal    -> Normal.event e state
-        Search {} -> Search.event e state
+        Search    -> Search.event e state
         Insert {} -> Insert.event e state
         Modal {}  -> Modal.event e state
         _         -> pure state

@@ -60,5 +60,6 @@ event :: Event -> Stateful
 event (EvKey (KChar n) _)
     | isDigit n = selectList n
     | otherwise = pure
+event (EvKey KEsc _) = clearSearch
 -- fallback
 event _ = pure

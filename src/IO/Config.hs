@@ -17,9 +17,9 @@ import Brick.Themes    (loadCustomizations, themeToAttrMap)
 import Data.FileEmbed  (embedFile)
 import Data.Ini.Config
 
-import IO.Keyboard        (defaultBindings)
+import IO.Keyboard        (addMissing, badMapping, defaultBindings)
 import IO.Keyboard.Parser (bindings)
-import IO.Keyboard.Types  (Bindings, badMapping, missing)
+import IO.Keyboard.Types  (Bindings)
 import UI.Theme           (defaultTheme)
 
 import qualified IO.Config.General  as General
@@ -101,7 +101,7 @@ getConfig = do
 getBindings :: IO Bindings
 getBindings = do
     bnds <- bindings <$> (T.readFile =<< (bindingsPath <$> getDir))
-    case missing =<< badMapping =<< bnds of
+    case addMissing <$> (badMapping =<< bnds) of
         Right b -> pure b
         Left err ->
             putStrLn ("bindings.ini: " <> err <> " - using default bindings") $> defaultBindings

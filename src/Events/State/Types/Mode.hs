@@ -40,7 +40,6 @@ data Mode
              InsertMode
              Field
     | Modal ModalType
-    | Search Bool
-             Field
+    | Search
     | Shutdown
     deriving (Eq, Show)

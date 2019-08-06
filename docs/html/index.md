@@ -301,6 +301,8 @@ listLeft = <
 
 Available special keys: `<Space>`, `<Enter>`, `<Backspace>`, `<Left>`, `<Right>`, `<Up>`, `<Down>`
 
+On a Mac you can use the `alt` characters: e.g. `quit = œ` is equivalent to `alt+q`.
+
 You shouldn't try to assign the `1`-`9` keys, as it will not overwrite the default behaviour.
 
 

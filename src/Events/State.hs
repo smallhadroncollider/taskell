@@ -6,6 +6,7 @@ module Events.State
     ( continue
     , write
     , countCurrent
+    , setHeight
     -- UI.Main
     , normalise
     -- Main
@@ -36,8 +37,8 @@ module Events.State
     , undo
     , store
     , searchMode
-    -- Events.Actions.Search
-    , searchEntered
+    , clearSearch
+    , appendSearch
     -- Events.Actions.Insert
     , createList
     , removeBlank
@@ -60,19 +61,29 @@ import Control.Lens ((&), (.~), (^.))
 
 import Data.Char (digitToInt, ord)
 
-import           Data.Taskell.List  (List, deleteTask, getTask, move, new, newAt, title, update)
+import           Data.Taskell.List  (List, deleteTask, getTask, move, nearest, new, newAt, nextTask,
+                                     prevTask, title, update)
 import qualified Data.Taskell.Lists as Lists
 import           Data.Taskell.Task  (Task, isBlank, name)
 
 import Events.State.Types
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
-import UI.Field                (blankField, getText, textToField)
+import UI.Field                (Field, blankField, getText, textToField)
 
 type InternalStateful = State -> State
 
 create :: FilePath -> Lists.Lists -> State
 create p ls =
-    State {_mode = Normal, _lists = ls, _history = [], _current = (0, 0), _path = p, _io = Nothing}
+    State
+    { _mode = Normal
+    , _lists = ls
+    , _history = []
+    , _current = (0, 0)
+    , _path = p
+    , _io = Nothing
+    , _height = 0
+    , _searchTerm = Nothing
+    }
 
 -- app state
 quit :: Stateful
@@ -231,24 +242,18 @@ setCurrentList state idx = state & current .~ (idx, getIndex state)
 getIndex :: State -> Int
 getIndex = snd . (^. current)
 
+changeTask :: (Int -> Maybe Text -> List -> Int) -> Stateful
+changeTask fn state = do
+    list <- getList state
+    let idx = getIndex state
+    let term = getText <$> state ^. searchTerm
+    Just $ setIndex state (fn idx term list)
+
 next :: Stateful
-next state = Just $ setIndex state idx'
-  where
-    idx = getIndex state
-    count = countCurrent state
-    idx' =
-        if idx < (count - 1)
-            then succ idx
-            else idx
+next = changeTask nextTask
 
 previous :: Stateful
-previous state = Just $ setIndex state idx'
-  where
-    idx = getIndex state
-    idx' =
-        if idx > 0
-            then pred idx
-            else 0
+previous = changeTask prevTask
 
 left :: Stateful
 left state =
@@ -271,21 +276,12 @@ right state =
 
 fixIndex :: InternalStateful
 fixIndex state =
-    if getIndex state' > count
-        then setIndex state' count'
-        else state'
+    case getList state of
+        Just list -> setIndex state (nearest idx trm list)
+        Nothing   -> state
   where
-    lists' = state ^. lists
-    idx = Lists.exists (getCurrentList state) lists'
-    state' =
-        if idx
-            then state
-            else setCurrentList state (length lists' - 1)
-    count = countCurrent state' - 1
-    count' =
-        if count < 0
-            then 0
-            else count
+    trm = getText <$> state ^. searchTerm
+    idx = getIndex state
 
 -- tasks
 getCurrentList :: State -> Int
@@ -332,17 +328,17 @@ listRight = listMove 1
 
 -- search
 searchMode :: Stateful
-searchMode state =
-    Just $
-    case state ^. mode of
-        Search _ field -> state & mode .~ Search True field
-        _              -> state & mode .~ Search True blankField
+searchMode state = pure . fixIndex $ (state & mode .~ Search) & searchTerm .~ sTerm
+  where
+    sTerm = Just (fromMaybe blankField (state ^. searchTerm))
 
-searchEntered :: Stateful
-searchEntered state =
-    case state ^. mode of
-        Search _ field -> Just $ state & mode .~ Search False field
-        _              -> Nothing
+clearSearch :: Stateful
+clearSearch state = pure $ state & searchTerm .~ Nothing
+
+appendSearch :: (Field -> Field) -> Stateful
+appendSearch genField state = do
+    let field = fromMaybe blankField (state ^. searchTerm)
+    pure . fixIndex $ state & searchTerm .~ Just (genField field)
 
 -- help
 showHelp :: Stateful
@@ -351,13 +347,11 @@ showHelp = Just . (mode .~ Modal Help)
 showMoveTo :: Stateful
 showMoveTo = Just . (mode .~ Modal MoveTo)
 
--- view - maybe shouldn't be in here...
-search :: State -> State
-search state =
-    case state ^. mode of
-        Search _ field -> fixIndex . setLists state $ Lists.search (getText field) (state ^. lists)
-        _ -> state
+-- view
+setHeight :: Int -> State -> State
+setHeight i = height .~ i
 
+-- more view - maybe shouldn't be in here...
 newList :: State -> State
 newList state =
     case state ^. mode of
@@ -367,4 +361,4 @@ newList state =
         _ -> state
 
 normalise :: State -> State
-normalise = newList . search
+normalise = newList

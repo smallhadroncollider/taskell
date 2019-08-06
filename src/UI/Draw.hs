@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
 module UI.Draw
     ( draw
@@ -18,16 +19,17 @@ import Brick
 
 import           Data.Taskell.Date       (Day, dayToText, deadline)
 import           Data.Taskell.List       (List, tasks, title)
-import           Data.Taskell.Lists      (Lists)
-import qualified Data.Taskell.Task       as T (Task, countCompleteSubtasks, countSubtasks,
+import           Data.Taskell.Lists      (Lists, count)
+import qualified Data.Taskell.Task       as T (Task, contains, countCompleteSubtasks, countSubtasks,
                                                description, due, hasSubtasks, name)
 import           Events.State            (normalise)
-import           Events.State.Types      (Pointer, State, current, lists, mode)
+import           Events.State.Types      (Pointer, State, current, height, lists, mode, path,
+                                          searchTerm)
 import           Events.State.Types.Mode (DetailMode (..), InsertType (..), ModalType (..),
                                           Mode (..))
 import           IO.Config.Layout        (Config, columnPadding, columnWidth, descriptionIndicator)
 import           IO.Keyboard.Types       (Bindings)
-import           UI.Field                (Field, field, textField, widgetFromMaybe)
+import           UI.Field                (Field, field, getText, textField, widgetFromMaybe)
 import           UI.Modal                (showModal)
 import           UI.Theme
 import           UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
@@ -37,10 +39,12 @@ data DrawState = DrawState
     { dsLists        :: Lists
     , dsMode         :: Mode
     , dsLayout       :: Config
+    , dsPath         :: FilePath
     , dsToday        :: Day
     , dsCurrent      :: Pointer
     , dsField        :: Maybe Field
     , dsEditingTitle :: Bool
+    , dsSearchTerm   :: Maybe Field
     }
 
 -- | Use a Reader to pass around DrawState
@@ -73,8 +77,8 @@ indicators task = do
             ]
 
 -- | Renders an individual task
-renderTask :: Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
-renderTask listIndex taskIndex task = do
+renderTask' :: Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
+renderTask' listIndex taskIndex task = do
     eTitle <- dsEditingTitle <$> ask -- is the title being edited? (for visibility)
     selected <- (== (listIndex, taskIndex)) . dsCurrent <$> ask -- is the current task selected?
     taskField <- dsField <$> ask -- get the field, if it's being edited
@@ -97,6 +101,16 @@ renderTask listIndex taskIndex task = do
         if selected && not eTitle
             then widget'
             else widget
+
+renderTask :: Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
+renderTask listIndex taskIndex task = do
+    searchT <- asks dsSearchTerm
+    case searchT of
+        Nothing -> renderTask' listIndex taskIndex task
+        Just term ->
+            if T.contains (getText term) task
+                then renderTask' listIndex taskIndex task
+                else pure emptyWidget
 
 -- | Gets the relevant column prefix - number in normal mode, letter in moveTo
 columnPrefix :: Int -> Int -> ReaderDrawState Text
@@ -164,18 +178,59 @@ renderList listIndex list = do
 -- | Renders the search area
 renderSearch :: Widget ResourceName -> ReaderDrawState (Widget ResourceName)
 renderSearch mainWidget = do
-    m <- dsMode <$> ask
-    case m of
-        Search editing searchField -> do
+    m <- asks dsMode
+    term <- asks dsSearchTerm
+    case term of
+        Just searchField -> do
             colPad <- columnPadding . dsLayout <$> ask
             let attr =
                     withAttr $
-                    if editing
-                        then taskCurrentAttr
-                        else taskAttr
-            let widget = attr . padTopBottom 1 . padLeftRight colPad $ txt "/" <+> field searchField
+                    case m of
+                        Search -> taskCurrentAttr
+                        _      -> taskAttr
+            let widget = attr . padLeftRight colPad $ txt "/" <+> field searchField
             pure $ mainWidget <=> widget
         _ -> pure mainWidget
+
+-- | Render the status bar
+getPosition :: ReaderDrawState Text
+getPosition = do
+    (col, pos) <- asks dsCurrent
+    len <- count col <$> asks dsLists
+    let posNorm =
+            if len > 0
+                then pos + 1
+                else 0
+    pure $ tshow posNorm <> "/" <> tshow len
+
+modeToText :: Maybe Field -> Mode -> Text
+modeToText fld =
+    \case
+        Normal ->
+            case fld of
+                Nothing -> "NORMAL"
+                Just _  -> "NORMAL + SEARCH"
+        Insert {} -> "INSERT"
+        Modal Help -> "HELP"
+        Modal MoveTo -> "MOVE"
+        Modal Detail {} -> "DETAIL"
+        Search {} -> "SEARCH"
+        _ -> ""
+
+getMode :: ReaderDrawState Text
+getMode = modeToText <$> asks dsSearchTerm <*> asks dsMode
+
+renderStatusBar :: ReaderDrawState (Widget ResourceName)
+renderStatusBar = do
+    topPath <- pack <$> asks dsPath
+    colPad <- columnPadding <$> asks dsLayout
+    posTxt <- getPosition
+    modeTxt <- getMode
+    let titl = padLeftRight colPad $ txt topPath
+    let pos = padRight (Pad colPad) $ txt posTxt
+    let md = txt modeTxt
+    let bar = padRight Max (titl <+> md) <+> pos
+    pure . padTop (Pad 1) $ withAttr statusBarAttr bar
 
 -- | Renders the main widget
 main :: ReaderDrawState (Widget ResourceName)
@@ -183,7 +238,8 @@ main = do
     ls <- dsLists <$> ask
     listWidgets <- toList <$> sequence (renderList `mapWithIndex` ls)
     let mainWidget = viewport RNLists Horizontal . padTopBottom 1 $ hBox listWidgets
-    renderSearch mainWidget
+    statusBar <- renderStatusBar
+    renderSearch (mainWidget <=> statusBar)
 
 getField :: Mode -> Maybe Field
 getField (Insert _ _ f) = Just f
@@ -198,33 +254,36 @@ moveTo (Modal MoveTo) = True
 moveTo _              = False
 
 -- draw
+drawR :: Int -> State -> Bindings -> ReaderDrawState [Widget ResourceName]
+drawR ht normalisedState bindings = do
+    modal <- showModal ht bindings normalisedState <$> asks dsToday
+    mn <- main
+    pure [modal, mn]
+
 draw :: Config -> Bindings -> Day -> State -> [Widget ResourceName]
-draw layout bindings today state =
-    showModal
-        bindings
-        normalisedState
-        today
-        [ runReader
-              main
-              DrawState
-              { dsLists = normalisedState ^. lists
-              , dsMode = stateMode
-              , dsLayout = layout
-              , dsToday = today
-              , dsField = getField stateMode
-              , dsCurrent = normalisedState ^. current
-              , dsEditingTitle = editingTitle stateMode
-              }
-        ]
+draw layout bindings today state = runReader (drawR ht normalisedState bindings) drawState
   where
     normalisedState = normalise state
     stateMode = state ^. mode
+    ht = state ^. height
+    drawState =
+        DrawState
+        { dsLists = normalisedState ^. lists
+        , dsMode = stateMode
+        , dsLayout = layout
+        , dsPath = normalisedState ^. path
+        , dsToday = today
+        , dsField = getField stateMode
+        , dsCurrent = normalisedState ^. current
+        , dsEditingTitle = editingTitle stateMode
+        , dsSearchTerm = normalisedState ^. searchTerm
+        }
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
 chooseCursor state =
     case normalise state ^. mode of
         Insert {}                         -> showCursorNamed RNCursor
-        Search True _                     -> showCursorNamed RNCursor
+        Search                            -> showCursorNamed RNCursor
         Modal (Detail _ (DetailInsert _)) -> showCursorNamed RNCursor
         _                                 -> neverShowCursor state

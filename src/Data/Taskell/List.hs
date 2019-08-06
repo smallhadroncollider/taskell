@@ -17,6 +17,9 @@ module Data.Taskell.List
     , deleteTask
     , getTask
     , searchFor
+    , nextTask
+    , prevTask
+    , nearest
     ) where
 
 import Data.Taskell.List.Internal

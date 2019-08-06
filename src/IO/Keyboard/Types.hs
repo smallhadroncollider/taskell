@@ -3,13 +3,12 @@
 
 module IO.Keyboard.Types where
 
-import ClassyPrelude hiding ((\\))
+import ClassyPrelude
 
-import Data.List                 ((\\))
 import Data.Map.Strict           (Map)
 import Graphics.Vty.Input.Events (Event (..), Key (..))
 
-import qualified Events.Actions.Types as A (ActionType (Nothing), allActions)
+import qualified Events.Actions.Types as A (ActionType)
 import           Events.State.Types   (Stateful)
 
 data Binding
@@ -30,23 +29,6 @@ instance Show Binding where
     show (BKey "Left")  = "←"
     show (BKey "Right") = "→"
     show (BKey name)    = "<" <> unpack name <> ">"
-
-badMapping :: Bindings -> Either Text Bindings
-badMapping bindings =
-    if null result
-        then Right bindings
-        else Left "invalid mapping"
-  where
-    result = filter ((== A.Nothing) . snd) bindings
-
-missing :: Bindings -> Either Text Bindings
-missing bindings =
-    if null result
-        then Right bindings
-        else Left "missing mapping"
-  where
-    bnd = A.Nothing : (snd <$> bindings)
-    result = A.allActions \\ bnd
 
 bindingsToText :: Bindings -> A.ActionType -> [Text]
 bindingsToText bindings key = tshow . fst <$> toList (filterMap (== key) bindings)

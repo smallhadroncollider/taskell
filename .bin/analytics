@@ -1,1 +1,1 @@
-curl -s https://formulae.brew.sh/analytics/install/30d/ | grep taskell -A 1 | sed -e 's/<[^>]*>//g'
+brew info taskell | tail -3

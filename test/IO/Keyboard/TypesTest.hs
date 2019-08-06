@@ -11,13 +11,16 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import qualified Events.Actions.Types as A (ActionType (..))
-import           IO.Keyboard          (defaultBindings)
-import           IO.Keyboard.Types    (Binding (..), Bindings, badMapping, missing)
+import           IO.Keyboard          (addMissing, badMapping, defaultBindings)
+import           IO.Keyboard.Types    (Binding (..), Bindings)
 
 notFull :: Bindings
-notFull =
-    [ (BChar 'q', A.Quit)
-    , (BChar 'u', A.Undo)
+notFull = [(BChar 'œ', A.Quit), (BChar 'U', A.Undo)]
+
+notFullResult :: Bindings
+notFullResult =
+    [ (BChar 'œ', A.Quit)
+    , (BChar 'U', A.Undo)
     , (BChar '/', A.Search)
     , (BChar '?', A.Help)
     , (BChar 'k', A.Previous)
@@ -25,6 +28,11 @@ notFull =
     , (BChar 'h', A.Left)
     , (BChar 'l', A.Right)
     , (BChar 'g', A.Bottom)
+    , (BChar 'a', A.New)
+    , (BChar 'O', A.NewAbove)
+    , (BChar 'o', A.NewBelow)
+    , (BChar 'e', A.Edit)
+    , (BChar 'A', A.Edit)
     , (BChar 'i', A.Edit)
     , (BChar 'C', A.Clear)
     , (BChar 'D', A.Delete)
@@ -53,13 +61,10 @@ test_types =
         "Events.Actions.Types"
         [ testCase
               "not missing"
-              (assertEqual
-                   "Finds no missing items"
-                   (Right defaultBindings)
-                   (missing defaultBindings))
+              (assertEqual "Finds no missing items" defaultBindings (addMissing defaultBindings))
         , testCase
               "not missing"
-              (assertEqual "Finds missing items" (Left "missing mapping") (missing notFull))
+              (assertEqual "Finds missing items" notFullResult (addMissing notFull))
         , testCase
               "bad mapping"
               (assertEqual "Finds bad mapping" (Left "invalid mapping") (badMapping bad))

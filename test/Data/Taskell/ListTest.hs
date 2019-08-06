@@ -148,9 +148,15 @@ test_list =
               , testCase
                     "multiple"
                     (assertEqual
-                         "Blah and Fish"
-                         (List "Populated" (fromList [T.new "Blah", T.new "Fish"]))
-                         (searchFor "h" populatedList))
+                         "Hello and Blah"
+                         (List "Populated" (fromList [T.new "Hello", T.new "Blah"]))
+                         (searchFor "l" populatedList))
+              , testCase
+                    "case-insensitive"
+                    (assertEqual
+                         "Hello"
+                         (List "Populated" (fromList [T.new "Hello"]))
+                         (searchFor "hello" populatedList))
               , testCase
                     "doesn't exist"
                     (assertEqual

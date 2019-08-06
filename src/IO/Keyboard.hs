@@ -4,18 +4,39 @@
 module IO.Keyboard
     ( generate
     , defaultBindings
+    , badMapping
+    , addMissing
     ) where
 
-import ClassyPrelude
+import ClassyPrelude hiding ((\\))
 
 import Data.Bitraversable (bitraverse)
+import Data.List          ((\\))
 
-import Events.Actions.Types as A
-import IO.Keyboard.Types
+import qualified Events.Actions.Types as A
+import           IO.Keyboard.Types
 
 generate :: Bindings -> Actions -> BoundActions
 generate bindings actions =
     mapFromList . catMaybes $ bitraverse bindingToEvent (`lookup` actions) <$> bindings
+
+badMapping :: Bindings -> Either Text Bindings
+badMapping bindings =
+    if null result
+        then Right bindings
+        else Left "invalid mapping"
+  where
+    result = filter ((== A.Nothing) . snd) bindings
+
+addMissing :: Bindings -> Bindings
+addMissing bindings = bindings <> replaced
+  where
+    bnd = A.Nothing : (snd <$> bindings)
+    result = A.allActions \\ bnd
+    replaced = concat $ replace <$> result
+
+replace :: A.ActionType -> Bindings
+replace action = filter ((==) action . snd) defaultBindings
 
 defaultBindings :: Bindings
 defaultBindings =
