@@ -9,6 +9,8 @@
 ## Refactoring
 
 - Use Attoparsec for parsing
+- Switch over to Vectors?
+    > Sequence has O(log n) lookup. Vector has O(1). Vectors support mapping with index.
 - Add tests for IO.GitHub
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
