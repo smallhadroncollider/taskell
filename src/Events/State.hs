@@ -182,10 +182,7 @@ newItem :: Stateful
 newItem state = selectLast . setList state . L.new <$> getList state
 
 duplicate :: Stateful
-duplicate state = do
-    let idx = getIndex state
-    list <- getList state
-    setList state <$> L.duplicate idx list
+duplicate state = setList state <$> (L.duplicate (getIndex state) =<< getList state)
 
 clearItem :: Stateful
 clearItem = setCurrentTaskText ""
