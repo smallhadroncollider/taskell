@@ -20,6 +20,7 @@ data DetailItem
 data ModalType
     = Help
     | MoveTo
+    | Due
     | Detail DetailItem
              DetailMode
     deriving (Eq, Show)

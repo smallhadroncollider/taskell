@@ -18,6 +18,7 @@ import Events.State.Types.Mode (ModalType (..), Mode (..))
 import IO.Keyboard.Types       (Bindings)
 import UI.Field                (textField)
 import UI.Modal.Detail         (detail)
+import UI.Modal.Due            (due)
 import UI.Modal.Help           (help)
 import UI.Modal.MoveTo         (moveTo)
 import UI.Theme                (titleAttr)
@@ -40,4 +41,5 @@ showModal ht bindings state today =
         Modal Help      -> surround ht (help bindings)
         Modal Detail {} -> surround ht (detail state today)
         Modal MoveTo    -> surround ht (moveTo state)
+        Modal Due       -> surround ht (due state today)
         _               -> emptyWidget

@@ -50,6 +50,7 @@ module Events.State
     -- Events.Actions.Modal
     , showHelp
     , showMoveTo
+    , showDue
     , moveTo
     , getCurrentList
     , getCurrentTask
@@ -356,6 +357,9 @@ showHelp = Just . (mode .~ Modal Help)
 
 showMoveTo :: Stateful
 showMoveTo = Just . (mode .~ Modal MoveTo)
+
+showDue :: Stateful
+showDue = Just . (mode .~ Modal Due)
 
 -- view
 setHeight :: Int -> State -> State

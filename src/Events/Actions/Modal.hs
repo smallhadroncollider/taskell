@@ -13,6 +13,7 @@ import Events.State.Types.Mode   (ModalType (..), Mode (Modal))
 import Graphics.Vty.Input.Events
 
 import qualified Events.Actions.Modal.Detail as Detail
+import qualified Events.Actions.Modal.Due    as Due
 import qualified Events.Actions.Modal.Help   as Help
 import qualified Events.Actions.Modal.MoveTo as MoveTo
 
@@ -22,4 +23,5 @@ event e s =
         Modal Help         -> Help.event e s
         Modal (Detail _ _) -> Detail.event e s
         Modal MoveTo       -> MoveTo.event e s
+        Modal Due          -> Due.event e s
         _                  -> pure s

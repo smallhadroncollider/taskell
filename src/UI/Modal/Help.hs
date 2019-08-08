@@ -21,6 +21,7 @@ import UI.Types (ResourceName)
 descriptions :: [([ActionType], Text)]
 descriptions =
     [ ([A.Help], "Show this list of controls")
+    , ([A.Due], "Show tasks with due dates")
     , ([A.Previous, A.Next, A.Left, A.Right], "Move down / up / left / right")
     , ([A.Bottom], "Go to bottom of list")
     , ([A.New], "Add a task")

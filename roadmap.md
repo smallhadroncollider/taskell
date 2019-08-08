@@ -89,7 +89,10 @@
 ## In Progress
 
 - Some way to just see tasks with due dates
-    * [ ] Sort by date or filter by urgency?
+    * [x] Sort by date
+    * [ ] Scrollable
+    * [ ] Pressing Enter on one takes you to it
+    * [ ] Remove duplicated renderDate function (in Draw.hs and Modal/Due.hs)
 
 ## Done
 

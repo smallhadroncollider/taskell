@@ -22,6 +22,7 @@ notFullResult =
     [ (BChar 'œ', A.Quit)
     , (BChar 'U', A.Undo)
     , (BChar '/', A.Search)
+    , (BChar '!', A.Due)
     , (BChar '?', A.Help)
     , (BChar 'k', A.Previous)
     , (BChar 'j', A.Next)

@@ -24,6 +24,7 @@ events
     , (A.Undo, (write =<<) . undo)
     , (A.Search, searchMode)
     , (A.Help, showHelp)
+    , (A.Due, showDue)
         -- navigation
     , (A.Previous, previous)
     , (A.Next, next)

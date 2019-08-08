@@ -43,6 +43,7 @@ defaultBindings =
     [ (BChar 'q', A.Quit)
     , (BChar 'u', A.Undo)
     , (BChar '/', A.Search)
+    , (BChar '!', A.Due)
     , (BChar '?', A.Help)
     , (BChar 'k', A.Previous)
     , (BChar 'j', A.Next)

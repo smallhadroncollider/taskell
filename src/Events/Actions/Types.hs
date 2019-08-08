@@ -9,6 +9,7 @@ data ActionType
     = Quit
     | Undo
     | Search
+    | Due
     | Help
     | Previous
     | Next
@@ -44,6 +45,7 @@ read :: Text -> ActionType
 read "quit"       = Quit
 read "undo"       = Undo
 read "search"     = Search
+read "due"        = Due
 read "help"       = Help
 read "previous"   = Previous
 read "next"       = Next
