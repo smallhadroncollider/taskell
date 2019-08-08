@@ -39,8 +39,15 @@
 
 ## Features
 
-- Some way to just see tasks with due dates
-    * [ ] Sort by date or filter by urgency?
+- Add custom key support
+    * [x] Create bindings.ini
+    * [x] Update events to use Map from bindings.ini
+    * [ ] Check for key conflicts: include keys not explicitly mapped (e.g. 1-9, Esc, Enter)
+    * [x] Check for bits of functionality missing a mapping
+    * [x] Update Help dialogue with key mappings
+    * [x] Needs to support merging with default options so that it's easy to add new default keys in the future
+    * [ ] Add keys to Help which aren't in bindings
+    * [ ] More detailed error messages for missing/invalid mappings
 - Add a List widget for common actions between tasks and sub-tasks
     * [ ] Re-ordering subtasks
 - Add a --debug command
@@ -81,15 +88,8 @@
 
 ## In Progress
 
-- Add custom key support
-    * [x] Create bindings.ini
-    * [x] Update events to use Map from bindings.ini
-    * [ ] Check for key conflicts: include keys not explicitly mapped (e.g. 1-9, Esc, Enter)
-    * [x] Check for bits of functionality missing a mapping
-    * [x] Update Help dialogue with key mappings
-    * [x] Needs to support merging with default options so that it's easy to add new default keys in the future
-    * [ ] Add keys to Help which aren't in bindings
-    * [ ] More detailed error messages for missing/invalid mappings
+- Some way to just see tasks with due dates
+    * [ ] Sort by date or filter by urgency?
 
 ## Done
 

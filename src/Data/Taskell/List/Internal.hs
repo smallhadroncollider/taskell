@@ -11,7 +11,7 @@ import Control.Lens (element, makeLenses, (%%~), (%~), (&), (.~), (^.), (^?))
 import Data.Sequence as S (adjust', deleteAt, insertAt, update, (|>))
 
 import qualified Data.Taskell.Seq  as S
-import qualified Data.Taskell.Task as T (Task, Update, blank, contains, duplicate)
+import qualified Data.Taskell.Task as T (Task, Update, blank, contains, due, duplicate)
 
 data List = List
     { _title :: Text
@@ -35,6 +35,9 @@ new = append T.blank
 
 count :: List -> Int
 count = length . (^. tasks)
+
+due :: List -> Seq T.Task
+due list = filter (isJust . (^. T.due)) (list ^. tasks)
 
 newAt :: Int -> Update
 newAt idx = tasks %~ S.insertAt idx T.blank

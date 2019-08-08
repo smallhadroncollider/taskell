@@ -6,6 +6,7 @@ module Data.Taskell.List
     , tasks
     , create
     , empty
+    , due
     , new
     , count
     , newAt
