@@ -25,6 +25,7 @@ descriptions =
     , ([A.Bottom], "Go to bottom of list")
     , ([A.New], "Add a task")
     , ([A.NewAbove, A.NewBelow], "Add a task above / below")
+    , ([A.Duplicate], "Duplicate a task")
     , ([A.Edit], "Edit a task")
     , ([A.Clear], "Change task")
     , ([A.Detail], "Show task details / Edit task description")
