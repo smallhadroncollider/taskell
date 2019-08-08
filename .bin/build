@@ -1,3 +1,4 @@
+workDir=".stack-build"
 branch=$(git rev-parse --abbrev-ref HEAD)
 
 if [ $branch != "master" ]; then
@@ -5,7 +6,7 @@ if [ $branch != "master" ]; then
     exit
 fi
 
-if [ ! -d ".stack-work" ]; then
+if [ ! -d "$workDir" ]; then
     echo "\033[0;31mMust be run in project root\033[0m"
     exit
 fi
@@ -19,23 +20,23 @@ fi
 git push --all && git push --tags
 
 # clean out previous build attempts
-rm -rf .stack-work/install
+rm -rf "$workDir/install"
 
 # sort out releases directory
 rm -rf "releases/$1/taskell"
 mkdir -p "releases/$1/taskell"
 
 # Mac
-stack build --ghc-options -O3
+stack build --work-dir "$workDir" --ghc-options -O3
 
-tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory="$(stack path --local-install-root)/bin" "taskell"
+tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory="$(stack path --local-install-root --work-dir $workDir)/bin" "taskell"
 
 
 # Linux
 stack docker pull
-stack build --docker --ghc-options -O3
+stack build --work-dir "$workDir" --docker --ghc-options -O3
 
-LINUX_PATH=$(find .stack-work -path "*linux*" -and -path "*bin/taskell")
+LINUX_PATH=$(find "$workDir" -path "*linux*" -and -path "*bin/taskell")
 
 tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz" $LINUX_PATH
 
