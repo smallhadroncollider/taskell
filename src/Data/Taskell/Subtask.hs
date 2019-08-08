@@ -8,6 +8,7 @@ module Data.Taskell.Subtask
     , name
     , complete
     , toggle
+    , duplicate
     ) where
 
 import Data.Taskell.Subtask.Internal

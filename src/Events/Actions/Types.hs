@@ -18,6 +18,7 @@ data ActionType
     | New
     | NewAbove
     | NewBelow
+    | Duplicate
     | Edit
     | Clear
     | Delete

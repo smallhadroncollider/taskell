@@ -34,6 +34,7 @@ events
     , (A.New, (startCreate =<<) . (newItem =<<) . store)
     , (A.NewAbove, (startCreate =<<) . (above =<<) . store)
     , (A.NewBelow, (startCreate =<<) . (below =<<) . store)
+    , (A.Duplicate, (next =<<) . (write =<<) . (duplicate =<<) . store)
     -- editing tasks
     , (A.Edit, (startEdit =<<) . store)
     , (A.Clear, (startEdit =<<) . (clearItem =<<) . store)

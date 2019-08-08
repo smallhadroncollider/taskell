@@ -45,7 +45,6 @@
     * [ ] Re-ordering subtasks
 - Add a --debug command
     * [ ] Shows full Mode print out
-- Duplicate task with `+`
 - Add tags/labels with `t`
 - Use proper error codes
 - Performance with large files
@@ -286,3 +285,4 @@
     * [x] Navigating between lists
     * [x] Moving task up and down
     * [x] Often nothing is selected when first entering search mode
+- Duplicate task with `+`

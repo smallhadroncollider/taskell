@@ -31,6 +31,7 @@ notFullResult =
     , (BChar 'a', A.New)
     , (BChar 'O', A.NewAbove)
     , (BChar 'o', A.NewBelow)
+    , (BChar '+', A.Duplicate)
     , (BChar 'e', A.Edit)
     , (BChar 'A', A.Edit)
     , (BChar 'i', A.Edit)

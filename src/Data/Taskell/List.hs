@@ -9,6 +9,7 @@ module Data.Taskell.List
     , new
     , count
     , newAt
+    , duplicate
     , append
     , extract
     , updateFn

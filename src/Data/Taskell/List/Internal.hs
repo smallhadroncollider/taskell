@@ -11,7 +11,7 @@ import Control.Lens (element, makeLenses, (%%~), (%~), (&), (.~), (^.), (^?))
 import Data.Sequence as S (adjust', deleteAt, insertAt, update, (|>))
 
 import qualified Data.Taskell.Seq  as S
-import qualified Data.Taskell.Task as T (Task, Update, blank, contains)
+import qualified Data.Taskell.Task as T (Task, Update, blank, contains, duplicate)
 
 data List = List
     { _title :: Text
@@ -37,7 +37,12 @@ count :: List -> Int
 count = length . (^. tasks)
 
 newAt :: Int -> Update
-newAt idx = tasks %~ insertAt idx T.blank
+newAt idx = tasks %~ S.insertAt idx T.blank
+
+duplicate :: Int -> List -> Maybe List
+duplicate idx list = do
+    task <- T.duplicate <$> getTask idx list
+    pure $ list & tasks %~ S.insertAt idx task
 
 append :: T.Task -> Update
 append task = tasks %~ (|> task)

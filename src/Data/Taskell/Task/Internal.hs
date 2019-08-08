@@ -10,7 +10,7 @@ import Control.Lens (ix, makeLenses, (%~), (&), (.~), (^.), (^?))
 
 import           Data.Sequence        as S (adjust', deleteAt, (|>))
 import           Data.Taskell.Date    (Day, textToDay)
-import qualified Data.Taskell.Subtask as ST (Subtask, Update, complete, name)
+import qualified Data.Taskell.Subtask as ST (Subtask, Update, complete, duplicate, name)
 import           Data.Text            (strip)
 
 data Task = Task
@@ -89,3 +89,6 @@ isBlank :: Task -> Bool
 isBlank task =
     null (task ^. name) &&
     isNothing (task ^. description) && null (task ^. subtasks) && isNothing (task ^. due)
+
+duplicate :: Task -> Task
+duplicate (Task n d st du) = Task n d (ST.duplicate <$> st) du

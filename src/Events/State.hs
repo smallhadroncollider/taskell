@@ -23,6 +23,7 @@ module Events.State
     , below
     , bottom
     , previous
+    , duplicate
     , next
     , left
     , right
@@ -61,8 +62,8 @@ import Control.Lens ((&), (.~), (^.))
 
 import Data.Char (digitToInt, ord)
 
-import           Data.Taskell.List  (List, deleteTask, getTask, move, nearest, new, newAt, nextTask,
-                                     prevTask, title, update)
+import qualified Data.Taskell.List  as L (List, deleteTask, duplicate, getTask, move, nearest, new,
+                                          newAt, nextTask, prevTask, title, update)
 import qualified Data.Taskell.Lists as Lists
 import           Data.Taskell.Task  (Task, isBlank, name)
 
@@ -123,7 +124,7 @@ createListStart = Just . (mode .~ Insert IList ICreate blankField)
 -- editList
 editListStart :: Stateful
 editListStart state = do
-    f <- textToField . (^. title) <$> getList state
+    f <- textToField . (^. L.title) <$> getList state
     pure $ state & mode .~ Insert IList IEdit f
 
 deleteCurrentList :: Stateful
@@ -132,10 +133,10 @@ deleteCurrentList state =
 
 -- insert
 getCurrentTask :: State -> Maybe Task
-getCurrentTask state = getList state >>= getTask (getIndex state)
+getCurrentTask state = getList state >>= L.getTask (getIndex state)
 
 setCurrentTask :: Task -> Stateful
-setCurrentTask task state = setList state . update (getIndex state) task <$> getList state
+setCurrentTask task state = setList state . L.update (getIndex state) task <$> getList state
 
 setCurrentTaskText :: Text -> Stateful
 setCurrentTaskText text state =
@@ -169,7 +170,7 @@ normalMode = Just . (mode .~ Normal)
 addToListAt :: Int -> Stateful
 addToListAt offset state = do
     let idx = getIndex state + offset
-    fixIndex . setList (setIndex state idx) . newAt idx <$> getList state
+    fixIndex . setList (setIndex state idx) . L.newAt idx <$> getList state
 
 above :: Stateful
 above = addToListAt 0
@@ -178,7 +179,13 @@ below :: Stateful
 below = addToListAt 1
 
 newItem :: Stateful
-newItem state = selectLast . setList state . new <$> getList state
+newItem state = selectLast . setList state . L.new <$> getList state
+
+duplicate :: Stateful
+duplicate state = do
+    let idx = getIndex state
+    list <- getList state
+    setList state <$> L.duplicate idx list
 
 clearItem :: Stateful
 clearItem = setCurrentTaskText ""
@@ -201,7 +208,7 @@ removeBlank state = do
 --
 moveVertical :: Int -> Stateful
 moveVertical dir state = do
-    (lst, idx) <- move (getIndex state) dir (getText <$> state ^. searchTerm) =<< getList state
+    (lst, idx) <- L.move (getIndex state) dir (getText <$> state ^. searchTerm) =<< getList state
     Just $ setIndex (setList state lst) idx
 
 up :: Stateful
@@ -233,7 +240,7 @@ selectList idx state =
 
 -- removing
 delete :: Stateful
-delete state = fixIndex . setList state . deleteTask (getIndex state) <$> getList state
+delete state = fixIndex . setList state . L.deleteTask (getIndex state) <$> getList state
 
 -- list and index
 countCurrent :: State -> Int
@@ -248,7 +255,7 @@ setCurrentList state idx = state & current .~ (idx, getIndex state)
 getIndex :: State -> Int
 getIndex = snd . (^. current)
 
-changeTask :: (Int -> Maybe Text -> List -> Int) -> Stateful
+changeTask :: (Int -> Maybe Text -> L.List -> Int) -> Stateful
 changeTask fn state = do
     list <- getList state
     let idx = getIndex state
@@ -256,10 +263,10 @@ changeTask fn state = do
     Just $ setIndex state (fn idx term list)
 
 next :: Stateful
-next = changeTask nextTask
+next = changeTask L.nextTask
 
 previous :: Stateful
-previous = changeTask prevTask
+previous = changeTask L.prevTask
 
 left :: Stateful
 left state =
@@ -283,7 +290,7 @@ right state =
 fixIndex :: InternalStateful
 fixIndex state =
     case getList state of
-        Just list -> setIndex state (nearest idx trm list)
+        Just list -> setIndex state (L.nearest idx trm list)
         Nothing   -> state
   where
     trm = getText <$> state ^. searchTerm
@@ -293,14 +300,14 @@ fixIndex state =
 getCurrentList :: State -> Int
 getCurrentList = fst . (^. current)
 
-getList :: State -> Maybe List
+getList :: State -> Maybe L.List
 getList state = Lists.get (state ^. lists) (getCurrentList state)
 
-setList :: State -> List -> State
+setList :: State -> L.List -> State
 setList state list = setLists state (Lists.updateLists (getCurrentList state) list (state ^. lists))
 
 setCurrentListTitle :: Text -> Stateful
-setCurrentListTitle text state = setList state . (title .~ text) <$> getList state
+setCurrentListTitle text state = setList state . (L.title .~ text) <$> getList state
 
 setLists :: State -> Lists.Lists -> State
 setLists state lists' = state & lists .~ lists'
