@@ -74,5 +74,8 @@ test_list =
               , testCase
                     "out of bounds with no term"
                     (assertEqual "nothing" 5 (L.nearest 50 Nothing list))
+              , testCase
+                    "out of bounds by 1 with no term"
+                    (assertEqual "nothing" 5 (L.nearest 6 Nothing list))
               ]
         ]

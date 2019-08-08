@@ -256,48 +256,7 @@ subtask = "-"
 
 You can edit keyboard bindings in the `bindings.ini` config file.
 
-The default bindings are as follows:
-
-```ini
-# general
-quit = q
-undo = u
-search = /
-help = ?
-
-# navigation
-previous = k
-next = j
-left = h
-right = l
-bottom = G
-
-# new tasks
-new = a
-newAbove = O
-newBelow = o
-
-# editing tasks
-edit = e, A, i
-clear = C
-delete = D
-detail = <Enter>
-dueDate = @
-
-# moving tasks
-moveUp = K
-moveDown = J
-moveLeft = H
-moveRight = L, <Space>
-moveMenu = m
-
-# lists
-listNew = N
-listEdit = E
-listDelete = X
-listRight = >
-listLeft = <
-```
+The default bindings can be found in [`bindings.ini`](https://github.com/smallhadroncollider/taskell/blob/master/templates/bindings.ini).
 
 Available special keys: `<Space>`, `<Enter>`, `<Backspace>`, `<Left>`, `<Right>`, `<Up>`, `<Down>`
 
@@ -315,6 +274,10 @@ You can edit Taskell's colour-scheme by editing `theme.ini`:
 
 ; list title
 title.fg = green
+
+; status bar
+statusBar.bg = magenta
+statusBar.fg = black
 
 ; current list title
 titleCurrent.fg = blue

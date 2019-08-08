@@ -90,7 +90,7 @@ closest current previous next =
 bound :: Int -> List -> Int
 bound idx lst
     | idx < 0 = 0
-    | idx > count lst = count lst - 1
+    | idx >= count lst = count lst - 1
     | otherwise = idx
 
 nearest' :: Int -> Maybe Text -> List -> Maybe Int
