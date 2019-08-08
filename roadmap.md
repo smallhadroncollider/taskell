@@ -282,3 +282,5 @@
     > Based on the index in the full list, rather than the filtered one. So will show the task from the full list if the indexes don't happen to match.
 - Can't remove dates
 - Tidy up load functions in IO.Taskell
+- Getting stuck in INSERT mode when blank item
+- If an item isn't created, then selection gets lost
