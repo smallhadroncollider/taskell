@@ -53,6 +53,7 @@ read "bottom"     = Bottom
 read "new"        = New
 read "newAbove"   = NewAbove
 read "newBelow"   = NewBelow
+read "duplicate"  = Duplicate
 read "edit"       = Edit
 read "clear"      = Clear
 read "delete"     = Delete
