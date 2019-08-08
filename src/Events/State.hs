@@ -198,21 +198,27 @@ removeBlank state = do
         state
 
 -- moving
+--
+moveVertical :: Int -> Stateful
+moveVertical dir state = do
+    (lst, idx) <- move (getIndex state) dir (getText <$> state ^. searchTerm) =<< getList state
+    Just $ setIndex (setList state lst) idx
+
 up :: Stateful
-up state = previous =<< setList state <$> (move (getIndex state) (-1) =<< getList state)
+up = moveVertical (-1)
 
 down :: Stateful
-down state = next =<< setList state <$> (move (getIndex state) 1 =<< getList state)
+down = moveVertical 1
 
-move' :: Int -> State -> Maybe State
-move' idx state =
+moveHorizontal :: Int -> State -> Maybe State
+moveHorizontal idx state =
     fixIndex . setLists state <$> Lists.changeList (state ^. current) (state ^. lists) idx
 
 moveLeft :: Stateful
-moveLeft = move' (-1)
+moveLeft = moveHorizontal (-1)
 
 moveRight :: Stateful
-moveRight = move' 1
+moveRight = moveHorizontal 1
 
 selectList :: Char -> Stateful
 selectList idx state =
@@ -306,7 +312,7 @@ moveTo char state = do
     if li == cur || li < 0 || li >= length (state ^. lists)
         then Nothing
         else do
-            s <- move' (li - cur) state
+            s <- moveHorizontal (li - cur) state
             pure . selectLast $ setCurrentList s li
 
 -- move lists

@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 
 module Data.Taskell.List.Internal where
 
@@ -52,8 +53,13 @@ updateFn idx fn = tasks %~ adjust' fn idx
 update :: Int -> T.Task -> Update
 update idx task = tasks %~ S.update idx task
 
-move :: Int -> Int -> List -> Maybe List
-move from dir = tasks %%~ S.shiftBy from dir
+move :: Int -> Int -> Maybe Text -> List -> Maybe (List, Int)
+move current dir term list =
+    case term of
+        Nothing -> (, bound (current + dir) list) <$> (list & tasks %%~ S.shiftBy current dir)
+        Just _ -> do
+            idx <- changeTask dir current term list
+            (, idx) <$> (list & tasks %%~ S.shiftBy current (idx - current))
 
 deleteTask :: Int -> Update
 deleteTask idx = tasks %~ deleteAt idx

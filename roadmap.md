@@ -43,6 +43,8 @@
     * [ ] Sort by date or filter by urgency?
 - Add a List widget for common actions between tasks and sub-tasks
     * [ ] Re-ordering subtasks
+- Add a --debug command
+    * [ ] Shows full Mode print out
 - Duplicate task with `+`
 - Add tags/labels with `t`
 - Use proper error codes
@@ -80,12 +82,6 @@
 
 ## In Progress
 
-- Search navigation issues
-    > Issues with navigation when in NORMAL + SEARCH mode
-    * [x] Navigating up and down
-    * [x] Navigating between lists
-    * [ ] Moving task up and down
-    * [x] Often nothing is selected when first entering search mode
 - Add custom key support
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
@@ -284,3 +280,9 @@
 - Tidy up load functions in IO.Taskell
 - Getting stuck in INSERT mode when blank item
 - If an item isn't created, then selection gets lost
+- Search navigation issues
+    > Issues with navigation when in NORMAL + SEARCH mode
+    * [x] Navigating up and down
+    * [x] Navigating between lists
+    * [x] Moving task up and down
+    * [x] Often nothing is selected when first entering search mode
