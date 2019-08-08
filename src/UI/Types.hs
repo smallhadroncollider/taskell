@@ -18,4 +18,5 @@ data ResourceName
     | RNList Int
     | RNLists
     | RNModal
+    | RNDue Int
     deriving (Show, Eq, Ord)

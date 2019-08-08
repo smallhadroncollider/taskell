@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 
 module UI.Draw.Main.List
     ( renderList
@@ -22,7 +23,7 @@ import UI.Draw.Mode
 import UI.Draw.Task       (renderTask)
 import UI.Draw.Types      (DrawState (..), ReaderDrawState)
 import UI.Theme
-import UI.Types           (ResourceName (..))
+import UI.Types           (ListIndex (ListIndex), ResourceName (..), TaskIndex (TaskIndex))
 
 -- | Gets the relevant column prefix - number in normal mode, letter in moveTo
 columnPrefix :: Int -> Int -> ReaderDrawState Text
@@ -73,7 +74,10 @@ renderList listIndex list = do
     eTitle <- editingTitle . (^. mode) <$> asks dsState
     titleWidget <- renderTitle listIndex list
     (currentList, _) <- (^. current) <$> asks dsState
-    taskWidgets <- sequence $ renderTask listIndex `mapWithIndex` (list ^. tasks)
+    taskWidgets <-
+        sequence $
+        renderTask (RNTask . (ListIndex listIndex, ) . TaskIndex) listIndex `mapWithIndex`
+        (list ^. tasks)
     let widget =
             (if not eTitle
                  then cached (RNList listIndex)

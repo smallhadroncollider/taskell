@@ -20,7 +20,7 @@ import           UI.Draw.Field      (getText, textField, widgetFromMaybe)
 import           UI.Draw.Mode
 import           UI.Draw.Types      (DrawState (..), ReaderDrawState)
 import           UI.Theme
-import           UI.Types           (ListIndex (..), ResourceName (..), TaskIndex (..))
+import           UI.Types           (ResourceName)
 
 -- | Takes a task's 'due' property and renders a date with appropriate styling (e.g. red if overdue)
 renderDate :: Maybe Day -> ReaderDrawState (Maybe (Widget ResourceName))
@@ -49,14 +49,15 @@ indicators task = do
             ]
 
 -- | Renders an individual task
-renderTask' :: Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
-renderTask' listIndex taskIndex task = do
+renderTask' ::
+       (Int -> ResourceName) -> Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
+renderTask' rn listIndex taskIndex task = do
     eTitle <- editingTitle . (^. mode) <$> asks dsState -- is the title being edited? (for visibility)
     selected <- (== (listIndex, taskIndex)) . (^. current) <$> asks dsState -- is the current task selected?
     taskField <- getField . (^. mode) <$> asks dsState -- get the field, if it's being edited
     after <- indicators task -- get the indicators widget
     let text = task ^. T.name
-        name = RNTask (ListIndex listIndex, TaskIndex taskIndex)
+        name = rn taskIndex
         widget = textField text
         widget' = widgetFromMaybe widget taskField
     pure $
@@ -74,12 +75,13 @@ renderTask' listIndex taskIndex task = do
             then widget'
             else widget
 
-renderTask :: Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
-renderTask listIndex taskIndex task = do
-    searchT <- (^. searchTerm) <$> asks dsState
+renderTask :: (Int -> ResourceName) -> Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
+renderTask rn listIndex taskIndex task = do
+    searchT <- (getText <$>) . (^. searchTerm) <$> asks dsState
+    let taskWidget = renderTask' rn listIndex taskIndex task
     case searchT of
-        Nothing -> renderTask' listIndex taskIndex task
+        Nothing -> taskWidget
         Just term ->
-            if T.contains (getText term) task
-                then renderTask' listIndex taskIndex task
+            if T.contains term task
+                then taskWidget
                 else pure emptyWidget

@@ -97,10 +97,10 @@
     * [x] Sort by date
     * [ ] Scrollable
     * [ ] Pressing Enter on one takes you to it
-    * [ ] Use renderTask from Draw
+    * [x] Use renderTask from Draw
     * [ ] Filter by: overdue, this week, later
     * [ ] Number of due items in status bar?
-    * [ ] Descriptions need to wrap
+    * [x] Descriptions need to wrap
     * [ ] Group by date?
     * [ ] Search should filter
 - Add a "complete" action
