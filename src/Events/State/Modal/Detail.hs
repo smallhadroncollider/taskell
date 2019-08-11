@@ -46,14 +46,14 @@ updateField fieldEvent s =
 
 finishSubtask :: Stateful
 finishSubtask state = do
-    text <- getText <$> getField state
+    text <- getText <$> getField (state ^. mode)
     i <- getCurrentSubtask state
     task <- updateSubtask i (ST.name .~ text) <$> getCurrentTask state
     setCurrentTask task $ state & mode .~ Modal (Detail (DetailItem i) (DetailInsert blankField))
 
 finish :: (Text -> Task -> Task) -> Stateful
 finish fn state = do
-    text <- getText <$> getField state
+    text <- getText <$> getField (state ^. mode)
     task <- fn text <$> getCurrentTask state
     setCurrentTask task $ state & mode .~ Modal (Detail (DetailItem 0) DetailNormal)
 
@@ -75,11 +75,9 @@ getCurrentSubtask state =
         Modal (Detail (DetailItem i) _) -> Just i
         _                               -> Nothing
 
-getCurrentItem :: State -> Maybe DetailItem
-getCurrentItem state =
-    case state ^. mode of
-        Modal (Detail item _) -> Just item
-        _                     -> Nothing
+getCurrentItem :: Mode -> Maybe DetailItem
+getCurrentItem (Modal (Detail item _)) = Just item
+getCurrentItem _                       = Nothing
 
 getCurrentMode :: State -> Maybe DetailMode
 getCurrentMode state =
@@ -87,11 +85,9 @@ getCurrentMode state =
         Modal (Detail _ m) -> Just m
         _                  -> Nothing
 
-getField :: State -> Maybe Field
-getField state =
-    case state ^. mode of
-        Modal (Detail _ (DetailInsert f)) -> Just f
-        _                                 -> Nothing
+getField :: Mode -> Maybe Field
+getField (Modal (Detail _ (DetailInsert f))) = Just f
+getField _                                   = Nothing
 
 setComplete :: Stateful
 setComplete state = do

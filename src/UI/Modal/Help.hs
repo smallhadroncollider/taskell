@@ -12,11 +12,12 @@ import Brick
 import Data.Text as T (justifyRight)
 
 import Events.Actions.Types as A (ActionType (..))
-import IO.Keyboard.Types    (Bindings, bindingsToText)
+import IO.Keyboard.Types    (bindingsToText)
 
-import UI.Field (textField)
-import UI.Theme (taskCurrentAttr)
-import UI.Types (ResourceName)
+import UI.Draw.Types (DrawState (dsBindings), ReaderDrawState)
+import UI.Field      (textField)
+import UI.Theme      (taskCurrentAttr)
+import UI.Types      (ResourceName)
 
 descriptions :: [([ActionType], Text)]
 descriptions =
@@ -44,8 +45,10 @@ descriptions =
     , ([A.Quit], "Quit")
     ]
 
-generate :: Bindings -> [([Text], Text)]
-generate bindings = first (intercalate ", " . bindingsToText bindings <$>) <$> descriptions
+generate :: ReaderDrawState [([Text], Text)]
+generate = do
+    bindings <- bindingsToText <$> asks dsBindings
+    pure $ first (intercalate ", " . bindings <$>) <$> descriptions
 
 format :: ([Text], Text) -> (Text, Text)
 format = first (intercalate " / ")
@@ -56,9 +59,9 @@ line m (l, r) = left <+> right
     left = padRight (Pad 2) . withAttr taskCurrentAttr . txt $ justifyRight m ' ' l
     right = textField r
 
-help :: Bindings -> (Text, Widget ResourceName)
-help bindings = ("Controls", w)
-  where
-    ls = format <$> generate bindings
-    m = foldl' max 0 $ length . fst <$> ls
-    w = vBox $ line m <$> ls
+help :: ReaderDrawState (Text, Widget ResourceName)
+help = do
+    ls <- (format <$>) <$> generate
+    let m = foldl' max 0 $ length . fst <$> ls
+    let w = vBox $ line m <$> ls
+    pure ("Controls", w)

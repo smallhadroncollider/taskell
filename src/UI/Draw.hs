@@ -19,36 +19,20 @@ import Brick
 
 import           Data.Taskell.Date       (Day, dayToText, deadline)
 import           Data.Taskell.List       (List, tasks, title)
-import           Data.Taskell.Lists      (Lists, count)
+import           Data.Taskell.Lists      (count)
 import qualified Data.Taskell.Task       as T (Task, contains, countCompleteSubtasks, countSubtasks,
                                                description, due, hasSubtasks, name)
 import           Events.State            (normalise)
-import           Events.State.Types      (Pointer, State, current, height, lists, mode, path,
-                                          searchTerm)
+import           Events.State.Types      (State, current, height, lists, mode, path, searchTerm)
 import           Events.State.Types.Mode (DetailMode (..), InsertType (..), ModalType (..),
                                           Mode (..))
 import           IO.Config.Layout        (Config, columnPadding, columnWidth, descriptionIndicator)
 import           IO.Keyboard.Types       (Bindings)
+import           UI.Draw.Types           (DrawState (..), ReaderDrawState)
 import           UI.Field                (Field, field, getText, textField, widgetFromMaybe)
 import           UI.Modal                (showModal)
 import           UI.Theme
 import           UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
-
--- | Draw needs to know various pieces of information, so keep track of them in a record
-data DrawState = DrawState
-    { dsLists        :: Lists
-    , dsMode         :: Mode
-    , dsLayout       :: Config
-    , dsPath         :: FilePath
-    , dsToday        :: Day
-    , dsCurrent      :: Pointer
-    , dsField        :: Maybe Field
-    , dsEditingTitle :: Bool
-    , dsSearchTerm   :: Maybe Field
-    }
-
--- | Use a Reader to pass around DrawState
-type ReaderDrawState = ReaderT DrawState Identity
 
 -- | Takes a task's 'due' property and renders a date with appropriate styling (e.g. red if overdue)
 renderDate :: Maybe Day -> ReaderDrawState (Maybe (Widget ResourceName))
@@ -254,18 +238,17 @@ moveTo (Modal MoveTo) = True
 moveTo _              = False
 
 -- draw
-drawR :: Int -> State -> Bindings -> ReaderDrawState [Widget ResourceName]
-drawR ht normalisedState bindings = do
-    modal <- showModal ht bindings normalisedState <$> asks dsToday
+drawR :: ReaderDrawState [Widget ResourceName]
+drawR = do
+    modal <- showModal
     mn <- main
     pure [modal, mn]
 
 draw :: Config -> Bindings -> Day -> State -> [Widget ResourceName]
-draw layout bindings today state = runReader (drawR ht normalisedState bindings) drawState
+draw layout bindings today state = runReader drawR drawState
   where
     normalisedState = normalise state
     stateMode = state ^. mode
-    ht = state ^. height
     drawState =
         DrawState
         { dsLists = normalisedState ^. lists
@@ -277,6 +260,8 @@ draw layout bindings today state = runReader (drawR ht normalisedState bindings)
         , dsCurrent = normalisedState ^. current
         , dsEditingTitle = editingTitle stateMode
         , dsSearchTerm = normalisedState ^. searchTerm
+        , dsHeight = state ^. height
+        , dsBindings = bindings
         }
 
 -- cursors

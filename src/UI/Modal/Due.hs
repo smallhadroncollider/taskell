@@ -13,24 +13,26 @@ import Control.Lens ((^.))
 import           Data.Taskell.Date  (Day, dayToText, deadline)
 import qualified Data.Taskell.Lists as L (due)
 import qualified Data.Taskell.Task  as T (Task, due, name)
-import           Events.State.Types (State, lists)
+import           UI.Draw.Types      (DrawState (..), ReaderDrawState)
 import           UI.Theme           (dlToAttr)
 import           UI.Types           (ResourceName)
 
-renderDate :: Day -> Maybe Day -> Maybe (Widget ResourceName)
-renderDate today dueDay = do
+renderDate :: Maybe Day -> ReaderDrawState (Maybe (Widget ResourceName))
+renderDate dueDay = do
+    today <- asks dsToday
     let attr = withAttr . dlToAttr . deadline today <$> dueDay
         widget = txt . dayToText today <$> dueDay
-    attr <*> widget
+    pure $ attr <*> widget
 
-renderTask :: Day -> T.Task -> Widget ResourceName
-renderTask today task = du <+> name
-  where
-    name = padLeftRight 1 . txt $ task ^. T.name
-    du = fromMaybe emptyWidget (renderDate today (task ^. T.due))
+renderTask :: T.Task -> ReaderDrawState (Widget ResourceName)
+renderTask task = do
+    date <- renderDate (task ^. T.due)
+    let name = padLeftRight 1 . txt $ task ^. T.name
+    let du = fromMaybe emptyWidget date
+    pure $ du <+> name
 
-due :: State -> Day -> (Text, Widget ResourceName)
-due state today = ("Due Tasks", widget)
-  where
-    tasks = L.due $ state ^. lists
-    widget = vBox . toList $ renderTask today <$> tasks
+due :: ReaderDrawState (Text, Widget ResourceName)
+due = do
+    tasks <- L.due <$> asks dsLists
+    widgets <- sequence $ renderTask <$> tasks
+    pure ("Due Tasks", vBox $ toList widgets)

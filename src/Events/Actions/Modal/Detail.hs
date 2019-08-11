@@ -8,6 +8,7 @@ module Events.Actions.Modal.Detail
     ) where
 
 import ClassyPrelude
+import Control.Lens  ((^.))
 
 import           Events.Actions.Types      as A (ActionType (..))
 import           Events.State
@@ -40,13 +41,13 @@ normal _              = pure
 
 insert :: Event -> Stateful
 insert (EvKey KEsc _) s = do
-    item <- getCurrentItem s
+    item <- getCurrentItem (s ^. mode)
     case item of
         DetailDescription -> (write =<<) $ finishDescription s
         DetailDate        -> (write =<<) $ finishDue s
         (DetailItem _)    -> (write =<<) . (showDetail =<<) $ finishSubtask s
 insert (EvKey KEnter _) s = do
-    item <- getCurrentItem s
+    item <- getCurrentItem (s ^. mode)
     case item of
         DetailDescription -> (write =<<) $ finishDescription s
         DetailDate -> (write =<<) $ finishDue s

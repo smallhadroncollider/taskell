@@ -9,6 +9,11 @@
 ## Refactoring
 
 - Use Attoparsec for parsing
+- Define key binding info in one place
+    > Currently all over the place
+    * [ ] Bindings
+    * [ ] Default key
+    * [ ] Description
 - Switch over to Vectors?
     > Sequence has O(log n) lookup. Vector has O(1). Vectors support mapping with index.
 - Add tests for IO.GitHub
@@ -24,7 +29,7 @@
 
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
-- No longer a difference between <Space> and move right
+- MoveTo shouldn't show if nothing selected
 - Help modal needs to wrap and scroll
 - Limit modal height based on content
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
@@ -39,6 +44,10 @@
 
 ## Features
 
+- Add a List widget for common actions between tasks and sub-tasks
+    * [ ] Re-ordering subtasks
+- Add a --debug command
+    * [ ] Shows full Mode print out
 - Add custom key support
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
@@ -48,10 +57,6 @@
     * [x] Needs to support merging with default options so that it's easy to add new default keys in the future
     * [ ] Add keys to Help which aren't in bindings
     * [ ] More detailed error messages for missing/invalid mappings
-- Add a List widget for common actions between tasks and sub-tasks
-    * [ ] Re-ordering subtasks
-- Add a --debug command
-    * [ ] Shows full Mode print out
 - Add tags/labels with `t`
 - Use proper error codes
 - Performance with large files
@@ -92,7 +97,19 @@
     * [x] Sort by date
     * [ ] Scrollable
     * [ ] Pressing Enter on one takes you to it
-    * [ ] Remove duplicated renderDate function (in Draw.hs and Modal/Due.hs)
+    * [ ] Use renderTask from Draw
+    * [ ] Filter by: overdue, this week, later
+    * [ ] Number of due items in status bar?
+    * [ ] Descriptions need to wrap
+    * [ ] Group by date?
+    * [ ] Search should filter
+- Simplify DrawState
+    * [ ] Bindings
+    * [ ] Today
+    * [ ] Normalised State
+    * [ ] Layout
+- Add a "complete" action
+    > Moves to last column and removes date. Space bar by default.
 
 ## Done
 
@@ -289,3 +306,4 @@
     * [x] Moving task up and down
     * [x] Often nothing is selected when first entering search mode
 - Duplicate task with `+`
+- Use Reader throughout Draw/Modal modules
