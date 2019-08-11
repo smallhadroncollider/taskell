@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module UI.Modal.Due
+module UI.Draw.Modal.Due
     ( due
     ) where
 

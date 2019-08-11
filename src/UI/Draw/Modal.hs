@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module UI.Modal
-    ( modal
+module UI.Draw.Modal
+    ( renderModal
     ) where
 
 import ClassyPrelude
@@ -14,12 +14,12 @@ import Brick.Widgets.Center
 
 import Events.State.Types      (height, mode)
 import Events.State.Types.Mode (ModalType (..), Mode (..))
+import UI.Draw.Field           (textField)
+import UI.Draw.Modal.Detail    (detail)
+import UI.Draw.Modal.Due       (due)
+import UI.Draw.Modal.Help      (help)
+import UI.Draw.Modal.MoveTo    (moveTo)
 import UI.Draw.Types           (DrawState (dsState), ReaderDrawState)
-import UI.Field                (textField)
-import UI.Modal.Detail         (detail)
-import UI.Modal.Due            (due)
-import UI.Modal.Help           (help)
-import UI.Modal.MoveTo         (moveTo)
 import UI.Theme                (titleAttr)
 import UI.Types                (ResourceName (..))
 
@@ -35,8 +35,8 @@ surround (title, widget) = do
         padLeftRight 4 . vLimit (ht - 9) . hLimit 50 . (t <=>) . viewport RNModal Vertical $
         widget
 
-modal :: ReaderDrawState (Widget ResourceName)
-modal = do
+renderModal :: ReaderDrawState (Widget ResourceName)
+renderModal = do
     md <- (^. mode) <$> asks dsState
     case md of
         Modal Help      -> surround =<< help

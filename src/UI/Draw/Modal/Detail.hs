@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module UI.Modal.Detail
+module UI.Draw.Modal.Detail
     ( detail
     ) where
 
@@ -19,8 +19,8 @@ import           Data.Taskell.Task         (Task, description, due, name, subtas
 import           Events.State              (getCurrentTask)
 import           Events.State.Modal.Detail (getCurrentItem, getField)
 import           Events.State.Types.Mode   (DetailItem (..))
+import           UI.Draw.Field             (Field, textField, widgetFromMaybe)
 import           UI.Draw.Types             (DrawState (..), ReaderDrawState)
-import           UI.Field                  (Field, textField, widgetFromMaybe)
 import           UI.Theme                  (disabledAttr, dlToAttr, taskCurrentAttr,
                                             titleCurrentAttr)
 import           UI.Types                  (ResourceName (..))

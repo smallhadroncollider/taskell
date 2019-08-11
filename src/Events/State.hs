@@ -70,7 +70,7 @@ import           Data.Taskell.Task  (Task, isBlank, name)
 
 import Events.State.Types
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
-import UI.Field                (Field, blankField, getText, textToField)
+import UI.Draw.Field                (Field, blankField, getText, textToField)
 
 type InternalStateful = State -> State
 

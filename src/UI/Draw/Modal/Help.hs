@@ -1,8 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module UI.Modal.Help
+module UI.Draw.Modal.Help
     ( help
     ) where
 
@@ -14,8 +13,8 @@ import Data.Text as T (justifyRight)
 import Events.Actions.Types as A (ActionType (..))
 import IO.Keyboard.Types    (bindingsToText)
 
+import UI.Draw.Field (textField)
 import UI.Draw.Types (DrawState (dsBindings), ReaderDrawState)
-import UI.Field      (textField)
 import UI.Theme      (taskCurrentAttr)
 import UI.Types      (ResourceName)
 

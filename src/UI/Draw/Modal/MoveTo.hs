@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module UI.Modal.MoveTo
+module UI.Draw.Modal.MoveTo
     ( moveTo
     ) where
 
@@ -13,8 +13,8 @@ import Brick
 
 import Data.Taskell.List  (title)
 import Events.State.Types (current, lists)
+import UI.Draw.Field      (textField)
 import UI.Draw.Types      (DrawState (dsState), ReaderDrawState)
-import UI.Field           (textField)
 import UI.Theme           (taskCurrentAttr)
 import UI.Types           (ResourceName)
 

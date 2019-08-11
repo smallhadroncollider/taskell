@@ -8,7 +8,7 @@ import ClassyPrelude
 import Control.Lens (makeLenses)
 
 import Data.Taskell.Lists (Lists)
-import UI.Field           (Field)
+import UI.Draw.Field      (Field)
 
 import qualified Events.State.Types.Mode as M (Mode)
 

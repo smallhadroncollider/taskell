@@ -7,8 +7,8 @@ module UI.FieldTest
 
 import ClassyPrelude
 
-import UI.Field (Field (Field), backspace, cursorPosition, insertCharacter, insertText,
-                 updateCursor, wrap)
+import UI.Draw.Field (Field (Field), backspace, cursorPosition, insertCharacter, insertText,
+                      updateCursor, wrap)
 
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -24,7 +24,7 @@ cursorPosition' text cursor = cursorPosition wrapped width (cursor - offset)
 test_field :: TestTree
 test_field =
     testGroup
-        "UI.Field"
+        "UI.Draw.Field"
         [ testGroup
               "Field cursor left"
               [ testCase

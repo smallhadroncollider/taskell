@@ -16,7 +16,7 @@ import           Events.State.Types
 import           Events.State.Types.Mode   (DetailItem (..), DetailMode (..))
 import           Graphics.Vty.Input.Events
 import           IO.Keyboard.Types         (Actions)
-import qualified UI.Field                  as F (event)
+import qualified UI.Draw.Field             as F (event)
 
 events :: Actions
 events

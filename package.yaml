@@ -50,7 +50,7 @@ library:
   - IO.Keyboard
   - IO.Keyboard.Parser
   - IO.Keyboard.Types
-  - UI.Field
+  - UI.Draw.Field
 
   dependencies:
   - base <=5

@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module UI.Field where
+module UI.Draw.Field where
 
 import ClassyPrelude
 

@@ -4,7 +4,7 @@ module Events.State.Types.Mode where
 
 import ClassyPrelude
 
-import UI.Field (Field)
+import UI.Draw.Field (Field)
 
 data DetailMode
     = DetailNormal
