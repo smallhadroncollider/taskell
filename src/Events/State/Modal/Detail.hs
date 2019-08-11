@@ -46,14 +46,14 @@ updateField fieldEvent s =
 
 finishSubtask :: Stateful
 finishSubtask state = do
-    text <- getText <$> getField (state ^. mode)
+    text <- getText <$> getField state
     i <- getCurrentSubtask state
     task <- updateSubtask i (ST.name .~ text) <$> getCurrentTask state
     setCurrentTask task $ state & mode .~ Modal (Detail (DetailItem i) (DetailInsert blankField))
 
 finish :: (Text -> Task -> Task) -> Stateful
 finish fn state = do
-    text <- getText <$> getField (state ^. mode)
+    text <- getText <$> getField state
     task <- fn text <$> getCurrentTask state
     setCurrentTask task $ state & mode .~ Modal (Detail (DetailItem 0) DetailNormal)
 
@@ -75,9 +75,11 @@ getCurrentSubtask state =
         Modal (Detail (DetailItem i) _) -> Just i
         _                               -> Nothing
 
-getCurrentItem :: Mode -> Maybe DetailItem
-getCurrentItem (Modal (Detail item _)) = Just item
-getCurrentItem _                       = Nothing
+getCurrentItem :: State -> Maybe DetailItem
+getCurrentItem state =
+    case state ^. mode of
+        Modal (Detail item _) -> Just item
+        _                     -> Nothing
 
 getCurrentMode :: State -> Maybe DetailMode
 getCurrentMode state =
@@ -85,9 +87,11 @@ getCurrentMode state =
         Modal (Detail _ m) -> Just m
         _                  -> Nothing
 
-getField :: Mode -> Maybe Field
-getField (Modal (Detail _ (DetailInsert f))) = Just f
-getField _                                   = Nothing
+getField :: State -> Maybe Field
+getField state =
+    case state ^. mode of
+        Modal (Detail _ (DetailInsert f)) -> Just f
+        _                                 -> Nothing
 
 setComplete :: Stateful
 setComplete state = do
@@ -155,4 +159,4 @@ setIndex state i = do
             | i > lst = lst
             | i < 0 = 0
             | otherwise = i
-    pure $ state & mode .~ Modal (Detail (DetailItem newIndex) m)
+    return $ state & mode .~ Modal (Detail (DetailItem newIndex) m)

@@ -11,16 +11,17 @@ import Control.Lens ((^.))
 
 import Brick
 
-import Data.Taskell.List (title)
-import UI.Draw.Types     (DrawState (dsCurrent, dsLists), ReaderDrawState)
-import UI.Field          (textField)
-import UI.Theme          (taskCurrentAttr)
-import UI.Types          (ResourceName)
+import Data.Taskell.List  (title)
+import Events.State.Types (current, lists)
+import UI.Draw.Types      (DrawState (dsState), ReaderDrawState)
+import UI.Field           (textField)
+import UI.Theme           (taskCurrentAttr)
+import UI.Types           (ResourceName)
 
 moveTo :: ReaderDrawState (Text, Widget ResourceName)
 moveTo = do
-    skip <- fst <$> asks dsCurrent
-    ls <- toList <$> asks dsLists
+    skip <- fst . (^. current) <$> asks dsState
+    ls <- toList . (^. lists) <$> asks dsState
     let titles = textField . (^. title) <$> ls
     let letter a =
             padRight (Pad 1) . hBox $

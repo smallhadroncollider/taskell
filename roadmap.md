@@ -103,11 +103,6 @@
     * [ ] Descriptions need to wrap
     * [ ] Group by date?
     * [ ] Search should filter
-- Simplify DrawState
-    * [ ] Bindings
-    * [ ] Today
-    * [ ] Normalised State
-    * [ ] Layout
 - Add a "complete" action
     > Moves to last column and removes date. Space bar by default.
 
@@ -307,3 +302,8 @@
     * [x] Often nothing is selected when first entering search mode
 - Duplicate task with `+`
 - Use Reader throughout Draw/Modal modules
+- Simplify DrawState
+    * [x] Bindings
+    * [x] Today
+    * [x] Normalised State
+    * [x] Layout

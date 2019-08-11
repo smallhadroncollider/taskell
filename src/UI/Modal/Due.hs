@@ -13,6 +13,7 @@ import Control.Lens ((^.))
 import           Data.Taskell.Date  (Day, dayToText, deadline)
 import qualified Data.Taskell.Lists as L (due)
 import qualified Data.Taskell.Task  as T (Task, due, name)
+import           Events.State.Types (lists)
 import           UI.Draw.Types      (DrawState (..), ReaderDrawState)
 import           UI.Theme           (dlToAttr)
 import           UI.Types           (ResourceName)
@@ -33,6 +34,6 @@ renderTask task = do
 
 due :: ReaderDrawState (Text, Widget ResourceName)
 due = do
-    tasks <- L.due <$> asks dsLists
+    tasks <- L.due . (^. lists) <$> asks dsState
     widgets <- sequence $ renderTask <$> tasks
     pure ("Due Tasks", vBox $ toList widgets)

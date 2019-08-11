@@ -14,10 +14,9 @@ import Data.Sequence (mapWithIndex)
 import Brick
 
 import           Data.Taskell.Date         (Day, dayToOutput, deadline)
-import qualified Data.Taskell.List         as L (getTask)
-import qualified Data.Taskell.Lists        as L (get)
 import qualified Data.Taskell.Subtask      as ST (Subtask, complete, name)
 import           Data.Taskell.Task         (Task, description, due, name, subtasks)
+import           Events.State              (getCurrentTask)
 import           Events.State.Modal.Detail (getCurrentItem, getField)
 import           Events.State.Types.Mode   (DetailItem (..))
 import           UI.Draw.Types             (DrawState (..), ReaderDrawState)
@@ -75,15 +74,12 @@ renderDate today field item task =
 detail :: ReaderDrawState (Text, Widget ResourceName)
 detail = do
     today <- asks dsToday
-    mode <- asks dsMode
-    (lst, itm) <- asks dsCurrent
-    lists <- asks dsLists
+    state <- asks dsState
     pure $
         fromMaybe ("Error", txt "Oops") $ do
-            list <- L.get lists lst
-            task <- L.getTask itm list
-            i <- getCurrentItem mode
-            let f = getField mode
+            task <- getCurrentTask state
+            i <- getCurrentItem state
+            let f = getField state
             let sts = task ^. subtasks
                 w
                     | null sts = withAttr disabledAttr $ txt "No sub-tasks"
