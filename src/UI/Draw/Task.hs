@@ -11,7 +11,7 @@ import Control.Lens ((^.))
 
 import Brick
 
-import           Data.Taskell.Date  (Day, dayToText, deadline)
+import           Data.Taskell.Date  (dayToText, deadline)
 import qualified Data.Taskell.Task  as T (Task, contains, countCompleteSubtasks, countSubtasks,
                                           description, due, hasSubtasks, name)
 import           Events.State.Types (current, mode, searchTerm)
@@ -23,30 +23,33 @@ import           UI.Theme
 import           UI.Types           (ResourceName)
 
 -- | Takes a task's 'due' property and renders a date with appropriate styling (e.g. red if overdue)
-renderDate :: Maybe Day -> ReaderDrawState (Maybe (Widget ResourceName))
-renderDate dueDay = do
-    today <- dsToday <$> ask -- get the value of `today` from DrawState
-    let attr = withAttr . dlToAttr . deadline today <$> dueDay -- create a `Maybe (Widget -> Widget)` attribute function
-        widget = txt . dayToText today <$> dueDay -- get the formatted due date `Maybe Text`
-    pure $ attr <*> widget
+renderDate :: T.Task -> ReaderDrawState (Maybe (Widget ResourceName))
+renderDate task = do
+    today <- asks dsToday -- get the value of `today` from DrawState
+    pure $
+        (\day -> withAttr (dlToAttr $ deadline today day) (txt $ dayToText today day)) <$>
+        task ^. T.due
 
 -- | Renders the appropriate completed sub task count e.g. "[2/3]"
-renderSubtaskCount :: T.Task -> Widget ResourceName
-renderSubtaskCount task =
-    txt $ concat ["[", tshow $ T.countCompleteSubtasks task, "/", tshow $ T.countSubtasks task, "]"]
+renderSubtaskCount :: T.Task -> ReaderDrawState (Maybe (Widget ResourceName))
+renderSubtaskCount task = pure $ bool Nothing (Just indicator) (T.hasSubtasks task)
+  where
+    complete = tshow $ T.countCompleteSubtasks task
+    total = tshow $ T.countSubtasks task
+    indicator = txt $ concat ["[", complete, "/", total, "]"]
+
+-- | Renders the description indicator
+renderDescIndicator :: T.Task -> ReaderDrawState (Maybe (Widget ResourceName))
+renderDescIndicator task = do
+    indicator <- descriptionIndicator <$> asks dsLayout
+    pure $ const (txt indicator) <$> task ^. T.description -- show the description indicator if one is set
 
 -- | Renders the appropriate indicators: description, sub task count, and due date
 indicators :: T.Task -> ReaderDrawState (Widget ResourceName)
 indicators task = do
-    dateWidget <- renderDate (task ^. T.due) -- get the due date widget
-    descIndicator <- descriptionIndicator . dsLayout <$> ask
-    pure . hBox $
-        padRight (Pad 1) <$>
-        catMaybes
-            [ const (txt descIndicator) <$> task ^. T.description -- show the description indicator if one is set
-            , bool Nothing (Just (renderSubtaskCount task)) (T.hasSubtasks task) -- if it has subtasks, render the sub task count
-            , dateWidget
-            ]
+    widgets <-
+        catMaybes <$> sequence [renderDescIndicator task, renderSubtaskCount task, renderDate task]
+    pure . hBox $ padRight (Pad 1) <$> widgets
 
 -- | Renders an individual task
 renderTask' ::
