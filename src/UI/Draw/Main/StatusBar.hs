@@ -47,6 +47,7 @@ modeToText fld md = do
                      Modal Help -> "HELP"
                      Modal MoveTo -> "MOVE"
                      Modal Detail {} -> "DETAIL"
+                     Modal Due {} -> "DUE"
                      Search {} -> "SEARCH"
                      _ -> ""
 
