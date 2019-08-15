@@ -12,6 +12,7 @@ import Data.Char                 (isDigit)
 import Events.Actions.Types      as A (ActionType (..))
 import Events.State
 import Events.State.Modal.Detail (editDue, showDetail)
+import Events.State.Modal.Due    (showDue)
 import Events.State.Types        (Stateful)
 import Graphics.Vty.Input.Events
 import IO.Keyboard.Types         (Actions)

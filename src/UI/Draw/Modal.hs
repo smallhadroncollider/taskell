@@ -39,8 +39,8 @@ renderModal :: ReaderDrawState (Widget ResourceName)
 renderModal = do
     md <- (^. mode) <$> asks dsState
     case md of
-        Modal Help      -> surround =<< help
-        Modal Detail {} -> surround =<< detail
-        Modal MoveTo    -> surround =<< moveTo
-        Modal Due       -> surround =<< due
-        _               -> pure emptyWidget
+        Modal Help                 -> surround =<< help
+        Modal Detail {}            -> surround =<< detail
+        Modal MoveTo               -> surround =<< moveTo
+        Modal (Due tasks selected) -> surround =<< due tasks selected
+        _                          -> pure emptyWidget

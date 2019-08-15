@@ -81,6 +81,14 @@ clearList state = do
     invalidateCacheEntry $ RNList list
     traverse_ (invalidateCacheEntry . RNTask . (,) (ListIndex list) . TaskIndex) range
 
+clearDue :: State -> EventM ResourceName ()
+clearDue state =
+    case state ^. mode of
+        Modal (Due _ pos) -> do
+            let range = [(pos - 1) .. (pos + 1)]
+            traverse_ (invalidateCacheEntry . RNDue) range
+        _ -> pure ()
+
 -- event handling
 handleVtyEvent ::
        (DebouncedWrite, Trigger) -> ActionSets -> State -> Event -> EventM ResourceName (Next State)
@@ -93,6 +101,7 @@ handleVtyEvent (send, trigger) actions previousState e = do
         _                        -> pure ()
     case state ^. mode of
         Shutdown -> liftIO (Debounce.close trigger) *> Brick.halt state
+        (Modal Due {}) -> clearDue state *> next send state
         (Modal MoveTo) -> clearAllTitles state *> next send state
         (Insert ITask ICreate _) -> clearList state *> next send state
         _ -> clearCache previousState *> clearCache state *> next send state

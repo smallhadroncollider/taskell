@@ -50,7 +50,6 @@ module Events.State
     -- Events.Actions.Modal
     , showHelp
     , showMoveTo
-    , showDue
     , moveTo
     , getCurrentList
     , getCurrentTask
@@ -70,7 +69,7 @@ import           Data.Taskell.Task  (Task, isBlank, name)
 
 import Events.State.Types
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
-import UI.Draw.Field                (Field, blankField, getText, textToField)
+import UI.Draw.Field           (Field, blankField, getText, textToField)
 
 type InternalStateful = State -> State
 
@@ -357,9 +356,6 @@ showHelp = Just . (mode .~ Modal Help)
 
 showMoveTo :: Stateful
 showMoveTo = Just . (mode .~ Modal MoveTo)
-
-showDue :: Stateful
-showDue = Just . (mode .~ Modal Due)
 
 -- view
 setHeight :: Int -> State -> State

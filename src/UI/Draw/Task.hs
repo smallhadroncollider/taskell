@@ -2,7 +2,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module UI.Draw.Task
-    ( renderTask
+    ( TaskWidget(..)
+    , renderTask
+    , parts
     ) where
 
 import ClassyPrelude
@@ -22,34 +24,51 @@ import           UI.Draw.Types      (DrawState (..), ReaderDrawState)
 import           UI.Theme
 import           UI.Types           (ResourceName)
 
+data TaskWidget = TaskWidget
+    { textW     :: Widget ResourceName
+    , dateW     :: Widget ResourceName
+    , summaryW  :: Widget ResourceName
+    , subtasksW :: Widget ResourceName
+    }
+
 -- | Takes a task's 'due' property and renders a date with appropriate styling (e.g. red if overdue)
-renderDate :: T.Task -> ReaderDrawState (Maybe (Widget ResourceName))
+renderDate :: T.Task -> ReaderDrawState (Widget ResourceName)
 renderDate task = do
     today <- asks dsToday -- get the value of `today` from DrawState
-    pure $
+    pure . fromMaybe emptyWidget $
         (\day -> withAttr (dlToAttr $ deadline today day) (txt $ dayToText today day)) <$>
         task ^. T.due
 
 -- | Renders the appropriate completed sub task count e.g. "[2/3]"
-renderSubtaskCount :: T.Task -> ReaderDrawState (Maybe (Widget ResourceName))
-renderSubtaskCount task = pure $ bool Nothing (Just indicator) (T.hasSubtasks task)
+renderSubtaskCount :: T.Task -> ReaderDrawState (Widget ResourceName)
+renderSubtaskCount task =
+    pure . fromMaybe emptyWidget $ bool Nothing (Just indicator) (T.hasSubtasks task)
   where
     complete = tshow $ T.countCompleteSubtasks task
     total = tshow $ T.countSubtasks task
     indicator = txt $ concat ["[", complete, "/", total, "]"]
 
 -- | Renders the description indicator
-renderDescIndicator :: T.Task -> ReaderDrawState (Maybe (Widget ResourceName))
+renderDescIndicator :: T.Task -> ReaderDrawState (Widget ResourceName)
 renderDescIndicator task = do
     indicator <- descriptionIndicator <$> asks dsLayout
-    pure $ const (txt indicator) <$> task ^. T.description -- show the description indicator if one is set
+    pure . fromMaybe emptyWidget $ const (txt indicator) <$> task ^. T.description -- show the description indicator if one is set
+
+-- | Renders the task text
+renderText :: T.Task -> ReaderDrawState (Widget ResourceName)
+renderText task = pure $ textField (task ^. T.name)
 
 -- | Renders the appropriate indicators: description, sub task count, and due date
 indicators :: T.Task -> ReaderDrawState (Widget ResourceName)
 indicators task = do
-    widgets <-
-        catMaybes <$> sequence [renderDescIndicator task, renderSubtaskCount task, renderDate task]
+    widgets <- sequence (($ task) <$> [renderDescIndicator, renderSubtaskCount, renderDate])
     pure . hBox $ padRight (Pad 1) <$> widgets
+
+-- | The individual parts of a task widget
+parts :: T.Task -> ReaderDrawState TaskWidget
+parts task =
+    TaskWidget <$> renderText task <*> renderDate task <*> renderDescIndicator task <*>
+    renderSubtaskCount task
 
 -- | Renders an individual task
 renderTask' ::
@@ -59,9 +78,8 @@ renderTask' rn listIndex taskIndex task = do
     selected <- (== (listIndex, taskIndex)) . (^. current) <$> asks dsState -- is the current task selected?
     taskField <- getField . (^. mode) <$> asks dsState -- get the field, if it's being edited
     after <- indicators task -- get the indicators widget
-    let text = task ^. T.name
-        name = rn taskIndex
-        widget = textField text
+    widget <- renderText task
+    let name = rn taskIndex
         widget' = widgetFromMaybe widget taskField
     pure $
         cached name .
