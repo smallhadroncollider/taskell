@@ -13,14 +13,27 @@ import Test.Tasty.HUnit
 import qualified Data.Taskell.List           as L
 import           Data.Taskell.Lists.Internal
 import qualified Data.Taskell.Task           as T
+import           Types                       (ListIndex (ListIndex), TaskIndex (TaskIndex))
 
 -- test data
 list1, list2, list3 :: L.List
-list1 = foldl' (flip L.append) (L.empty "List 1") [T.new "One", T.new "Two", T.new "Three"]
+list1 =
+    foldl'
+        (flip L.append)
+        (L.empty "List 1")
+        [T.new "One", T.setDue "2019-08-14" (T.new "Two"), T.new "Three"]
 
-list2 = foldl' (flip L.append) (L.empty "List 2") [T.new "1", T.new "2", T.new "3"]
+list2 =
+    foldl'
+        (flip L.append)
+        (L.empty "List 2")
+        [T.new "1", T.new "2", T.setDue "2018-12-03" (T.new "3")]
 
-list3 = foldl' (flip L.append) (L.empty "List 3") [T.new "01", T.new "10", T.new "11"]
+list3 =
+    foldl'
+        (flip L.append)
+        (L.empty "List 3")
+        [T.setDue "2019-04-05" (T.new "01"), T.new "10", T.new "11"]
 
 testLists :: Lists
 testLists = fromList [list1, list2, list3]
@@ -68,13 +81,17 @@ test_lists =
                                    , foldl'
                                          (flip L.append)
                                          (L.empty "List 2")
-                                         [T.new "1", T.new "3"]
+                                         [T.new "1", T.setDue "2018-12-03" (T.new "3")]
                                    , foldl'
                                          (flip L.append)
                                          (L.empty "List 3")
-                                         [T.new "01", T.new "10", T.new "11", T.new "2"]
+                                         [ T.setDue "2019-04-05" (T.new "01")
+                                         , T.new "10"
+                                         , T.new "11"
+                                         , T.new "2"
+                                         ]
                                    ]))
-                         (changeList (1, 1) testLists 1))
+                         (changeList (ListIndex 1, TaskIndex 1) testLists 1))
               , testCase
                     "left"
                     (assertEqual
@@ -84,20 +101,30 @@ test_lists =
                                    [ foldl'
                                          (flip L.append)
                                          (L.empty "List 1")
-                                         [T.new "One", T.new "Two", T.new "Three", T.new "2"]
+                                         [ T.new "One"
+                                         , T.setDue "2019-08-14" (T.new "Two")
+                                         , T.new "Three"
+                                         , T.new "2"
+                                         ]
                                    , foldl'
                                          (flip L.append)
                                          (L.empty "List 2")
-                                         [T.new "1", T.new "3"]
+                                         [T.new "1", T.setDue "2018-12-03" (T.new "3")]
                                    , list3
                                    ]))
-                         (changeList (1, 1) testLists (-1)))
+                         (changeList (ListIndex 1, TaskIndex 1) testLists (-1)))
               , testCase
                     "out of bounds list"
-                    (assertEqual "Nothing" Nothing (changeList (5, 1) testLists 1))
+                    (assertEqual
+                         "Nothing"
+                         Nothing
+                         (changeList (ListIndex 5, TaskIndex 1) testLists 1))
               , testCase
                     "out of bounds task"
-                    (assertEqual "Nothing" Nothing (changeList (1, 10) testLists 1))
+                    (assertEqual
+                         "Nothing"
+                         Nothing
+                         (changeList (ListIndex 1, TaskIndex 10) testLists 1))
               ]
         , testCase
               "newList"
@@ -173,7 +200,11 @@ test_lists =
                               , foldl'
                                     (flip L.append)
                                     (L.empty "List 3")
-                                    [T.new "01", T.new "10", T.new "11", T.new "Blah"]
+                                    [ T.setDue "2019-04-05" (T.new "01")
+                                    , T.new "10"
+                                    , T.new "11"
+                                    , T.new "Blah"
+                                    ]
                               ])
                          (appendToLast (T.new "Blah") testLists))
               , testCase
@@ -186,4 +217,14 @@ test_lists =
                    "Returns an analysis"
                    "test.md\nLists: 3\nTasks: 9"
                    (analyse "test.md" testLists))
+        , testCase
+              "due"
+              (assertEqual
+                   "returns just due list"
+                   (fromList
+                        [ ((ListIndex 1, TaskIndex 2), T.setDue "2018-12-03" (T.new "3"))
+                        , ((ListIndex 2, TaskIndex 0), T.setDue "2019-04-05" (T.new "01"))
+                        , ((ListIndex 0, TaskIndex 1), T.setDue "2019-08-14" (T.new "Two"))
+                        ])
+                   (due testLists))
         ]

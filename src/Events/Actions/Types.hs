@@ -9,6 +9,7 @@ data ActionType
     = Quit
     | Undo
     | Search
+    | Due
     | Help
     | Previous
     | Next
@@ -18,6 +19,7 @@ data ActionType
     | New
     | NewAbove
     | NewBelow
+    | Duplicate
     | Edit
     | Clear
     | Delete
@@ -43,6 +45,7 @@ read :: Text -> ActionType
 read "quit"       = Quit
 read "undo"       = Undo
 read "search"     = Search
+read "due"        = Due
 read "help"       = Help
 read "previous"   = Previous
 read "next"       = Next
@@ -52,6 +55,7 @@ read "bottom"     = Bottom
 read "new"        = New
 read "newAbove"   = NewAbove
 read "newBelow"   = NewBelow
+read "duplicate"  = Duplicate
 read "edit"       = Edit
 read "clear"      = Clear
 read "delete"     = Delete

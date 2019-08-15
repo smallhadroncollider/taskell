@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 
 module Data.Taskell.List.Internal where
 
@@ -10,7 +11,8 @@ import Control.Lens (element, makeLenses, (%%~), (%~), (&), (.~), (^.), (^?))
 import Data.Sequence as S (adjust', deleteAt, insertAt, update, (|>))
 
 import qualified Data.Taskell.Seq  as S
-import qualified Data.Taskell.Task as T (Task, Update, blank, contains)
+import qualified Data.Taskell.Task as T (Task, Update, blank, contains, due, duplicate)
+import           Types             (TaskIndex (TaskIndex))
 
 data List = List
     { _title :: Text
@@ -35,8 +37,18 @@ new = append T.blank
 count :: List -> Int
 count = length . (^. tasks)
 
+due :: List -> Seq (TaskIndex, T.Task)
+due list = catMaybes (filt S.<#> (list ^. tasks))
+  where
+    filt int task = const (TaskIndex int, task) <$> task ^. T.due
+
 newAt :: Int -> Update
-newAt idx = tasks %~ insertAt idx T.blank
+newAt idx = tasks %~ S.insertAt idx T.blank
+
+duplicate :: Int -> List -> Maybe List
+duplicate idx list = do
+    task <- T.duplicate <$> getTask idx list
+    pure $ list & tasks %~ S.insertAt idx task
 
 append :: T.Task -> Update
 append task = tasks %~ (|> task)
@@ -52,8 +64,13 @@ updateFn idx fn = tasks %~ adjust' fn idx
 update :: Int -> T.Task -> Update
 update idx task = tasks %~ S.update idx task
 
-move :: Int -> Int -> List -> Maybe List
-move from dir = tasks %%~ S.shiftBy from dir
+move :: Int -> Int -> Maybe Text -> List -> Maybe (List, Int)
+move current dir term list =
+    case term of
+        Nothing -> (, bound (current + dir) list) <$> (list & tasks %%~ S.shiftBy current dir)
+        Just _ -> do
+            idx <- changeTask dir current term list
+            (, idx) <$> (list & tasks %%~ S.shiftBy current (idx - current))
 
 deleteTask :: Int -> Update
 deleteTask idx = tasks %~ deleteAt idx

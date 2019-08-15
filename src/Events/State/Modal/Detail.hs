@@ -34,7 +34,7 @@ import           Events.State            (getCurrentTask, setCurrentTask)
 import           Events.State.Types      (State, Stateful, mode)
 import           Events.State.Types.Mode (DetailItem (..), DetailMode (..), ModalType (Detail),
                                           Mode (Modal))
-import           UI.Field                (Field, blankField, getText, textToField)
+import           UI.Draw.Field           (Field, blankField, getText, textToField)
 
 updateField :: (Field -> Field) -> Stateful
 updateField fieldEvent s =
@@ -159,4 +159,4 @@ setIndex state i = do
             | i > lst = lst
             | i < 0 = 0
             | otherwise = i
-    pure $ state & mode .~ Modal (Detail (DetailItem newIndex) m)
+    return $ state & mode .~ Modal (Detail (DetailItem newIndex) m)

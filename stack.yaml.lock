@@ -3,45 +3,10 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages:
-- completed:
-    hackage: config-ini-0.2.4.0@sha256:38a6d484d471c6fac81445de2eac8c4e8c82760962fca5491ae1c3bfca9c4047,3232
-    pantry-tree:
-      size: 886
-      sha256: b608472507ec84e468f768acab36d8c85b46bcf918f2a60604fff46137160d2d
-  original:
-    hackage: config-ini-0.2.4.0
-- completed:
-    hackage: data-clist-0.1.2.3@sha256:0a4ad5f045c285eb533c2baa228581d2ff3ee123a4da7ca84e95a74aea9fb058,936
-    pantry-tree:
-      size: 219
-      sha256: 3d708d2da0d526aada2a1bd72e233133ee2a9f96e229ea122e5267a65f683a13
-  original:
-    hackage: data-clist-0.1.2.3
-- completed:
-    hackage: text-zipper-0.10.1@sha256:8b73a97a3717a17df9b0a722b178950c476ff2268ca5c583e99d010c94af849e,1471
-    pantry-tree:
-      size: 600
-      sha256: ebd5f0e2fc8c59b1bde6706cef1fdb012d52bb26b3953a97a4fa6502f56cdd65
-  original:
-    hackage: text-zipper-0.10.1
-- completed:
-    hackage: word-wrap-0.4.1@sha256:f72233b383ef569c557bfd9812cbb8e306c415ce509082c0bd15ee51c0239ccc,1606
-    pantry-tree:
-      size: 423
-      sha256: dcf5071895ee477e60e3c9de1e30eb711e11e9a7335db160616f80baeb20ad71
-  original:
-    hackage: word-wrap-0.4.1
-- completed:
-    hackage: brick-0.47.1@sha256:de548e3c39cc393dafbc1ecfe788746103fe5233d5a69c2cca5da8ed819ba661,13868
-    pantry-tree:
-      size: 3752
-      sha256: bea3f31fbc18a56f0a78d3b27438eba5eb4a81d59c5ca120ddee4ca919183018
-  original:
-    hackage: brick-0.47.1
+packages: []
 snapshots:
 - completed:
-    size: 500539
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/13/30.yaml
-    sha256: 59ad6b944c9903847fecdc1d4815e8500c1f9999d80fd1b4d2d66e408faec44b
-  original: lts-13.30
+    size: 523448
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/1.yaml
+    sha256: 0045b9bae36c3bb2dd374c29b586389845af1557eea0423958d152fc500d4fbf
+  original: lts-14.1

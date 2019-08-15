@@ -8,11 +8,10 @@ import ClassyPrelude
 import Control.Lens (makeLenses)
 
 import Data.Taskell.Lists (Lists)
-import UI.Field           (Field)
+import Types              (Pointer)
+import UI.Draw.Field      (Field)
 
 import qualified Events.State.Types.Mode as M (Mode)
-
-type Pointer = (Int, Int)
 
 data State = State
     { _mode       :: M.Mode

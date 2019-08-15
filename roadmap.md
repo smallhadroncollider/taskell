@@ -8,14 +8,17 @@
 
 ## Refactoring
 
+- Somehow merge `event` and `events` in Actions that use bindings
 - Use Attoparsec for parsing
-- Switch over to Vectors?
-    > Sequence has O(log n) lookup. Vector has O(1). Vectors support mapping with index.
+- Define key binding info in one place
+    > Currently all over the place
+    * [ ] Bindings
+    * [ ] Default key
+    * [ ] Description
 - Add tests for IO.GitHub
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Remove duplication of config - currently using ini and hard-coded defaults
-- Move Help modal creation into Template Haskell
 - Remove `~` style sub-task complete parsing
     @ 2018-12-10
 - Use Shake instead of bash script
@@ -24,7 +27,7 @@
 
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
-- No longer a difference between <Space> and move right
+- MoveTo shouldn't show if nothing selected
 - Help modal needs to wrap and scroll
 - Limit modal height based on content
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
@@ -39,11 +42,17 @@
 
 ## Features
 
-- Some way to just see tasks with due dates
-    * [ ] Sort by date or filter by urgency?
 - Add a List widget for common actions between tasks and sub-tasks
     * [ ] Re-ordering subtasks
-- Duplicate task with `+`
+- Add custom key support
+    * [x] Create bindings.ini
+    * [x] Update events to use Map from bindings.ini
+    * [ ] Check for key conflicts: include keys not explicitly mapped (e.g. 1-9, Esc, Enter)
+    * [x] Check for bits of functionality missing a mapping
+    * [x] Update Help dialogue with key mappings
+    * [x] Needs to support merging with default options so that it's easy to add new default keys in the future
+    * [ ] Add keys to Help which aren't in bindings
+    * [ ] More detailed error messages for missing/invalid mappings
 - Add tags/labels with `t`
 - Use proper error codes
 - Performance with large files
@@ -59,13 +68,13 @@
     * [x] Markdown parsing
     * [ ] Text line breaks go a bit funny with multi-line descriptions
 - Check times work no matter what timezone
-- URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Redo functionality
 - Always show list title
     > Floating list titles - so you can always see what list you're in
 - Make token UX better
     * [ ] Open link automatically?
     * [ ] Ask for token and save to ini file automatically
+- URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Import Issues from GitHub using  labels
 - Readline support?
     > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
@@ -80,21 +89,19 @@
 
 ## In Progress
 
-- Search navigation issues
-    > Issues with navigation when in NORMAL + SEARCH mode
-    * [x] Navigating up and down
-    * [x] Navigating between lists
-    * [ ] Moving task up and down
-    * [x] Often nothing is selected when first entering search mode
-- Add custom key support
-    * [x] Create bindings.ini
-    * [x] Update events to use Map from bindings.ini
-    * [ ] Check for key conflicts: include keys not explicitly mapped (e.g. 1-9, Esc, Enter)
-    * [x] Check for bits of functionality missing a mapping
-    * [x] Update Help dialogue with key mappings
-    * [x] Needs to support merging with default options so that it's easy to add new default keys in the future
-    * [ ] Add keys to Help which aren't in bindings
-    * [ ] More detailed error messages for missing/invalid mappings
+- Some way to just see tasks with due dates
+    * [x] Sort by date
+    * [x] Scrollable
+    * [x] Pressing Enter on one takes you to it
+    * [x] Use renderTask from Draw
+    * [ ] Filter by: overdue, this week, later
+    * [ ] Number of due items in status bar?
+    * [x] Descriptions need to wrap
+    * [ ] Search should filter
+    * [ ] Show list each task belongs to?
+    * [ ] Backspace (customisable) removes date
+- Add a "complete" action
+    > Moves to last column and removes date. Space bar by default.
 
 ## Done
 
@@ -284,3 +291,18 @@
 - Tidy up load functions in IO.Taskell
 - Getting stuck in INSERT mode when blank item
 - If an item isn't created, then selection gets lost
+- Search navigation issues
+    > Issues with navigation when in NORMAL + SEARCH mode
+    * [x] Navigating up and down
+    * [x] Navigating between lists
+    * [x] Moving task up and down
+    * [x] Often nothing is selected when first entering search mode
+- Duplicate task with `+`
+- Use Reader throughout Draw/Modal modules
+- Simplify DrawState
+    * [x] Bindings
+    * [x] Today
+    * [x] Normalised State
+    * [x] Layout
+- Add a debug option
+    * [x] Shows full Mode print out

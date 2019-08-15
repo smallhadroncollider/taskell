@@ -12,6 +12,7 @@ import Data.Char                 (isDigit)
 import Events.Actions.Types      as A (ActionType (..))
 import Events.State
 import Events.State.Modal.Detail (editDue, showDetail)
+import Events.State.Modal.Due    (showDue)
 import Events.State.Types        (Stateful)
 import Graphics.Vty.Input.Events
 import IO.Keyboard.Types         (Actions)
@@ -24,6 +25,7 @@ events
     , (A.Undo, (write =<<) . undo)
     , (A.Search, searchMode)
     , (A.Help, showHelp)
+    , (A.Due, showDue)
         -- navigation
     , (A.Previous, previous)
     , (A.Next, next)
@@ -34,6 +36,7 @@ events
     , (A.New, (startCreate =<<) . (newItem =<<) . store)
     , (A.NewAbove, (startCreate =<<) . (above =<<) . store)
     , (A.NewBelow, (startCreate =<<) . (below =<<) . store)
+    , (A.Duplicate, (next =<<) . (write =<<) . (duplicate =<<) . store)
     -- editing tasks
     , (A.Edit, (startEdit =<<) . store)
     , (A.Clear, (startEdit =<<) . (clearItem =<<) . store)

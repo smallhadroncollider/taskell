@@ -12,7 +12,7 @@ import           Events.State
 import           Events.State.Types
 import           Events.State.Types.Mode   (InsertMode (..), InsertType (..), Mode (Insert))
 import           Graphics.Vty.Input.Events (Event (EvKey), Key (KEnter, KEsc))
-import qualified UI.Field                  as F (event)
+import qualified UI.Draw.Field             as F (event)
 
 event :: Event -> Stateful
 event (EvKey KEnter _) state =

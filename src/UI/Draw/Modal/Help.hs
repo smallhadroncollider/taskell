@@ -1,8 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module UI.Modal.Help
+module UI.Draw.Modal.Help
     ( help
     ) where
 
@@ -12,19 +11,22 @@ import Brick
 import Data.Text as T (justifyRight)
 
 import Events.Actions.Types as A (ActionType (..))
-import IO.Keyboard.Types    (Bindings, bindingsToText)
+import IO.Keyboard.Types    (bindingsToText)
 
-import UI.Field (textField)
-import UI.Theme (taskCurrentAttr)
-import UI.Types (ResourceName)
+import IO.Keyboard.Types (Bindings)
+import UI.Draw.Field     (textField)
+import UI.Draw.Types     (DrawState (dsBindings), ModalWidget, TWidget)
+import UI.Theme          (taskCurrentAttr)
 
 descriptions :: [([ActionType], Text)]
 descriptions =
     [ ([A.Help], "Show this list of controls")
+    , ([A.Due], "Show tasks with due dates")
     , ([A.Previous, A.Next, A.Left, A.Right], "Move down / up / left / right")
     , ([A.Bottom], "Go to bottom of list")
     , ([A.New], "Add a task")
     , ([A.NewAbove, A.NewBelow], "Add a task above / below")
+    , ([A.Duplicate], "Duplicate a task")
     , ([A.Edit], "Edit a task")
     , ([A.Clear], "Change task")
     , ([A.Detail], "Show task details / Edit task description")
@@ -48,15 +50,16 @@ generate bindings = first (intercalate ", " . bindingsToText bindings <$>) <$> d
 format :: ([Text], Text) -> (Text, Text)
 format = first (intercalate " / ")
 
-line :: Int -> (Text, Text) -> Widget ResourceName
+line :: Int -> (Text, Text) -> TWidget
 line m (l, r) = left <+> right
   where
     left = padRight (Pad 2) . withAttr taskCurrentAttr . txt $ justifyRight m ' ' l
     right = textField r
 
-help :: Bindings -> (Text, Widget ResourceName)
-help bindings = ("Controls", w)
-  where
-    ls = format <$> generate bindings
-    m = foldl' max 0 $ length . fst <$> ls
-    w = vBox $ line m <$> ls
+help :: ModalWidget
+help = do
+    bindings <- asks dsBindings
+    let ls = format <$> generate bindings
+    let m = foldl' max 0 $ length . fst <$> ls
+    let w = vBox $ line m <$> ls
+    pure ("Controls", w)

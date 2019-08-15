@@ -21,10 +21,11 @@ import Events.Actions          (ActionSets, event, generateActions)
 import Events.State            (continue, countCurrent, setHeight)
 import Events.State.Types      (State, current, io, lists, mode, path, searchTerm)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
-import IO.Config               (Config, generateAttrMap, getBindings, layout)
+import IO.Config               (Config, debugging, generateAttrMap, getBindings, layout)
 import IO.Taskell              (writeData)
+import Types                   (ListIndex (..), TaskIndex (..))
 import UI.Draw                 (chooseCursor, draw)
-import UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
+import UI.Types                (ResourceName (..))
 
 type DebouncedMessage = (Lists, FilePath)
 
@@ -62,7 +63,7 @@ debounce config initial = do
 -- cache clearing
 clearCache :: State -> EventM ResourceName ()
 clearCache state = do
-    let (li, ti) = state ^. current
+    let (ListIndex li, TaskIndex ti) = state ^. current
     invalidateCacheEntry (RNList li)
     invalidateCacheEntry (RNTask (ListIndex li, TaskIndex ti))
 
@@ -75,11 +76,19 @@ clearAllTitles state = do
 
 clearList :: State -> EventM ResourceName ()
 clearList state = do
-    let (list, _) = state ^. current
+    let (ListIndex list, _) = state ^. current
     let count = countCurrent state
     let range = [0 .. (count - 1)]
     invalidateCacheEntry $ RNList list
     traverse_ (invalidateCacheEntry . RNTask . (,) (ListIndex list) . TaskIndex) range
+
+clearDue :: State -> EventM ResourceName ()
+clearDue state =
+    case state ^. mode of
+        Modal (Due dues _) -> do
+            let range = [0 .. (length dues + 1)]
+            traverse_ (invalidateCacheEntry . RNDue) range
+        _ -> pure ()
 
 -- event handling
 handleVtyEvent ::
@@ -93,6 +102,7 @@ handleVtyEvent (send, trigger) actions previousState e = do
         _                        -> pure ()
     case state ^. mode of
         Shutdown -> liftIO (Debounce.close trigger) *> Brick.halt state
+        (Modal Due {}) -> clearDue state *> next send state
         (Modal MoveTo) -> clearAllTitles state *> next send state
         (Insert ITask ICreate _) -> clearList state *> next send state
         _ -> clearCache previousState *> clearCache state *> next send state
@@ -131,7 +141,7 @@ go config initial = do
     bindings <- getBindings
     let app =
             App
-            { appDraw = draw (layout config) bindings today
+            { appDraw = draw (layout config) bindings today (debugging config)
             , appChooseCursor = chooseCursor
             , appHandleEvent = handleEvent db (generateActions bindings)
             , appStartEvent = appStart

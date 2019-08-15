@@ -9,6 +9,7 @@ module Data.Taskell.Task
     , subtasks
     , blank
     , new
+    , duplicate
     , setDescription
     , appendDescription
     , setDue

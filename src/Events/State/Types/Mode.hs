@@ -4,7 +4,9 @@ module Events.State.Types.Mode where
 
 import ClassyPrelude
 
-import UI.Field (Field)
+import Data.Taskell.Task (Task)
+import Types             (Pointer)
+import UI.Draw.Field     (Field)
 
 data DetailMode
     = DetailNormal
@@ -20,6 +22,8 @@ data DetailItem
 data ModalType
     = Help
     | MoveTo
+    | Due (Seq (Pointer, Task))
+          Int
     | Detail DetailItem
              DetailMode
     deriving (Eq, Show)

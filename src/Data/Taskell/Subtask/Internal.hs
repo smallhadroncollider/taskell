@@ -26,3 +26,6 @@ new = Subtask
 
 toggle :: Update
 toggle = complete %~ not
+
+duplicate :: Subtask -> Subtask
+duplicate (Subtask n c) = Subtask n c

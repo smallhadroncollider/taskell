@@ -92,37 +92,61 @@ test_list =
                     (assertEqual
                          "List with moved item"
                          (Just
-                              (List
-                                   "Populated"
-                                   (fromList [T.new "Hello", T.new "Fish", T.new "Blah"])))
-                         (move 1 1 populatedList))
+                              ( List
+                                    "Populated"
+                                    (fromList [T.new "Hello", T.new "Fish", T.new "Blah"])
+                              , 2))
+                         (move 1 1 Nothing populatedList))
               , testCase
                     "down"
                     (assertEqual
                          "List with moved item"
                          (Just
-                              (List
-                                   "Populated"
-                                   (fromList [T.new "Blah", T.new "Hello", T.new "Fish"])))
-                         (move 1 (-1) populatedList))
+                              ( List
+                                    "Populated"
+                                    (fromList [T.new "Blah", T.new "Hello", T.new "Fish"])
+                              , 0))
+                         (move 1 (-1) Nothing populatedList))
               , testCase
                     "up - out of bounds"
                     (assertEqual
                          "List with moved item"
                          (Just
-                              (List
-                                   "Populated"
-                                   (fromList [T.new "Hello", T.new "Fish", T.new "Blah"])))
-                         (move 1 10 populatedList))
+                              ( List
+                                    "Populated"
+                                    (fromList [T.new "Hello", T.new "Fish", T.new "Blah"])
+                              , 2))
+                         (move 1 10 Nothing populatedList))
               , testCase
                     "down - out of bounds"
                     (assertEqual
                          "List with moved item"
                          (Just
-                              (List
-                                   "Populated"
-                                   (fromList [T.new "Blah", T.new "Hello", T.new "Fish"])))
-                         (move 1 (-10) populatedList))
+                              ( List
+                                    "Populated"
+                                    (fromList [T.new "Blah", T.new "Hello", T.new "Fish"])
+                              , 0))
+                         (move 1 (-10) Nothing populatedList))
+              , testCase
+                    "up - with search"
+                    (assertEqual
+                         "List with moved item"
+                         (Just
+                              ( List
+                                    "Populated"
+                                    (fromList [T.new "Blah", T.new "Fish", T.new "Hello"])
+                              , 2))
+                         (move 0 1 (Just "Fish") populatedList))
+              , testCase
+                    "down - with search"
+                    (assertEqual
+                         "List with moved item"
+                         (Just
+                              ( List
+                                    "Populated"
+                                    (fromList [T.new "Fish", T.new "Hello", T.new "Blah"])
+                              , 0))
+                         (move 2 (-1) (Just "Hello") populatedList))
               ]
         , testCase
               "deleteTask"

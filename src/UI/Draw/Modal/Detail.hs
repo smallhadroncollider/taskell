@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module UI.Modal.Detail
+module UI.Draw.Modal.Detail
     ( detail
     ) where
 
@@ -18,14 +18,13 @@ import qualified Data.Taskell.Subtask      as ST (Subtask, complete, name)
 import           Data.Taskell.Task         (Task, description, due, name, subtasks)
 import           Events.State              (getCurrentTask)
 import           Events.State.Modal.Detail (getCurrentItem, getField)
-import           Events.State.Types        (State)
 import           Events.State.Types.Mode   (DetailItem (..))
-import           UI.Field                  (Field, textField, widgetFromMaybe)
+import           UI.Draw.Field             (Field, textField, widgetFromMaybe)
+import           UI.Draw.Types             (DrawState (..), ModalWidget, TWidget)
 import           UI.Theme                  (disabledAttr, dlToAttr, taskCurrentAttr,
                                             titleCurrentAttr)
-import           UI.Types                  (ResourceName (..))
 
-renderSubtask :: Maybe Field -> DetailItem -> Int -> ST.Subtask -> Widget ResourceName
+renderSubtask :: Maybe Field -> DetailItem -> Int -> ST.Subtask -> TWidget
 renderSubtask f current i subtask = padBottom (Pad 1) $ prefix <+> final
   where
     cur =
@@ -49,7 +48,7 @@ renderSubtask f current i subtask = padBottom (Pad 1) $ prefix <+> final
         | not done = attr widget
         | otherwise = widget
 
-renderSummary :: Maybe Field -> DetailItem -> Task -> Widget ResourceName
+renderSummary :: Maybe Field -> DetailItem -> Task -> TWidget
 renderSummary f i task = padTop (Pad 1) $ padBottom (Pad 2) w'
   where
     w = textField $ fromMaybe "No description" (task ^. description)
@@ -58,7 +57,7 @@ renderSummary f i task = padTop (Pad 1) $ padBottom (Pad 2) w'
             DetailDescription -> visible $ widgetFromMaybe w f
             _                 -> w
 
-renderDate :: Day -> Maybe Field -> DetailItem -> Task -> Widget ResourceName
+renderDate :: Day -> Maybe Field -> DetailItem -> Task -> TWidget
 renderDate today field item task =
     case item of
         DetailDate -> visible $ prefix <+> widgetFromMaybe widget field
@@ -71,14 +70,17 @@ renderDate today field item task =
     prefix = txt "Due: "
     widget = textField $ maybe "" dayToOutput day
 
-detail :: State -> Day -> (Text, Widget ResourceName)
-detail state today =
-    fromMaybe ("Error", txt "Oops") $ do
-        task <- getCurrentTask state
-        i <- getCurrentItem state
-        let f = getField state
-        let sts = task ^. subtasks
-            w
-                | null sts = withAttr disabledAttr $ txt "No sub-tasks"
-                | otherwise = vBox . toList $ renderSubtask f i `mapWithIndex` sts
-        pure (task ^. name, renderDate today f i task <=> renderSummary f i task <=> w)
+detail :: ModalWidget
+detail = do
+    today <- asks dsToday
+    state <- asks dsState
+    pure $
+        fromMaybe ("Error", txt "Oops") $ do
+            task <- getCurrentTask state
+            i <- getCurrentItem state
+            let f = getField state
+            let sts = task ^. subtasks
+                w
+                    | null sts = withAttr disabledAttr $ txt "No sub-tasks"
+                    | otherwise = vBox . toList $ renderSubtask f i `mapWithIndex` sts
+            pure (task ^. name, renderDate today f i task <=> renderSummary f i task <=> w)

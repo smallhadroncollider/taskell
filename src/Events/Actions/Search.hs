@@ -12,7 +12,7 @@ import           Events.State
 import           Events.State.Types        (Stateful, mode)
 import           Events.State.Types.Mode   (Mode (Search))
 import           Graphics.Vty.Input.Events
-import qualified UI.Field                  as F (event)
+import qualified UI.Draw.Field             as F (event)
 
 event :: Event -> Stateful
 event (EvKey KEsc _) s = clearSearch =<< normalMode s

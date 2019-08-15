@@ -1,5 +1,5 @@
 name: taskell
-version: '1.5.1.0'
+version: '1.6.0.0'
 category: Command Line Tools
 author: Mark Wales
 maintainer: mark@smallhadroncollider.com
@@ -50,7 +50,8 @@ library:
   - IO.Keyboard
   - IO.Keyboard.Parser
   - IO.Keyboard.Types
-  - UI.Field
+  - UI.Draw.Field
+  - Types
 
   dependencies:
   - base <=5

@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Data.Taskell.ListNavigationTest
-    ( test_list
+    ( test_listNav
     ) where
 
 import ClassyPrelude as CP
@@ -28,8 +28,8 @@ list :: List
 list = List "Populated" taskSeq
 
 -- tests
-test_list :: TestTree
-test_list =
+test_listNav :: TestTree
+test_listNav =
     testGroup
         "Data.Taskell.List Navigation"
         [ testGroup
