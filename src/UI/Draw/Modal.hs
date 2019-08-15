@@ -19,11 +19,11 @@ import UI.Draw.Modal.Detail    (detail)
 import UI.Draw.Modal.Due       (due)
 import UI.Draw.Modal.Help      (help)
 import UI.Draw.Modal.MoveTo    (moveTo)
-import UI.Draw.Types           (DrawState (dsState), ReaderDrawState)
+import UI.Draw.Types           (DSWidget, DrawState (dsState), TWidget)
 import UI.Theme                (titleAttr)
 import UI.Types                (ResourceName (..))
 
-surround :: (Text, Widget ResourceName) -> ReaderDrawState (Widget ResourceName)
+surround :: (Text, TWidget) -> DSWidget
 surround (title, widget) = do
     ht <- (^. height) <$> asks dsState
     let t = padBottom (Pad 1) . withAttr titleAttr $ textField title
@@ -35,7 +35,7 @@ surround (title, widget) = do
         padLeftRight 4 . vLimit (ht - 9) . hLimit 50 . (t <=>) . viewport RNModal Vertical $
         widget
 
-renderModal :: ReaderDrawState (Widget ResourceName)
+renderModal :: DSWidget
 renderModal = do
     md <- (^. mode) <$> asks dsState
     case md of

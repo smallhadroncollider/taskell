@@ -19,9 +19,8 @@ import Events.State.Types.Mode (ModalType (..), Mode (..))
 import IO.Config.Layout        (columnPadding)
 import Types                   (ListIndex (ListIndex), TaskIndex (TaskIndex))
 import UI.Draw.Field           (Field)
-import UI.Draw.Types           (DrawState (..), ReaderDrawState)
+import UI.Draw.Types           (DSWidget, DrawState (..), ReaderDrawState)
 import UI.Theme
-import UI.Types                (ResourceName (..))
 
 getPosition :: ReaderDrawState Text
 getPosition = do
@@ -57,7 +56,7 @@ getMode = do
     state <- asks dsState
     modeToText (state ^. searchTerm) (state ^. mode)
 
-renderStatusBar :: ReaderDrawState (Widget ResourceName)
+renderStatusBar :: DSWidget
 renderStatusBar = do
     topPath <- pack . (^. path) <$> asks dsState
     colPad <- columnPadding <$> asks dsLayout

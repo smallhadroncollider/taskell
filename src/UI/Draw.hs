@@ -21,14 +21,14 @@ import IO.Config.Layout        (Config)
 import IO.Keyboard.Types       (Bindings)
 import UI.Draw.Main            (renderMain)
 import UI.Draw.Modal           (renderModal)
-import UI.Draw.Types           (DrawState (DrawState), ReaderDrawState)
+import UI.Draw.Types           (DrawState (DrawState), ReaderDrawState, TWidget)
 import UI.Types                (ResourceName (..))
 
 -- draw
-renderApp :: ReaderDrawState [Widget ResourceName]
+renderApp :: ReaderDrawState [TWidget]
 renderApp = sequence [renderModal, renderMain]
 
-draw :: Config -> Bindings -> Day -> Bool -> State -> [Widget ResourceName]
+draw :: Config -> Bindings -> Day -> Bool -> State -> [TWidget]
 draw layout bindings today debug state =
     runReader renderApp (DrawState layout bindings today debug (normalise state))
 

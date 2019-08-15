@@ -13,11 +13,11 @@ import Events.State.Types      (mode, searchTerm)
 import Events.State.Types.Mode (Mode (..))
 import IO.Config.Layout        (columnPadding)
 import UI.Draw.Field           (field)
-import UI.Draw.Types           (DrawState (..), ReaderDrawState)
+import UI.Draw.Types           (DSWidget, DrawState (..))
 import UI.Theme
 import UI.Types                (ResourceName (..))
 
-renderSearch :: Widget ResourceName -> ReaderDrawState (Widget ResourceName)
+renderSearch :: Widget ResourceName -> DSWidget
 renderSearch mainWidget = do
     m <- (^. mode) <$> asks dsState
     term <- (^. searchTerm) <$> asks dsState

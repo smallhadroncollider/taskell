@@ -22,7 +22,7 @@ import Types              (ListIndex (ListIndex), TaskIndex (TaskIndex))
 import UI.Draw.Field      (textField, widgetFromMaybe)
 import UI.Draw.Mode
 import UI.Draw.Task       (renderTask)
-import UI.Draw.Types      (DrawState (..), ReaderDrawState)
+import UI.Draw.Types      (DSWidget, DrawState (..), ReaderDrawState)
 import UI.Theme
 import UI.Types           (ResourceName (..))
 
@@ -45,7 +45,7 @@ columnPrefix selectedList i = do
                     else ""
 
 -- | Renders the title for a list
-renderTitle :: Int -> List -> ReaderDrawState (Widget ResourceName)
+renderTitle :: Int -> List -> DSWidget
 renderTitle listIndex list = do
     (ListIndex selectedList, TaskIndex selectedTask) <- (^. current) <$> asks dsState
     editing <- (selectedList == listIndex &&) . editingTitle . (^. mode) <$> asks dsState
@@ -69,7 +69,7 @@ renderTitle listIndex list = do
             else title'
 
 -- | Renders a list
-renderList :: Int -> List -> ReaderDrawState (Widget ResourceName)
+renderList :: Int -> List -> DSWidget
 renderList listIndex list = do
     layout <- dsLayout <$> ask
     eTitle <- editingTitle . (^. mode) <$> asks dsState

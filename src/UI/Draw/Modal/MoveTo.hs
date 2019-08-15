@@ -15,11 +15,10 @@ import Data.Taskell.List  (title)
 import Events.State.Types (current, lists)
 import Types              (showListIndex)
 import UI.Draw.Field      (textField)
-import UI.Draw.Types      (DrawState (dsState), ReaderDrawState)
+import UI.Draw.Types      (DrawState (dsState), ModalWidget)
 import UI.Theme           (taskCurrentAttr)
-import UI.Types           (ResourceName)
 
-moveTo :: ReaderDrawState (Text, Widget ResourceName)
+moveTo :: ModalWidget
 moveTo = do
     skip <- showListIndex . fst . (^. current) <$> asks dsState
     ls <- toList . (^. lists) <$> asks dsState

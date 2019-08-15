@@ -13,10 +13,10 @@ import Data.Text as T (justifyRight)
 import Events.Actions.Types as A (ActionType (..))
 import IO.Keyboard.Types    (bindingsToText)
 
-import UI.Draw.Field (textField)
-import UI.Draw.Types (DrawState (dsBindings), ReaderDrawState)
-import UI.Theme      (taskCurrentAttr)
-import UI.Types      (ResourceName)
+import IO.Keyboard.Types (Bindings)
+import UI.Draw.Field     (textField)
+import UI.Draw.Types     (DrawState (dsBindings), ModalWidget, TWidget)
+import UI.Theme          (taskCurrentAttr)
 
 descriptions :: [([ActionType], Text)]
 descriptions =
@@ -44,23 +44,22 @@ descriptions =
     , ([A.Quit], "Quit")
     ]
 
-generate :: ReaderDrawState [([Text], Text)]
-generate = do
-    bindings <- bindingsToText <$> asks dsBindings
-    pure $ first (intercalate ", " . bindings <$>) <$> descriptions
+generate :: Bindings -> [([Text], Text)]
+generate bindings = first (intercalate ", " . bindingsToText bindings <$>) <$> descriptions
 
 format :: ([Text], Text) -> (Text, Text)
 format = first (intercalate " / ")
 
-line :: Int -> (Text, Text) -> Widget ResourceName
+line :: Int -> (Text, Text) -> TWidget
 line m (l, r) = left <+> right
   where
     left = padRight (Pad 2) . withAttr taskCurrentAttr . txt $ justifyRight m ' ' l
     right = textField r
 
-help :: ReaderDrawState (Text, Widget ResourceName)
+help :: ModalWidget
 help = do
-    ls <- (format <$>) <$> generate
+    bindings <- asks dsBindings
+    let ls = format <$> generate bindings
     let m = foldl' max 0 $ length . fst <$> ls
     let w = vBox $ line m <$> ls
     pure ("Controls", w)
