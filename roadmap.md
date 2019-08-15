@@ -8,19 +8,17 @@
 
 ## Refactoring
 
+- Somehow merge `event` and `events` in Actions that use bindings
 - Use Attoparsec for parsing
 - Define key binding info in one place
     > Currently all over the place
     * [ ] Bindings
     * [ ] Default key
     * [ ] Description
-- Switch over to Vectors?
-    > Sequence has O(log n) lookup. Vector has O(1). Vectors support mapping with index.
 - Add tests for IO.GitHub
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Remove duplication of config - currently using ini and hard-coded defaults
-- Move Help modal creation into Template Haskell
 - Remove `~` style sub-task complete parsing
     @ 2018-12-10
 - Use Shake instead of bash script
@@ -70,13 +68,13 @@
     * [x] Markdown parsing
     * [ ] Text line breaks go a bit funny with multi-line descriptions
 - Check times work no matter what timezone
-- URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Redo functionality
 - Always show list title
     > Floating list titles - so you can always see what list you're in
 - Make token UX better
     * [ ] Open link automatically?
     * [ ] Ask for token and save to ini file automatically
+- URL field - plus config to run specific command when selected (e.g. `open -a Chrome.app #{url}`)
 - Import Issues from GitHub using  labels
 - Readline support?
     > Using Haskline: https://rootmos.github.io/main/2017/08/31/combining-brick-and-haskeline.html
@@ -100,6 +98,8 @@
     * [ ] Number of due items in status bar?
     * [x] Descriptions need to wrap
     * [ ] Search should filter
+    * [ ] Show list each task belongs to?
+    * [ ] Backspace (customisable) removes date
 - Add a "complete" action
     > Moves to last column and removes date. Space bar by default.
 
