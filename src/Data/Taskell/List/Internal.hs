@@ -12,6 +12,7 @@ import Data.Sequence as S (adjust', deleteAt, insertAt, update, (|>))
 
 import qualified Data.Taskell.Seq  as S
 import qualified Data.Taskell.Task as T (Task, Update, blank, contains, due, duplicate)
+import           Types             (TaskIndex (TaskIndex))
 
 data List = List
     { _title :: Text
@@ -36,8 +37,10 @@ new = append T.blank
 count :: List -> Int
 count = length . (^. tasks)
 
-due :: List -> Seq T.Task
-due list = filter (isJust . (^. T.due)) (list ^. tasks)
+due :: List -> Seq (TaskIndex, T.Task)
+due list = catMaybes (filt S.<#> (list ^. tasks))
+  where
+    filt int task = const (TaskIndex int, task) <$> task ^. T.due
 
 newAt :: Int -> Update
 newAt idx = tasks %~ S.insertAt idx T.blank

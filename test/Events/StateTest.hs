@@ -18,6 +18,7 @@ import qualified Data.Taskell.Task       as T (new)
 import           Events.State
 import           Events.State.Types
 import           Events.State.Types.Mode
+import           Types                   (ListIndex (..), TaskIndex (..))
 
 testState :: State
 testState =
@@ -25,7 +26,7 @@ testState =
     { _mode = Normal
     , _lists = empty
     , _history = []
-    , _current = (0, 0)
+    , _current = (ListIndex 0, TaskIndex 0)
     , _path = "test.md"
     , _io = Nothing
     , _height = 0
@@ -49,7 +50,7 @@ moveToState =
               , L.empty "List 9"
               ]
     , _history = []
-    , _current = (4, 0)
+    , _current = (ListIndex 4, TaskIndex 0)
     , _path = "test.md"
     , _io = Nothing
     , _height = 0

@@ -13,6 +13,7 @@ import Test.Tasty.HUnit
 import qualified Data.Taskell.List           as L
 import           Data.Taskell.Lists.Internal
 import qualified Data.Taskell.Task           as T
+import           Types                       (ListIndex (ListIndex), TaskIndex (TaskIndex))
 
 -- test data
 list1, list2, list3 :: L.List
@@ -90,7 +91,7 @@ test_lists =
                                          , T.new "2"
                                          ]
                                    ]))
-                         (changeList (1, 1) testLists 1))
+                         (changeList (ListIndex 1, TaskIndex 1) testLists 1))
               , testCase
                     "left"
                     (assertEqual
@@ -111,13 +112,19 @@ test_lists =
                                          [T.new "1", T.setDue "2018-12-03" (T.new "3")]
                                    , list3
                                    ]))
-                         (changeList (1, 1) testLists (-1)))
+                         (changeList (ListIndex 1, TaskIndex 1) testLists (-1)))
               , testCase
                     "out of bounds list"
-                    (assertEqual "Nothing" Nothing (changeList (5, 1) testLists 1))
+                    (assertEqual
+                         "Nothing"
+                         Nothing
+                         (changeList (ListIndex 5, TaskIndex 1) testLists 1))
               , testCase
                     "out of bounds task"
-                    (assertEqual "Nothing" Nothing (changeList (1, 10) testLists 1))
+                    (assertEqual
+                         "Nothing"
+                         Nothing
+                         (changeList (ListIndex 1, TaskIndex 10) testLists 1))
               ]
         , testCase
               "newList"
@@ -215,9 +222,9 @@ test_lists =
               (assertEqual
                    "returns just due list"
                    (fromList
-                        [ T.setDue "2018-12-03" (T.new "3")
-                        , T.setDue "2019-04-05" (T.new "01")
-                        , T.setDue "2019-08-14" (T.new "Two")
+                        [ ((ListIndex 1, TaskIndex 2), T.setDue "2018-12-03" (T.new "3"))
+                        , ((ListIndex 2, TaskIndex 0), T.setDue "2019-04-05" (T.new "01"))
+                        , ((ListIndex 0, TaskIndex 1), T.setDue "2019-08-14" (T.new "Two"))
                         ])
                    (due testLists))
         ]

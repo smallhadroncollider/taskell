@@ -66,6 +66,7 @@ import qualified Data.Taskell.List  as L (List, deleteTask, duplicate, getTask, 
                                           newAt, nextTask, prevTask, title, update)
 import qualified Data.Taskell.Lists as Lists
 import           Data.Taskell.Task  (Task, isBlank, name)
+import           Types
 
 import Events.State.Types
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
@@ -79,7 +80,7 @@ create p ls =
     { _mode = Normal
     , _lists = ls
     , _history = []
-    , _current = (0, 0)
+    , _current = (ListIndex 0, TaskIndex 0)
     , _path = p
     , _io = Nothing
     , _height = 0
@@ -228,7 +229,7 @@ selectList :: Char -> Stateful
 selectList idx state =
     Just $
     (if exists
-         then current .~ (list, 0)
+         then current .~ (ListIndex list, TaskIndex 0)
          else id)
         state
   where
@@ -244,13 +245,13 @@ countCurrent :: State -> Int
 countCurrent state = Lists.count (getCurrentList state) (state ^. lists)
 
 setIndex :: State -> Int -> State
-setIndex state idx = state & current .~ (getCurrentList state, idx)
+setIndex state idx = state & current .~ (ListIndex (getCurrentList state), TaskIndex idx)
 
 setCurrentList :: State -> Int -> State
-setCurrentList state idx = state & current .~ (idx, getIndex state)
+setCurrentList state idx = state & current .~ (ListIndex idx, TaskIndex (getIndex state))
 
 getIndex :: State -> Int
-getIndex = snd . (^. current)
+getIndex = showTaskIndex . snd . (^. current)
 
 changeTask :: (Int -> Maybe Text -> L.List -> Int) -> Stateful
 changeTask fn state = do
@@ -295,7 +296,7 @@ fixIndex state =
 
 -- tasks
 getCurrentList :: State -> Int
-getCurrentList = fst . (^. current)
+getCurrentList = showListIndex . fst . (^. current)
 
 getList :: State -> Maybe L.List
 getList state = Lists.get (state ^. lists) (getCurrentList state)

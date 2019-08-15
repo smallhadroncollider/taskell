@@ -23,8 +23,9 @@ import Events.State.Types      (State, current, io, lists, mode, path, searchTer
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
 import IO.Config               (Config, debugging, generateAttrMap, getBindings, layout)
 import IO.Taskell              (writeData)
+import Types                   (ListIndex (..), TaskIndex (..))
 import UI.Draw                 (chooseCursor, draw)
-import UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
+import UI.Types                (ResourceName (..))
 
 type DebouncedMessage = (Lists, FilePath)
 
@@ -62,7 +63,7 @@ debounce config initial = do
 -- cache clearing
 clearCache :: State -> EventM ResourceName ()
 clearCache state = do
-    let (li, ti) = state ^. current
+    let (ListIndex li, TaskIndex ti) = state ^. current
     invalidateCacheEntry (RNList li)
     invalidateCacheEntry (RNTask (ListIndex li, TaskIndex ti))
 
@@ -75,7 +76,7 @@ clearAllTitles state = do
 
 clearList :: State -> EventM ResourceName ()
 clearList state = do
-    let (list, _) = state ^. current
+    let (ListIndex list, _) = state ^. current
     let count = countCurrent state
     let range = [0 .. (count - 1)]
     invalidateCacheEntry $ RNList list
@@ -84,8 +85,8 @@ clearList state = do
 clearDue :: State -> EventM ResourceName ()
 clearDue state =
     case state ^. mode of
-        Modal (Due _ pos) -> do
-            let range = [(pos - 1) .. (pos + 1)]
+        Modal (Due dues _) -> do
+            let range = [0 .. (length dues + 1)]
             traverse_ (invalidateCacheEntry . RNDue) range
         _ -> pure ()
 

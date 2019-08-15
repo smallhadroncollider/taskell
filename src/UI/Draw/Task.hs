@@ -18,6 +18,7 @@ import qualified Data.Taskell.Task  as T (Task, contains, countCompleteSubtasks,
                                           description, due, hasSubtasks, name)
 import           Events.State.Types (current, mode, searchTerm)
 import           IO.Config.Layout   (descriptionIndicator)
+import           Types              (ListIndex (..), TaskIndex (..))
 import           UI.Draw.Field      (getText, textField, widgetFromMaybe)
 import           UI.Draw.Mode
 import           UI.Draw.Types      (DrawState (..), ReaderDrawState)
@@ -75,7 +76,7 @@ renderTask' ::
        (Int -> ResourceName) -> Int -> Int -> T.Task -> ReaderDrawState (Widget ResourceName)
 renderTask' rn listIndex taskIndex task = do
     eTitle <- editingTitle . (^. mode) <$> asks dsState -- is the title being edited? (for visibility)
-    selected <- (== (listIndex, taskIndex)) . (^. current) <$> asks dsState -- is the current task selected?
+    selected <- (== (ListIndex listIndex, TaskIndex taskIndex)) . (^. current) <$> asks dsState -- is the current task selected?
     taskField <- getField . (^. mode) <$> asks dsState -- get the field, if it's being edited
     after <- indicators task -- get the indicators widget
     widget <- renderText task

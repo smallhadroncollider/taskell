@@ -93,8 +93,8 @@
 
 - Some way to just see tasks with due dates
     * [x] Sort by date
-    * [ ] Scrollable
-    * [ ] Pressing Enter on one takes you to it
+    * [x] Scrollable
+    * [x] Pressing Enter on one takes you to it
     * [x] Use renderTask from Draw
     * [ ] Filter by: overdue, this week, later
     * [ ] Number of due items in status bar?

@@ -11,6 +11,7 @@ import Brick
 import Data.Taskell.Seq ((<#>))
 
 import qualified Data.Taskell.Task as T (Task)
+import           Types             (Pointer)
 import           UI.Draw.Task      (TaskWidget (..), parts)
 import           UI.Draw.Types     (ReaderDrawState)
 import           UI.Theme          (taskAttr, taskCurrentAttr)
@@ -24,14 +25,13 @@ renderTask current position task = do
             if selected
                 then taskCurrentAttr
                 else taskAttr
-    pure .
-        (if selected
-             then visible
-             else id) .
-        cached (RNDue position) . padBottom (Pad 1) . withAttr attr $
-        vBox [date, text]
+    let shw =
+            if selected
+                then visible
+                else id
+    pure . shw . cached (RNDue position) . padBottom (Pad 1) . withAttr attr $ vBox [date, text]
 
-due :: Seq T.Task -> Int -> ReaderDrawState (Text, Widget ResourceName)
+due :: Seq (Pointer, T.Task) -> Int -> ReaderDrawState (Text, Widget ResourceName)
 due tasks selected = do
-    widgets <- sequence $ renderTask selected <#> tasks
+    widgets <- sequence $ renderTask selected <#> (snd <$> tasks)
     pure ("Due Tasks", vBox $ toList widgets)

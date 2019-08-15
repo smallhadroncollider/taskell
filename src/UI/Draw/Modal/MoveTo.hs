@@ -13,6 +13,7 @@ import Brick
 
 import Data.Taskell.List  (title)
 import Events.State.Types (current, lists)
+import Types              (showListIndex)
 import UI.Draw.Field      (textField)
 import UI.Draw.Types      (DrawState (dsState), ReaderDrawState)
 import UI.Theme           (taskCurrentAttr)
@@ -20,7 +21,7 @@ import UI.Types           (ResourceName)
 
 moveTo :: ReaderDrawState (Text, Widget ResourceName)
 moveTo = do
-    skip <- fst . (^. current) <$> asks dsState
+    skip <- showListIndex . fst . (^. current) <$> asks dsState
     ls <- toList . (^. lists) <$> asks dsState
     let titles = textField . (^. title) <$> ls
     let letter a =

@@ -18,12 +18,13 @@ import Brick
 import Data.Taskell.List  (List, tasks, title)
 import Events.State.Types (current, mode)
 import IO.Config.Layout   (columnPadding, columnWidth)
+import Types              (ListIndex (ListIndex), TaskIndex (TaskIndex))
 import UI.Draw.Field      (textField, widgetFromMaybe)
 import UI.Draw.Mode
 import UI.Draw.Task       (renderTask)
 import UI.Draw.Types      (DrawState (..), ReaderDrawState)
 import UI.Theme
-import UI.Types           (ListIndex (ListIndex), ResourceName (..), TaskIndex (TaskIndex))
+import UI.Types           (ResourceName (..))
 
 -- | Gets the relevant column prefix - number in normal mode, letter in moveTo
 columnPrefix :: Int -> Int -> ReaderDrawState Text
@@ -46,7 +47,7 @@ columnPrefix selectedList i = do
 -- | Renders the title for a list
 renderTitle :: Int -> List -> ReaderDrawState (Widget ResourceName)
 renderTitle listIndex list = do
-    (selectedList, selectedTask) <- (^. current) <$> asks dsState
+    (ListIndex selectedList, TaskIndex selectedTask) <- (^. current) <$> asks dsState
     editing <- (selectedList == listIndex &&) . editingTitle . (^. mode) <$> asks dsState
     titleField <- getField . (^. mode) <$> asks dsState
     col <- txt <$> columnPrefix selectedList listIndex
@@ -73,7 +74,7 @@ renderList listIndex list = do
     layout <- dsLayout <$> ask
     eTitle <- editingTitle . (^. mode) <$> asks dsState
     titleWidget <- renderTitle listIndex list
-    (currentList, _) <- (^. current) <$> asks dsState
+    (ListIndex currentList, _) <- (^. current) <$> asks dsState
     taskWidgets <-
         sequence $
         renderTask (RNTask . (ListIndex listIndex, ) . TaskIndex) listIndex `mapWithIndex`

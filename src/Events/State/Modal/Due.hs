@@ -9,10 +9,11 @@ module Events.State.Modal.Due
 
 import ClassyPrelude
 
-import Control.Lens ((&), (.~), (^.))
+import Control.Lens  ((&), (.~), (^.))
+import Data.Sequence ((!?))
 
 import qualified Data.Taskell.Lists      as L (due)
-import           Events.State.Types      (Stateful, lists, mode)
+import           Events.State.Types      (Stateful, current, lists, mode)
 import           Events.State.Types.Mode (ModalType (Due), Mode (..))
 
 showDue :: Stateful
@@ -23,10 +24,10 @@ showDue state = do
 previous :: Stateful
 previous state =
     case state ^. mode of
-        Modal (Due due current) -> do
+        Modal (Due due cur) -> do
             let pos =
-                    if current > 0
-                        then current - 1
+                    if cur > 0
+                        then cur - 1
                         else 0
             pure $ state & mode .~ Modal (Due due pos)
         _ -> pure state
@@ -34,14 +35,20 @@ previous state =
 next :: Stateful
 next state =
     case state ^. mode of
-        Modal (Due due current) -> do
+        Modal (Due due cur) -> do
             let lim = length due - 1
             let pos =
-                    if current < lim
-                        then current + 1
+                    if cur < lim
+                        then cur + 1
                         else lim
             pure $ state & mode .~ Modal (Due due pos)
         _ -> pure state
 
 goto :: Stateful
-goto = pure
+goto state =
+    case state ^. mode of
+        Modal (Due due cur) ->
+            case due !? cur of
+                Just (pointer, _) -> pure $ state & current .~ pointer
+                Nothing           -> Nothing
+        _ -> pure state

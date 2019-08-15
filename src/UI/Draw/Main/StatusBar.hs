@@ -17,6 +17,7 @@ import Events.State.Types (current, lists, mode, path, searchTerm)
 
 import Events.State.Types.Mode (ModalType (..), Mode (..))
 import IO.Config.Layout        (columnPadding)
+import Types                   (ListIndex (ListIndex), TaskIndex (TaskIndex))
 import UI.Draw.Field           (Field)
 import UI.Draw.Types           (DrawState (..), ReaderDrawState)
 import UI.Theme
@@ -24,7 +25,7 @@ import UI.Types                (ResourceName (..))
 
 getPosition :: ReaderDrawState Text
 getPosition = do
-    (col, pos) <- (^. current) <$> asks dsState
+    (ListIndex col, TaskIndex pos) <- (^. current) <$> asks dsState
     len <- count col . (^. lists) <$> asks dsState
     let posNorm =
             if len > 0
