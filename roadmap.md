@@ -99,7 +99,6 @@
     * [ ] Filter by: overdue, this week, later
     * [ ] Number of due items in status bar?
     * [x] Descriptions need to wrap
-    * [ ] Group by date?
     * [ ] Search should filter
 - Add a "complete" action
     > Moves to last column and removes date. Space bar by default.
