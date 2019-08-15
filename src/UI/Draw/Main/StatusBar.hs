@@ -12,8 +12,9 @@ import Control.Lens ((^.))
 
 import Brick
 
-import Data.Taskell.Lists      (count)
-import Events.State.Types      (current, lists, mode, path, searchTerm)
+import Data.Taskell.Lists (count)
+import Events.State.Types (current, lists, mode, path, searchTerm)
+
 import Events.State.Types.Mode (ModalType (..), Mode (..))
 import IO.Config.Layout        (columnPadding)
 import UI.Draw.Field           (Field)
@@ -31,24 +32,28 @@ getPosition = do
                 else 0
     pure $ tshow posNorm <> "/" <> tshow len
 
-modeToText :: Maybe Field -> Mode -> Text
-modeToText fld =
-    \case
-        Normal ->
-            case fld of
-                Nothing -> "NORMAL"
-                Just _  -> "NORMAL + SEARCH"
-        Insert {} -> "INSERT"
-        Modal Help -> "HELP"
-        Modal MoveTo -> "MOVE"
-        Modal Detail {} -> "DETAIL"
-        Search {} -> "SEARCH"
-        _ -> ""
+modeToText :: Maybe Field -> Mode -> ReaderDrawState Text
+modeToText fld md = do
+    debug <- asks dsDebug
+    pure $
+        if debug
+            then tshow md
+            else case md of
+                     Normal ->
+                         case fld of
+                             Nothing -> "NORMAL"
+                             Just _  -> "NORMAL + SEARCH"
+                     Insert {} -> "INSERT"
+                     Modal Help -> "HELP"
+                     Modal MoveTo -> "MOVE"
+                     Modal Detail {} -> "DETAIL"
+                     Search {} -> "SEARCH"
+                     _ -> ""
 
 getMode :: ReaderDrawState Text
 getMode = do
     state <- asks dsState
-    pure $ modeToText (state ^. searchTerm) (state ^. mode)
+    modeToText (state ^. searchTerm) (state ^. mode)
 
 renderStatusBar :: ReaderDrawState (Widget ResourceName)
 renderStatusBar = do

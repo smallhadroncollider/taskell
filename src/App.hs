@@ -21,7 +21,7 @@ import Events.Actions          (ActionSets, event, generateActions)
 import Events.State            (continue, countCurrent, setHeight)
 import Events.State.Types      (State, current, io, lists, mode, path, searchTerm)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
-import IO.Config               (Config, generateAttrMap, getBindings, layout)
+import IO.Config               (Config, debugging, generateAttrMap, getBindings, layout)
 import IO.Taskell              (writeData)
 import UI.Draw                 (chooseCursor, draw)
 import UI.Types                (ListIndex (..), ResourceName (..), TaskIndex (..))
@@ -131,7 +131,7 @@ go config initial = do
     bindings <- getBindings
     let app =
             App
-            { appDraw = draw (layout config) bindings today
+            { appDraw = draw (layout config) bindings today (debugging config)
             , appChooseCursor = chooseCursor
             , appHandleEvent = handleEvent db (generateActions bindings)
             , appStartEvent = appStart

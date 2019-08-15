@@ -46,8 +46,6 @@
 
 - Add a List widget for common actions between tasks and sub-tasks
     * [ ] Re-ordering subtasks
-- Add a --debug command
-    * [ ] Shows full Mode print out
 - Add custom key support
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
@@ -307,3 +305,5 @@
     * [x] Today
     * [x] Normalised State
     * [x] Layout
+- Add a debug option
+    * [x] Shows full Mode print out

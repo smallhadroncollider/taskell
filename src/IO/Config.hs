@@ -36,6 +36,9 @@ data Config = Config
     , github   :: GitHub.Config
     }
 
+debugging :: Config -> Bool
+debugging config = General.debug (general config)
+
 defaultConfig :: Config
 defaultConfig =
     Config

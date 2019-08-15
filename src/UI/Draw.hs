@@ -29,9 +29,9 @@ import UI.Types                (ResourceName (..))
 renderApp :: ReaderDrawState [Widget ResourceName]
 renderApp = sequence [renderModal, renderMain]
 
-draw :: Config -> Bindings -> Day -> State -> [Widget ResourceName]
-draw layout bindings today state =
-    runReader renderApp (DrawState layout bindings today (normalise state))
+draw :: Config -> Bindings -> Day -> Bool -> State -> [Widget ResourceName]
+draw layout bindings today debug state =
+    runReader renderApp (DrawState layout bindings today debug (normalise state))
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)
