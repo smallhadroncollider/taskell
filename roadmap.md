@@ -25,7 +25,6 @@
 
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
-- MoveTo shouldn't show if nothing selected
 - Help modal needs to wrap and scroll
 - Limit modal height based on content
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
@@ -305,3 +304,4 @@
 - Add a "complete" action
     > Moves to last column and removes date. Space bar by default.
 - Remove `~` style sub-task complete parsing
+- MoveTo shouldn't show if nothing selected

@@ -372,7 +372,7 @@ showHelp :: Stateful
 showHelp = Just . (mode .~ Modal Help)
 
 showMoveTo :: Stateful
-showMoveTo = Just . (mode .~ Modal MoveTo)
+showMoveTo state = const (state & mode .~ Modal MoveTo) <$> getCurrentTask state
 
 -- view
 setHeight :: Int -> State -> State
