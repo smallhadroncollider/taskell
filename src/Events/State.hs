@@ -19,6 +19,7 @@ module Events.State
     , editListStart
     , deleteCurrentList
     , clearItem
+    , clearDate
     , above
     , below
     , bottom
@@ -31,6 +32,7 @@ module Events.State
     , down
     , moveLeft
     , moveRight
+    , moveToLast
     , delete
     , selectList
     , listLeft
@@ -65,7 +67,7 @@ import Data.Char (digitToInt, ord)
 import qualified Data.Taskell.List  as L (List, deleteTask, duplicate, getTask, move, nearest, new,
                                           newAt, nextTask, prevTask, title, update)
 import qualified Data.Taskell.Lists as Lists
-import           Data.Taskell.Task  (Task, isBlank, name)
+import           Data.Taskell.Task  (Task, due, isBlank, name)
 import           Types
 
 import Events.State.Types
@@ -188,6 +190,9 @@ duplicate state = setList state <$> (L.duplicate (getIndex state) =<< getList st
 clearItem :: Stateful
 clearItem = setCurrentTaskText ""
 
+clearDate :: Stateful
+clearDate state = flip setCurrentTask state =<< (due .~ Nothing) <$> getCurrentTask state
+
 bottom :: Stateful
 bottom = pure . selectLast
 
@@ -224,6 +229,15 @@ moveLeft = moveHorizontal (-1)
 
 moveRight :: Stateful
 moveRight = moveHorizontal 1
+
+moveToLast :: Stateful
+moveToLast state =
+    if idx == cur
+        then pure state
+        else moveHorizontal (idx - cur) state
+  where
+    idx = length (state ^. lists) - 1
+    cur = getCurrentList state
 
 selectList :: Char -> Stateful
 selectList idx state =
@@ -310,15 +324,17 @@ setCurrentListTitle text state = setList state . (L.title .~ text) <$> getList s
 setLists :: State -> Lists.Lists -> State
 setLists state lists' = state & lists .~ lists'
 
-moveTo :: Char -> Stateful
-moveTo char state = do
-    let li = ord char - ord 'a'
-        cur = getCurrentList state
+moveTo' :: Int -> Stateful
+moveTo' li state = do
+    let cur = getCurrentList state
     if li == cur || li < 0 || li >= length (state ^. lists)
         then Nothing
         else do
             s <- moveHorizontal (li - cur) state
             pure . selectLast $ setCurrentList s li
+
+moveTo :: Char -> Stateful
+moveTo char = moveTo' (ord char - ord 'a')
 
 -- move lists
 listMove :: Int -> Stateful

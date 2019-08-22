@@ -48,6 +48,7 @@ events
     , (A.MoveDown, (write =<<) . (down =<<) . store)
     , (A.MoveLeft, (write =<<) . (bottom =<<) . (left =<<) . (moveLeft =<<) . store)
     , (A.MoveRight, (write =<<) . (bottom =<<) . (right =<<) . (moveRight =<<) . store)
+    , (A.Complete, (write =<<) . (moveToLast =<<) . (clearDate =<<) . store)
     , (A.MoveMenu, showMoveTo)
     -- lists
     , (A.ListNew, (createListStart =<<) . store)

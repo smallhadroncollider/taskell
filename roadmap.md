@@ -100,8 +100,6 @@
     * [ ] Search should filter
     * [ ] Show list each task belongs to?
     * [ ] Backspace (customisable) removes date
-- Add a "complete" action
-    > Moves to last column and removes date. Space bar by default.
 
 ## Done
 
@@ -306,3 +304,5 @@
     * [x] Layout
 - Add a debug option
     * [x] Shows full Mode print out
+- Add a "complete" action
+    > Moves to last column and removes date. Space bar by default.

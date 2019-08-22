@@ -65,7 +65,7 @@ defaultBindings =
     , (BChar 'J', A.MoveDown)
     , (BChar 'H', A.MoveLeft)
     , (BChar 'L', A.MoveRight)
-    , (BKey "Space", A.MoveRight)
+    , (BKey "Space", A.Complete)
     , (BChar 'm', A.MoveMenu)
     , (BChar 'N', A.ListNew)
     , (BChar 'E', A.ListEdit)

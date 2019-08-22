@@ -33,6 +33,7 @@ descriptions =
     , ([A.DueDate], "Add/edit due date (yyyy-mm-dd)")
     , ([A.MoveUp, A.MoveDown], "Shift task down / up")
     , ([A.MoveLeft, A.MoveRight], "Shift task left / right")
+    , ([A.Complete], "Move task to last list and remove any due dates")
     , ([A.MoveMenu], "Move task to specific list")
     , ([A.Delete], "Delete task")
     , ([A.Undo], "Undo")
