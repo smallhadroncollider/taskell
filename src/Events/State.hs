@@ -299,11 +299,20 @@ right state =
     list = getCurrentList state
     count = length (state ^. lists)
 
+fixListIndex :: InternalStateful
+fixListIndex state =
+    if listIdx
+        then state
+        else setCurrentList state (length lists' - 1)
+  where
+    lists' = state ^. lists
+    listIdx = Lists.exists (getCurrentList state) lists'
+
 fixIndex :: InternalStateful
 fixIndex state =
     case getList state of
         Just list -> setIndex state (L.nearest idx trm list)
-        Nothing   -> state
+        Nothing   -> fixListIndex state
   where
     trm = getText <$> state ^. searchTerm
     idx = getIndex state

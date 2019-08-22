@@ -305,3 +305,4 @@
     > Moves to last column and removes date. Space bar by default.
 - Remove `~` style sub-task complete parsing
 - MoveTo shouldn't show if nothing selected
+- Deleting a list can screw up current position
