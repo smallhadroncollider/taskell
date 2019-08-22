@@ -122,7 +122,7 @@ test_markdown =
                           (assertEqual
                                "List item with Sub-Task"
                                (makeSubTask "Blah" True, [])
-                               (start defaultConfig (listWithItem, []) ("    * ~Blah~", 1)))
+                               (start defaultConfig (listWithItem, []) ("    * [x] Blah", 1)))
                     , ignoreTest $
                       testCase
                           "List item without list"
@@ -194,12 +194,6 @@ test_markdown =
                                "List item with Sub-Task"
                                (makeSubTask "Blah" False, [])
                                (start alternativeConfig (listWithItem, []) ("- Blah", 1)))
-                    , testCase
-                          "Complete Sub-Task (old style)"
-                          (assertEqual
-                               "List item with Sub-Task"
-                               (makeSubTask "Blah" True, [])
-                               (start alternativeConfig (listWithItem, []) ("- ~Blah~", 1)))
                     ]
               ]
         , testGroup

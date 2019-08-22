@@ -19,8 +19,6 @@
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Remove duplication of config - currently using ini and hard-coded defaults
-- Remove `~` style sub-task complete parsing
-    @ 2018-12-10
 - Use Shake instead of bash script
 
 ## Bugs
@@ -306,3 +304,4 @@
     * [x] Shows full Mode print out
 - Add a "complete" action
     > Moves to last column and removes date. Space bar by default.
+- Remove `~` style sub-task complete parsing

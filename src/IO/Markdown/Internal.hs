@@ -8,7 +8,7 @@ import ClassyPrelude
 import Control.Lens ((^.))
 
 import Data.Sequence      (adjust')
-import Data.Text          as T (dropAround, splitOn, strip)
+import Data.Text          as T (splitOn, strip)
 import Data.Text.Encoding (decodeUtf8With)
 
 import           Data.Taskell.Date    (dayToOutput)
@@ -23,9 +23,6 @@ import           IO.Config.Markdown (Config, descriptionOutput, dueOutput, subta
                                      taskOutput, titleOutput)
 
 -- parse code
-trimTilde :: Text -> Text
-trimTilde = strip . T.dropAround (== '~')
-
 addSubItem :: Text -> Lists -> Lists
 addSubItem t ls = adjust' updateList i ls
   where
@@ -33,7 +30,6 @@ addSubItem t ls = adjust' updateList i ls
     st
         | "[ ] " `isPrefixOf` t = ST.new (drop 4 t) False
         | "[x] " `isPrefixOf` t = ST.new (drop 4 t) True
-        | "~" `isPrefixOf` t = ST.new (trimTilde t) True
         | otherwise = ST.new t False
     updateList l = updateFn j (T.addSubtask st) l
       where
