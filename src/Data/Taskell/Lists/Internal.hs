@@ -7,9 +7,10 @@ module Data.Taskell.Lists.Internal where
 import ClassyPrelude
 
 import Control.Lens  ((^.))
-import Data.Sequence as S (deleteAt, update, (!?), (|>))
+import Data.Sequence as S (adjust', deleteAt, update, (!?), (|>))
 
-import qualified Data.Taskell.List as L (List, append, count, due, empty, extract, searchFor)
+import qualified Data.Taskell.List as L (List, Update, append, clearDue, count, due, empty, extract,
+                                         searchFor)
 import qualified Data.Taskell.Seq  as S
 import qualified Data.Taskell.Task as T (Task, due)
 import           Types             (ListIndex (ListIndex), Pointer, TaskIndex (TaskIndex))
@@ -32,6 +33,12 @@ due lists = sortOn ((^. T.due) . snd) dues
   where
     format x lst = (\(y, t) -> ((ListIndex x, y), t)) <$> L.due lst
     dues = concat $ format S.<#> lists
+
+clearDue :: Pointer -> Update
+clearDue (idx, tsk) = updateFn idx (L.clearDue tsk)
+
+updateFn :: ListIndex -> L.Update -> Update
+updateFn (ListIndex idx) fn = adjust' fn idx
 
 get :: Lists -> Int -> Maybe L.List
 get = (!?)

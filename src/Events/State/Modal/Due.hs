@@ -2,6 +2,7 @@
 
 module Events.State.Modal.Due
     ( showDue
+    , clearDate
     , previous
     , next
     , goto
@@ -12,7 +13,7 @@ import ClassyPrelude
 import Control.Lens  ((&), (.~), (^.))
 import Data.Sequence ((!?))
 
-import qualified Data.Taskell.Lists      as L (due)
+import qualified Data.Taskell.Lists      as L (clearDue, due)
 import           Events.State.Types      (Stateful, current, lists, mode)
 import           Events.State.Types.Mode (ModalType (Due), Mode (..))
 
@@ -51,4 +52,15 @@ goto state =
             case due !? cur of
                 Just (pointer, _) -> pure $ state & current .~ pointer
                 Nothing           -> Nothing
+        _ -> pure state
+
+clearDate :: Stateful
+clearDate state =
+    case state ^. mode of
+        Modal (Due due cur) ->
+            case due !? cur of
+                Just (pointer, _) -> do
+                    let cleared = state & lists .~ L.clearDue pointer (state ^. lists)
+                    pure $ cleared & mode .~ Modal (Due (L.due (cleared ^. lists)) 0)
+                Nothing -> Nothing
         _ -> pure state

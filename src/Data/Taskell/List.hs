@@ -2,11 +2,13 @@
 
 module Data.Taskell.List
     ( List
+    , Update
     , title
     , tasks
     , create
     , empty
     , due
+    , clearDue
     , new
     , count
     , newAt

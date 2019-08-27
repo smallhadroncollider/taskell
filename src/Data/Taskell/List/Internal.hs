@@ -11,7 +11,7 @@ import Control.Lens (element, makeLenses, (%%~), (%~), (&), (.~), (^.), (^?))
 import Data.Sequence as S (adjust', deleteAt, insertAt, update, (|>))
 
 import qualified Data.Taskell.Seq  as S
-import qualified Data.Taskell.Task as T (Task, Update, blank, contains, due, duplicate)
+import qualified Data.Taskell.Task as T (Task, Update, blank, clearDue, contains, due, duplicate)
 import           Types             (TaskIndex (TaskIndex))
 
 data List = List
@@ -41,6 +41,9 @@ due :: List -> Seq (TaskIndex, T.Task)
 due list = catMaybes (filt S.<#> (list ^. tasks))
   where
     filt int task = const (TaskIndex int, task) <$> task ^. T.due
+
+clearDue :: TaskIndex -> Update
+clearDue (TaskIndex int) = updateFn int T.clearDue
 
 newAt :: Int -> Update
 newAt idx = tasks %~ S.insertAt idx T.blank

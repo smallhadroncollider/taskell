@@ -67,7 +67,7 @@ import Data.Char (digitToInt, ord)
 import qualified Data.Taskell.List  as L (List, deleteTask, duplicate, getTask, move, nearest, new,
                                           newAt, nextTask, prevTask, title, update)
 import qualified Data.Taskell.Lists as Lists
-import           Data.Taskell.Task  (Task, due, isBlank, name)
+import           Data.Taskell.Task  (Task, isBlank, name)
 import           Types
 
 import Events.State.Types
@@ -191,7 +191,7 @@ clearItem :: Stateful
 clearItem = setCurrentTaskText ""
 
 clearDate :: Stateful
-clearDate state = flip setCurrentTask state =<< (due .~ Nothing) <$> getCurrentTask state
+clearDate state = pure $ state & lists .~ Lists.clearDue (state ^. current) (state ^. lists)
 
 bottom :: Stateful
 bottom = pure . selectLast
