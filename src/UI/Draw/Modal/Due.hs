@@ -33,5 +33,10 @@ renderTask current position task = do
 
 due :: Seq (Pointer, T.Task) -> Int -> ModalWidget
 due tasks selected = do
-    widgets <- sequence $ renderTask selected <#> (snd <$> tasks)
-    pure ("Due Tasks", vBox $ toList widgets)
+    let items = snd <$> tasks
+    widgets <- sequence $ renderTask selected <#> items
+    pure
+        ( "Due Tasks"
+        , if null items
+              then txt "No due tasks"
+              else vBox $ toList widgets)
