@@ -310,3 +310,4 @@
     * [x] NORMAL mode
     * [x] DETAIL mode
     * [x] DUE mode
+- Update screenshot
