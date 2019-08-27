@@ -31,6 +31,7 @@ descriptions =
     , ([A.Clear], "Change task")
     , ([A.Detail], "Show task details / Edit task description")
     , ([A.DueDate], "Add/edit due date (yyyy-mm-dd)")
+    , ([A.ClearDate], "Removes due date")
     , ([A.MoveUp, A.MoveDown], "Shift task down / up")
     , ([A.MoveLeft, A.MoveRight], "Shift task left / right")
     , ([A.Complete], "Move task to last list and remove any due dates")

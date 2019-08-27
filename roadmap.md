@@ -86,6 +86,10 @@
 
 ## In Progress
 
+- Remove date
+    * [x] NORMAL mode
+    * [x] DETAIL mode
+    * [ ] DUE mode
 - Some way to just see tasks with due dates
     * [x] Sort by date
     * [x] Scrollable

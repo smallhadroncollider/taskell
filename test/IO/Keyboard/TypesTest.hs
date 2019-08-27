@@ -40,6 +40,7 @@ notFullResult =
     , (BChar 'D', A.Delete)
     , (BKey "Enter", A.Detail)
     , (BChar '@', A.DueDate)
+    , (BKey "Backspace", A.ClearDate)
     , (BChar 'K', A.MoveUp)
     , (BChar 'J', A.MoveDown)
     , (BChar 'H', A.MoveLeft)

@@ -31,6 +31,7 @@ events
     , (A.Complete, (write =<<) . (setComplete =<<) . store)
     , (A.Delete, (write =<<) . (Detail.remove =<<) . store)
     , (A.DueDate, (editDue =<<) . store)
+    , (A.ClearDate, (write =<<) . (clearDate =<<) . store)
     , (A.Detail, (editDescription =<<) . store)
     ]
 
