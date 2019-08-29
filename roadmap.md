@@ -19,15 +19,12 @@
 - Break up State module
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Remove duplication of config - currently using ini and hard-coded defaults
-- Remove `~` style sub-task complete parsing
-    @ 2018-12-10
 - Use Shake instead of bash script
 
 ## Bugs
 
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
-- MoveTo shouldn't show if nothing selected
 - Help modal needs to wrap and scroll
 - Limit modal height based on content
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
@@ -100,8 +97,6 @@
     * [ ] Search should filter
     * [ ] Show list each task belongs to?
     * [ ] Backspace (customisable) removes date
-- Add a "complete" action
-    > Moves to last column and removes date. Space bar by default.
 
 ## Done
 
@@ -306,3 +301,13 @@
     * [x] Layout
 - Add a debug option
     * [x] Shows full Mode print out
+- Add a "complete" action
+    > Moves to last column and removes date. Space bar by default.
+- Remove `~` style sub-task complete parsing
+- MoveTo shouldn't show if nothing selected
+- Deleting a list can screw up current position
+- Remove date
+    * [x] NORMAL mode
+    * [x] DETAIL mode
+    * [x] DUE mode
+- Update screenshot

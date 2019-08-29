@@ -57,6 +57,9 @@ setDue date task =
                  Just day -> task & due .~ Just day
                  Nothing  -> task
 
+clearDue :: Update
+clearDue task = task & due .~ Nothing
+
 getSubtask :: Int -> Task -> Maybe ST.Subtask
 getSubtask idx = (^? subtasks . ix idx)
 

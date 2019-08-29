@@ -16,3 +16,9 @@ shiftBy :: Int -> Int -> Seq a -> Maybe (Seq a)
 shiftBy idx dir xs = do
     (a, current) <- extract idx xs
     pure $ insertAt (idx + dir) current a
+
+bound :: Seq a -> Int -> Int
+bound s i
+    | i < 0 = 0
+    | i >= length s = pred (length s)
+    | otherwise = i

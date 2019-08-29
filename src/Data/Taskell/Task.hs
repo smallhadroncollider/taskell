@@ -13,6 +13,7 @@ module Data.Taskell.Task
     , setDescription
     , appendDescription
     , setDue
+    , clearDue
     , getSubtask
     , addSubtask
     , hasSubtasks

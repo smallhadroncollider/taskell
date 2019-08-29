@@ -2,6 +2,7 @@
 
 module Events.State.Modal.Due
     ( showDue
+    , clearDate
     , previous
     , next
     , goto
@@ -12,43 +13,56 @@ import ClassyPrelude
 import Control.Lens  ((&), (.~), (^.))
 import Data.Sequence ((!?))
 
-import qualified Data.Taskell.Lists      as L (due)
+import qualified Data.Taskell.Lists      as L (clearDue, due)
+import           Data.Taskell.Seq        (bound)
+import           Data.Taskell.Task       (Task)
 import           Events.State.Types      (Stateful, current, lists, mode)
 import           Events.State.Types.Mode (ModalType (Due), Mode (..))
+import           Types                   (Pointer)
+
+type DueStateful = Seq (Pointer, Task) -> Int -> Stateful
+
+λfilter :: DueStateful -> Stateful
+λfilter fn state =
+    case state ^. mode of
+        Modal (Due due cur) -> fn due cur state
+        _                   -> pure state
+
+λsetMode :: DueStateful
+λsetMode due pos state = pure $ state & mode .~ Modal (Due due pos)
+
+λprevious :: DueStateful
+λprevious due cur = λsetMode due (bound due (cur - 1))
+
+λnext :: DueStateful
+λnext due cur = λsetMode due (bound due (cur + 1))
+
+λgoto :: DueStateful
+λgoto due cur state =
+    case due !? cur of
+        Just (pointer, _) -> pure $ state & current .~ pointer
+        Nothing           -> Nothing
+
+λclearDate :: DueStateful
+λclearDate due cur state =
+    case due !? cur of
+        Just (pointer, _) -> do
+            let new = L.clearDue pointer (state ^. lists)
+            let dues = L.due new
+            λsetMode dues (bound dues cur) (state & lists .~ new)
+        Nothing -> Nothing
 
 showDue :: Stateful
-showDue state = do
-    let due = L.due (state ^. lists)
-    pure $ state & mode .~ Modal (Due due 0)
+showDue state = λsetMode (L.due (state ^. lists)) 0 state
 
 previous :: Stateful
-previous state =
-    case state ^. mode of
-        Modal (Due due cur) -> do
-            let pos =
-                    if cur > 0
-                        then cur - 1
-                        else 0
-            pure $ state & mode .~ Modal (Due due pos)
-        _ -> pure state
+previous = λfilter λprevious
 
 next :: Stateful
-next state =
-    case state ^. mode of
-        Modal (Due due cur) -> do
-            let lim = length due - 1
-            let pos =
-                    if cur < lim
-                        then cur + 1
-                        else lim
-            pure $ state & mode .~ Modal (Due due pos)
-        _ -> pure state
+next = λfilter λnext
 
 goto :: Stateful
-goto state =
-    case state ^. mode of
-        Modal (Due due cur) ->
-            case due !? cur of
-                Just (pointer, _) -> pure $ state & current .~ pointer
-                Nothing           -> Nothing
-        _ -> pure state
+goto = λfilter λgoto
+
+clearDate :: Stateful
+clearDate = λfilter λclearDate

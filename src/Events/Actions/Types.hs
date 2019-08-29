@@ -25,10 +25,12 @@ data ActionType
     | Delete
     | Detail
     | DueDate
+    | ClearDate
     | MoveUp
     | MoveDown
     | MoveLeft
     | MoveRight
+    | Complete
     | MoveMenu
     | ListNew
     | ListEdit
@@ -61,10 +63,12 @@ read "clear"      = Clear
 read "delete"     = Delete
 read "detail"     = Detail
 read "dueDate"    = DueDate
+read "clearDate"  = ClearDate
 read "moveUp"     = MoveUp
 read "moveDown"   = MoveDown
 read "moveLeft"   = MoveLeft
 read "moveRight"  = MoveRight
+read "complete"   = Complete
 read "moveMenu"   = MoveMenu
 read "listNew"    = ListNew
 read "listEdit"   = ListEdit

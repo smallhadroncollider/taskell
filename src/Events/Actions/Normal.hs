@@ -43,11 +43,13 @@ events
     , (A.Delete, (write =<<) . (delete =<<) . store)
     , (A.Detail, showDetail)
     , (A.DueDate, (editDue =<<) . (store =<<) . showDetail)
+    , (A.ClearDate, (write =<<) . (clearDate =<<) . store)
     -- moving tasks
     , (A.MoveUp, (write =<<) . (up =<<) . store)
     , (A.MoveDown, (write =<<) . (down =<<) . store)
     , (A.MoveLeft, (write =<<) . (bottom =<<) . (left =<<) . (moveLeft =<<) . store)
     , (A.MoveRight, (write =<<) . (bottom =<<) . (right =<<) . (moveRight =<<) . store)
+    , (A.Complete, (write =<<) . (moveToLast =<<) . (clearDate =<<) . store)
     , (A.MoveMenu, showMoveTo)
     -- lists
     , (A.ListNew, (createListStart =<<) . store)

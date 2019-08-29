@@ -11,7 +11,7 @@ import Control.Lens (element, makeLenses, (%%~), (%~), (&), (.~), (^.), (^?))
 import Data.Sequence as S (adjust', deleteAt, insertAt, update, (|>))
 
 import qualified Data.Taskell.Seq  as S
-import qualified Data.Taskell.Task as T (Task, Update, blank, contains, due, duplicate)
+import qualified Data.Taskell.Task as T (Task, Update, blank, clearDue, contains, due, duplicate)
 import           Types             (TaskIndex (TaskIndex))
 
 data List = List
@@ -42,6 +42,9 @@ due list = catMaybes (filt S.<#> (list ^. tasks))
   where
     filt int task = const (TaskIndex int, task) <$> task ^. T.due
 
+clearDue :: TaskIndex -> Update
+clearDue (TaskIndex int) = updateFn int T.clearDue
+
 newAt :: Int -> Update
 newAt idx = tasks %~ S.insertAt idx T.blank
 
@@ -67,7 +70,7 @@ update idx task = tasks %~ S.update idx task
 move :: Int -> Int -> Maybe Text -> List -> Maybe (List, Int)
 move current dir term list =
     case term of
-        Nothing -> (, bound (current + dir) list) <$> (list & tasks %%~ S.shiftBy current dir)
+        Nothing -> (, bound list (current + dir)) <$> (list & tasks %%~ S.shiftBy current dir)
         Just _ -> do
             idx <- changeTask dir current term list
             (, idx) <$> (list & tasks %%~ S.shiftBy current (idx - current))
@@ -104,11 +107,8 @@ closest current previous next =
         then next
         else previous
 
-bound :: Int -> List -> Int
-bound idx lst
-    | idx < 0 = 0
-    | idx >= count lst = count lst - 1
-    | otherwise = idx
+bound :: List -> Int -> Int
+bound lst = S.bound (lst ^. tasks)
 
 nearest' :: Int -> Maybe Text -> List -> Maybe Int
 nearest' current term lst = do
@@ -123,5 +123,5 @@ nearest current term lst = idx
     near = fromMaybe (-1) $ nearest' current term lst
     idx =
         case term of
-            Nothing  -> bound current lst
+            Nothing  -> bound lst current
             Just txt -> maybe near (bool near current . T.contains txt) $ getTask current lst

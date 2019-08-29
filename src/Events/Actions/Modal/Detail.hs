@@ -28,9 +28,10 @@ events
     , (A.Next, nextSubtask)
     , (A.New, (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store)
     , (A.Edit, (Detail.insertMode =<<) . store)
-    , (A.MoveRight, (write =<<) . (setComplete =<<) . store)
+    , (A.Complete, (write =<<) . (setComplete =<<) . store)
     , (A.Delete, (write =<<) . (Detail.remove =<<) . store)
     , (A.DueDate, (editDue =<<) . store)
+    , (A.ClearDate, (write =<<) . (clearDate =<<) . store)
     , (A.Detail, (editDescription =<<) . store)
     ]
 

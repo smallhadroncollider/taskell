@@ -19,6 +19,7 @@ module Events.State
     , editListStart
     , deleteCurrentList
     , clearItem
+    , clearDate
     , above
     , below
     , bottom
@@ -31,6 +32,7 @@ module Events.State
     , down
     , moveLeft
     , moveRight
+    , moveToLast
     , delete
     , selectList
     , listLeft
@@ -89,20 +91,20 @@ create p ls =
 
 -- app state
 quit :: Stateful
-quit = Just . (mode .~ Shutdown)
+quit = pure . (mode .~ Shutdown)
 
 continue :: State -> State
 continue = io .~ Nothing
 
 write :: Stateful
-write state = Just $ state & io .~ Just (state ^. lists)
+write state = pure $ state & io .~ Just (state ^. lists)
 
 store :: Stateful
-store state = Just $ state & history .~ (state ^. current, state ^. lists) : state ^. history
+store state = pure $ state & history .~ (state ^. current, state ^. lists) : state ^. history
 
 undo :: Stateful
 undo state =
-    Just $
+    pure $
     case state ^. history of
         []          -> state
         ((c, l):xs) -> state & current .~ c & lists .~ l & history .~ xs
@@ -110,7 +112,7 @@ undo state =
 -- createList
 createList :: Stateful
 createList state =
-    Just $
+    pure $
     case state ^. mode of
         Insert IList ICreate f ->
             updateListToLast . setLists state $ Lists.newList (getText f) $ state ^. lists
@@ -120,7 +122,7 @@ updateListToLast :: InternalStateful
 updateListToLast state = setCurrentList state (length (state ^. lists) - 1)
 
 createListStart :: Stateful
-createListStart = Just . (mode .~ Insert IList ICreate blankField)
+createListStart = pure . (mode .~ Insert IList ICreate blankField)
 
 -- editList
 editListStart :: Stateful
@@ -130,7 +132,7 @@ editListStart state = do
 
 deleteCurrentList :: Stateful
 deleteCurrentList state =
-    Just . fixIndex . setLists state $ Lists.delete (getCurrentList state) (state ^. lists)
+    pure . fixIndex . setLists state $ Lists.delete (getCurrentList state) (state ^. lists)
 
 -- insert
 getCurrentTask :: State -> Maybe Task
@@ -144,7 +146,7 @@ setCurrentTaskText text state =
     flip setCurrentTask state =<< (name .~ text) <$> getCurrentTask state
 
 startCreate :: Stateful
-startCreate = Just . (mode .~ Insert ITask ICreate blankField)
+startCreate = pure . (mode .~ Insert ITask ICreate blankField)
 
 startEdit :: Stateful
 startEdit state = do
@@ -156,17 +158,17 @@ finishTask state =
     case state ^. mode of
         Insert ITask iMode f ->
             setCurrentTaskText (getText f) $ state & (mode .~ Insert ITask iMode blankField)
-        _ -> Just state
+        _ -> pure state
 
 finishListTitle :: Stateful
 finishListTitle state =
     case state ^. mode of
         Insert IList iMode f ->
             setCurrentListTitle (getText f) $ state & (mode .~ Insert IList iMode blankField)
-        _ -> Just state
+        _ -> pure state
 
 normalMode :: Stateful
-normalMode = Just . (mode .~ Normal)
+normalMode = pure . (mode .~ Normal)
 
 addToListAt :: Int -> Stateful
 addToListAt offset state = do
@@ -188,6 +190,9 @@ duplicate state = setList state <$> (L.duplicate (getIndex state) =<< getList st
 clearItem :: Stateful
 clearItem = setCurrentTaskText ""
 
+clearDate :: Stateful
+clearDate state = pure $ state & lists .~ Lists.clearDue (state ^. current) (state ^. lists)
+
 bottom :: Stateful
 bottom = pure . selectLast
 
@@ -207,7 +212,7 @@ removeBlank state = do
 moveVertical :: Int -> Stateful
 moveVertical dir state = do
     (lst, idx) <- L.move (getIndex state) dir (getText <$> state ^. searchTerm) =<< getList state
-    Just $ setIndex (setList state lst) idx
+    pure $ setIndex (setList state lst) idx
 
 up :: Stateful
 up = moveVertical (-1)
@@ -225,9 +230,18 @@ moveLeft = moveHorizontal (-1)
 moveRight :: Stateful
 moveRight = moveHorizontal 1
 
+moveToLast :: Stateful
+moveToLast state =
+    if idx == cur
+        then pure state
+        else moveHorizontal (idx - cur) state
+  where
+    idx = length (state ^. lists) - 1
+    cur = getCurrentList state
+
 selectList :: Char -> Stateful
 selectList idx state =
-    Just $
+    pure $
     (if exists
          then current .~ (ListIndex list, TaskIndex 0)
          else id)
@@ -258,7 +272,7 @@ changeTask fn state = do
     list <- getList state
     let idx = getIndex state
     let term = getText <$> state ^. searchTerm
-    Just $ setIndex state (fn idx term list)
+    pure $ setIndex state (fn idx term list)
 
 next :: Stateful
 next = changeTask L.nextTask
@@ -268,7 +282,7 @@ previous = changeTask L.prevTask
 
 left :: Stateful
 left state =
-    Just . fixIndex . setCurrentList state $
+    pure . fixIndex . setCurrentList state $
     if list > 0
         then pred list
         else 0
@@ -277,7 +291,7 @@ left state =
 
 right :: Stateful
 right state =
-    Just . fixIndex . setCurrentList state $
+    pure . fixIndex . setCurrentList state $
     if list < (count - 1)
         then succ list
         else list
@@ -285,11 +299,20 @@ right state =
     list = getCurrentList state
     count = length (state ^. lists)
 
+fixListIndex :: InternalStateful
+fixListIndex state =
+    if listIdx
+        then state
+        else setCurrentList state (length lists' - 1)
+  where
+    lists' = state ^. lists
+    listIdx = Lists.exists (getCurrentList state) lists'
+
 fixIndex :: InternalStateful
 fixIndex state =
     case getList state of
         Just list -> setIndex state (L.nearest idx trm list)
-        Nothing   -> state
+        Nothing   -> fixListIndex state
   where
     trm = getText <$> state ^. searchTerm
     idx = getIndex state
@@ -310,15 +333,17 @@ setCurrentListTitle text state = setList state . (L.title .~ text) <$> getList s
 setLists :: State -> Lists.Lists -> State
 setLists state lists' = state & lists .~ lists'
 
-moveTo :: Char -> Stateful
-moveTo char state = do
-    let li = ord char - ord 'a'
-        cur = getCurrentList state
+moveTo' :: Int -> Stateful
+moveTo' li state = do
+    let cur = getCurrentList state
     if li == cur || li < 0 || li >= length (state ^. lists)
         then Nothing
         else do
             s <- moveHorizontal (li - cur) state
             pure . selectLast $ setCurrentList s li
+
+moveTo :: Char -> Stateful
+moveTo char = moveTo' (ord char - ord 'a')
 
 -- move lists
 listMove :: Int -> Stateful
@@ -341,7 +366,7 @@ listRight = listMove 1
 searchMode :: Stateful
 searchMode state = pure . fixIndex $ (state & mode .~ Search) & searchTerm .~ sTerm
   where
-    sTerm = Just (fromMaybe blankField (state ^. searchTerm))
+    sTerm = pure (fromMaybe blankField (state ^. searchTerm))
 
 clearSearch :: Stateful
 clearSearch state = pure $ state & searchTerm .~ Nothing
@@ -349,18 +374,18 @@ clearSearch state = pure $ state & searchTerm .~ Nothing
 appendSearch :: (Field -> Field) -> Stateful
 appendSearch genField state = do
     let field = fromMaybe blankField (state ^. searchTerm)
-    pure . fixIndex $ state & searchTerm .~ Just (genField field)
+    pure . fixIndex $ state & searchTerm .~ pure (genField field)
 
 -- help
 showHelp :: Stateful
-showHelp = Just . (mode .~ Modal Help)
+showHelp = pure . (mode .~ Modal Help)
 
 showMoveTo :: Stateful
-showMoveTo = Just . (mode .~ Modal MoveTo)
+showMoveTo state = const (state & mode .~ Modal MoveTo) <$> getCurrentTask state
 
 -- view
 setHeight :: Int -> State -> State
-setHeight i = height .~ i
+setHeight = (.~) height
 
 -- more view - maybe shouldn't be in here...
 newList :: State -> State

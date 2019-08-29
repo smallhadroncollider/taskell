@@ -6,6 +6,7 @@ module Data.Taskell.Lists
     , updateLists
     , count
     , due
+    , clearDue
     , get
     , changeList
     , newList
