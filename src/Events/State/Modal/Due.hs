@@ -48,7 +48,8 @@ type DueStateful = Seq (Pointer, Task) -> Int -> Stateful
     case due !? cur of
         Just (pointer, _) -> do
             let new = L.clearDue pointer (state ^. lists)
-            showDue (state & lists .~ new)
+            let dues = L.due new
+            λsetMode dues (bound dues cur) (state & lists .~ new)
         Nothing -> Nothing
 
 showDue :: Stateful
