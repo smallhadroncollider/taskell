@@ -53,6 +53,14 @@ There are usually bottles (binaries) available. If these are not available for y
 
 Not officially supported, but try running `sudo dnf install ncurses-compat-libs` then download and run the binary as described below. If that doesn't work you may need to build from scratch ([Cabal](#cabal)/[Stack](#stack)).
 
+### Scarf
+
+Taskell is available on [Scarf](https://scarf.sh/package/scarf/taskell).
+
+```bash
+scarf install taskell
+```
+
 ### Binaries
 
 [A binary is available for Mac and Debian/Ubuntu](https://github.com/smallhadroncollider/taskell/releases). Download it and copy it to a directory in your `$PATH` (e.g. `/usr/local/bin` or `/usr/bin`).
