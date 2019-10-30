@@ -16,7 +16,7 @@ import Brick
 import           Data.Taskell.Date  (dayToText, deadline)
 import qualified Data.Taskell.Task  as T (Task, contains, countCompleteSubtasks, countSubtasks,
                                           description, due, hasSubtasks, name)
-import           Events.State.Types (current, mode, searchTerm)
+import           Events.State.Types (current, mode, searchTerm, time)
 import           IO.Config.Layout   (descriptionIndicator)
 import           Types              (ListIndex (..), TaskIndex (..))
 import           UI.Draw.Field      (getText, textField, widgetFromMaybe)
@@ -35,7 +35,7 @@ data TaskWidget = TaskWidget
 -- | Takes a task's 'due' property and renders a date with appropriate styling (e.g. red if overdue)
 renderDate :: T.Task -> DSWidget
 renderDate task = do
-    today <- asks dsToday -- get the value of `today` from DrawState
+    today <- utctDay . (^. time) <$> asks dsState
     pure . fromMaybe emptyWidget $
         (\day -> withAttr (dlToAttr $ deadline today day) (txt $ dayToText today day)) <$>
         task ^. T.due

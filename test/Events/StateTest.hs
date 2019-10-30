@@ -12,6 +12,8 @@ import Test.Tasty.HUnit
 
 import Control.Lens ((&), (.~), (^.))
 
+import Data.Time.Clock (secondsToDiffTime)
+
 import qualified Data.Sequence           as S (lookup)
 import qualified Data.Taskell.List       as L (append, empty)
 import qualified Data.Taskell.Task       as T (new)
@@ -19,6 +21,9 @@ import           Events.State
 import           Events.State.Types
 import           Events.State.Types.Mode
 import           Types                   (ListIndex (..), TaskIndex (..))
+
+mockTime :: UTCTime
+mockTime = UTCTime (ModifiedJulianDay 20) (secondsToDiffTime 0)
 
 testState :: State
 testState =
@@ -31,6 +36,7 @@ testState =
     , _io = Nothing
     , _height = 0
     , _searchTerm = Nothing
+    , _time = mockTime
     }
 
 moveToState :: State
@@ -55,6 +61,7 @@ moveToState =
     , _io = Nothing
     , _height = 0
     , _searchTerm = Nothing
+    , _time = mockTime
     }
 
 -- tests

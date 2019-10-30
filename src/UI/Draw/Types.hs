@@ -13,7 +13,6 @@ import UI.Types           (ResourceName)
 data DrawState = DrawState
     { dsLayout   :: Config
     , dsBindings :: Bindings
-    , dsToday    :: Day
     , dsDebug    :: Bool
     , dsState    :: State
     }

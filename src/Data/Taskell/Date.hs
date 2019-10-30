@@ -9,7 +9,6 @@ module Data.Taskell.Date
     , dayToOutput
     , textToDay
     , utcToLocalDay
-    , currentDay
     , deadline
     ) where
 
@@ -52,9 +51,6 @@ textToTime = parseTimeM False defaultTimeLocale "%Y-%m-%d" . unpack
 
 textToDay :: Text -> Maybe Day
 textToDay = (utctDay <$>) . textToTime
-
-currentDay :: IO Day
-currentDay = utctDay <$> getCurrentTime
 
 -- work out the deadline
 deadline :: Day -> Day -> Deadline

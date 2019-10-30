@@ -22,6 +22,7 @@ data State = State
     , _io         :: Maybe Lists
     , _height     :: Int
     , _searchTerm :: Maybe Field
+    , _time       :: UTCTime
     } deriving (Eq, Show)
 
 -- create lenses

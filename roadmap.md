@@ -32,7 +32,6 @@
     > Visibility should be on the description by default?
 - No obvious way to know if there are more items in a list off-screen
     > Lowest item should be "..." if more items
-- Date should update if taskell is left open
 - Blank trello token should show info about setting it up rather than auth error
     > Auth error should show setup info too?
 - A single issue with config.ini reverts to defaultConfig?
@@ -311,3 +310,4 @@
     * [x] DETAIL mode
     * [x] DUE mode
 - Update screenshot
+- Date should update if taskell is left open

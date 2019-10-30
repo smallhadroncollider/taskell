@@ -13,6 +13,8 @@ import Test.Tasty.HUnit
 
 import Control.Lens ((.~))
 
+import Data.Time.Clock (secondsToDiffTime)
+
 import Data.Taskell.Lists.Internal (initial)
 import Events.Actions.Types        as A
 import Events.State                (create, quit)
@@ -22,11 +24,14 @@ import Graphics.Vty.Input.Events   (Event (..), Key (..))
 import IO.Keyboard                 (generate)
 import IO.Keyboard.Types
 
+mockTime :: UTCTime
+mockTime = UTCTime (ModifiedJulianDay 20) (secondsToDiffTime 0)
+
 tester :: BoundActions -> Event -> Stateful
 tester actions ev state = lookup ev actions >>= ($ state)
 
 cleanState :: State
-cleanState = create "taskell.md" initial
+cleanState = create mockTime "taskell.md" initial
 
 basicBindings :: Bindings
 basicBindings = [(BChar 'q', A.Quit)]

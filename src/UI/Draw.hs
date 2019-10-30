@@ -13,7 +13,6 @@ import Control.Monad.Reader (runReader)
 
 import Brick
 
-import Data.Taskell.Date       (Day)
 import Events.State            (normalise)
 import Events.State.Types      (State, mode)
 import Events.State.Types.Mode (DetailMode (..), ModalType (..), Mode (..))
@@ -28,9 +27,9 @@ import UI.Types                (ResourceName (..))
 renderApp :: ReaderDrawState [TWidget]
 renderApp = sequence [renderModal, renderMain]
 
-draw :: Config -> Bindings -> Day -> Bool -> State -> [TWidget]
-draw layout bindings today debug state =
-    runReader renderApp (DrawState layout bindings today debug (normalise state))
+draw :: Config -> Bindings -> Bool -> State -> [TWidget]
+draw layout bindings debug state =
+    runReader renderApp (DrawState layout bindings debug (normalise state))
 
 -- cursors
 chooseCursor :: State -> [CursorLocation ResourceName] -> Maybe (CursorLocation ResourceName)

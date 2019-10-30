@@ -5,6 +5,7 @@ module Events.State
     -- App
     ( continue
     , write
+    , setTime
     , countCurrent
     , setHeight
     -- UI.Main
@@ -76,8 +77,8 @@ import UI.Draw.Field           (Field, blankField, getText, textToField)
 
 type InternalStateful = State -> State
 
-create :: FilePath -> Lists.Lists -> State
-create p ls =
+create :: UTCTime -> FilePath -> Lists.Lists -> State
+create t p ls =
     State
     { _mode = Normal
     , _lists = ls
@@ -87,6 +88,7 @@ create p ls =
     , _io = Nothing
     , _height = 0
     , _searchTerm = Nothing
+    , _time = t
     }
 
 -- app state
@@ -95,6 +97,9 @@ quit = pure . (mode .~ Shutdown)
 
 continue :: State -> State
 continue = io .~ Nothing
+
+setTime :: UTCTime -> State -> State
+setTime t = time .~ t
 
 write :: Stateful
 write state = pure $ state & io .~ Just (state ^. lists)
