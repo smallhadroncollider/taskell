@@ -10,7 +10,7 @@ module Events.Actions.Modal.Detail
 import ClassyPrelude
 
 import           Events.Actions.Types      as A (ActionType (..))
-import           Events.State
+import           Events.State              (clearDate, normalMode, quit, store, undo, write)
 import           Events.State.Modal.Detail as Detail
 import           Events.State.Types
 import           Events.State.Types.Mode   (DetailItem (..), DetailMode (..))
@@ -26,6 +26,8 @@ events
     , (A.Undo, (write =<<) . undo)
     , (A.Previous, previousSubtask)
     , (A.Next, nextSubtask)
+    , (A.MoveUp, (write =<<) . (up =<<) . store)
+    , (A.MoveDown, (write =<<) . (down =<<) . store)
     , (A.New, (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store)
     , (A.Edit, (Detail.insertMode =<<) . store)
     , (A.Complete, (write =<<) . (setComplete =<<) . store)

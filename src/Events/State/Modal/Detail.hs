@@ -19,6 +19,8 @@ module Events.State.Modal.Detail
     , nextSubtask
     , previousSubtask
     , lastSubtask
+    , up
+    , down
     ) where
 
 import ClassyPrelude
@@ -26,10 +28,11 @@ import ClassyPrelude
 import Control.Lens ((&), (.~), (^.))
 
 import           Data.Taskell.Date       (dayToOutput)
+import qualified Data.Taskell.Seq        as S
 import qualified Data.Taskell.Subtask    as ST (blank, name, toggle)
 import           Data.Taskell.Task       (Task, addSubtask, countSubtasks, description, due,
                                           getSubtask, removeSubtask, setDescription, setDue,
-                                          updateSubtask)
+                                          subtasks, updateSubtask)
 import           Events.State            (getCurrentTask, setCurrentTask)
 import           Events.State.Types      (State, Stateful, mode)
 import           Events.State.Types.Mode (DetailItem (..), DetailMode (..), ModalType (Detail),
@@ -160,3 +163,19 @@ setIndex state i = do
             | i < 0 = 0
             | otherwise = i
     return $ state & mode .~ Modal (Detail (DetailItem newIndex) m)
+
+-- moving tasks
+moveVertical :: Int -> Stateful
+moveVertical dir state = do
+    task <- getCurrentTask state
+    let tasks = task ^. subtasks
+    i <- getCurrentSubtask state
+    shifted <- S.shiftBy i dir tasks
+    state' <- setCurrentTask (task & subtasks .~ shifted) state
+    changeSubtask dir state'
+
+up :: Stateful
+up = moveVertical (-1)
+
+down :: Stateful
+down = moveVertical 1
