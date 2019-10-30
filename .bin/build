@@ -44,7 +44,7 @@ tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz"  --directory="$LINUX_PATH
 mkdir -p "releases/$1/taskell/DEBIAN"
 mkdir -p "releases/$1/taskell/usr/local/bin"
 
-cp $LINUX_PATH "releases/$1/taskell/usr/local/bin"
+cp "$LINUX_PATH/taskell" "releases/$1/taskell/usr/local/bin"
 
 echo "Package: taskell
 Version: $1
