@@ -6,11 +6,14 @@ module App
 
 import ClassyPrelude
 
+import Control.Concurrent (forkIO, threadDelay)
+
 import Control.Lens ((^.))
 
 import Brick
-import Graphics.Vty              (Mode (BracketedPaste), displayBounds, outputIface, setMode,
-                                  supportsMode)
+import Brick.BChan               (BChan, newBChan, writeBChan)
+import Graphics.Vty              (Mode (BracketedPaste), defaultConfig, displayBounds, mkVty,
+                                  outputIface, setMode, supportsMode)
 import Graphics.Vty.Input.Events (Event (..))
 
 import qualified Control.FoldDebounce as Debounce
@@ -18,7 +21,7 @@ import qualified Control.FoldDebounce as Debounce
 import Data.Taskell.Date       (currentDay)
 import Data.Taskell.Lists      (Lists)
 import Events.Actions          (ActionSets, event, generateActions)
-import Events.State            (continue, countCurrent, setHeight)
+import Events.State            (continue, countCurrent, setHeight, setTime)
 import Events.State.Types      (State, current, io, lists, mode, path, searchTerm)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
 import IO.Config               (Config, debugging, generateAttrMap, getBindings, layout)
@@ -32,6 +35,22 @@ type DebouncedMessage = (Lists, FilePath)
 type DebouncedWrite = DebouncedMessage -> IO ()
 
 type Trigger = Debounce.Trigger DebouncedMessage DebouncedMessage
+
+-- tick
+data TaskellEvent =
+    Tick
+
+oneSecond :: Int
+oneSecond = 1000000
+
+frequency :: Int
+frequency = 60 * oneSecond
+
+timer :: BChan TaskellEvent -> IO ()
+timer chan =
+    void . forkIO . forever $ do
+        writeBChan chan Tick
+        threadDelay frequency
 
 -- store
 store :: Config -> DebouncedMessage -> IO ()
@@ -114,8 +133,11 @@ handleEvent ::
        (DebouncedWrite, Trigger)
     -> ActionSets
     -> State
-    -> BrickEvent ResourceName e
+    -> BrickEvent ResourceName TaskellEvent
     -> EventM ResourceName (Next State)
+handleEvent _ _ state (AppEvent Tick) = do
+    t <- liftIO getCurrentTime
+    Brick.continue $ setTime t state
 handleEvent _ _ state (VtyEvent (EvResize _ _)) = do
     invalidateCache
     h <- getHeight
@@ -136,9 +158,16 @@ appStart state = do
 go :: Config -> State -> IO ()
 go config initial = do
     attrMap' <- const <$> generateAttrMap
+    -- get current day
     today <- currentDay
+    -- setup debouncing
     db <- debounce config initial
+    -- get bindings
     bindings <- getBindings
+    -- setup timer channel
+    timerChan <- newBChan 1
+    timer timerChan
+    -- create app
     let app =
             App
             { appDraw = draw (layout config) bindings today (debugging config)
@@ -147,4 +176,7 @@ go config initial = do
             , appStartEvent = appStart
             , appAttrMap = attrMap'
             }
-    void (defaultMain app initial)
+    -- start
+    let builder = mkVty defaultConfig
+    initialVty <- builder
+    void $ customMain initialVty builder (Just timerChan) app initial
