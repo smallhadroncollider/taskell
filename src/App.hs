@@ -18,7 +18,6 @@ import Graphics.Vty.Input.Events (Event (..))
 
 import qualified Control.FoldDebounce as Debounce
 
-import Data.Taskell.Date       (currentDay)
 import Data.Taskell.Lists      (Lists)
 import Events.Actions          (ActionSets, event, generateActions)
 import Events.State            (continue, countCurrent, setHeight, setTime)
@@ -158,8 +157,6 @@ appStart state = do
 go :: Config -> State -> IO ()
 go config initial = do
     attrMap' <- const <$> generateAttrMap
-    -- get current day
-    today <- currentDay
     -- setup debouncing
     db <- debounce config initial
     -- get bindings
@@ -170,7 +167,7 @@ go config initial = do
     -- create app
     let app =
             App
-            { appDraw = draw (layout config) bindings today (debugging config)
+            { appDraw = draw (layout config) bindings (debugging config)
             , appChooseCursor = chooseCursor
             , appHandleEvent = handleEvent db (generateActions bindings)
             , appStartEvent = appStart

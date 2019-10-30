@@ -18,6 +18,7 @@ import qualified Data.Taskell.Subtask      as ST (Subtask, complete, name)
 import           Data.Taskell.Task         (Task, description, due, name, subtasks)
 import           Events.State              (getCurrentTask)
 import           Events.State.Modal.Detail (getCurrentItem, getField)
+import           Events.State.Types        (time)
 import           Events.State.Types.Mode   (DetailItem (..))
 import           UI.Draw.Field             (Field, textField, widgetFromMaybe)
 import           UI.Draw.Types             (DrawState (..), ModalWidget, TWidget)
@@ -72,8 +73,8 @@ renderDate today field item task =
 
 detail :: ModalWidget
 detail = do
-    today <- asks dsToday
     state <- asks dsState
+    let today = utctDay (state ^. time)
     pure $
         fromMaybe ("Error", txt "Oops") $ do
             task <- getCurrentTask state
