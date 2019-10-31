@@ -8,21 +8,18 @@
 
 ## Refactoring
 
-- Somehow merge `event` and `events` in Actions that use bindings
 - Use Attoparsec for parsing
-- Define key binding info in one place
-    > Currently all over the place
-    * [ ] Bindings
-    * [ ] Default key
-    * [ ] Description
 - Add tests for IO.GitHub
 - Break up State module
+    * [ ] More of logic should go into Task, List, and Lists
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Remove duplication of config - currently using ini and hard-coded defaults
 - Use Shake instead of bash script
 
 ## Bugs
 
+- Selected item can still get a bit lost in SEARCH mode when going between lists
+    > Sometimes defaults to 0, when there is something to be found
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
 - Help modal needs to wrap and scroll
@@ -38,8 +35,18 @@
 
 ## Features
 
+- Edit task text in DETAIL mode
+    > Need to be able to select different parts of the DETAIL modal. Probably need to rethink Mode constructors.
+- Pressing Undo in DUE mode should undo without leaving view
+    > Fallthrough to NORMAL events more generally?
 - Add a List widget for common actions between tasks and sub-tasks
+    > Or use a typeclass... somehow?
+    * [ ] Moving around
     * [ ] Re-ordering subtasks
+    * [ ] New items above/below
+    * [ ] Duplicating
+    * [ ] Marking complete
+    * [ ] Deleting
 - Add custom key support
     * [x] Create bindings.ini
     * [x] Update events to use Map from bindings.ini
@@ -95,7 +102,14 @@
     * [x] Descriptions need to wrap
     * [ ] Search should filter
     * [ ] Show list each task belongs to?
-    * [ ] Backspace (customisable) removes date
+    * [x] Backspace (customisable) removes date
+- Define key binding info in one place
+    > Currently all over the place
+    * [ ] Bindings
+    * [ ] Default key
+    * [ ] Description
+    * [ ] Generate bindings.ini from it
+- Somehow merge `event` and `events` in Actions that use bindings
 
 ## Done
 
