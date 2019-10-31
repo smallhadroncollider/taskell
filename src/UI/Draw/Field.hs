@@ -65,30 +65,23 @@ insertText insert (Field text cursor) = Field newText newCursor
     newText = concat [start, insert, end]
     newCursor = cursor + length insert
 
-textToWidths :: Text -> [Int]
-textToWidths = foldl' (\l t -> l <> [V.safeWcwidth t]) []
+widthFold :: [Int] -> Char -> [Int]
+widthFold l t = l <> [V.safeWcwidth t]
 
 cursorPosition :: [Text] -> Int -> Int -> (Int, Int)
 cursorPosition lns width cursor =
     if x == width
-        then (0, y + 1)
+        then (0, y + 1) -- go to next line if at end of line
         else (x, y)
   where
-    parts = textToWidths <$> lns -- list of list of individual character lengths
+    parts = foldl' widthFold [] <$> lns -- list of list of individual character lengths
     lengths = length <$> parts -- list of line lengths
     cumulative = L.scanl1 (+) lengths -- cumulative total of line lengths
-    below = takeWhile (< cursor) cumulative
-    y = length below
-    offset = fromMaybe 0 (lastMay below)
-    cumulativeWidths = L.scanl1 (+) <$> index parts y
-    cursor' = cursor - offset
-    x =
-        case cumulativeWidths of
-            Nothing -> 0
-            Just w ->
-                if cursor' == 0
-                    then 0
-                    else fromMaybe 0 $ index w (cursor' - 1)
+    above = takeWhile (< cursor) cumulative -- lines above the cursor
+    y = length above -- number of lines above
+    adjustedCursor = cursor - fromMaybe 0 (lastMay above) -- subtract lines above from cursor position
+    cumulativeWidths = L.scanl1 (+) <$> index parts y -- get cumulative widths for current line
+    x = fromMaybe 0 $ flip index (adjustedCursor - 1) =<< cumulativeWidths
 
 getText :: Field -> Text
 getText (Field text _) = text
