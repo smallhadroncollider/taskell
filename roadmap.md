@@ -57,7 +57,6 @@
     * [ ] Add keys to Help which aren't in bindings
     * [ ] More detailed error messages for missing/invalid mappings
 - Add tags/labels with `t`
-- Use proper error codes
 - Performance with large files
     > Becomes unusable with large files
     * [x] Initially use debouncing to avoid writing too often
@@ -325,3 +324,4 @@
     * [x] DUE mode
 - Update screenshot
 - Date should update if taskell is left open
+- Use proper error codes

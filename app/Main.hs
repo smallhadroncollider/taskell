@@ -4,6 +4,8 @@ module Main where
 
 import ClassyPrelude
 
+import System.Exit (die)
+
 import App          (go)
 import Events.State (create)
 import IO.Config    (setup)
@@ -17,4 +19,5 @@ main = do
     case next of
         Exit            -> pure ()
         Output text     -> putStrLn text
+        Error text      -> die $ unpack text
         Load path lists -> go config $ create time path lists

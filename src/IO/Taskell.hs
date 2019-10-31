@@ -28,6 +28,7 @@ type ReaderConfig a = ReaderT Config IO a
 
 data Next
     = Output Text
+    | Error Text
     | Load FilePath
            Lists
     | Exit
@@ -40,7 +41,7 @@ parseArgs ["-g", identifier, file] = loadGitHub identifier file
 parseArgs ["-i", file]             = fileInfo file
 parseArgs [file]                   = loadFile file
 parseArgs []                       = (pack . filename . general <$> ask) >>= loadFile
-parseArgs _                        = pure $ Output (unlines ["Invalid options", "", usage])
+parseArgs _                        = pure $ Error (unlines ["Invalid options", "", usage])
 
 load :: ReaderConfig Next
 load = getArgs >>= parseArgs
@@ -53,14 +54,14 @@ loadFile filepath = do
     mPath <- exists filepath
     case mPath of
         Nothing   -> pure Exit
-        Just path -> either (Output . colonic path) (Load path) <$> readData path
+        Just path -> either (Error . colonic path) (Load path) <$> readData path
 
 loadRemote :: (token -> FilePath -> ReaderConfig Next) -> token -> Text -> ReaderConfig Next
 loadRemote createFn identifier filepath = do
     let path = unpack filepath
     exists' <- fileExists path
     if exists'
-        then pure $ Output (filepath <> " already exists")
+        then pure $ Error (filepath <> " already exists")
         else createFn identifier path
 
 loadTrello :: Trello.TrelloBoardID -> Text -> ReaderConfig Next
@@ -74,8 +75,8 @@ fileInfo filepath = do
     let path = unpack filepath
     exists' <- fileExists path
     if exists'
-        then Output . either (colonic path) (analyse filepath) <$> readData path
-        else pure Exit
+        then either (Error . colonic path) (Output . analyse filepath) <$> readData path
+        else pure $ Error (filepath <> " does not exist")
 
 createRemote ::
        (Config -> Maybe token)
@@ -87,11 +88,11 @@ createRemote ::
 createRemote tokenFn missingToken getFn identifier path = do
     config <- ask
     case tokenFn config of
-        Nothing -> pure $ Output missingToken
+        Nothing -> pure $ Error missingToken
         Just token -> do
             lists <- lift $ runReaderT (getFn identifier) token
             case lists of
-                Left txt -> pure $ Output txt
+                Left txt -> pure $ Error txt
                 Right ls ->
                     promptCreate path >>=
                     bool (pure Exit) (Load path ls <$ lift (writeData config ls path))
