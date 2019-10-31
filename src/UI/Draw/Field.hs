@@ -12,6 +12,7 @@ import qualified Brick                     as B (Location (Location), Size (Fixe
                                                  availWidth, getContext, render, showCursor, txt,
                                                  vBox)
 import qualified Brick.Widgets.Core        as B (textWidth)
+import qualified Graphics.Text.Width       as V (safeWcwidth)
 import qualified Graphics.Vty.Input.Events as V (Event (..), Key (..))
 
 import qualified UI.Types as UI (ResourceName (RNCursor))
@@ -64,16 +65,30 @@ insertText insert (Field text cursor) = Field newText newCursor
     newText = concat [start, insert, end]
     newCursor = cursor + length insert
 
+textToWidths :: Text -> [Int]
+textToWidths = foldl' (\l t -> l <> [V.safeWcwidth t]) []
+
 cursorPosition :: [Text] -> Int -> Int -> (Int, Int)
-cursorPosition text width cursor =
+cursorPosition lns width cursor =
     if x == width
         then (0, y + 1)
         else (x, y)
   where
-    scanned = L.scanl1 (+) $ length <$> text
-    below = takeWhile (< cursor) scanned
-    x = cursor - maybe 0 last (fromNullable below)
+    parts = textToWidths <$> lns -- list of list of individual character lengths
+    lengths = length <$> parts -- list of line lengths
+    cumulative = L.scanl1 (+) lengths -- cumulative total of line lengths
+    below = takeWhile (< cursor) cumulative
     y = length below
+    offset = fromMaybe 0 (lastMay below)
+    cumulativeWidths = L.scanl1 (+) <$> index parts y
+    cursor' = cursor - offset
+    x =
+        case cumulativeWidths of
+            Nothing -> 0
+            Just w ->
+                if cursor' == 0
+                    then 0
+                    else fromMaybe 0 $ index w (cursor' - 1)
 
 getText :: Field -> Text
 getText (Field text _) = text

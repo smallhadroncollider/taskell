@@ -148,10 +148,27 @@ test_field =
                          (6, 1)
                          (cursorPosition' "Artichoke penguin astronaut wombat" 34))
               , testCase
+                    "Triple line"
+                    (assertEqual
+                         "Should wrap to correct position"
+                         (11, 2)
+                         (cursorPosition'
+                              "Artichoke penguin astronaut wombat artichoke penguin astronaut wombat"
+                              64))
+              , testCase
                     "Long words with space"
                     (assertEqual
                          "Should ignore the space when counting"
                          (16, 1)
                          (cursorPosition' "Blah fish wombat monkey sponge catpult arsonist" 47))
+              , testCase
+                    "Multibyte string single line"
+                    (assertEqual "Should move in twos" (4, 0) (cursorPosition' "乤乭亍乫" 2))
+              , testCase
+                    "Multibyte string multi-line"
+                    (assertEqual
+                         "Should move in twos"
+                         (4, 1)
+                         (cursorPosition' "乤乭亍乫 乤乭亍乫 乤乭亍乫 乤乭亍乫" 17))
               ]
         ]
