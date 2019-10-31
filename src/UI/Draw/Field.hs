@@ -12,6 +12,7 @@ import qualified Brick                     as B (Location (Location), Size (Fixe
                                                  availWidth, getContext, render, showCursor, txt,
                                                  vBox)
 import qualified Brick.Widgets.Core        as B (textWidth)
+import qualified Graphics.Text.Width       as V (safeWcwidth)
 import qualified Graphics.Vty.Input.Events as V (Event (..), Key (..))
 
 import qualified UI.Types as UI (ResourceName (RNCursor))
@@ -64,16 +65,23 @@ insertText insert (Field text cursor) = Field newText newCursor
     newText = concat [start, insert, end]
     newCursor = cursor + length insert
 
+widthFold :: [Int] -> Char -> [Int]
+widthFold l t = l <> [V.safeWcwidth t]
+
 cursorPosition :: [Text] -> Int -> Int -> (Int, Int)
-cursorPosition text width cursor =
+cursorPosition lns width cursor =
     if x == width
-        then (0, y + 1)
+        then (0, y + 1) -- go to next line if at end of line
         else (x, y)
   where
-    scanned = L.scanl1 (+) $ length <$> text
-    below = takeWhile (< cursor) scanned
-    x = cursor - maybe 0 last (fromNullable below)
-    y = length below
+    parts = foldl' widthFold [] <$> lns -- list of list of individual character lengths
+    lengths = length <$> parts -- list of line lengths
+    cumulative = L.scanl1 (+) lengths -- cumulative total of line lengths
+    above = takeWhile (< cursor) cumulative -- lines above the cursor
+    y = length above -- number of lines above
+    adjustedCursor = cursor - fromMaybe 0 (lastMay above) -- subtract lines above from cursor position
+    cumulativeWidths = L.scanl1 (+) <$> index parts y -- get cumulative widths for current line
+    x = fromMaybe 0 $ flip index (adjustedCursor - 1) =<< cumulativeWidths
 
 getText :: Field -> Text
 getText (Field text _) = text
