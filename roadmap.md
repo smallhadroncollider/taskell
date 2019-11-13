@@ -70,7 +70,6 @@
     * [x] Markdown parsing
     * [ ] Text line breaks go a bit funny with multi-line descriptions
 - Check times work no matter what timezone
-- Redo functionality
 - Always show list title
     > Floating list titles - so you can always see what list you're in
 - Make token UX better
@@ -325,3 +324,4 @@
 - Update screenshot
 - Date should update if taskell is left open
 - Use proper error codes
+- Redo functionality
