@@ -23,6 +23,7 @@ events
  =
     [ (A.Quit, quit)
     , (A.Undo, (write =<<) . undo)
+    , (A.Redo, (write =<<) . redo)
     , (A.Search, searchMode)
     , (A.Help, showHelp)
     , (A.Due, showDue)

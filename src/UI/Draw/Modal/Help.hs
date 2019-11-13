@@ -38,6 +38,7 @@ descriptions =
     , ([A.MoveMenu], "Move task to specific list")
     , ([A.Delete], "Delete task")
     , ([A.Undo], "Undo")
+    , ([A.Redo], "Redo")
     , ([A.ListNew], "New list")
     , ([A.ListEdit], "Edit list title")
     , ([A.ListDelete], "Delete list")

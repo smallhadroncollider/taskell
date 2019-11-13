@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedLists #-}
 
 module Events.StateTest
     ( test_state
@@ -20,7 +21,7 @@ import qualified Data.Taskell.Task       as T (new)
 import           Events.State
 import           Events.State.Types
 import           Events.State.Types.Mode
-import           Types                   (ListIndex (..), TaskIndex (..))
+import           Types                   (ListIndex (ListIndex), TaskIndex (TaskIndex))
 
 mockTime :: UTCTime
 mockTime = UTCTime (ModifiedJulianDay 20) (secondsToDiffTime 0)
@@ -29,9 +30,7 @@ testState :: State
 testState =
     State
     { _mode = Normal
-    , _lists = empty
-    , _history = []
-    , _current = (ListIndex 0, TaskIndex 0)
+    , _history = fresh empty
     , _path = "test.md"
     , _io = Nothing
     , _height = 0
@@ -43,20 +42,23 @@ moveToState :: State
 moveToState =
     State
     { _mode = Modal MoveTo
-    , _lists =
-          fromList
-              [ L.empty "List 1"
-              , L.empty "List 2"
-              , L.empty "List 3"
-              , L.empty "List 4"
-              , L.append (T.new "Test Item") (L.empty "List 5")
-              , L.empty "List 6"
-              , L.empty "List 7"
-              , L.empty "List 8"
-              , L.empty "List 9"
-              ]
-    , _history = []
-    , _current = (ListIndex 4, TaskIndex 0)
+    , _history =
+          History
+          { _past = empty
+          , _present =
+                ( (ListIndex 4, TaskIndex 0)
+                , [ L.empty "List 1"
+                  , L.empty "List 2"
+                  , L.empty "List 3"
+                  , L.empty "List 4"
+                  , L.append (T.new "Test Item") (L.empty "List 5")
+                  , L.empty "List 6"
+                  , L.empty "List 7"
+                  , L.empty "List 8"
+                  , L.empty "List 9"
+                  ])
+          , _future = empty
+          }
     , _path = "test.md"
     , _io = Nothing
     , _height = 0

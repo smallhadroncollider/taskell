@@ -13,3 +13,6 @@ newtype TaskIndex = TaskIndex
     } deriving (Show, Eq, Ord)
 
 type Pointer = (ListIndex, TaskIndex)
+
+startPointer :: Pointer
+startPointer = (ListIndex 0, TaskIndex 0)
