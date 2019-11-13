@@ -57,7 +57,6 @@
     * [ ] Add keys to Help which aren't in bindings
     * [ ] More detailed error messages for missing/invalid mappings
 - Add tags/labels with `t`
-- Use proper error codes
 - Performance with large files
     > Becomes unusable with large files
     * [x] Initially use debouncing to avoid writing too often
@@ -71,7 +70,6 @@
     * [x] Markdown parsing
     * [ ] Text line breaks go a bit funny with multi-line descriptions
 - Check times work no matter what timezone
-- Redo functionality
 - Always show list title
     > Floating list titles - so you can always see what list you're in
 - Make token UX better
@@ -325,3 +323,5 @@
     * [x] DUE mode
 - Update screenshot
 - Date should update if taskell is left open
+- Use proper error codes
+- Redo functionality

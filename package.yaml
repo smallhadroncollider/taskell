@@ -1,5 +1,5 @@
 name: taskell
-version: '1.7.1.0'
+version: '1.7.2.0'
 category: Command Line Tools
 author: Mark Wales
 maintainer: mark@smallhadroncollider.com
@@ -40,6 +40,7 @@ library:
   - Data.Taskell.Task
   - Data.Taskell.Task.Internal
   - Events.Actions.Types
+  - Events.State.History
   - Events.State.Types
   - Events.State.Types.Mode
   - IO.Config.Markdown

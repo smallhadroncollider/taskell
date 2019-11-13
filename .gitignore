@@ -11,4 +11,5 @@ large.md
 releases/
 files/
 homebrew-taskell/
+.jekyll-cache/
 .cmt.bkp

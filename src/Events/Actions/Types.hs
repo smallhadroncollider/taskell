@@ -8,6 +8,7 @@ import ClassyPrelude hiding (Left, Nothing, Right)
 data ActionType
     = Quit
     | Undo
+    | Redo
     | Search
     | Due
     | Help

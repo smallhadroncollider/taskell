@@ -21,6 +21,7 @@ notFullResult :: Bindings
 notFullResult =
     [ (BChar 'œ', A.Quit)
     , (BChar 'U', A.Undo)
+    , (BChar 'r', A.Redo)
     , (BChar '/', A.Search)
     , (BChar '!', A.Due)
     , (BChar '?', A.Help)

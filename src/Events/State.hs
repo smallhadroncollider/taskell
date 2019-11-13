@@ -39,6 +39,7 @@ module Events.State
     , listLeft
     , listRight
     , undo
+    , redo
     , store
     , searchMode
     , clearSearch
@@ -61,7 +62,7 @@ module Events.State
 
 import ClassyPrelude hiding (delete)
 
-import Control.Lens ((&), (.~), (^.))
+import Control.Lens ((%~), (&), (.~), (?~), (^.))
 
 import Data.Char (digitToInt, ord)
 
@@ -71,9 +72,11 @@ import qualified Data.Taskell.Lists as Lists
 import           Data.Taskell.Task  (Task, isBlank, name)
 import           Types
 
-import Events.State.Types
-import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
-import UI.Draw.Field           (Field, blankField, getText, textToField)
+import qualified Events.State.History    as History (redo, store, undo)
+import           Events.State.Types
+import           Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..),
+                                          Mode (..))
+import           UI.Draw.Field           (Field, blankField, getText, textToField)
 
 type InternalStateful = State -> State
 
@@ -81,9 +84,7 @@ create :: UTCTime -> FilePath -> Lists.Lists -> State
 create t p ls =
     State
     { _mode = Normal
-    , _lists = ls
-    , _history = []
-    , _current = (ListIndex 0, TaskIndex 0)
+    , _history = fresh ls
     , _path = p
     , _io = Nothing
     , _height = 0
@@ -98,21 +99,20 @@ quit = pure . (mode .~ Shutdown)
 continue :: State -> State
 continue = io .~ Nothing
 
+store :: Stateful
+store state = pure $ state & history %~ History.store
+
+undo :: Stateful
+undo state = pure $ state & history %~ History.undo
+
+redo :: Stateful
+redo state = pure $ state & history %~ History.redo
+
 setTime :: UTCTime -> State -> State
 setTime t = time .~ t
 
 write :: Stateful
-write state = pure $ state & io .~ Just (state ^. lists)
-
-store :: Stateful
-store state = pure $ state & history .~ (state ^. current, state ^. lists) : state ^. history
-
-undo :: Stateful
-undo state =
-    pure $
-    case state ^. history of
-        []          -> state
-        ((c, l):xs) -> state & current .~ c & lists .~ l & history .~ xs
+write state = pure $ state & (io ?~ (state ^. lists))
 
 -- createList
 createList :: Stateful
