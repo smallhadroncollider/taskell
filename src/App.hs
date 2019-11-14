@@ -1,4 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TupleSections #-}
 
 module App
     ( go
@@ -90,7 +91,7 @@ clearAllTitles state = do
     let count = length (state ^. lists)
     let range = [0 .. (count - 1)]
     traverse_ (invalidateCacheEntry . RNList) range
-    traverse_ (invalidateCacheEntry . RNTask . flip (,) (TaskIndex (-1)) . ListIndex) range
+    traverse_ (invalidateCacheEntry . RNTask . (, TaskIndex (-1)) . ListIndex) range
 
 clearList :: State -> EventM ResourceName ()
 clearList state = do
