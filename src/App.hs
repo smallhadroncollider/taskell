@@ -126,9 +126,7 @@ handleVtyEvent (send, trigger) actions previousState e = do
         _ -> clearCache previousState *> clearCache state *> next send state
 
 getHeight :: EventM ResourceName Int
-getHeight = do
-    i <- outputIface <$> getVtyHandle
-    snd <$> liftIO (displayBounds i)
+getHeight = snd <$> (liftIO . displayBounds =<< outputIface <$> getVtyHandle)
 
 handleEvent ::
        (DebouncedWrite, Trigger)
