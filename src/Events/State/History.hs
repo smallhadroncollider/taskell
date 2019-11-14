@@ -11,7 +11,7 @@ import ClassyPrelude
 
 import Control.Lens (Lens', (&), (.~), (^.))
 
-import Events.State.Types (History, future, past, present)
+import Events.State.Types (History (History), future, past, present)
 
 λstack :: Lens' (History a) [a] -> History a -> [a]
 λstack fn history = history ^. present : (history ^. fn)
@@ -23,10 +23,10 @@ undo :: History a -> History a
 undo history =
     case history ^. past of
         []          -> history
-        (moment:xs) -> history & present .~ moment & past .~ xs & future .~ λstack future history
+        (moment:xs) -> History xs moment (λstack future history)
 
 redo :: History a -> History a
 redo history =
     case history ^. future of
         []          -> history
-        (moment:xs) -> history & present .~ moment & future .~ xs & past .~ λstack past history
+        (moment:xs) -> History (λstack past history) moment xs
