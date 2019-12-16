@@ -7,11 +7,11 @@ import ClassyPrelude
 
 import Control.Lens ((.~), (^.))
 
-import Data.Time.Zones (utcTZ)
-
 import Data.Sequence      (adjust')
 import Data.Text          as T (splitOn, strip)
 import Data.Text.Encoding (decodeUtf8With)
+
+import Data.Time.Zones (TZ)
 
 import           Data.Taskell.Date    (Due, textToTime, timeToOutput)
 import           Data.Taskell.List    (List, count, tasks, title, updateFn)
@@ -106,25 +106,25 @@ descriptionStringify config desc = concat $ add <$> splitOn "\n" desc
   where
     add d = concat [descriptionOutput config, " ", d, "\n"]
 
-dueStringify :: Config -> Due -> Text
-dueStringify config time = concat [dueOutput config, " ", timeToOutput utcTZ time, "\n"]
+dueStringify :: TZ -> Config -> Due -> Text
+dueStringify tz config time = concat [dueOutput config, " ", timeToOutput tz time, "\n"]
 
 nameStringify :: Config -> Text -> Text
 nameStringify config desc = concat [taskOutput config, " ", desc, "\n"]
 
-taskStringify :: Config -> Text -> T.Task -> Text
-taskStringify config s t =
+taskStringify :: TZ -> Config -> Text -> T.Task -> Text
+taskStringify tz config s t =
     foldl'
         (<>)
         s
         [ nameStringify config (t ^. T.name)
-        , maybe "" (dueStringify config) (t ^. T.due)
+        , maybe "" (dueStringify tz config) (t ^. T.due)
         , maybe "" (descriptionStringify config) (t ^. T.description)
         , foldl' (subtaskStringify config) "" (t ^. T.subtasks)
         ]
 
-listStringify :: Config -> Text -> List -> Text
-listStringify config text list =
+listStringify :: TZ -> Config -> Text -> List -> Text
+listStringify tz config text list =
     foldl'
         (<>)
         text
@@ -135,8 +135,8 @@ listStringify config text list =
         , " "
         , list ^. title
         , "\n\n"
-        , foldl' (taskStringify config) "" (list ^. tasks)
+        , foldl' (taskStringify tz config) "" (list ^. tasks)
         ]
 
-stringify :: C.Config -> Lists -> ByteString
-stringify config ls = encodeUtf8 $ foldl' (listStringify (C.markdown config)) "" ls
+stringify :: TZ -> C.Config -> Lists -> ByteString
+stringify tz config ls = encodeUtf8 $ foldl' (listStringify tz (C.markdown config)) "" ls

@@ -13,6 +13,9 @@ import Test.Tasty.HUnit
 
 import Control.Lens ((&), (.~))
 
+import Data.Time.Zones     (utcTZ)
+import Data.Time.Zones.All (TZLabel (America__New_York), tzByLabel)
+
 import           Data.Taskell.Date    (textToTime)
 import           Data.Taskell.Lists   (Lists, appendToLast, newList)
 import qualified Data.Taskell.Subtask as ST (new)
@@ -62,6 +65,12 @@ taskWithDueDate = task & due .~ textToTime "2018-04-12"
 
 listWithDueDateItem :: Lists
 listWithDueDateItem = appendToLast taskWithDueDate list
+
+taskWithDueTime :: Task
+taskWithDueTime = task & due .~ textToTime "2018-04-12 12:00 UTC"
+
+listWithDueTimeItem :: Lists
+listWithDueTimeItem = appendToLast taskWithDueTime list
 
 -- tests
 test_markdown :: TestTree
@@ -246,31 +255,46 @@ test_markdown =
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n"
-                               (foldl' (listStringify defaultConfig) "" listWithItem))
+                               (foldl' (listStringify utcTZ defaultConfig) "" listWithItem))
                     , testCase
                           "Standard list with summary"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    > Summary\n"
-                               (foldl' (listStringify defaultConfig) "" listWithSummaryItem))
+                               (foldl' (listStringify utcTZ defaultConfig) "" listWithSummaryItem))
                     , testCase
                           "Standard list with date"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    @ 2018-04-12\n"
-                               (foldl' (listStringify defaultConfig) "" listWithDueDateItem))
+                               (foldl' (listStringify utcTZ defaultConfig) "" listWithDueDateItem))
+                    , testCase
+                          "Standard list with date - timezone"
+                          (assertEqual
+                               "Markdown formatted output"
+                               "## Test\n\n- Test Item\n    @ 2018-04-12 08:00 EDT\n"
+                               (foldl'
+                                    (listStringify (tzByLabel America__New_York) defaultConfig)
+                                    ""
+                                    listWithDueTimeItem))
                     , testCase
                           "Standard list with sub-task"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    * [x] Blah\n"
-                               (foldl' (listStringify defaultConfig) "" (makeSubTask "Blah" True)))
+                               (foldl'
+                                    (listStringify utcTZ defaultConfig)
+                                    ""
+                                    (makeSubTask "Blah" True)))
                     , testCase
                           "Standard list with multi-line summary"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    > Summary Line 1\n    > Summary Line 2\n"
-                               (foldl' (listStringify defaultConfig) "" listWithMultiLineSummaryItem))
+                               (foldl'
+                                    (listStringify utcTZ defaultConfig)
+                                    ""
+                                    listWithMultiLineSummaryItem))
                     ]
               , testGroup
                     "Alternative Format"
@@ -279,13 +303,16 @@ test_markdown =
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n### Test Item\n"
-                               (foldl' (listStringify alternativeConfig) "" listWithItem))
+                               (foldl' (listStringify utcTZ alternativeConfig) "" listWithItem))
                     , testCase
                           "Standard list with sub-task"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    * [ ] Blah\n"
-                               (foldl' (listStringify defaultConfig) "" (makeSubTask "Blah" False)))
+                               (foldl'
+                                    (listStringify utcTZ defaultConfig)
+                                    ""
+                                    (makeSubTask "Blah" False)))
                     ]
               ]
         ]

@@ -11,14 +11,14 @@ import Data.Time.Zones (loadLocalTZ)
 import App          (go)
 import Events.State (create)
 import IO.Config    (setup)
-import IO.Taskell   (Next (..), load)
+import IO.Taskell   (IOInfo (IOInfo), Next (..), load)
 
 main :: IO ()
 main = do
     config <- setup
-    next <- runReaderT load config
-    time <- getCurrentTime
     timezone <- loadLocalTZ
+    next <- runReaderT load (IOInfo timezone config)
+    time <- getCurrentTime
     case next of
         Exit            -> pure ()
         Output text     -> putStrLn text
