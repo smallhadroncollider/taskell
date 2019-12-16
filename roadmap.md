@@ -123,7 +123,6 @@
 ## In Progress
 
 - Date validation
-- Add test for subtask linebreaks to MarkdownTest
 - Config option to always use UTC for markdown output
 - Relative dates days and weeks shouldn't include time?
 - Show remaining time on near dates
@@ -354,3 +353,4 @@
     * [x] Need to use parser
     * [x] Trello time parsing
 - Use ReaderConfig in IO.Markdown.Internal stringify functions
+- Add test for subtask linebreaks to MarkdownTest
