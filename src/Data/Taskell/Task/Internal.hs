@@ -6,10 +6,10 @@ module Data.Taskell.Task.Internal where
 
 import ClassyPrelude
 
-import Control.Lens (ix, makeLenses, (%~), (&), (.~), (^.), (^?))
+import Control.Lens (ix, makeLenses, (%~), (&), (.~), (?~), (^.), (^?))
 
 import           Data.Sequence        as S (adjust', deleteAt, (|>))
-import           Data.Taskell.Date    (Day, textToDay)
+import           Data.Taskell.Date    (textToTime)
 import qualified Data.Taskell.Subtask as ST (Subtask, Update, complete, duplicate, name)
 import           Data.Text            (strip)
 
@@ -17,7 +17,7 @@ data Task = Task
     { _name        :: Text
     , _description :: Maybe Text
     , _subtasks    :: Seq ST.Subtask
-    , _due         :: Maybe Day
+    , _due         :: Maybe UTCTime
     } deriving (Show, Eq)
 
 type Update = Task -> Task
@@ -53,8 +53,8 @@ setDue :: Text -> Update
 setDue date task =
     if null date
         then task & due .~ Nothing
-        else case textToDay date of
-                 Just day -> task & due .~ Just day
+        else case textToTime date of
+                 Just day -> task & due ?~ day
                  Nothing  -> task
 
 clearDue :: Update

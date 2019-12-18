@@ -9,14 +9,10 @@ import ClassyPrelude
 
 import Data.Attoparsec.Text
 
-import Utility.Parser (lexeme)
+import Data.Time.Clock (addUTCTime)
 
-import Data.Time.Calendar (fromGregorianValid)
-import Data.Time.Clock    (addUTCTime, secondsToDiffTime)
-
--- date utility functions
-toTime :: Integer -> (Integer, Int, Int) -> Maybe UTCTime
-toTime seconds (y, m, d) = flip UTCTime (secondsToDiffTime seconds) <$> fromGregorianValid y m d
+import Data.Taskell.Date (toTime)
+import Utility.Parser    (lexeme)
 
 -- relative date parsing
 minute :: Int

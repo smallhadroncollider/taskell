@@ -4,21 +4,23 @@
 module Data.Taskell.Date
     ( Day
     , Deadline(..)
-    , DeadlineFn
-    , dayToText
-    , dayToOutput
-    , textToDay
-    , utcToLocalDay
+    , toTime
+    , timeToText
+    , timeToOutput
+    , textToTime
     , deadline
     ) where
 
 import ClassyPrelude
 
-import Data.Time           (Day)
-import Data.Time.Calendar  (diffDays, toGregorian)
-import Data.Time.Clock     (secondsToDiffTime)
-import Data.Time.Format    (formatTime, parseTimeM)
-import Data.Time.LocalTime (TimeZone, localDay, utcToZonedTime, zonedTimeToLocalTime)
+import Control.Lens       ((^.))
+import Control.Lens.Tuple (_1)
+
+import Data.Time.Zones (TZ, utcToLocalTimeTZ)
+
+import Data.Time.Calendar (diffDays, fromGregorianValid, toGregorian)
+import Data.Time.Clock    (secondsToDiffTime)
+import Data.Time.Format   (formatTime, parseTimeM)
 
 data Deadline
     = Passed
@@ -28,37 +30,34 @@ data Deadline
     | Plenty
     deriving (Show, Eq)
 
-type DeadlineFn = Day -> Deadline
+toTime :: Integer -> (Integer, Int, Int) -> Maybe UTCTime
+toTime seconds (y, m, d) = flip UTCTime (secondsToDiffTime seconds) <$> fromGregorianValid y m d
 
-dayToText :: Day -> Day -> Text
-dayToText today day = pack $ formatTime defaultTimeLocale format (UTCTime day (secondsToDiffTime 0))
+getYear :: UTCTime -> Integer
+getYear = (^. _1) . toGregorian . utctDay
+
+timeToText :: TZ -> UTCTime -> UTCTime -> Text
+timeToText tz now date = pack $ formatTime defaultTimeLocale format time
   where
-    (currentYear, _, _) = toGregorian today
-    (dateYear, _, _) = toGregorian day
+    time = utcToLocalTimeTZ tz date
     format =
-        if currentYear == dateYear
+        if getYear now == getYear date
             then "%d-%b"
             else "%d-%b %Y"
 
-dayToOutput :: Day -> Text
-dayToOutput day = pack $ formatTime defaultTimeLocale "%Y-%m-%d" (UTCTime day (secondsToDiffTime 0))
-
-utcToLocalDay :: TimeZone -> UTCTime -> Day
-utcToLocalDay tz = localDay . zonedTimeToLocalTime . utcToZonedTime tz
+timeToOutput :: TZ -> UTCTime -> Text
+timeToOutput tz time = pack $ formatTime defaultTimeLocale "%Y-%m-%d" (utcToLocalTimeTZ tz time)
 
 textToTime :: Text -> Maybe UTCTime
 textToTime = parseTimeM False defaultTimeLocale "%Y-%m-%d" . unpack
 
-textToDay :: Text -> Maybe Day
-textToDay = (utctDay <$>) . textToTime
-
 -- work out the deadline
-deadline :: Day -> Day -> Deadline
-deadline today date
+deadline :: UTCTime -> UTCTime -> Deadline
+deadline now date
     | days < 0 = Passed
     | days == 0 = Today
     | days == 1 = Tomorrow
     | days < 7 = ThisWeek
     | otherwise = Plenty
   where
-    days = diffDays date today
+    days = diffDays (utctDay date) (utctDay now)

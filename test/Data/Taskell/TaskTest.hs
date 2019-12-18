@@ -12,8 +12,7 @@ import Control.Lens ((.~))
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Data.Time (fromGregorianValid)
-
+import           Data.Taskell.Date          (toTime)
 import qualified Data.Taskell.Subtask       as ST (name, new)
 import           Data.Taskell.Task.Internal
 
@@ -196,6 +195,6 @@ test_task =
                     (assertEqual
                          "Returns False"
                          False
-                         (isBlank (Task "" Nothing empty (fromGregorianValid 2018 05 18))))
+                         (isBlank (Task "" Nothing empty (toTime 0 (2018, 05, 18)))))
               ]
         ]

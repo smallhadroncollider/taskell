@@ -74,6 +74,7 @@ library:
   - template-haskell
   - text
   - time
+  - tz
   - vty
 
 executables:
@@ -87,6 +88,7 @@ executables:
     dependencies:
     - base
     - taskell
+    - tz
 
 tests:
   taskell-test:
@@ -110,4 +112,5 @@ tests:
     - tasty-hunit
     - text
     - time
+    - tz
     - vty

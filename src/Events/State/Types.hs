@@ -8,6 +8,8 @@ import ClassyPrelude
 import Control.Lens             (Lens', makeLenses)
 import Control.Lens.Combinators (_1, _2)
 
+import Data.Time.Zones (TZ)
+
 import Data.Taskell.Lists (Lists)
 import Types              (Pointer, startPointer)
 import UI.Draw.Field      (Field)
@@ -33,6 +35,7 @@ data State = State
     , _height     :: Int
     , _searchTerm :: Maybe Field
     , _time       :: UTCTime
+    , _timeZone   :: TZ
     } deriving (Eq, Show)
 
 -- create lenses

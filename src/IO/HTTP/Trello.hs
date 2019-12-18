@@ -19,8 +19,7 @@ import IO.HTTP.Trello.Card          (Card, idChecklists, setChecklists)
 import IO.HTTP.Trello.ChecklistItem (ChecklistItem, checkItems)
 import IO.HTTP.Trello.List          (List, cards, listToList, setCards)
 
-import Data.Taskell.Lists  (Lists)
-import Data.Time.LocalTime (TimeZone, getCurrentTimeZone)
+import Data.Taskell.Lists (Lists)
 
 type ReaderTrelloToken a = ReaderT TrelloToken IO a
 
@@ -57,8 +56,8 @@ checklistURL :: TrelloChecklistID -> ReaderTrelloToken String
 checklistURL checklist =
     fullURL $ concat ["checklists/", checklist, "?fields=id", "&checkItem_fields=name,state"]
 
-trelloListsToLists :: TimeZone -> [List] -> Lists
-trelloListsToLists tz ls = fromList $ listToList tz <$> ls
+trelloListsToLists :: [List] -> Lists
+trelloListsToLists ls = fromList $ listToList <$> ls
 
 fetch :: String -> IO (Int, ByteString)
 fetch url = do
@@ -95,11 +94,10 @@ getLists board = do
     putStrLn "Fetching from Trello..."
     url <- boardURL board
     (status, body) <- lift $ fetch url
-    timezone <- lift getCurrentTimeZone
     case status of
         200 ->
             case eitherDecodeStrict body of
-                Right raw -> fmap (trelloListsToLists timezone) <$> getChecklists raw
+                Right raw -> fmap trelloListsToLists <$> getChecklists raw
                 Left err  -> pure . Left $ parseError err
         404 ->
             pure . Left $ "Could not find Trello board " <> board <> ". Make sure the ID is correct"
