@@ -30,6 +30,7 @@ library:
 
   # tests
   - Data.Taskell.Date
+  - Data.Taskell.Date.RelativeParser
   - Data.Taskell.List
   - Data.Taskell.List.Internal
   - Data.Taskell.Lists
