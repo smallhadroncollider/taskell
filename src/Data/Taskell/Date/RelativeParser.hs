@@ -9,10 +9,12 @@ import ClassyPrelude
 
 import Data.Attoparsec.Text
 
-import Data.Time.Clock (addUTCTime)
+import Data.Time.Calendar  (fromGregorianValid)
+import Data.Time.Clock     (addUTCTime)
+import Data.Time.LocalTime (LocalTime (LocalTime), midnight)
+import Data.Time.Zones     (TZ, localTimeToUTCTZ)
 
-import Data.Taskell.Date (toTime)
-import Utility.Parser    (lexeme)
+import Utility.Parser (lexeme)
 
 -- relative date parsing
 minute :: Int
@@ -51,14 +53,18 @@ relativeP now = do
     pure $ Just (addUTCTime period now)
 
 -- date parsing
-formattedP :: Parser (Maybe UTCTime)
-formattedP = toTime 0 <$> ((,,) <$> decimal <* char '-' <*> decimal <* char '-' <*> decimal)
+formattedP :: TZ -> Parser (Maybe UTCTime)
+formattedP tz = do
+    year <- decimal <* char '-'
+    month <- decimal <* char '-'
+    date <- decimal
+    pure $ localTimeToUTCTZ tz . flip LocalTime midnight <$> fromGregorianValid year month date
 
-dateP :: UTCTime -> Parser (Maybe UTCTime)
-dateP now = lexeme (formattedP <|> relativeP now)
+dateP :: TZ -> UTCTime -> Parser (Maybe UTCTime)
+dateP tz now = lexeme (formattedP tz <|> relativeP now)
 
-parseDate :: UTCTime -> Text -> Either Text UTCTime
-parseDate now text =
-    case parseOnly (dateP now) text of
+parseDate :: TZ -> UTCTime -> Text -> Either Text UTCTime
+parseDate tz now text =
+    case parseOnly (dateP tz now) text of
         Right (Just time) -> Right time
         _                 -> Left "Could not parse date."

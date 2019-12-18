@@ -12,6 +12,7 @@ import Test.Tasty.HUnit
 
 import Data.Time.Calendar (fromGregorian)
 import Data.Time.Clock    (secondsToDiffTime)
+import Data.Time.Zones    (utcTZ)
 
 import Data.Taskell.Date.RelativeParser (parseDate)
 
@@ -32,53 +33,65 @@ test_relative_parser =
               (assertEqual
                    "Date from yyyy-mm-dd format"
                    (Right (toTime (2019, 12, 18) 0))
-                   (parseDate time "2019-12-18"))
+                   (parseDate utcTZ time "2019-12-18"))
         , testCase
               "Second"
               (assertEqual
                    "Adds a second"
                    (Right (toTime (2019, 12, 18) 31984))
-                   (parseDate time "1s"))
+                   (parseDate utcTZ time "1s"))
         , testCase
               "Minute"
               (assertEqual
                    "Adds a minute"
                    (Right (toTime (2019, 12, 18) 32043))
-                   (parseDate time "1m"))
+                   (parseDate utcTZ time "1m"))
         , testCase
               "Hour"
               (assertEqual
                    "Adds an hour"
                    (Right (toTime (2019, 12, 18) 35583))
-                   (parseDate time "1h"))
+                   (parseDate utcTZ time "1h"))
         , testCase
               "Day"
-              (assertEqual "Adds a day" (Right (toTime (2019, 12, 19) 31983)) (parseDate time "1d"))
+              (assertEqual
+                   "Adds a day"
+                   (Right (toTime (2019, 12, 19) 31983))
+                   (parseDate utcTZ time "1d"))
         , testCase
               "Days"
               (assertEqual
                    "Adds 29 days"
                    (Right (toTime (2020, 1, 16) 31983))
-                   (parseDate time "29 d"))
+                   (parseDate utcTZ time "29 d"))
         , testCase
               "Week"
-              (assertEqual "Adds a week" (Right (toTime (2019, 12, 25) 31983)) (parseDate time "1w"))
+              (assertEqual
+                   "Adds a week"
+                   (Right (toTime (2019, 12, 25) 31983))
+                   (parseDate utcTZ time "1w"))
         , testCase
               "Mix"
               (assertEqual
                    "Adds 1 week 2 days and 29 seconds"
                    (Right (toTime (2019, 12, 27) 32012))
-                   (parseDate time " 1 w 2d 29 s "))
+                   (parseDate utcTZ time " 1 w 2d 29 s "))
         , testCase
               "Mix out of order"
               (assertEqual
                    "Adds 1 week 2 days and 29 seconds"
                    (Right (toTime (2019, 12, 27) 32012))
-                   (parseDate time " 2d 1 w 29 s"))
+                   (parseDate utcTZ time " 2d 1 w 29 s"))
         , testCase
               "invalid format"
-              (assertEqual "Error" (Left "Could not parse date.") (parseDate time "18/12/2019"))
+              (assertEqual
+                   "Error"
+                   (Left "Could not parse date.")
+                   (parseDate utcTZ time "18/12/2019"))
         , testCase
               "invalid numbers"
-              (assertEqual "Error" (Left "Could not parse date.") (parseDate time "2019-39-59"))
+              (assertEqual
+                   "Error"
+                   (Left "Could not parse date.")
+                   (parseDate utcTZ time "2019-39-59"))
         ]
