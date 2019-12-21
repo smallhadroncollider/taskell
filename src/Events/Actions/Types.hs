@@ -47,6 +47,7 @@ allActions = [toEnum 0 ..]
 read :: Text -> ActionType
 read "quit"       = Quit
 read "undo"       = Undo
+read "redo"       = Redo
 read "search"     = Search
 read "due"        = Due
 read "help"       = Help

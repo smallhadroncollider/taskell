@@ -34,7 +34,8 @@ descriptions =
     , ([A.ClearDate], "Removes due date")
     , ([A.MoveUp, A.MoveDown], "Shift task down / up")
     , ([A.MoveLeft, A.MoveRight], "Shift task left / right")
-    , ([A.Complete], "Move task to last list and remove any due dates")
+    , ( [A.Complete]
+      , "Move task to last list and remove any due dates / Mark subtask as (in)complete")
     , ([A.MoveMenu], "Move task to specific list")
     , ([A.Delete], "Delete task")
     , ([A.Undo], "Undo")
