@@ -83,6 +83,6 @@ brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archi
 layout: default
 title: {{ site.name }}
 ---
-" > index.md && cat ../../README.md >> index.md && jekyll build)
+" > index.md && cat ../../README.md >> index.md && bundle exec jekyll build)
 (cd docs/html/_site && git add . && git commit -m "Latest Build" && git push)
-(cd docs/html && cap production deploy)
+(cd docs/html && bundle exec cap production deploy)
