@@ -5,6 +5,8 @@
     * [ ] Use case example: checklist
     * [ ] Use case example: Git controlled tasks
     * [ ] Blog posts for updates
+- Add to Flatpack
+    > https://opensource.com/article/19/10/how-build-flatpak-packaging
 
 ## Refactoring
 
@@ -18,6 +20,9 @@
 
 ## Bugs
 
+- Empty subtasks create "---" task
+    > Feel like I added this for some reason, can't think why...
+- Pressing Esc while editing a task should go back to previous version?
 - Selected item can still get a bit lost in SEARCH mode when going between lists
     > Sometimes defaults to 0, when there is something to be found
 - Very long words should get hyphenated
@@ -35,10 +40,18 @@
 
 ## Features
 
+- Configuration options
+    > See #54
+    * [ ] Padding
+    * [ ] Move to top of list - different key binding?
+    * [ ] Show toggle bar
 - Edit task text in DETAIL mode
     > Need to be able to select different parts of the DETAIL modal. Probably need to rethink Mode constructors.
 - Pressing Undo in DUE mode should undo without leaving view
-    > Fallthrough to NORMAL events more generally?
+    > Fallthrough to NORMAL events more generally? Might require rethinking modes to separate behaviour and things being tracked?
+- Date validation
+- Use relative times for due dates
+    > e.g. 1w, 2d, 1w 2d (see `man sleep` options for ideas)
 - Add a List widget for common actions between tasks and sub-tasks
     > Or use a typeclass... somehow?
     * [ ] Moving around
@@ -57,6 +70,8 @@
     * [ ] Add keys to Help which aren't in bindings
     * [ ] More detailed error messages for missing/invalid mappings
 - Add tags/labels with `t`
+    * [ ] Way to filter by tag
+    * [ ] Hide/show tags with key press
 - Performance with large files
     > Becomes unusable with large files
     * [x] Initially use debouncing to avoid writing too often
@@ -90,6 +105,8 @@
 
 ## In Progress
 
+- Add Cabal test to build process
+    > Use `stack sdist .` to generate cabal file
 - Some way to just see tasks with due dates
     * [x] Sort by date
     * [x] Scrollable
@@ -108,6 +125,7 @@
     * [ ] Description
     * [ ] Generate bindings.ini from it
 - Somehow merge `event` and `events` in Actions that use bindings
+    > Can one event trigger multiple separate state changes?
 
 ## Done
 
@@ -325,3 +343,4 @@
 - Date should update if taskell is left open
 - Use proper error codes
 - Redo functionality
+- Modifier keys?
