@@ -24,82 +24,94 @@ test_date =
     testGroup
         "Data.Taskell.Date"
         [ testGroup
-              "timeToDisplay"
-              [ testCase
-                    "timeToDisplay time"
-                    (assertEqual
-                         "Date in yyyy-mm-dd format"
-                         "2018-05-18 00:00"
-                         (timeToDisplay utcTZ (DueTime testDate)))
-              , testCase
-                    "timeToDisplay time - non-utc"
-                    (assertEqual
-                         "Date in yyyy-mm-dd format"
-                         "2018-05-17 20:00"
-                         (timeToDisplay (tzByLabel America__New_York) (DueTime testDate)))
-              , testCase
-                    "timeToDisplay date"
-                    (assertEqual
-                         "Date in yyyy-mm-dd format"
-                         "2018-05-18"
-                         (timeToDisplay utcTZ (DueDate (fromGregorian 2018 05 18))))
+              "Date Output"
+              [ testGroup
+                    "timeToDisplay"
+                    [ testCase
+                          "timeToDisplay time"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-18 00:00"
+                               (timeToDisplay utcTZ (DueTime testDate)))
+                    , testCase
+                          "timeToDisplay time - non-utc"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-17 20:00"
+                               (timeToDisplay (tzByLabel America__New_York) (DueTime testDate)))
+                    , testCase
+                          "timeToDisplay date"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-18"
+                               (timeToDisplay utcTZ (DueDate (fromGregorian 2018 05 18))))
+                    ]
+              , testGroup
+                    "timeToOutput"
+                    [ testCase
+                          "timeToOutput time"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-18 00:00 UTC"
+                               (timeToOutput utcTZ (DueTime testDate)))
+                    , testCase
+                          "timeToOutput time - non-utc"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-17 20:00 EDT"
+                               (timeToOutput (tzByLabel America__New_York) (DueTime testDate)))
+                    , testCase
+                          "timeToOutput date"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-18"
+                               (timeToOutput utcTZ (DueDate (fromGregorian 2018 05 18))))
+                    , testCase
+                          "timeToOutput date - non-utc"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-18"
+                               (timeToOutput
+                                    (tzByLabel America__New_York)
+                                    (DueDate (fromGregorian 2018 05 18))))
+                    ]
+              , testGroup
+                    "timeToText"
+                    [ testCase
+                          "same year"
+                          (assertEqual
+                               "Date in 18-May format"
+                               "18-May"
+                               (timeToText utcTZ testDate (DueTime testDate)))
+                    , testCase
+                          "different year"
+                          (assertEqual
+                               "Date in 18-May 2019 format"
+                               "18-May 2019"
+                               (timeToText utcTZ testDate (DueDate (fromGregorian 2019 5 18))))
+                    , testCase
+                          "different year"
+                          (assertEqual
+                               "Date in 18-May 2017 format"
+                               "18-May 2017"
+                               (timeToText utcTZ testDate (DueDate (fromGregorian 2017 5 18))))
+                    ]
               ]
         , testGroup
-              "timeToOutput"
+              "Input"
               [ testCase
-                    "timeToOutput time"
+                    "textToTime"
                     (assertEqual
-                         "Date in yyyy-mm-dd format"
-                         "2018-05-18 00:00 UTC"
-                         (timeToOutput utcTZ (DueTime testDate)))
+                         "A valid Day"
+                         (DueDate <$> (fromGregorianValid 2018 05 18))
+                         (textToTime "2018-05-18"))
               , testCase
-                    "timeToOutput time - non-utc"
+                    "isoToTime"
                     (assertEqual
-                         "Date in yyyy-mm-dd format"
-                         "2018-05-17 20:00 EDT"
-                         (timeToOutput (tzByLabel America__New_York) (DueTime testDate)))
-              , testCase
-                    "timeToOutput date"
-                    (assertEqual
-                         "Date in yyyy-mm-dd format"
-                         "2018-05-18"
-                         (timeToOutput utcTZ (DueDate (fromGregorian 2018 05 18))))
-              , testCase
-                    "timeToOutput date - non-utc"
-                    (assertEqual
-                         "Date in yyyy-mm-dd format"
-                         "2018-05-18"
-                         (timeToOutput
-                              (tzByLabel America__New_York)
-                              (DueDate (fromGregorian 2018 05 18))))
+                         "Gives back time"
+                         (Just (DueTime (UTCTime (fromGregorian 2020 8 11) 82800)))
+                         (isoToTime "2020-08-11T23:00:00.000Z"))
               ]
-        , testGroup
-              "dayToText"
-              [ testCase
-                    "same year"
-                    (assertEqual
-                         "Date in 18-May format"
-                         "18-May"
-                         (timeToText utcTZ testDate (DueTime testDate)))
-              , testCase
-                    "different year"
-                    (assertEqual
-                         "Date in 18-May 2019 format"
-                         ("18-May 2019")
-                         (timeToText utcTZ testDate (DueDate (fromGregorian 2019 5 18))))
-              , testCase
-                    "different year"
-                    (assertEqual
-                         "Date in 18-May 2017 format"
-                         "18-May 2017"
-                         (timeToText utcTZ testDate (DueDate (fromGregorian 2017 5 18))))
-              ]
-        , testCase
-              "textToDay"
-              (assertEqual
-                   "A valid Day"
-                   (DueDate <$> (fromGregorianValid 2018 05 18))
-                   (textToTime "2018-05-18"))
         , testGroup
               "deadline"
               [ testCase
@@ -128,10 +140,4 @@ test_date =
                          Passed
                          (deadline testDate (DueDate (fromGregorian 2018 05 17))))
               ]
-        , testCase
-              "isoToTime"
-              (assertEqual
-                   "Gives back time"
-                   (Just (DueTime (UTCTime (fromGregorian 2020 8 11) 82800)))
-                   (isoToTime "2020-08-11T23:00:00.000Z"))
         ]
