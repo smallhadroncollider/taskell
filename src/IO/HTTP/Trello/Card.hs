@@ -16,7 +16,7 @@ import Control.Lens (makeLenses, (&), (.~), (^.))
 import IO.HTTP.Aeson                (deriveFromJSON)
 import IO.HTTP.Trello.ChecklistItem (ChecklistItem, checklistItemToSubTask)
 
-import           Data.Taskell.Date (textToTime)
+import           Data.Taskell.Date (isoToTime)
 import qualified Data.Taskell.Task as T (Task, due, new, setDescription, subtasks)
 
 data Card = Card
@@ -36,7 +36,7 @@ $(makeLenses ''Card)
 -- operations
 cardToTask :: Card -> T.Task
 cardToTask card =
-    task & T.due .~ textToTime (fromMaybe "" (card ^. due)) & T.subtasks .~
+    task & T.due .~ isoToTime (fromMaybe "" (card ^. due)) & T.subtasks .~
     fromList (checklistItemToSubTask <$> fromMaybe [] (card ^. checklists))
   where
     task = T.setDescription (card ^. desc) $ T.new (card ^. name)

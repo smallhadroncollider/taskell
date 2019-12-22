@@ -9,6 +9,7 @@ module Data.Taskell.Date
     , timeToDisplay
     , timeToOutput
     , textToTime
+    , isoToTime
     , deadline
     ) where
 
@@ -21,7 +22,7 @@ import Data.Time.LocalTime (ZonedTime (ZonedTime))
 import Data.Time.Zones     (TZ, timeZoneForUTCTime, utcToLocalTimeTZ)
 
 import Data.Time.Calendar (diffDays, toGregorian)
-import Data.Time.Format   (formatTime, parseTimeM)
+import Data.Time.Format   (formatTime, iso8601DateFormat, parseTimeM)
 
 data Due
     = DueTime UTCTime
@@ -80,6 +81,11 @@ textToTime txt =
     if length txt == 10 -- not a great check, needs to use parser
         then DueDate <$> parseTimeM False defaultTimeLocale dateFormat (unpack txt)
         else DueTime <$> parseTimeM False defaultTimeLocale timeFormat (unpack txt)
+
+isoToTime :: Text -> Maybe Due
+isoToTime txt = DueTime <$> parseTimeM False defaultTimeLocale format (unpack txt)
+  where
+    format = iso8601DateFormat (Just "%H:%M:%S%Q%Z")
 
 -- work out the deadline
 deadline :: UTCTime -> Due -> Deadline

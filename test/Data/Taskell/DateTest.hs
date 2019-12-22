@@ -128,4 +128,10 @@ test_date =
                          Passed
                          (deadline testDate (DueDate (fromGregorian 2018 05 17))))
               ]
+        , testCase
+              "isoToTime"
+              (assertEqual
+                   "Gives back time"
+                   (Just (DueTime (UTCTime (fromGregorian 2020 8 11) 82800)))
+                   (isoToTime "2020-08-11T23:00:00.000Z"))
         ]

@@ -126,7 +126,7 @@
     > e.g. 1w, 2d, 1w 2d (see `man sleep` options for ideas)
     * [ ] Markdown needs to use actual timezone
     * [ ] Need to use parser
-    * [ ] Trello time parsing
+    * [x] Trello time parsing
 - Date validation
 - Check times work no matter what timezone
 
