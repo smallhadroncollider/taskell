@@ -11,9 +11,12 @@ import Test.Tasty
 import Test.Tasty.ExpectedFailure (ignoreTest)
 import Test.Tasty.HUnit
 
+import Control.Lens ((&), (.~))
+
+import           Data.Taskell.Date    (textToTime)
 import           Data.Taskell.Lists   (Lists, appendToLast, newList)
 import qualified Data.Taskell.Subtask as ST (new)
-import           Data.Taskell.Task    (Task, addSubtask, new, setDescription, setDue)
+import           Data.Taskell.Task    (Task, addSubtask, due, new, setDescription)
 import qualified IO.Config            as C (defaultConfig)
 import           IO.Config.Markdown   (Config (..), defaultConfig)
 import           IO.Markdown.Internal (listStringify, parse, start)
@@ -55,7 +58,7 @@ listWithMultiLineSummaryItem :: Lists
 listWithMultiLineSummaryItem = appendToLast taskWithMultiLineSummary list
 
 taskWithDueDate :: Task
-taskWithDueDate = setDue "2018-04-12" task
+taskWithDueDate = task & due .~ textToTime "2018-04-12"
 
 listWithDueDateItem :: Lists
 listWithDueDateItem = appendToLast taskWithDueDate list

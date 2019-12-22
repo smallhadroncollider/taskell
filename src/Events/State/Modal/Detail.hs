@@ -34,7 +34,7 @@ import           Data.Taskell.Task       (Task, addSubtask, countSubtasks, descr
                                           getSubtask, removeSubtask, setDescription, setDue,
                                           subtasks, updateSubtask)
 import           Events.State            (getCurrentTask, setCurrentTask)
-import           Events.State.Types      (State, Stateful, mode, timeZone)
+import           Events.State.Types      (State, Stateful, mode, time, timeZone)
 import           Events.State.Types.Mode (DetailItem (..), DetailMode (..), ModalType (Detail),
                                           Mode (Modal))
 import           UI.Draw.Field           (Field, blankField, getText, textToField)
@@ -64,7 +64,10 @@ finishDescription :: Stateful
 finishDescription = finish setDescription
 
 finishDue :: Stateful
-finishDue = finish setDue
+finishDue state = finish (setDue tz now) state
+  where
+    tz = state ^. timeZone
+    now = state ^. time
 
 showDetail :: Stateful
 showDetail s = do

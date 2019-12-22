@@ -5,7 +5,7 @@ module IO.Markdown.Internal where
 
 import ClassyPrelude
 
-import Control.Lens ((^.))
+import Control.Lens ((.~), (^.))
 
 import Data.Time.Zones (utcTZ)
 
@@ -13,12 +13,12 @@ import Data.Sequence      (adjust')
 import Data.Text          as T (splitOn, strip)
 import Data.Text.Encoding (decodeUtf8With)
 
-import           Data.Taskell.Date    (Due, timeToOutput)
+import           Data.Taskell.Date    (Due, textToTime, timeToOutput)
 import           Data.Taskell.List    (List, count, tasks, title, updateFn)
 import           Data.Taskell.Lists   (Lists, appendToLast, newList)
 import qualified Data.Taskell.Subtask as ST (Subtask, complete, name, new)
 import qualified Data.Taskell.Task    as T (Task, addSubtask, appendDescription, description, due,
-                                            name, new, setDue, subtasks)
+                                            name, new, subtasks)
 
 import qualified IO.Config          as C (Config, markdown)
 import           IO.Config.Markdown (Config, descriptionOutput, dueOutput, subtaskOutput,
@@ -49,7 +49,7 @@ addDue :: Text -> Lists -> Lists
 addDue t ls = adjust' updateList i ls
   where
     i = length ls - 1
-    updateList l = updateFn j (T.setDue t) l
+    updateList l = updateFn j (T.due .~ textToTime t) l
       where
         j = count l - 1
 
