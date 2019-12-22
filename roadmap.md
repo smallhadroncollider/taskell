@@ -5,6 +5,8 @@
     * [ ] Use case example: checklist
     * [ ] Use case example: Git controlled tasks
     * [ ] Blog posts for updates
+- Add to Flatpack
+    > https://opensource.com/article/19/10/how-build-flatpak-packaging
 
 ## Refactoring
 
@@ -18,6 +20,9 @@
 
 ## Bugs
 
+- Empty subtasks create "---" task
+    > Feel like I added this for some reason, can't think why...
+- Pressing Esc while editing a task should go back to previous version?
 - Selected item can still get a bit lost in SEARCH mode when going between lists
     > Sometimes defaults to 0, when there is something to be found
 - Very long words should get hyphenated
@@ -35,10 +40,36 @@
 
 ## Features
 
+- Add Cabal test to build process
+    > Use `stack sdist .` to generate cabal file
+- Define key binding info in one place
+    > Currently all over the place
+    * [ ] Bindings
+    * [ ] Default key
+    * [ ] Description
+    * [ ] Generate bindings.ini from it
+- Somehow merge `event` and `events` in Actions that use bindings
+    > Can one event trigger multiple separate state changes?
+- Some way to just see tasks with due dates
+    * [x] Sort by date
+    * [x] Scrollable
+    * [x] Pressing Enter on one takes you to it
+    * [x] Use renderTask from Draw
+    * [ ] Filter by: overdue, this week, later
+    * [ ] Number of due items in status bar?
+    * [x] Descriptions need to wrap
+    * [ ] Search should filter
+    * [ ] Show list each task belongs to?
+    * [x] Backspace (customisable) removes date
+- Configuration options
+    > See #54
+    * [ ] Padding
+    * [ ] Move to top of list - different key binding?
+    * [ ] Show toggle bar
 - Edit task text in DETAIL mode
     > Need to be able to select different parts of the DETAIL modal. Probably need to rethink Mode constructors.
 - Pressing Undo in DUE mode should undo without leaving view
-    > Fallthrough to NORMAL events more generally?
+    > Fallthrough to NORMAL events more generally? Might require rethinking modes to separate behaviour and things being tracked?
 - Add a List widget for common actions between tasks and sub-tasks
     > Or use a typeclass... somehow?
     * [ ] Moving around
@@ -57,6 +88,8 @@
     * [ ] Add keys to Help which aren't in bindings
     * [ ] More detailed error messages for missing/invalid mappings
 - Add tags/labels with `t`
+    * [ ] Way to filter by tag
+    * [ ] Hide/show tags with key press
 - Performance with large files
     > Becomes unusable with large files
     * [x] Initially use debouncing to avoid writing too often
@@ -69,7 +102,6 @@
     * [ ] Regular input (Shift + Enter for new line?)
     * [x] Markdown parsing
     * [ ] Text line breaks go a bit funny with multi-line descriptions
-- Check times work no matter what timezone
 - Always show list title
     > Floating list titles - so you can always see what list you're in
 - Make token UX better
@@ -90,24 +122,13 @@
 
 ## In Progress
 
-- Some way to just see tasks with due dates
-    * [x] Sort by date
-    * [x] Scrollable
-    * [x] Pressing Enter on one takes you to it
-    * [x] Use renderTask from Draw
-    * [ ] Filter by: overdue, this week, later
-    * [ ] Number of due items in status bar?
-    * [x] Descriptions need to wrap
-    * [ ] Search should filter
-    * [ ] Show list each task belongs to?
-    * [x] Backspace (customisable) removes date
-- Define key binding info in one place
-    > Currently all over the place
-    * [ ] Bindings
-    * [ ] Default key
-    * [ ] Description
-    * [ ] Generate bindings.ini from it
-- Somehow merge `event` and `events` in Actions that use bindings
+- Use relative times for due dates
+    > e.g. 1w, 2d, 1w 2d (see `man sleep` options for ideas)
+    * [ ] Markdown needs to use actual timezone
+    * [ ] Need to use parser
+    * [ ] Trello time parsing
+- Date validation
+- Check times work no matter what timezone
 
 ## Done
 
@@ -325,3 +346,4 @@
 - Date should update if taskell is left open
 - Use proper error codes
 - Redo functionality
+- Modifier keys?
