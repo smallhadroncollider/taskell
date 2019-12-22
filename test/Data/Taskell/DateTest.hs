@@ -99,12 +99,69 @@ test_date =
               ]
         , testGroup
               "Input"
-              [ testCase
+              [ testGroup
                     "textToTime"
-                    (assertEqual
-                         "A valid Day"
-                         (DueDate <$> (fromGregorianValid 2018 05 18))
-                         (textToTime "2018-05-18"))
+                    [ testCase
+                          "simple date"
+                          (assertEqual
+                               "A valid Day"
+                               (DueDate <$> fromGregorianValid 2018 05 18)
+                               (textToTime "2018-05-18"))
+                    , testCase
+                          "simple time"
+                          (assertEqual
+                               "A valid time"
+                               (DueTime . flip UTCTime 64800 <$> fromGregorianValid 2018 05 18)
+                               (textToTime "2018-05-18 18:00 UTC"))
+                    , testCase
+                          "time with timezone"
+                          (assertEqual
+                               "A valid time"
+                               (DueTime . flip UTCTime 0 <$> fromGregorianValid 2018 05 18)
+                               (textToTime "2018-05-17 20:00 EDT"))
+                    ]
+              , testGroup
+                    "inputToTime"
+                    [ testCase
+                          "simple date"
+                          (assertEqual
+                               "A valid Day"
+                               (DueDate <$> fromGregorianValid 2018 05 18)
+                               (inputToTime utcTZ testDate "2018-05-18"))
+                    , testCase
+                          "simple time"
+                          (assertEqual
+                               "A valid time"
+                               (DueTime . flip UTCTime 64800 <$> fromGregorianValid 2018 05 18)
+                               (inputToTime utcTZ testDate "2018-05-18 18:00"))
+                    , testCase
+                          "time with timezone"
+                          (assertEqual
+                               "A valid time"
+                               (DueTime . flip UTCTime 79200 <$> fromGregorianValid 2018 05 18)
+                               (inputToTime
+                                    (tzByLabel America__New_York)
+                                    testDate
+                                    "2018-05-18 18:00"))
+                    , testCase
+                          "relative time - seconds"
+                          (assertEqual
+                               "Adds 7 seconds"
+                               (DueTime . flip UTCTime 7 <$> fromGregorianValid 2018 05 18)
+                               (inputToTime utcTZ testDate "7s"))
+                    , testCase
+                          "relative time - days"
+                          (assertEqual
+                               "Adds 29 days, 12 hours"
+                               (DueTime . flip UTCTime 43200 <$> fromGregorianValid 2018 06 16)
+                               (inputToTime utcTZ testDate "29 d 12h"))
+                    , testCase
+                          "relative time - weeks"
+                          (assertEqual
+                               "Adds four weeks, two days, 12 hours"
+                               (DueTime . flip UTCTime 43200 <$> fromGregorianValid 2018 06 17)
+                               (inputToTime utcTZ testDate "4w 2d 12h"))
+                    ]
               , testCase
                     "isoToTime"
                     (assertEqual

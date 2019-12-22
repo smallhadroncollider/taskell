@@ -124,8 +124,10 @@
 
 - Use relative times for due dates
     > e.g. 1w, 2d, 1w 2d (see `man sleep` options for ideas)
+    * [x] Markdown input
+    * [ ] Markdown output
     * [ ] Markdown needs to use actual timezone
-    * [ ] Need to use parser
+    * [x] Need to use parser
     * [x] Trello time parsing
 - Date validation
 - Check times work no matter what timezone

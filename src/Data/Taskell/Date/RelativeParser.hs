@@ -2,17 +2,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Data.Taskell.Date.RelativeParser
-    ( parseDate
+    ( parseRelative
     ) where
 
 import ClassyPrelude
 
 import Data.Attoparsec.Text
 
-import Data.Time.Calendar  (fromGregorianValid)
-import Data.Time.Clock     (addUTCTime)
-import Data.Time.LocalTime (LocalTime (LocalTime), midnight)
-import Data.Time.Zones     (TZ, localTimeToUTCTZ)
+import Data.Time.Clock (addUTCTime)
 
 import Utility.Parser (lexeme)
 
@@ -48,23 +45,13 @@ sP :: Parser Int
 sP = periodP 's'
 
 relativeP :: UTCTime -> Parser (Maybe UTCTime)
-relativeP now = do
-    period <- fromIntegral . sum <$> many1 (sP <|> mP <|> hP <|> dP <|> wP)
-    pure $ Just (addUTCTime period now)
+relativeP now =
+    lexeme $ do
+        period <- fromIntegral . sum <$> many1 (sP <|> mP <|> hP <|> dP <|> wP)
+        pure $ Just (addUTCTime period now)
 
--- date parsing
-formattedP :: TZ -> Parser (Maybe UTCTime)
-formattedP tz = do
-    year <- decimal <* char '-'
-    month <- decimal <* char '-'
-    date <- decimal
-    pure $ localTimeToUTCTZ tz . flip LocalTime midnight <$> fromGregorianValid year month date
-
-dateP :: TZ -> UTCTime -> Parser (Maybe UTCTime)
-dateP tz now = lexeme (formattedP tz <|> relativeP now)
-
-parseDate :: TZ -> UTCTime -> Text -> Either Text UTCTime
-parseDate tz now text =
-    case parseOnly (dateP tz now) text of
+parseRelative :: UTCTime -> Text -> Either Text UTCTime
+parseRelative now text =
+    case parseOnly (relativeP now) text of
         Right (Just time) -> Right time
         _                 -> Left "Could not parse date."

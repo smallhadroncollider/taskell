@@ -9,6 +9,7 @@ module Data.Taskell.Date
     , timeToDisplay
     , timeToOutput
     , textToTime
+    , inputToTime
     , isoToTime
     , deadline
     ) where
@@ -19,10 +20,12 @@ import Control.Lens       ((^.))
 import Control.Lens.Tuple (_1)
 
 import Data.Time.LocalTime (ZonedTime (ZonedTime))
-import Data.Time.Zones     (TZ, timeZoneForUTCTime, utcToLocalTimeTZ)
+import Data.Time.Zones     (TZ, localTimeToUTCTZ, timeZoneForUTCTime, utcToLocalTimeTZ)
 
 import Data.Time.Calendar (diffDays, toGregorian)
 import Data.Time.Format   (FormatTime, ParseTime, formatTime, iso8601DateFormat, parseTimeM)
+
+import Data.Taskell.Date.RelativeParser (parseRelative)
 
 data Due
     = DueTime UTCTime
@@ -62,11 +65,11 @@ getYear (DueTime t) = dayToYear $ utctDay t
 getYear (DueDate d) = dayToYear d
 
 -- output
-format :: (FormatTime t) => String -> t -> String
-format = formatTime defaultTimeLocale
+format :: (FormatTime t) => String -> t -> Text
+format fmt = pack . formatTime defaultTimeLocale fmt
 
 timeToText :: TZ -> UTCTime -> Due -> Text
-timeToText tz now date = pack $ format fmt time
+timeToText tz now date = format fmt time
   where
     time =
         utcToLocalTimeTZ tz $
@@ -79,25 +82,36 @@ timeToText tz now date = pack $ format fmt time
             else "%d-%b %Y"
 
 timeToDisplay :: TZ -> Due -> Text
-timeToDisplay _ (DueDate day)   = pack $ format dateFormat day
-timeToDisplay tz (DueTime time) = pack $ format timeDisplayFormat (utcToLocalTimeTZ tz time)
+timeToDisplay _ (DueDate day)   = format dateFormat day
+timeToDisplay tz (DueTime time) = format timeDisplayFormat (utcToLocalTimeTZ tz time)
 
 timeToOutput :: TZ -> Due -> Text
-timeToOutput _ (DueDate day)   = pack $ format dateFormat day
-timeToOutput tz (DueTime time) = pack $ format timeFormat (utcToZonedTime tz time)
+timeToOutput _ (DueDate day)   = format dateFormat day
+timeToOutput tz (DueTime time) = format timeFormat (utcToZonedTime tz time)
 
 -- input
-parseT :: (Monad m, ParseTime t) => Text -> String -> m t
-parseT txt fmt = parseTimeM False defaultTimeLocale fmt (unpack txt)
+parseT :: (Monad m, ParseTime t) => String -> Text -> m t
+parseT fmt txt = parseTimeM False defaultTimeLocale fmt (unpack txt)
+
+parseDate :: Text -> Maybe Due
+parseDate txt = DueDate <$> parseT dateFormat txt
+
+(<?>) :: Maybe a -> Maybe a -> Maybe a
+(<?>) Nothing b = b
+(<?>) a _       = a
 
 textToTime :: Text -> Maybe Due
-textToTime txt =
-    if length txt == 10 -- not a great check, needs to use parser
-        then DueDate <$> parseT txt dateFormat
-        else DueTime <$> parseT txt timeFormat
+textToTime txt = parseDate txt <?> (DueTime <$> parseT timeFormat txt)
+
+inputToTime :: TZ -> UTCTime -> Text -> Maybe Due
+inputToTime tz now txt =
+    parseDate txt <?> (DueTime . localTimeToUTCTZ tz <$> parseT timeDisplayFormat txt) <?>
+    case parseRelative now txt of
+        Right utc -> Just $ DueTime utc
+        Left _    -> Nothing
 
 isoToTime :: Text -> Maybe Due
-isoToTime txt = DueTime <$> parseT txt isoFormat
+isoToTime txt = DueTime <$> parseT isoFormat txt
 
 -- deadlines
 deadline :: UTCTime -> Due -> Deadline
