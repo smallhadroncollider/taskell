@@ -6,6 +6,7 @@ module Data.Taskell.Date
     , Deadline(..)
     , Due(..)
     , timeToText
+    , timeToDisplay
     , timeToOutput
     , textToTime
     , deadline
@@ -16,10 +17,11 @@ import ClassyPrelude
 import Control.Lens       ((^.))
 import Control.Lens.Tuple (_1)
 
-import Data.Time.Zones (TZ, utcToLocalTimeTZ)
+import Data.Time.LocalTime (ZonedTime (ZonedTime))
+import Data.Time.Zones     (TZ, timeZoneForUTCTime, utcToLocalTimeTZ)
 
 import Data.Time.Calendar (diffDays, toGregorian)
-import Data.Time.Format   (formatTime, iso8601DateFormat, parseTimeM)
+import Data.Time.Format   (formatTime, parseTimeM)
 
 data Due
     = DueTime UTCTime
@@ -37,11 +39,14 @@ data Deadline
 dateFormat :: String
 dateFormat = "%Y-%m-%d"
 
-timeFormat :: String
-timeFormat = iso8601DateFormat (Just "%H:%M:%S%Q%Z")
+timeDisplayFormat :: String
+timeDisplayFormat = "%Y-%m-%d %H:%M"
 
-dayToUTC :: Day -> UTCTime
-dayToUTC day = UTCTime day 0
+timeFormat :: String
+timeFormat = "%Y-%m-%d %H:%M %Z"
+
+utcToZonedTime :: TZ -> UTCTime -> ZonedTime
+utcToZonedTime tz time = ZonedTime (utcToLocalTimeTZ tz time) (timeZoneForUTCTime tz time)
 
 getYear :: Due -> Integer
 getYear (DueTime t) = (^. _1) . toGregorian $ utctDay t
@@ -54,17 +59,21 @@ timeToText tz now date = pack $ formatTime defaultTimeLocale format time
         utcToLocalTimeTZ tz $
         case date of
             DueTime t -> t
-            DueDate d -> dayToUTC d
+            DueDate d -> UTCTime d 0
     format =
         if getYear (DueTime now) == getYear date
             then "%d-%b"
             else "%d-%b %Y"
 
+timeToDisplay :: TZ -> Due -> Text
+timeToDisplay _ (DueDate day) = pack $ formatTime defaultTimeLocale dateFormat day
+timeToDisplay tz (DueTime time) =
+    pack $ formatTime defaultTimeLocale timeDisplayFormat (utcToLocalTimeTZ tz time)
+
 timeToOutput :: TZ -> Due -> Text
-timeToOutput tz (DueDate day) =
-    pack $ formatTime defaultTimeLocale dateFormat (utcToLocalTimeTZ tz (dayToUTC day))
+timeToOutput _ (DueDate day) = pack $ formatTime defaultTimeLocale dateFormat day
 timeToOutput tz (DueTime time) =
-    pack $ formatTime defaultTimeLocale timeFormat (utcToLocalTimeTZ tz time)
+    pack $ formatTime defaultTimeLocale timeFormat (utcToZonedTime tz time)
 
 textToTime :: Text -> Maybe Due
 textToTime txt =

@@ -12,7 +12,8 @@ import Test.Tasty.HUnit
 
 import Data.Taskell.Date
 import Data.Time
-import Data.Time.Zones   (utcTZ)
+import Data.Time.Zones     (utcTZ)
+import Data.Time.Zones.All (TZLabel (America__New_York), tzByLabel)
 
 testDate :: UTCTime
 testDate = UTCTime (fromGregorian 2018 5 18) (secondsToDiffTime 0)
@@ -23,19 +24,54 @@ test_date =
     testGroup
         "Data.Taskell.Date"
         [ testGroup
-              "dayToText"
+              "timeToDisplay"
               [ testCase
-                    "dayToOutput time"
+                    "timeToDisplay time"
                     (assertEqual
                          "Date in yyyy-mm-dd format"
-                         "2018-05-18T00:00:00"
+                         "2018-05-18 00:00"
+                         (timeToDisplay utcTZ (DueTime testDate)))
+              , testCase
+                    "timeToDisplay time - non-utc"
+                    (assertEqual
+                         "Date in yyyy-mm-dd format"
+                         "2018-05-17 20:00"
+                         (timeToDisplay (tzByLabel America__New_York) (DueTime testDate)))
+              , testCase
+                    "timeToDisplay date"
+                    (assertEqual
+                         "Date in yyyy-mm-dd format"
+                         "2018-05-18"
+                         (timeToDisplay utcTZ (DueDate (fromGregorian 2018 05 18))))
+              ]
+        , testGroup
+              "timeToOutput"
+              [ testCase
+                    "timeToOutput time"
+                    (assertEqual
+                         "Date in yyyy-mm-dd format"
+                         "2018-05-18 00:00 UTC"
                          (timeToOutput utcTZ (DueTime testDate)))
               , testCase
-                    "dayToOutput date"
+                    "timeToOutput time - non-utc"
+                    (assertEqual
+                         "Date in yyyy-mm-dd format"
+                         "2018-05-17 20:00 EDT"
+                         (timeToOutput (tzByLabel America__New_York) (DueTime testDate)))
+              , testCase
+                    "timeToOutput date"
                     (assertEqual
                          "Date in yyyy-mm-dd format"
                          "2018-05-18"
                          (timeToOutput utcTZ (DueDate (fromGregorian 2018 05 18))))
+              , testCase
+                    "timeToOutput date - non-utc"
+                    (assertEqual
+                         "Date in yyyy-mm-dd format"
+                         "2018-05-18"
+                         (timeToOutput
+                              (tzByLabel America__New_York)
+                              (DueDate (fromGregorian 2018 05 18))))
               ]
         , testGroup
               "dayToText"

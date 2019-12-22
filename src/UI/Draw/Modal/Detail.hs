@@ -15,7 +15,7 @@ import Brick
 
 import Data.Time.Zones (TZ)
 
-import           Data.Taskell.Date         (deadline, timeToOutput)
+import           Data.Taskell.Date         (deadline, timeToDisplay)
 import qualified Data.Taskell.Subtask      as ST (Subtask, complete, name)
 import           Data.Taskell.Task         (Task, description, due, name, subtasks)
 import           Events.State              (getCurrentTask)
@@ -71,7 +71,7 @@ renderDate tz now field item task =
   where
     day = task ^. due
     prefix = txt "Due: "
-    widget = textField $ maybe "" (timeToOutput tz) day
+    widget = textField $ maybe "" (timeToDisplay tz) day
 
 detail :: ModalWidget
 detail = do
