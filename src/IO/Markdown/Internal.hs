@@ -13,7 +13,7 @@ import Data.Sequence      (adjust')
 import Data.Text          as T (splitOn, strip)
 import Data.Text.Encoding (decodeUtf8With)
 
-import           Data.Taskell.Date    (timeToOutput)
+import           Data.Taskell.Date    (Due, timeToOutput)
 import           Data.Taskell.List    (List, count, tasks, title, updateFn)
 import           Data.Taskell.Lists   (Lists, appendToLast, newList)
 import qualified Data.Taskell.Subtask as ST (Subtask, complete, name, new)
@@ -106,7 +106,7 @@ descriptionStringify config desc = concat $ add <$> splitOn "\n" desc
   where
     add d = concat [descriptionOutput config, " ", d, "\n"]
 
-dueStringify :: Config -> UTCTime -> Text
+dueStringify :: Config -> Due -> Text
 dueStringify config time = concat [dueOutput config, " ", timeToOutput utcTZ time, "\n"]
 
 nameStringify :: Config -> Text -> Text

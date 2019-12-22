@@ -4,7 +4,7 @@
 module Data.Taskell.Date
     ( Day
     , Deadline(..)
-    , toTime
+    , Due(..)
     , timeToText
     , timeToOutput
     , textToTime
@@ -18,9 +18,13 @@ import Control.Lens.Tuple (_1)
 
 import Data.Time.Zones (TZ, utcToLocalTimeTZ)
 
-import Data.Time.Calendar (diffDays, fromGregorianValid, toGregorian)
-import Data.Time.Clock    (secondsToDiffTime)
-import Data.Time.Format   (formatTime, parseTimeM)
+import Data.Time.Calendar (diffDays, toGregorian)
+import Data.Time.Format   (formatTime, iso8601DateFormat, parseTimeM)
+
+data Due
+    = DueTime UTCTime
+    | DueDate Day
+    deriving (Show, Eq, Ord)
 
 data Deadline
     = Passed
@@ -30,29 +34,46 @@ data Deadline
     | Plenty
     deriving (Show, Eq)
 
-toTime :: Integer -> (Integer, Int, Int) -> Maybe UTCTime
-toTime seconds (y, m, d) = flip UTCTime (secondsToDiffTime seconds) <$> fromGregorianValid y m d
+dateFormat :: String
+dateFormat = "%Y-%m-%d"
 
-getYear :: UTCTime -> Integer
-getYear = (^. _1) . toGregorian . utctDay
+timeFormat :: String
+timeFormat = iso8601DateFormat (Just "%H:%M:%S%Q%Z")
 
-timeToText :: TZ -> UTCTime -> UTCTime -> Text
+dayToUTC :: Day -> UTCTime
+dayToUTC day = UTCTime day 0
+
+getYear :: Due -> Integer
+getYear (DueTime t) = (^. _1) . toGregorian $ utctDay t
+getYear (DueDate d) = (^. _1) $ toGregorian d
+
+timeToText :: TZ -> UTCTime -> Due -> Text
 timeToText tz now date = pack $ formatTime defaultTimeLocale format time
   where
-    time = utcToLocalTimeTZ tz date
+    time =
+        utcToLocalTimeTZ tz $
+        case date of
+            DueTime t -> t
+            DueDate d -> dayToUTC d
     format =
-        if getYear now == getYear date
+        if getYear (DueTime now) == getYear date
             then "%d-%b"
             else "%d-%b %Y"
 
-timeToOutput :: TZ -> UTCTime -> Text
-timeToOutput tz time = pack $ formatTime defaultTimeLocale "%Y-%m-%d" (utcToLocalTimeTZ tz time)
+timeToOutput :: TZ -> Due -> Text
+timeToOutput tz (DueDate day) =
+    pack $ formatTime defaultTimeLocale dateFormat (utcToLocalTimeTZ tz (dayToUTC day))
+timeToOutput tz (DueTime time) =
+    pack $ formatTime defaultTimeLocale timeFormat (utcToLocalTimeTZ tz time)
 
-textToTime :: Text -> Maybe UTCTime
-textToTime = parseTimeM False defaultTimeLocale "%Y-%m-%d" . unpack
+textToTime :: Text -> Maybe Due
+textToTime txt =
+    if length txt == 10 -- not a great check, needs to use parser
+        then DueDate <$> parseTimeM False defaultTimeLocale dateFormat (unpack txt)
+        else DueTime <$> parseTimeM False defaultTimeLocale timeFormat (unpack txt)
 
 -- work out the deadline
-deadline :: UTCTime -> UTCTime -> Deadline
+deadline :: UTCTime -> Due -> Deadline
 deadline now date
     | days < 0 = Passed
     | days == 0 = Today
@@ -60,4 +81,7 @@ deadline now date
     | days < 7 = ThisWeek
     | otherwise = Plenty
   where
-    days = diffDays (utctDay date) (utctDay now)
+    days =
+        case date of
+            DueTime t -> diffDays (utctDay t) (utctDay now)
+            DueDate d -> diffDays d (utctDay now)

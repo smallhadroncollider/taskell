@@ -9,7 +9,7 @@ import ClassyPrelude
 import Control.Lens (ix, makeLenses, (%~), (&), (.~), (?~), (^.), (^?))
 
 import           Data.Sequence        as S (adjust', deleteAt, (|>))
-import           Data.Taskell.Date    (textToTime)
+import           Data.Taskell.Date    (Due (..), textToTime)
 import qualified Data.Taskell.Subtask as ST (Subtask, Update, complete, duplicate, name)
 import           Data.Text            (strip)
 
@@ -17,7 +17,7 @@ data Task = Task
     { _name        :: Text
     , _description :: Maybe Text
     , _subtasks    :: Seq ST.Subtask
-    , _due         :: Maybe UTCTime
+    , _due         :: Maybe Due
     } deriving (Show, Eq)
 
 type Update = Task -> Task
@@ -54,8 +54,8 @@ setDue date task =
     if null date
         then task & due .~ Nothing
         else case textToTime date of
-                 Just day -> task & due ?~ day
-                 Nothing  -> task
+                 Just deadline -> task & due ?~ deadline
+                 Nothing       -> task
 
 clearDue :: Update
 clearDue task = task & due .~ Nothing

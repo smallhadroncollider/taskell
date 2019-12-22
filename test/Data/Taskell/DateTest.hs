@@ -12,74 +12,84 @@ import Test.Tasty.HUnit
 
 import Data.Taskell.Date
 import Data.Time
-import Data.Time.Zones   (loadLocalTZ)
+import Data.Time.Zones   (utcTZ)
 
 testDate :: UTCTime
 testDate = UTCTime (fromGregorian 2018 5 18) (secondsToDiffTime 0)
 
 -- tests
-test_date :: IO TestTree
-test_date = do
-    tz <- loadLocalTZ
-    pure $
-        testGroup
-            "Data.Taskell.Date"
-            [ testCase
-                  "dayToOutput"
-                  (assertEqual
-                       "Date in yyyy-mm-dd format"
-                       (Just "2018-05-18")
-                       (timeToOutput tz <$> toTime 0 (2018, 05, 18)))
-            , testGroup
-                  "dayToText"
-                  [ testCase
-                        "same year"
-                        (assertEqual
-                             "Date in 18-May format"
-                             (Just "18-May")
-                             (timeToText tz <$> toTime 0 (2018, 08, 18) <*> toTime 0 (2018, 05, 18)))
-                  , testCase
-                        "different year"
-                        (assertEqual
-                             "Date in 18-May 2019 format"
-                             (Just "18-May 2019")
-                             (timeToText tz <$> toTime 0 (2018, 08, 18) <*> toTime 0 (2019, 05, 18)))
-                  , testCase
-                        "different year"
-                        (assertEqual
-                             "Date in 18-May 2017 format"
-                             (Just "18-May 2017")
-                             (timeToText tz <$> toTime 0 (2018, 08, 18) <*> toTime 0 (2017, 05, 18)))
-                  ]
-            , testCase
-                  "textToDay"
-                  (assertEqual "A valid Day" (toTime 0 (2018, 05, 18)) (textToTime "2018-05-18"))
-            , testGroup
-                  "deadline"
-                  [ testCase
-                        "Plenty"
-                        (assertEqual
-                             "Plenty of time"
-                             Plenty
-                             (deadline testDate (UTCTime (fromGregorian 2018 05 28) 0)))
-                  , testCase
-                        "ThisWeek"
-                        (assertEqual
-                             "This week"
-                             ThisWeek
-                             (deadline testDate (UTCTime (fromGregorian 2018 05 24) 0)))
-                  , testCase
-                        "Tomorrow"
-                        (assertEqual
-                             "Tomorrow"
-                             Tomorrow
-                             (deadline testDate (UTCTime (fromGregorian 2018 05 19) 0)))
-                  , testCase "Today" (assertEqual "Today" Today (deadline testDate testDate))
-                  , testCase
-                        "Passed"
-                        (assertEqual
-                             "Passed"
-                             Passed
-                             (deadline testDate (UTCTime (fromGregorian 2018 05 17) 0)))
-                  ]
-            ]
+test_date :: TestTree
+test_date =
+    testGroup
+        "Data.Taskell.Date"
+        [ testGroup
+              "dayToText"
+              [ testCase
+                    "dayToOutput time"
+                    (assertEqual
+                         "Date in yyyy-mm-dd format"
+                         "2018-05-18T00:00:00"
+                         (timeToOutput utcTZ (DueTime testDate)))
+              , testCase
+                    "dayToOutput date"
+                    (assertEqual
+                         "Date in yyyy-mm-dd format"
+                         "2018-05-18"
+                         (timeToOutput utcTZ (DueDate (fromGregorian 2018 05 18))))
+              ]
+        , testGroup
+              "dayToText"
+              [ testCase
+                    "same year"
+                    (assertEqual
+                         "Date in 18-May format"
+                         "18-May"
+                         (timeToText utcTZ testDate (DueTime testDate)))
+              , testCase
+                    "different year"
+                    (assertEqual
+                         "Date in 18-May 2019 format"
+                         ("18-May 2019")
+                         (timeToText utcTZ testDate (DueDate (fromGregorian 2019 5 18))))
+              , testCase
+                    "different year"
+                    (assertEqual
+                         "Date in 18-May 2017 format"
+                         "18-May 2017"
+                         (timeToText utcTZ testDate (DueDate (fromGregorian 2017 5 18))))
+              ]
+        , testCase
+              "textToDay"
+              (assertEqual
+                   "A valid Day"
+                   (DueDate <$> (fromGregorianValid 2018 05 18))
+                   (textToTime "2018-05-18"))
+        , testGroup
+              "deadline"
+              [ testCase
+                    "Plenty"
+                    (assertEqual
+                         "Plenty of time"
+                         Plenty
+                         (deadline testDate (DueDate (fromGregorian 2018 05 28))))
+              , testCase
+                    "ThisWeek"
+                    (assertEqual
+                         "This week"
+                         ThisWeek
+                         (deadline testDate (DueDate (fromGregorian 2018 05 24))))
+              , testCase
+                    "Tomorrow"
+                    (assertEqual
+                         "Tomorrow"
+                         Tomorrow
+                         (deadline testDate (DueDate (fromGregorian 2018 05 19))))
+              , testCase "Today" (assertEqual "Today" Today (deadline testDate (DueTime testDate)))
+              , testCase
+                    "Passed"
+                    (assertEqual
+                         "Passed"
+                         Passed
+                         (deadline testDate (DueDate (fromGregorian 2018 05 17))))
+              ]
+        ]

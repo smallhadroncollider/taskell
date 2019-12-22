@@ -13,11 +13,11 @@ import ClassyPrelude
 
 import Control.Lens (makeLenses, (&), (.~), (^.))
 
-import qualified Data.Taskell.Task as T (Task, due, new, setDescription, subtasks)
-import           Data.Time.Format  (iso8601DateFormat, parseTimeM)
-
 import IO.HTTP.Aeson                (deriveFromJSON)
 import IO.HTTP.Trello.ChecklistItem (ChecklistItem, checklistItemToSubTask)
+
+import           Data.Taskell.Date (textToTime)
+import qualified Data.Taskell.Task as T (Task, due, new, setDescription, subtasks)
 
 data Card = Card
     { _name         :: Text
@@ -34,11 +34,6 @@ $(deriveFromJSON ''Card)
 $(makeLenses ''Card)
 
 -- operations
-textToTime :: Text -> Maybe UTCTime
-textToTime = parseTimeM False defaultTimeLocale format . unpack
-  where
-    format = iso8601DateFormat (Just "%H:%M:%S%Q%Z")
-
 cardToTask :: Card -> T.Task
 cardToTask card =
     task & T.due .~ textToTime (fromMaybe "" (card ^. due)) & T.subtasks .~
