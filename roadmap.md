@@ -10,6 +10,7 @@
 
 ## Refactoring
 
+- Refactor Task `Update` to be `Task -> Maybe Task`?
 - Use Attoparsec for parsing
 - Add tests for IO.GitHub
 - Break up State module
@@ -122,7 +123,6 @@
 
 ## In Progress
 
-- Date validation
 - Relative dates days and weeks shouldn't include time?
 - Show remaining time on near dates
 
@@ -355,3 +355,4 @@
 - Config option to always use UTC for markdown output
 - Check times work no matter what timezone
 - Show time on short dates
+- Date validation

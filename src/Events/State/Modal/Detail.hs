@@ -64,10 +64,12 @@ finishDescription :: Stateful
 finishDescription = finish setDescription
 
 finishDue :: Stateful
-finishDue state = finish (setDue tz now) state
-  where
-    tz = state ^. timeZone
-    now = state ^. time
+finishDue state = do
+    let tz = state ^. timeZone
+    let now = state ^. time
+    text <- getText <$> getField state
+    task <- setDue tz now text =<< getCurrentTask state
+    setCurrentTask task $ state & mode .~ Modal (Detail (DetailItem 0) DetailNormal)
 
 showDetail :: Stateful
 showDetail s = do

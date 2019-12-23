@@ -50,13 +50,11 @@ appendDescription text =
         then id
         else description %~ maybeAppend text
 
-setDue :: TZ -> UTCTime -> Text -> Update
+setDue :: TZ -> UTCTime -> Text -> Task -> Maybe Task
 setDue tz now date task =
     if null date
-        then task & due .~ Nothing
-        else case inputToTime tz now date of
-                 Just deadline -> task & due ?~ deadline
-                 Nothing       -> task
+        then Just (task & due .~ Nothing)
+        else (\d -> task & due ?~ d) <$> inputToTime tz now date
 
 clearDue :: Update
 clearDue task = task & due .~ Nothing
