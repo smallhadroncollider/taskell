@@ -8,7 +8,7 @@ import ClassyPrelude
 import Control.Lens ((.~), (^.))
 
 import           Data.Sequence      (adjust')
-import qualified Data.Text          as T (dropEnd, isSuffixOf, splitOn, strip)
+import qualified Data.Text          as T (splitOn, strip)
 import           Data.Text.Encoding (decodeUtf8With)
 
 import Data.Time.Zones (TZ)
@@ -99,12 +99,6 @@ parse config s = do
         else Left $ "could not parse line(s) " <> intercalate ", " (tshow <$> errs)
 
 -- stringify code
-clean :: Text -> Text
-clean txt =
-    if "\n" `T.isSuffixOf` txt
-        then T.dropEnd 1 txt
-        else txt
-
 subtaskSymbol :: Bool -> Text
 subtaskSymbol True  = "[x]"
 subtaskSymbol False = "[ ]"
@@ -118,7 +112,7 @@ descriptionStringify :: Text -> ReaderMarkdown
 descriptionStringify desc = do
     symbol <- descriptionOutput <$> asks mdConfig
     let add d = concat [symbol, " ", d]
-    pure . clean . unlines $ add <$> T.splitOn "\n" desc
+    pure . intercalate "\n" $ add <$> T.splitOn "\n" desc
 
 dueStringify :: Due -> ReaderMarkdown
 dueStringify time = do
@@ -136,7 +130,7 @@ taskStringify t = do
     nameString <- nameStringify (t ^. T.name)
     dueString <- fromMaybe "" <$> sequence (dueStringify <$> t ^. T.due)
     descriptionString <- fromMaybe "" <$> sequence (descriptionStringify <$> t ^. T.description)
-    subtaskString <- clean . unlines <$> sequence (subtaskStringify <$> t ^. T.subtasks)
+    subtaskString <- intercalate "\n" <$> sequence (subtaskStringify <$> t ^. T.subtasks)
     pure . unlines . filter (/= "") $ [nameString, dueString, descriptionString, subtaskString]
 
 listStringify :: List -> ReaderMarkdown
@@ -146,4 +140,4 @@ listStringify list = do
     pure $ concat [symbol, " ", list ^. title, "\n\n", taskString]
 
 stringify :: Lists -> ReaderMarkdown
-stringify ls = clean . unlines <$> sequence (listStringify <$> ls)
+stringify ls = intercalate "\n" <$> sequence (listStringify <$> ls)
