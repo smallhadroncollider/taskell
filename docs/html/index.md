@@ -35,6 +35,7 @@ Follow [@taskellcli](https://twitter.com/taskellcli) on Twitter for updates
     - [Importing GitHub Projects](#importing-github-projects)
 - [Configuration](#configuration)
     - [Controls](#controls)
+        - [Due Dates](#due-dates)
     - [Theming](#theming)
 - [Roadmap](#roadmap)
 
@@ -233,6 +234,11 @@ task = "-"
 
 ; the markdown to start a sub-task line with
 subtask = "    *"
+
+; by default times are stored in UTC to avoid diffs if you
+; change locations. Set this to true if it will always be
+; edited in the same timezone
+localTimes = false
 ```
 
 Make sure that the values in the `[markdown]` section are surrounded by **double**-quotes.
@@ -263,6 +269,12 @@ Available special keys: `<Space>`, `<Enter>`, `<Backspace>`, `<Left>`, `<Right>`
 On a Mac you can use the `alt` characters: e.g. `quit = œ` is equivalent to `alt+q`.
 
 You shouldn't try to assign the `1`-`9` keys, as it will not overwrite the default behaviour.
+
+#### Due Dates
+
+Due dates must be input with the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM`. The date will not be accepted otherwise.
+
+By default times are stored in the Markdown file as UTC. If you would like local times (and are unlikely to open the file in lots of different timezones) then you can set `localTimes` to `true` in the `markdown` section of the [config file](#configuration). If you have this setting on and you change timezone, you'll get a diff on all your times the next time you make changes to the file.
 
 
 ### Theming
