@@ -123,6 +123,8 @@
 ## In Progress
 
 - Date validation
+- Config option to always use UTC for markdown output
+- Use ReaderConfig in IO.Markdown.Internal stringify functions
 - Relative dates days and weeks shouldn't include time?
 - Show remaining time on near dates
 - Check times work no matter what timezone
