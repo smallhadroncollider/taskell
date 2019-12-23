@@ -54,7 +54,7 @@ setDue :: TZ -> UTCTime -> Text -> Task -> Maybe Task
 setDue tz now date task =
     if null date
         then Just (task & due .~ Nothing)
-        else (\d -> task & due ?~ d) <$> inputToTime tz now date
+        else (\d -> task & due ?~ d) <$> inputToTime tz now (strip date)
 
 clearDue :: Update
 clearDue task = task & due .~ Nothing
