@@ -8,6 +8,7 @@ module Data.Taskell.Date
     , timeToText
     , timeToDisplay
     , timeToOutput
+    , timeToOutputLocal
     , textToTime
     , inputToTime
     , isoToTime
@@ -85,9 +86,13 @@ timeToDisplay :: TZ -> Due -> Text
 timeToDisplay _ (DueDate day)   = format dateFormat day
 timeToDisplay tz (DueTime time) = format timeDisplayFormat (utcToLocalTimeTZ tz time)
 
-timeToOutput :: TZ -> Due -> Text
-timeToOutput _ (DueDate day)   = format dateFormat day
-timeToOutput tz (DueTime time) = format timeFormat (utcToZonedTime tz time)
+timeToOutput :: Due -> Text
+timeToOutput (DueDate day)  = format dateFormat day
+timeToOutput (DueTime time) = format timeFormat time
+
+timeToOutputLocal :: TZ -> Due -> Text
+timeToOutputLocal _ (DueDate day)   = format dateFormat day
+timeToOutputLocal tz (DueTime time) = format timeFormat (utcToZonedTime tz time)
 
 -- input
 parseT :: (Monad m, ParseTime t) => String -> Text -> m t

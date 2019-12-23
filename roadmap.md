@@ -123,10 +123,8 @@
 ## In Progress
 
 - Date validation
-- Config option to always use UTC for markdown output
 - Relative dates days and weeks shouldn't include time?
 - Show remaining time on near dates
-- Check times work no matter what timezone
 
 ## Done
 
@@ -354,3 +352,5 @@
     * [x] Trello time parsing
 - Use ReaderConfig in IO.Markdown.Internal stringify functions
 - Add test for subtask linebreaks to MarkdownTest
+- Config option to always use UTC for markdown output
+- Check times work no matter what timezone

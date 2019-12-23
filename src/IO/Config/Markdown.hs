@@ -12,6 +12,7 @@ data Config = Config
     , descriptionOutput :: Text
     , dueOutput         :: Text
     , subtaskOutput     :: Text
+    , localTimes        :: Bool
     }
 
 defaultConfig :: Config
@@ -22,6 +23,7 @@ defaultConfig =
     , descriptionOutput = "    >"
     , dueOutput = "    @"
     , subtaskOutput = "    *"
+    , localTimes = False
     }
 
 parser :: IniParser Config
@@ -42,6 +44,7 @@ parser =
             subtaskOutputCf <-
                 fromMaybe (subtaskOutput defaultConfig) . (noEmpty . parseText =<<) <$>
                 fieldMb "subtask"
+            localTimesCf <- fieldFlagDef "localTimes" (localTimes defaultConfig)
             pure
                 Config
                 { titleOutput = titleOutputCf
@@ -49,4 +52,5 @@ parser =
                 , descriptionOutput = descriptionOutputCf
                 , dueOutput = dueOutputCf
                 , subtaskOutput = subtaskOutputCf
+                , localTimes = localTimesCf
                 })

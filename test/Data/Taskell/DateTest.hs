@@ -53,25 +53,40 @@ test_date =
                           (assertEqual
                                "Date in yyyy-mm-dd format"
                                "2018-05-18 00:00 UTC"
-                               (timeToOutput utcTZ (DueTime testDate)))
-                    , testCase
-                          "timeToOutput time - non-utc"
-                          (assertEqual
-                               "Date in yyyy-mm-dd format"
-                               "2018-05-17 20:00 EDT"
-                               (timeToOutput (tzByLabel America__New_York) (DueTime testDate)))
+                               (timeToOutput (DueTime testDate)))
                     , testCase
                           "timeToOutput date"
                           (assertEqual
                                "Date in yyyy-mm-dd format"
                                "2018-05-18"
-                               (timeToOutput utcTZ (DueDate (fromGregorian 2018 05 18))))
+                               (timeToOutput (DueDate (fromGregorian 2018 05 18))))
+                    ]
+              , testGroup
+                    "timeToOutputLocal"
+                    [ testCase
+                          "timeToOutputLocal time"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-18 00:00 UTC"
+                               (timeToOutputLocal utcTZ (DueTime testDate)))
                     , testCase
-                          "timeToOutput date - non-utc"
+                          "timeToOutputLocal time - non-utc"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-17 20:00 EDT"
+                               (timeToOutputLocal (tzByLabel America__New_York) (DueTime testDate)))
+                    , testCase
+                          "timeToOutputLocal date"
                           (assertEqual
                                "Date in yyyy-mm-dd format"
                                "2018-05-18"
-                               (timeToOutput
+                               (timeToOutputLocal utcTZ (DueDate (fromGregorian 2018 05 18))))
+                    , testCase
+                          "timeToOutputLocal date - non-utc"
+                          (assertEqual
+                               "Date in yyyy-mm-dd format"
+                               "2018-05-18"
+                               (timeToOutputLocal
                                     (tzByLabel America__New_York)
                                     (DueDate (fromGregorian 2018 05 18))))
                     ]

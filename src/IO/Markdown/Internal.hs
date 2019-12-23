@@ -13,7 +13,7 @@ import           Data.Text.Encoding (decodeUtf8With)
 
 import Data.Time.Zones (TZ)
 
-import           Data.Taskell.Date    (Due, textToTime, timeToOutput)
+import           Data.Taskell.Date    (Due, textToTime, timeToOutput, timeToOutputLocal)
 import           Data.Taskell.List    (List, count, tasks, title, updateFn)
 import           Data.Taskell.Lists   (Lists, appendToLast, newList)
 import qualified Data.Taskell.Subtask as ST (Subtask, complete, name, new)
@@ -21,8 +21,8 @@ import qualified Data.Taskell.Task    as T (Task, addSubtask, appendDescription,
                                             name, new, subtasks)
 
 import qualified IO.Config          as C (Config, markdown)
-import           IO.Config.Markdown (Config, descriptionOutput, dueOutput, subtaskOutput,
-                                     taskOutput, titleOutput)
+import           IO.Config.Markdown (Config, descriptionOutput, dueOutput, localTimes,
+                                     subtaskOutput, taskOutput, titleOutput)
 
 data MarkdownInfo = MarkdownInfo
     { mdTZ     :: TZ
@@ -117,8 +117,13 @@ descriptionStringify desc = do
 dueStringify :: Due -> ReaderMarkdown
 dueStringify time = do
     symbol <- dueOutput <$> asks mdConfig
+    useLocal <- localTimes <$> asks mdConfig
     tz <- asks mdTZ
-    pure $ concat [symbol, " ", timeToOutput tz time]
+    let fn =
+            if useLocal
+                then timeToOutputLocal tz
+                else timeToOutput
+    pure $ concat [symbol, " ", fn time]
 
 nameStringify :: Text -> ReaderMarkdown
 nameStringify desc = do

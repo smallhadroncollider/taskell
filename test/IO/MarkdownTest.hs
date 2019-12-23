@@ -35,6 +35,7 @@ alternativeConfig =
     , descriptionOutput = ">"
     , dueOutput = "@"
     , subtaskOutput = "-"
+    , localTimes = True
     }
 
 -- useful records
@@ -298,8 +299,8 @@ test_markdown =
                     , testCase
                           "Standard list with date - timezone"
                           (assertEqual
-                               "Markdown formatted output"
-                               "## Test\n\n- Test Item\n    @ 2018-04-12 08:00 EDT\n"
+                               "Use UTC timezone"
+                               "## Test\n\n- Test Item\n    @ 2018-04-12 12:00 UTC\n"
                                (stringify'
                                     (MarkdownInfo (tzByLabel America__New_York) defaultConfig)
                                     listWithDueTimeItem))
@@ -338,6 +339,14 @@ test_markdown =
                                "Markdown formatted output"
                                "## Test\n\n### Test Item\n- [ ] Blah\n"
                                (stringify' alternativeReader (makeSubTask "Blah" False)))
+                    , testCase
+                          "Standard list with date - timezone"
+                          (assertEqual
+                               "Uses local timezone"
+                               "## Test\n\n### Test Item\n@ 2018-04-12 08:00 EDT\n"
+                               (stringify'
+                                    (MarkdownInfo (tzByLabel America__New_York) alternativeConfig)
+                                    listWithDueTimeItem))
                     ]
               ]
         ]
