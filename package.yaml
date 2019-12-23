@@ -1,5 +1,5 @@
 name: taskell
-version: '1.7.4.0'
+version: '1.8.0.0'
 category: Command Line Tools
 author: Mark Wales
 maintainer: mark@smallhadroncollider.com
@@ -30,6 +30,7 @@ library:
 
   # tests
   - Data.Taskell.Date
+  - Data.Taskell.Date.RelativeParser
   - Data.Taskell.List
   - Data.Taskell.List.Internal
   - Data.Taskell.Lists
@@ -73,6 +74,7 @@ library:
   - template-haskell
   - text
   - time
+  - tz
   - vty
 
 executables:
@@ -86,6 +88,7 @@ executables:
     dependencies:
     - base
     - taskell
+    - tz
 
 tests:
   taskell-test:
@@ -101,6 +104,7 @@ tests:
     - containers
     - file-embed
     - lens
+    - mtl
     - raw-strings-qq
     - taskell
     - tasty
@@ -109,4 +113,5 @@ tests:
     - tasty-hunit
     - text
     - time
+    - tz
     - vty

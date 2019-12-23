@@ -64,7 +64,8 @@ import ClassyPrelude hiding (delete)
 
 import Control.Lens ((%~), (&), (.~), (?~), (^.))
 
-import Data.Char (digitToInt, ord)
+import Data.Char       (digitToInt, ord)
+import Data.Time.Zones (TZ)
 
 import qualified Data.Taskell.List  as L (List, deleteTask, duplicate, getTask, move, nearest, new,
                                           newAt, nextTask, prevTask, title, update)
@@ -80,8 +81,8 @@ import           UI.Draw.Field           (Field, blankField, getText, textToFiel
 
 type InternalStateful = State -> State
 
-create :: UTCTime -> FilePath -> Lists.Lists -> State
-create t p ls =
+create :: TZ -> UTCTime -> FilePath -> Lists.Lists -> State
+create tz t p ls =
     State
     { _mode = Normal
     , _history = fresh ls
@@ -90,6 +91,7 @@ create t p ls =
     , _height = 0
     , _searchTerm = Nothing
     , _time = t
+    , _timeZone = tz
     }
 
 -- app state

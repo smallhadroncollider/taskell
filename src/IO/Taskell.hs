@@ -6,25 +6,33 @@ module IO.Taskell where
 
 import ClassyPrelude
 
-import Data.FileEmbed   (embedFile)
-import System.Directory (doesFileExist, getCurrentDirectory)
+import Control.Monad.Reader (runReader)
+import Data.FileEmbed       (embedFile)
+import System.Directory     (doesFileExist, getCurrentDirectory)
+
+import Data.Time.Zones (TZ)
 
 import Config             (usage, version)
 import Data.Taskell.Lists (Lists, analyse, initial)
 
-import           IO.Config         (Config, general, github, trello)
+import           IO.Config         (Config, general, github, markdown, trello)
 import           IO.Config.General (filename)
 import qualified IO.Config.GitHub  as GitHub (token)
 import qualified IO.Config.Trello  as Trello (token)
 
-import IO.Markdown (parse, stringify)
+import IO.Markdown (MarkdownInfo (MarkdownInfo), parse, stringify)
 
 import qualified IO.HTTP.GitHub as GitHub (GitHubIdentifier, getLists)
 import qualified IO.HTTP.Trello as Trello (TrelloBoardID, getLists)
 
 import UI.CLI (PromptYN (PromptYes), promptYN)
 
-type ReaderConfig a = ReaderT Config IO a
+data IOInfo = IOInfo
+    { ioTZ     :: TZ
+    , ioConfig :: Config
+    }
+
+type ReaderConfig a = ReaderT IOInfo IO a
 
 data Next
     = Output Text
@@ -40,7 +48,7 @@ parseArgs ["-t", boardID, file]    = loadTrello boardID file
 parseArgs ["-g", identifier, file] = loadGitHub identifier file
 parseArgs ["-i", file]             = fileInfo file
 parseArgs [file]                   = loadFile file
-parseArgs []                       = (pack . filename . general <$> ask) >>= loadFile
+parseArgs []                       = (pack . filename . general <$> asks ioConfig) >>= loadFile
 parseArgs _                        = pure $ Error (unlines ["Invalid options", "", usage])
 
 load :: ReaderConfig Next
@@ -86,7 +94,8 @@ createRemote ::
     -> FilePath
     -> ReaderConfig Next
 createRemote tokenFn missingToken getFn identifier path = do
-    config <- ask
+    config <- asks ioConfig
+    tz <- asks ioTZ
     case tokenFn config of
         Nothing -> pure $ Error missingToken
         Just token -> do
@@ -95,7 +104,7 @@ createRemote tokenFn missingToken getFn identifier path = do
                 Left txt -> pure $ Error txt
                 Right ls ->
                     promptCreate path >>=
-                    bool (pure Exit) (Load path ls <$ lift (writeData config ls path))
+                    bool (pure Exit) (Load path ls <$ lift (writeData tz config ls path))
 
 createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
 createTrello =
@@ -130,13 +139,16 @@ promptCreate path = do
 -- creates taskell file
 createPath :: FilePath -> ReaderConfig ()
 createPath path = do
-    config <- ask
-    lift (writeData config initial path)
+    config <- asks ioConfig
+    tz <- asks ioTZ
+    lift (writeData tz config initial path)
 
 -- writes Tasks to json file
-writeData :: Config -> Lists -> FilePath -> IO ()
-writeData config tasks path = void (writeFile path $ stringify config tasks)
+writeData :: TZ -> Config -> Lists -> FilePath -> IO ()
+writeData tz config tasks path = void (writeFile path output)
+  where
+    output = encodeUtf8 $ runReader (stringify tasks) (MarkdownInfo tz (markdown config))
 
 -- reads json file
 readData :: FilePath -> ReaderConfig (Either Text Lists)
-readData path = parse <$> ask <*> readFile path
+readData path = parse <$> asks ioConfig <*> readFile path

@@ -8,21 +8,17 @@ import ClassyPrelude
 
 import Data.Attoparsec.Text
 
+import Utility.Parser
+
 import Events.Actions.Types (ActionType, read)
 import IO.Keyboard.Types
 
 -- utility functions
-lexeme :: Parser a -> Parser a
-lexeme p = skipSpace *> p <* skipSpace
-
 commentP :: Parser ()
 commentP = lexeme $ skipMany ((char '#' <|> char ';') *> manyTill anyChar endOfLine)
 
 stripComments :: Parser a -> Parser a
 stripComments p = lexeme $ commentP *> p <* commentP
-
-word :: Parser Text
-word = lexeme $ pack <$> many1 letter
 
 -- ini parser
 keyP :: Parser Binding

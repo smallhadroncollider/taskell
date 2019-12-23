@@ -15,8 +15,7 @@ import Control.Lens (makeLenses, (&), (.~), (^.))
 import IO.HTTP.Aeson       (deriveFromJSON)
 import IO.HTTP.Trello.Card (Card, cardToTask)
 
-import qualified Data.Taskell.List   as L (List, create)
-import           Data.Time.LocalTime (TimeZone)
+import qualified Data.Taskell.List as L (List, create)
 
 data List = List
     { _name  :: Text
@@ -33,5 +32,5 @@ $(makeLenses ''List)
 setCards :: List -> [Card] -> List
 setCards list cs = list & cards .~ cs
 
-listToList :: TimeZone -> List -> L.List
-listToList tz ls = L.create (ls ^. name) (fromList $ cardToTask tz <$> (ls ^. cards))
+listToList :: List -> L.List
+listToList ls = L.create (ls ^. name) (fromList $ cardToTask <$> (ls ^. cards))
