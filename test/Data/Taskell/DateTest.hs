@@ -18,12 +18,31 @@ import Data.Time.Zones.All (TZLabel (America__New_York), tzByLabel)
 testDate :: UTCTime
 testDate = UTCTime (fromGregorian 2018 5 18) (secondsToDiffTime 0)
 
+-- sorting test data
+sort1 :: Due
+sort1 = DueTime (UTCTime (fromGregorian 2017 2 4) 0)
+
+sort2 :: Due
+sort2 = DueDate (fromGregorian 2016 12 15)
+
+sort3 :: Due
+sort3 = DueTime (UTCTime (fromGregorian 2020 8 9) 44000)
+
+sort4 :: Due
+sort4 = DueDate (fromGregorian 2019 8 30)
+
 -- tests
 test_date :: TestTree
 test_date =
     testGroup
         "Data.Taskell.Date"
-        [ testGroup
+        [ testCase
+              "Sorting"
+              (assertEqual
+                   "Sorted in date order"
+                   [sort2, sort1, sort4, sort3]
+                   (sort [sort1, sort2, sort3, sort4]))
+        , testGroup
               "Date Output"
               [ testGroup
                     "timeToDisplay"

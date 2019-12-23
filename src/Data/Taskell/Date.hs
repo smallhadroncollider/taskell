@@ -28,7 +28,13 @@ import Data.Taskell.Date.RelativeParser (parseRelative)
 data Due
     = DueTime UTCTime
     | DueDate Day
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq)
+
+instance Ord Due where
+    compare (DueTime t) (DueDate d)   = t `compare` UTCTime d 0
+    compare (DueDate d) (DueTime t)   = UTCTime d 0 `compare` t
+    compare (DueDate d1) (DueDate d2) = UTCTime d1 0 `compare` UTCTime d2 0
+    compare (DueTime t1) (DueTime t2) = t1 `compare` t2
 
 data Deadline
     = Passed
