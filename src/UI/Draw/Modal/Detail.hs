@@ -13,12 +13,14 @@ import Data.Sequence (mapWithIndex)
 
 import Brick
 
-import           Data.Taskell.Date         (Day, dayToOutput, deadline)
+import Data.Time.Zones (TZ)
+
+import           Data.Taskell.Date         (deadline, timeToDisplay)
 import qualified Data.Taskell.Subtask      as ST (Subtask, complete, name)
 import           Data.Taskell.Task         (Task, description, due, name, subtasks)
 import           Events.State              (getCurrentTask)
 import           Events.State.Modal.Detail (getCurrentItem, getField)
-import           Events.State.Types        (time)
+import           Events.State.Types        (time, timeZone)
 import           Events.State.Types.Mode   (DetailItem (..))
 import           UI.Draw.Field             (Field, textField, widgetFromMaybe)
 import           UI.Draw.Types             (DrawState (..), ModalWidget, TWidget)
@@ -58,23 +60,24 @@ renderSummary f i task = padTop (Pad 1) $ padBottom (Pad 2) w'
             DetailDescription -> visible $ widgetFromMaybe w f
             _                 -> w
 
-renderDate :: Day -> Maybe Field -> DetailItem -> Task -> TWidget
-renderDate today field item task =
+renderDate :: TZ -> UTCTime -> Maybe Field -> DetailItem -> Task -> TWidget
+renderDate tz now field item task =
     case item of
         DetailDate -> visible $ prefix <+> widgetFromMaybe widget field
         _ ->
             case day of
-                Just d  -> prefix <+> withAttr (dlToAttr (deadline today d)) widget
+                Just d  -> prefix <+> withAttr (dlToAttr (deadline now d)) widget
                 Nothing -> emptyWidget
   where
     day = task ^. due
     prefix = txt "Due: "
-    widget = textField $ maybe "" dayToOutput day
+    widget = textField $ maybe "" (timeToDisplay tz) day
 
 detail :: ModalWidget
 detail = do
     state <- asks dsState
-    let today = utctDay (state ^. time)
+    let now = state ^. time
+    let tz = state ^. timeZone
     pure $
         fromMaybe ("Error", txt "Oops") $ do
             task <- getCurrentTask state
@@ -84,4 +87,4 @@ detail = do
                 w
                     | null sts = withAttr disabledAttr $ txt "No sub-tasks"
                     | otherwise = vBox . toList $ renderSubtask f i `mapWithIndex` sts
-            pure (task ^. name, renderDate today f i task <=> renderSummary f i task <=> w)
+            pure (task ^. name, renderDate tz now f i task <=> renderSummary f i task <=> w)

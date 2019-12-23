@@ -14,6 +14,7 @@ import Test.Tasty.HUnit
 import Control.Lens ((&), (.~), (^.))
 
 import Data.Time.Clock (secondsToDiffTime)
+import Data.Time.Zones (utcTZ)
 
 import qualified Data.Sequence           as S (lookup)
 import qualified Data.Taskell.List       as L (append, empty)
@@ -36,6 +37,7 @@ testState =
     , _height = 0
     , _searchTerm = Nothing
     , _time = mockTime
+    , _timeZone = utcTZ
     }
 
 moveToState :: State
@@ -64,6 +66,7 @@ moveToState =
     , _height = 0
     , _searchTerm = Nothing
     , _time = mockTime
+    , _timeZone = utcTZ
     }
 
 -- tests

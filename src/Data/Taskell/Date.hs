@@ -4,21 +4,31 @@
 module Data.Taskell.Date
     ( Day
     , Deadline(..)
-    , DeadlineFn
-    , dayToText
-    , dayToOutput
-    , textToDay
-    , utcToLocalDay
+    , Due(..)
+    , timeToText
+    , timeToDisplay
+    , timeToOutput
+    , timeToOutputLocal
+    , textToTime
+    , inputToTime
+    , isoToTime
     , deadline
     ) where
 
 import ClassyPrelude
 
-import Data.Time           (Day)
-import Data.Time.Calendar  (diffDays, toGregorian)
-import Data.Time.Clock     (secondsToDiffTime)
-import Data.Time.Format    (formatTime, parseTimeM)
-import Data.Time.LocalTime (TimeZone, localDay, utcToZonedTime, zonedTimeToLocalTime)
+import Data.Time.LocalTime (ZonedTime (ZonedTime))
+import Data.Time.Zones     (TZ, localTimeToUTCTZ, timeZoneForUTCTime, utcToLocalTimeTZ)
+
+import Data.Time.Calendar (diffDays)
+import Data.Time.Format   (FormatTime, ParseTime, formatTime, iso8601DateFormat, parseTimeM)
+
+import Data.Taskell.Date.RelativeParser (parseRelative)
+
+data Due
+    = DueTime UTCTime
+    | DueDate Day
+    deriving (Show, Eq, Ord)
 
 data Deadline
     = Passed
@@ -28,37 +38,88 @@ data Deadline
     | Plenty
     deriving (Show, Eq)
 
-type DeadlineFn = Day -> Deadline
+-- formats
+dateFormat :: String
+dateFormat = "%Y-%m-%d"
 
-dayToText :: Day -> Day -> Text
-dayToText today day = pack $ formatTime defaultTimeLocale format (UTCTime day (secondsToDiffTime 0))
+timeDisplayFormat :: String
+timeDisplayFormat = "%Y-%m-%d %H:%M"
+
+timeFormat :: String
+timeFormat = "%Y-%m-%d %H:%M %Z"
+
+isoFormat :: String
+isoFormat = iso8601DateFormat (Just "%H:%M:%S%Q%Z")
+
+-- utility functions
+utcToZonedTime :: TZ -> UTCTime -> ZonedTime
+utcToZonedTime tz time = ZonedTime (utcToLocalTimeTZ tz time) (timeZoneForUTCTime tz time)
+
+appendYear :: (FormatTime t, FormatTime s) => String -> t -> s -> String
+appendYear txt t1 t2 =
+    if format "%Y" t1 == format "%Y" t2
+        then txt
+        else txt <> " %Y"
+
+-- output
+format :: (FormatTime t) => String -> t -> Text
+format fmt = pack . formatTime defaultTimeLocale fmt
+
+timeToText :: TZ -> UTCTime -> Due -> Text
+timeToText _ now (DueDate day) = format fmt day
   where
-    (currentYear, _, _) = toGregorian today
-    (dateYear, _, _) = toGregorian day
-    format =
-        if currentYear == dateYear
-            then "%d-%b"
-            else "%d-%b %Y"
+    fmt = appendYear "%d-%b" now day
+timeToText tz now (DueTime time) = format fmt local
+  where
+    local = utcToLocalTimeTZ tz time
+    fmt = appendYear "%H:%M %d-%b" now local
 
-dayToOutput :: Day -> Text
-dayToOutput day = pack $ formatTime defaultTimeLocale "%Y-%m-%d" (UTCTime day (secondsToDiffTime 0))
+timeToDisplay :: TZ -> Due -> Text
+timeToDisplay _ (DueDate day)   = format dateFormat day
+timeToDisplay tz (DueTime time) = format timeDisplayFormat (utcToLocalTimeTZ tz time)
 
-utcToLocalDay :: TimeZone -> UTCTime -> Day
-utcToLocalDay tz = localDay . zonedTimeToLocalTime . utcToZonedTime tz
+timeToOutput :: Due -> Text
+timeToOutput (DueDate day)  = format dateFormat day
+timeToOutput (DueTime time) = format timeFormat time
 
-textToTime :: Text -> Maybe UTCTime
-textToTime = parseTimeM False defaultTimeLocale "%Y-%m-%d" . unpack
+timeToOutputLocal :: TZ -> Due -> Text
+timeToOutputLocal _ (DueDate day)   = format dateFormat day
+timeToOutputLocal tz (DueTime time) = format timeFormat (utcToZonedTime tz time)
 
-textToDay :: Text -> Maybe Day
-textToDay = (utctDay <$>) . textToTime
+-- input
+parseT :: (Monad m, ParseTime t) => String -> Text -> m t
+parseT fmt txt = parseTimeM False defaultTimeLocale fmt (unpack txt)
 
--- work out the deadline
-deadline :: Day -> Day -> Deadline
-deadline today date
+parseDate :: Text -> Maybe Due
+parseDate txt = DueDate <$> parseT dateFormat txt
+
+(<?>) :: Maybe a -> Maybe a -> Maybe a
+(<?>) Nothing b = b
+(<?>) a _       = a
+
+textToTime :: Text -> Maybe Due
+textToTime txt = parseDate txt <?> (DueTime <$> parseT timeFormat txt)
+
+inputToTime :: TZ -> UTCTime -> Text -> Maybe Due
+inputToTime tz now txt =
+    parseDate txt <?> (DueTime . localTimeToUTCTZ tz <$> parseT timeDisplayFormat txt) <?>
+    case parseRelative now txt of
+        Right utc -> Just $ DueTime utc
+        Left _    -> Nothing
+
+isoToTime :: Text -> Maybe Due
+isoToTime txt = DueTime <$> parseT isoFormat txt
+
+-- deadlines
+deadline :: UTCTime -> Due -> Deadline
+deadline now date
     | days < 0 = Passed
     | days == 0 = Today
     | days == 1 = Tomorrow
     | days < 7 = ThisWeek
     | otherwise = Plenty
   where
-    days = diffDays date today
+    days =
+        case date of
+            DueTime t -> diffDays (utctDay t) (utctDay now)
+            DueDate d -> diffDays d (utctDay now)

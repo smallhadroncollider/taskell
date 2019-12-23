@@ -46,7 +46,7 @@ insert (EvKey KEsc _) s = do
     item <- getCurrentItem s
     case item of
         DetailDescription -> (write =<<) $ finishDescription s
-        DetailDate        -> (write =<<) $ finishDue s
+        DetailDate        -> showDetail s
         (DetailItem _)    -> (write =<<) . (showDetail =<<) $ finishSubtask s
 insert (EvKey KEnter _) s = do
     item <- getCurrentItem s

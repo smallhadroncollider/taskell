@@ -13,10 +13,10 @@ import Control.Lens ((^.))
 
 import Brick
 
-import           Data.Taskell.Date  (dayToText, deadline)
+import           Data.Taskell.Date  (deadline, timeToText)
 import qualified Data.Taskell.Task  as T (Task, contains, countCompleteSubtasks, countSubtasks,
                                           description, due, hasSubtasks, name)
-import           Events.State.Types (current, mode, searchTerm, time)
+import           Events.State.Types (current, mode, searchTerm, time, timeZone)
 import           IO.Config.Layout   (descriptionIndicator)
 import           Types              (ListIndex (..), TaskIndex (..))
 import           UI.Draw.Field      (getText, textField, widgetFromMaybe)
@@ -35,9 +35,10 @@ data TaskWidget = TaskWidget
 -- | Takes a task's 'due' property and renders a date with appropriate styling (e.g. red if overdue)
 renderDate :: T.Task -> DSWidget
 renderDate task = do
-    today <- utctDay . (^. time) <$> asks dsState
+    now <- (^. time) <$> asks dsState
+    tz <- (^. timeZone) <$> asks dsState
     pure . fromMaybe emptyWidget $
-        (\day -> withAttr (dlToAttr $ deadline today day) (txt $ dayToText today day)) <$>
+        (\date -> withAttr (dlToAttr $ deadline now date) (txt $ timeToText tz now date)) <$>
         task ^. T.due
 
 -- | Renders the appropriate completed sub task count e.g. "[2/3]"

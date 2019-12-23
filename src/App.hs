@@ -11,6 +11,8 @@ import Control.Concurrent (forkIO, threadDelay)
 
 import Control.Lens ((^.))
 
+import Data.Time.Zones (TZ)
+
 import Brick
 import Brick.BChan               (BChan, newBChan, writeBChan)
 import Graphics.Vty              (Mode (BracketedPaste), defaultConfig, displayBounds, mkVty,
@@ -22,7 +24,7 @@ import qualified Control.FoldDebounce as Debounce
 import Data.Taskell.Lists      (Lists)
 import Events.Actions          (ActionSets, event, generateActions)
 import Events.State            (continue, countCurrent, setHeight, setTime)
-import Events.State.Types      (State, current, io, lists, mode, path, searchTerm)
+import Events.State.Types      (State, current, io, lists, mode, path, searchTerm, timeZone)
 import Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..), Mode (..))
 import IO.Config               (Config, debugging, generateAttrMap, getBindings, layout)
 import IO.Taskell              (writeData)
@@ -30,7 +32,7 @@ import Types                   (ListIndex (..), TaskIndex (..))
 import UI.Draw                 (chooseCursor, draw)
 import UI.Types                (ResourceName (..))
 
-type DebouncedMessage = (Lists, FilePath)
+type DebouncedMessage = (Lists, FilePath, TZ)
 
 type DebouncedWrite = DebouncedMessage -> IO ()
 
@@ -54,14 +56,14 @@ timer chan =
 
 -- store
 store :: Config -> DebouncedMessage -> IO ()
-store config (ls, pth) = writeData config ls pth
+store config (ls, pth, tz) = writeData tz config ls pth
 
 next :: DebouncedWrite -> State -> EventM ResourceName (Next State)
 next send state =
     case state ^. io of
         Just ls -> do
             invalidateCache
-            liftIO $ send (ls, state ^. path)
+            liftIO $ send (ls, state ^. path, state ^. timeZone)
             Brick.continue $ Events.State.continue state
         Nothing -> Brick.continue state
 
@@ -73,7 +75,7 @@ debounce config initial = do
             Debounce.Args
             { Debounce.cb = store config
             , Debounce.fold = flip const
-            , Debounce.init = (initial ^. lists, initial ^. path)
+            , Debounce.init = (initial ^. lists, initial ^. path, initial ^. timeZone)
             }
             Debounce.def
     let send = Debounce.send trigger

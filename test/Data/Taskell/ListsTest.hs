@@ -10,6 +10,9 @@ import ClassyPrelude hiding (delete)
 import Test.Tasty
 import Test.Tasty.HUnit
 
+import Control.Lens ((.~))
+
+import           Data.Taskell.Date           (textToTime)
 import qualified Data.Taskell.List           as L
 import           Data.Taskell.Lists.Internal
 import qualified Data.Taskell.Task           as T
@@ -21,19 +24,19 @@ list1 =
     foldl'
         (flip L.append)
         (L.empty "List 1")
-        [T.new "One", T.setDue "2019-08-14" (T.new "Two"), T.new "Three"]
+        [T.new "One", (T.due .~ textToTime "2019-08-14") (T.new "Two"), T.new "Three"]
 
 list2 =
     foldl'
         (flip L.append)
         (L.empty "List 2")
-        [T.new "1", T.new "2", T.setDue "2018-12-03" (T.new "3")]
+        [T.new "1", T.new "2", (T.due .~ textToTime "2018-12-03") (T.new "3")]
 
 list3 =
     foldl'
         (flip L.append)
         (L.empty "List 3")
-        [T.setDue "2019-04-05" (T.new "01"), T.new "10", T.new "11"]
+        [(T.due .~ textToTime "2019-04-05") (T.new "01"), T.new "10", T.new "11"]
 
 testLists :: Lists
 testLists = fromList [list1, list2, list3]
@@ -81,11 +84,11 @@ test_lists =
                                    , foldl'
                                          (flip L.append)
                                          (L.empty "List 2")
-                                         [T.new "1", T.setDue "2018-12-03" (T.new "3")]
+                                         [T.new "1", (T.due .~ textToTime "2018-12-03") (T.new "3")]
                                    , foldl'
                                          (flip L.append)
                                          (L.empty "List 3")
-                                         [ T.setDue "2019-04-05" (T.new "01")
+                                         [ (T.due .~ textToTime "2019-04-05") (T.new "01")
                                          , T.new "10"
                                          , T.new "11"
                                          , T.new "2"
@@ -102,14 +105,14 @@ test_lists =
                                          (flip L.append)
                                          (L.empty "List 1")
                                          [ T.new "One"
-                                         , T.setDue "2019-08-14" (T.new "Two")
+                                         , (T.due .~ textToTime "2019-08-14") (T.new "Two")
                                          , T.new "Three"
                                          , T.new "2"
                                          ]
                                    , foldl'
                                          (flip L.append)
                                          (L.empty "List 2")
-                                         [T.new "1", T.setDue "2018-12-03" (T.new "3")]
+                                         [T.new "1", (T.due .~ textToTime "2018-12-03") (T.new "3")]
                                    , list3
                                    ]))
                          (changeList (ListIndex 1, TaskIndex 1) testLists (-1)))
@@ -200,7 +203,7 @@ test_lists =
                               , foldl'
                                     (flip L.append)
                                     (L.empty "List 3")
-                                    [ T.setDue "2019-04-05" (T.new "01")
+                                    [ (T.due .~ textToTime "2019-04-05") (T.new "01")
                                     , T.new "10"
                                     , T.new "11"
                                     , T.new "Blah"
@@ -222,9 +225,12 @@ test_lists =
               (assertEqual
                    "returns just due list"
                    (fromList
-                        [ ((ListIndex 1, TaskIndex 2), T.setDue "2018-12-03" (T.new "3"))
-                        , ((ListIndex 2, TaskIndex 0), T.setDue "2019-04-05" (T.new "01"))
-                        , ((ListIndex 0, TaskIndex 1), T.setDue "2019-08-14" (T.new "Two"))
+                        [ ( (ListIndex 1, TaskIndex 2)
+                          , (T.due .~ textToTime "2018-12-03") (T.new "3"))
+                        , ( (ListIndex 2, TaskIndex 0)
+                          , (T.due .~ textToTime "2019-04-05") (T.new "01"))
+                        , ( (ListIndex 0, TaskIndex 1)
+                          , (T.due .~ textToTime "2019-08-14") (T.new "Two"))
                         ])
                    (due testLists))
         ]

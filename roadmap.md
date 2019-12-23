@@ -10,6 +10,7 @@
 
 ## Refactoring
 
+- Refactor Task `Update` to be `Task -> Maybe Task`?
 - Use Attoparsec for parsing
 - Add tests for IO.GitHub
 - Break up State module
@@ -40,6 +41,27 @@
 
 ## Features
 
+- Add Cabal test to build process
+    > Use `stack sdist .` to generate cabal file
+- Define key binding info in one place
+    > Currently all over the place
+    * [ ] Bindings
+    * [ ] Default key
+    * [ ] Description
+    * [ ] Generate bindings.ini from it
+- Somehow merge `event` and `events` in Actions that use bindings
+    > Can one event trigger multiple separate state changes?
+- Some way to just see tasks with due dates
+    * [x] Sort by date
+    * [x] Scrollable
+    * [x] Pressing Enter on one takes you to it
+    * [x] Use renderTask from Draw
+    * [ ] Filter by: overdue, this week, later
+    * [ ] Number of due items in status bar?
+    * [x] Descriptions need to wrap
+    * [ ] Search should filter
+    * [ ] Show list each task belongs to?
+    * [x] Backspace (customisable) removes date
 - Configuration options
     > See #54
     * [ ] Padding
@@ -49,9 +71,6 @@
     > Need to be able to select different parts of the DETAIL modal. Probably need to rethink Mode constructors.
 - Pressing Undo in DUE mode should undo without leaving view
     > Fallthrough to NORMAL events more generally? Might require rethinking modes to separate behaviour and things being tracked?
-- Date validation
-- Use relative times for due dates
-    > e.g. 1w, 2d, 1w 2d (see `man sleep` options for ideas)
 - Add a List widget for common actions between tasks and sub-tasks
     > Or use a typeclass... somehow?
     * [ ] Moving around
@@ -84,7 +103,6 @@
     * [ ] Regular input (Shift + Enter for new line?)
     * [x] Markdown parsing
     * [ ] Text line breaks go a bit funny with multi-line descriptions
-- Check times work no matter what timezone
 - Always show list title
     > Floating list titles - so you can always see what list you're in
 - Make token UX better
@@ -105,27 +123,8 @@
 
 ## In Progress
 
-- Add Cabal test to build process
-    > Use `stack sdist .` to generate cabal file
-- Some way to just see tasks with due dates
-    * [x] Sort by date
-    * [x] Scrollable
-    * [x] Pressing Enter on one takes you to it
-    * [x] Use renderTask from Draw
-    * [ ] Filter by: overdue, this week, later
-    * [ ] Number of due items in status bar?
-    * [x] Descriptions need to wrap
-    * [ ] Search should filter
-    * [ ] Show list each task belongs to?
-    * [x] Backspace (customisable) removes date
-- Define key binding info in one place
-    > Currently all over the place
-    * [ ] Bindings
-    * [ ] Default key
-    * [ ] Description
-    * [ ] Generate bindings.ini from it
-- Somehow merge `event` and `events` in Actions that use bindings
-    > Can one event trigger multiple separate state changes?
+- Relative dates days and weeks shouldn't include time?
+- Show remaining time on near dates
 
 ## Done
 
@@ -344,3 +343,16 @@
 - Use proper error codes
 - Redo functionality
 - Modifier keys?
+- Use relative times for due dates
+    > e.g. 1w, 2d, 1w 2d (see `man sleep` options for ideas)
+    * [x] Markdown input
+    * [x] Markdown output
+    * [x] Markdown needs to use actual timezone
+    * [x] Need to use parser
+    * [x] Trello time parsing
+- Use ReaderConfig in IO.Markdown.Internal stringify functions
+- Add test for subtask linebreaks to MarkdownTest
+- Config option to always use UTC for markdown output
+- Check times work no matter what timezone
+- Show time on short dates
+- Date validation

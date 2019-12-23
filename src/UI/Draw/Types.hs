@@ -4,7 +4,8 @@ module UI.Draw.Types where
 
 import ClassyPrelude
 
-import Brick              (Widget)
+import Brick (Widget)
+
 import Events.State.Types (State)
 import IO.Config.Layout   (Config)
 import IO.Keyboard.Types  (Bindings)

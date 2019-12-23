@@ -14,6 +14,7 @@ import Test.Tasty.HUnit
 import Control.Lens ((.~))
 
 import Data.Time.Clock (secondsToDiffTime)
+import Data.Time.Zones (utcTZ)
 
 import Data.Taskell.Lists.Internal (initial)
 import Events.Actions.Types        as A
@@ -31,7 +32,7 @@ tester :: BoundActions -> Event -> Stateful
 tester actions ev state = lookup ev actions >>= ($ state)
 
 cleanState :: State
-cleanState = create mockTime "taskell.md" initial
+cleanState = create utcTZ mockTime "taskell.md" initial
 
 basicBindings :: Bindings
 basicBindings = [(BChar 'q', A.Quit)]

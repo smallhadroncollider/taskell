@@ -27,14 +27,14 @@ import ClassyPrelude
 
 import Control.Lens ((&), (.~), (^.))
 
-import           Data.Taskell.Date       (dayToOutput)
+import           Data.Taskell.Date       (timeToDisplay)
 import qualified Data.Taskell.Seq        as S
 import qualified Data.Taskell.Subtask    as ST (blank, name, toggle)
 import           Data.Taskell.Task       (Task, addSubtask, countSubtasks, description, due,
                                           getSubtask, removeSubtask, setDescription, setDue,
                                           subtasks, updateSubtask)
 import           Events.State            (getCurrentTask, setCurrentTask)
-import           Events.State.Types      (State, Stateful, mode)
+import           Events.State.Types      (State, Stateful, mode, time, timeZone)
 import           Events.State.Types.Mode (DetailItem (..), DetailMode (..), ModalType (Detail),
                                           Mode (Modal))
 import           UI.Draw.Field           (Field, blankField, getText, textToField)
@@ -64,7 +64,12 @@ finishDescription :: Stateful
 finishDescription = finish setDescription
 
 finishDue :: Stateful
-finishDue = finish setDue
+finishDue state = do
+    let tz = state ^. timeZone
+    let now = state ^. time
+    text <- getText <$> getField state
+    task <- setDue tz now text =<< getCurrentTask state
+    setCurrentTask task $ state & mode .~ Modal (Detail (DetailItem 0) DetailNormal)
 
 showDetail :: Stateful
 showDetail s = do
@@ -128,7 +133,8 @@ editDescription state = do
 editDue :: Stateful
 editDue state = do
     day <- (^. due) <$> getCurrentTask state
-    let day' = maybe "" dayToOutput day
+    let tz = state ^. timeZone
+    let day' = maybe "" (timeToDisplay tz) day
     pure $ state & mode .~ Modal (Detail DetailDate (DetailInsert (textToField day')))
 
 newItem :: Stateful
