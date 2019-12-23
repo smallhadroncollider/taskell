@@ -356,3 +356,5 @@
 - Check times work no matter what timezone
 - Show time on short dates
 - Date validation
+- Check order of due items
+- Trim spaces for date input
