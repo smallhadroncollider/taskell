@@ -7,9 +7,9 @@ import ClassyPrelude
 
 import Control.Lens ((.~), (^.))
 
-import Data.Sequence      (adjust')
-import Data.Text          as T (splitOn, strip)
-import Data.Text.Encoding (decodeUtf8With)
+import           Data.Sequence      (adjust')
+import qualified Data.Text          as T (dropEnd, isSuffixOf, splitOn, strip)
+import           Data.Text.Encoding (decodeUtf8With)
 
 import Data.Time.Zones (TZ)
 
@@ -23,6 +23,13 @@ import qualified Data.Taskell.Task    as T (Task, addSubtask, appendDescription,
 import qualified IO.Config          as C (Config, markdown)
 import           IO.Config.Markdown (Config, descriptionOutput, dueOutput, subtaskOutput,
                                      taskOutput, titleOutput)
+
+data MarkdownInfo = MarkdownInfo
+    { mdTZ     :: TZ
+    , mdConfig :: Config
+    }
+
+type ReaderMarkdown = Reader MarkdownInfo Text
 
 -- parse code
 addSubItem :: Text -> Lists -> Lists
@@ -74,7 +81,7 @@ start config (current, errs) (text, line) =
     case find isJust $ uncurry (prefix config text) <$> matches of
         Just (Just set) -> (set current, errs)
         _ ->
-            if not (null (strip text))
+            if not (null (T.strip text))
                 then (current, errs <> [line])
                 else (current, errs)
 
@@ -92,51 +99,51 @@ parse config s = do
         else Left $ "could not parse line(s) " <> intercalate ", " (tshow <$> errs)
 
 -- stringify code
-subtaskStringify :: Config -> Text -> ST.Subtask -> Text
-subtaskStringify config t st =
-    foldl' (<>) t [subtaskOutput config, " ", pre, " ", st ^. ST.name, "\n"]
-  where
-    pre =
-        if st ^. ST.complete
-            then "[x]"
-            else "[ ]"
+clean :: Text -> Text
+clean txt =
+    if "\n" `T.isSuffixOf` txt
+        then T.dropEnd 1 txt
+        else txt
 
-descriptionStringify :: Config -> Text -> Text
-descriptionStringify config desc = concat $ add <$> splitOn "\n" desc
-  where
-    add d = concat [descriptionOutput config, " ", d, "\n"]
+subtaskSymbol :: Bool -> Text
+subtaskSymbol True  = "[x]"
+subtaskSymbol False = "[ ]"
 
-dueStringify :: TZ -> Config -> Due -> Text
-dueStringify tz config time = concat [dueOutput config, " ", timeToOutput tz time, "\n"]
+subtaskStringify :: ST.Subtask -> ReaderMarkdown
+subtaskStringify st = do
+    symbol <- subtaskOutput <$> asks mdConfig
+    pure . concat $ [symbol, " ", subtaskSymbol (st ^. ST.complete), " ", st ^. ST.name]
 
-nameStringify :: Config -> Text -> Text
-nameStringify config desc = concat [taskOutput config, " ", desc, "\n"]
+descriptionStringify :: Text -> ReaderMarkdown
+descriptionStringify desc = do
+    symbol <- descriptionOutput <$> asks mdConfig
+    let add d = concat [symbol, " ", d]
+    pure . clean . unlines $ add <$> T.splitOn "\n" desc
 
-taskStringify :: TZ -> Config -> Text -> T.Task -> Text
-taskStringify tz config s t =
-    foldl'
-        (<>)
-        s
-        [ nameStringify config (t ^. T.name)
-        , maybe "" (dueStringify tz config) (t ^. T.due)
-        , maybe "" (descriptionStringify config) (t ^. T.description)
-        , foldl' (subtaskStringify config) "" (t ^. T.subtasks)
-        ]
+dueStringify :: Due -> ReaderMarkdown
+dueStringify time = do
+    symbol <- dueOutput <$> asks mdConfig
+    tz <- asks mdTZ
+    pure $ concat [symbol, " ", timeToOutput tz time]
 
-listStringify :: TZ -> Config -> Text -> List -> Text
-listStringify tz config text list =
-    foldl'
-        (<>)
-        text
-        [ if null text
-              then ""
-              else "\n"
-        , titleOutput config
-        , " "
-        , list ^. title
-        , "\n\n"
-        , foldl' (taskStringify tz config) "" (list ^. tasks)
-        ]
+nameStringify :: Text -> ReaderMarkdown
+nameStringify desc = do
+    symbol <- taskOutput <$> asks mdConfig
+    pure $ concat [symbol, " ", desc]
 
-stringify :: TZ -> C.Config -> Lists -> ByteString
-stringify tz config ls = encodeUtf8 $ foldl' (listStringify tz (C.markdown config)) "" ls
+taskStringify :: T.Task -> ReaderMarkdown
+taskStringify t = do
+    nameString <- nameStringify (t ^. T.name)
+    dueString <- fromMaybe "" <$> sequence (dueStringify <$> t ^. T.due)
+    descriptionString <- fromMaybe "" <$> sequence (descriptionStringify <$> t ^. T.description)
+    subtaskString <- clean . unlines <$> sequence (subtaskStringify <$> t ^. T.subtasks)
+    pure . unlines . filter (/= "") $ [nameString, dueString, descriptionString, subtaskString]
+
+listStringify :: List -> ReaderMarkdown
+listStringify list = do
+    symbol <- titleOutput <$> asks mdConfig
+    taskString <- concat <$> sequence (taskStringify <$> list ^. tasks)
+    pure $ concat [symbol, " ", list ^. title, "\n\n", taskString]
+
+stringify :: Lists -> ReaderMarkdown
+stringify ls = clean . unlines <$> sequence (listStringify <$> ls)

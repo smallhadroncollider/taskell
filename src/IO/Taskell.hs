@@ -6,20 +6,21 @@ module IO.Taskell where
 
 import ClassyPrelude
 
-import Data.FileEmbed   (embedFile)
-import System.Directory (doesFileExist, getCurrentDirectory)
+import Control.Monad.Reader (runReader)
+import Data.FileEmbed       (embedFile)
+import System.Directory     (doesFileExist, getCurrentDirectory)
 
 import Data.Time.Zones (TZ)
 
 import Config             (usage, version)
 import Data.Taskell.Lists (Lists, analyse, initial)
 
-import           IO.Config         (Config, general, github, trello)
+import           IO.Config         (Config, general, github, markdown, trello)
 import           IO.Config.General (filename)
 import qualified IO.Config.GitHub  as GitHub (token)
 import qualified IO.Config.Trello  as Trello (token)
 
-import IO.Markdown (parse, stringify)
+import IO.Markdown (MarkdownInfo (MarkdownInfo), parse, stringify)
 
 import qualified IO.HTTP.GitHub as GitHub (GitHubIdentifier, getLists)
 import qualified IO.HTTP.Trello as Trello (TrelloBoardID, getLists)
@@ -144,7 +145,9 @@ createPath path = do
 
 -- writes Tasks to json file
 writeData :: TZ -> Config -> Lists -> FilePath -> IO ()
-writeData tz config tasks path = void (writeFile path $ stringify tz config tasks)
+writeData tz config tasks path = void (writeFile path output)
+  where
+    output = encodeUtf8 $ runReader (stringify tasks) (MarkdownInfo tz (markdown config))
 
 -- reads json file
 readData :: FilePath -> ReaderConfig (Either Text Lists)

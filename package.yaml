@@ -104,6 +104,7 @@ tests:
     - containers
     - file-embed
     - lens
+    - mtl
     - raw-strings-qq
     - taskell
     - tasty

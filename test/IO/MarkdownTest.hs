@@ -11,7 +11,8 @@ import Test.Tasty
 import Test.Tasty.ExpectedFailure (ignoreTest)
 import Test.Tasty.HUnit
 
-import Control.Lens ((&), (.~))
+import Control.Lens         ((&), (.~))
+import Control.Monad.Reader (runReader)
 
 import Data.Time.Zones     (utcTZ)
 import Data.Time.Zones.All (TZLabel (America__New_York), tzByLabel)
@@ -22,7 +23,7 @@ import qualified Data.Taskell.Subtask as ST (new)
 import           Data.Taskell.Task    (Task, addSubtask, due, new, setDescription)
 import qualified IO.Config            as C (defaultConfig)
 import           IO.Config.Markdown   (Config (..), defaultConfig)
-import           IO.Markdown.Internal (listStringify, parse, start)
+import           IO.Markdown.Internal (MarkdownInfo (MarkdownInfo), parse, start, stringify)
 
 -- alternative markdown configs
 alternativeConfig :: Config
@@ -71,6 +72,17 @@ taskWithDueTime = task & due .~ textToTime "2018-04-12 12:00 UTC"
 
 listWithDueTimeItem :: Lists
 listWithDueTimeItem = appendToLast taskWithDueTime list
+
+-- reader
+defaultReader :: MarkdownInfo
+defaultReader = MarkdownInfo utcTZ defaultConfig
+
+alternativeReader :: MarkdownInfo
+alternativeReader = MarkdownInfo utcTZ alternativeConfig
+
+-- simplify tests
+stringify' :: MarkdownInfo -> Lists -> Text
+stringify' md ls = runReader (stringify ls) md
 
 -- tests
 test_markdown :: TestTree
@@ -255,46 +267,39 @@ test_markdown =
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n"
-                               (foldl' (listStringify utcTZ defaultConfig) "" listWithItem))
+                               (stringify' defaultReader listWithItem))
                     , testCase
                           "Standard list with summary"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    > Summary\n"
-                               (foldl' (listStringify utcTZ defaultConfig) "" listWithSummaryItem))
+                               (stringify' defaultReader listWithSummaryItem))
                     , testCase
                           "Standard list with date"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    @ 2018-04-12\n"
-                               (foldl' (listStringify utcTZ defaultConfig) "" listWithDueDateItem))
+                               (stringify' defaultReader listWithDueDateItem))
                     , testCase
                           "Standard list with date - timezone"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    @ 2018-04-12 08:00 EDT\n"
-                               (foldl'
-                                    (listStringify (tzByLabel America__New_York) defaultConfig)
-                                    ""
+                               (stringify'
+                                    (MarkdownInfo (tzByLabel America__New_York) defaultConfig)
                                     listWithDueTimeItem))
                     , testCase
                           "Standard list with sub-task"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    * [x] Blah\n"
-                               (foldl'
-                                    (listStringify utcTZ defaultConfig)
-                                    ""
-                                    (makeSubTask "Blah" True)))
+                               (stringify' defaultReader (makeSubTask "Blah" True)))
                     , testCase
                           "Standard list with multi-line summary"
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n- Test Item\n    > Summary Line 1\n    > Summary Line 2\n"
-                               (foldl'
-                                    (listStringify utcTZ defaultConfig)
-                                    ""
-                                    listWithMultiLineSummaryItem))
+                               (stringify' defaultReader listWithMultiLineSummaryItem))
                     ]
               , testGroup
                     "Alternative Format"
@@ -303,16 +308,13 @@ test_markdown =
                           (assertEqual
                                "Markdown formatted output"
                                "## Test\n\n### Test Item\n"
-                               (foldl' (listStringify utcTZ alternativeConfig) "" listWithItem))
+                               (stringify' alternativeReader listWithItem))
                     , testCase
                           "Standard list with sub-task"
                           (assertEqual
                                "Markdown formatted output"
-                               "## Test\n\n- Test Item\n    * [ ] Blah\n"
-                               (foldl'
-                                    (listStringify utcTZ defaultConfig)
-                                    ""
-                                    (makeSubTask "Blah" False)))
+                               "## Test\n\n### Test Item\n- [ ] Blah\n"
+                               (stringify' alternativeReader (makeSubTask "Blah" False)))
                     ]
               ]
         ]
