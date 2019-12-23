@@ -93,11 +93,23 @@ test_date =
               , testGroup
                     "timeToText"
                     [ testCase
+                          "time"
+                          (assertEqual
+                               "Date in 18-May format"
+                               "00:00 18-May"
+                               (timeToText utcTZ testDate (DueTime testDate)))
+                    , testCase
+                          "time - non-utc"
+                          (assertEqual
+                               "Date in 17-May format"
+                               "20:00 17-May"
+                               (timeToText (tzByLabel America__New_York) testDate (DueTime testDate)))
+                    , testCase
                           "same year"
                           (assertEqual
                                "Date in 18-May format"
                                "18-May"
-                               (timeToText utcTZ testDate (DueTime testDate)))
+                               (timeToText utcTZ testDate (DueDate (fromGregorian 2018 5 18))))
                     , testCase
                           "different year"
                           (assertEqual

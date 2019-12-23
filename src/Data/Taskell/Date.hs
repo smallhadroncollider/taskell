@@ -17,13 +17,10 @@ module Data.Taskell.Date
 
 import ClassyPrelude
 
-import Control.Lens       ((^.))
-import Control.Lens.Tuple (_1)
-
 import Data.Time.LocalTime (ZonedTime (ZonedTime))
 import Data.Time.Zones     (TZ, localTimeToUTCTZ, timeZoneForUTCTime, utcToLocalTimeTZ)
 
-import Data.Time.Calendar (diffDays, toGregorian)
+import Data.Time.Calendar (diffDays)
 import Data.Time.Format   (FormatTime, ParseTime, formatTime, iso8601DateFormat, parseTimeM)
 
 import Data.Taskell.Date.RelativeParser (parseRelative)
@@ -58,29 +55,24 @@ isoFormat = iso8601DateFormat (Just "%H:%M:%S%Q%Z")
 utcToZonedTime :: TZ -> UTCTime -> ZonedTime
 utcToZonedTime tz time = ZonedTime (utcToLocalTimeTZ tz time) (timeZoneForUTCTime tz time)
 
-dayToYear :: Day -> Integer
-dayToYear = (^. _1) . toGregorian
-
-getYear :: Due -> Integer
-getYear (DueTime t) = dayToYear $ utctDay t
-getYear (DueDate d) = dayToYear d
+appendYear :: (FormatTime t, FormatTime s) => String -> t -> s -> String
+appendYear txt t1 t2 =
+    if format "%Y" t1 == format "%Y" t2
+        then txt
+        else txt <> " %Y"
 
 -- output
 format :: (FormatTime t) => String -> t -> Text
 format fmt = pack . formatTime defaultTimeLocale fmt
 
 timeToText :: TZ -> UTCTime -> Due -> Text
-timeToText tz now date = format fmt time
+timeToText _ now (DueDate day) = format fmt day
   where
-    time =
-        utcToLocalTimeTZ tz $
-        case date of
-            DueTime t -> t
-            DueDate d -> UTCTime d 0
-    fmt =
-        if getYear (DueTime now) == getYear date
-            then "%d-%b"
-            else "%d-%b %Y"
+    fmt = appendYear "%d-%b" now day
+timeToText tz now (DueTime time) = format fmt local
+  where
+    local = utcToLocalTimeTZ tz time
+    fmt = appendYear "%H:%M %d-%b" now local
 
 timeToDisplay :: TZ -> Due -> Text
 timeToDisplay _ (DueDate day)   = format dateFormat day

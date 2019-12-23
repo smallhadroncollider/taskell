@@ -354,3 +354,4 @@
 - Add test for subtask linebreaks to MarkdownTest
 - Config option to always use UTC for markdown output
 - Check times work no matter what timezone
+- Show time on short dates
