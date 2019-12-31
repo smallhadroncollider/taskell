@@ -20,7 +20,7 @@ import           IO.Config.General (filename)
 import qualified IO.Config.GitHub  as GitHub (token)
 import qualified IO.Config.Trello  as Trello (token)
 
-import IO.Markdown (MarkdownInfo (MarkdownInfo), parse, stringify)
+import IO.Markdown (MarkdownInfo (MarkdownInfo), parse, serialize)
 
 import qualified IO.HTTP.GitHub as GitHub (GitHubIdentifier, getLists)
 import qualified IO.HTTP.Trello as Trello (TrelloBoardID, getLists)
@@ -147,7 +147,7 @@ createPath path = do
 writeData :: TZ -> Config -> Lists -> FilePath -> IO ()
 writeData tz config tasks path = void (writeFile path output)
   where
-    output = encodeUtf8 $ runReader (stringify tasks) (MarkdownInfo tz (markdown config))
+    output = encodeUtf8 $ runReader (serialize tasks) (MarkdownInfo tz (markdown config))
 
 -- reads json file
 readData :: FilePath -> ReaderConfig (Either Text Lists)

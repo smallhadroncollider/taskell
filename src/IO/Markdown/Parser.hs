@@ -1,28 +1,27 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module IO.Markdown.Internal where
+module IO.Markdown.Parser where
 
 import ClassyPrelude
 
-import Control.Lens ((.~), (^.))
+import Control.Lens ((.~))
 
 import           Data.Sequence      (adjust')
-import qualified Data.Text          as T (splitOn, strip)
+import qualified Data.Text          as T (strip)
 import           Data.Text.Encoding (decodeUtf8With)
 
 import Data.Time.Zones (TZ)
 
-import           Data.Taskell.Date    (Due, textToTime, timeToOutput, timeToOutputLocal)
-import           Data.Taskell.List    (List, count, tasks, title, updateFn)
+import           Data.Taskell.Date    (textToTime)
+import           Data.Taskell.List    (count, updateFn)
 import           Data.Taskell.Lists   (Lists, appendToLast, newList)
-import qualified Data.Taskell.Subtask as ST (Subtask, complete, name, new)
-import qualified Data.Taskell.Task    as T (Task, addSubtask, appendDescription, description, due,
-                                            name, new, subtasks)
+import qualified Data.Taskell.Subtask as ST (new)
+import qualified Data.Taskell.Task    as T (addSubtask, appendDescription, due, new)
 
 import qualified IO.Config          as C (Config, markdown)
-import           IO.Config.Markdown (Config, descriptionOutput, dueOutput, localTimes,
-                                     subtaskOutput, taskOutput, titleOutput)
+import           IO.Config.Markdown (Config, descriptionOutput, dueOutput, subtaskOutput,
+                                     taskOutput, titleOutput)
 
 data MarkdownInfo = MarkdownInfo
     { mdTZ     :: TZ
@@ -97,52 +96,3 @@ parse config s = do
     if null errs
         then Right lists
         else Left $ "could not parse line(s) " <> intercalate ", " (tshow <$> errs)
-
--- stringify code
-subtaskSymbol :: Bool -> Text
-subtaskSymbol True  = "[x]"
-subtaskSymbol False = "[ ]"
-
-subtaskStringify :: ST.Subtask -> ReaderMarkdown
-subtaskStringify st = do
-    symbol <- subtaskOutput <$> asks mdConfig
-    pure . concat $ [symbol, " ", subtaskSymbol (st ^. ST.complete), " ", st ^. ST.name]
-
-descriptionStringify :: Text -> ReaderMarkdown
-descriptionStringify desc = do
-    symbol <- descriptionOutput <$> asks mdConfig
-    let add d = concat [symbol, " ", d]
-    pure . intercalate "\n" $ add <$> T.splitOn "\n" desc
-
-dueStringify :: Due -> ReaderMarkdown
-dueStringify time = do
-    symbol <- dueOutput <$> asks mdConfig
-    useLocal <- localTimes <$> asks mdConfig
-    tz <- asks mdTZ
-    let fn =
-            if useLocal
-                then timeToOutputLocal tz
-                else timeToOutput
-    pure $ concat [symbol, " ", fn time]
-
-nameStringify :: Text -> ReaderMarkdown
-nameStringify desc = do
-    symbol <- taskOutput <$> asks mdConfig
-    pure $ concat [symbol, " ", desc]
-
-taskStringify :: T.Task -> ReaderMarkdown
-taskStringify t = do
-    nameString <- nameStringify (t ^. T.name)
-    dueString <- fromMaybe "" <$> sequence (dueStringify <$> t ^. T.due)
-    descriptionString <- fromMaybe "" <$> sequence (descriptionStringify <$> t ^. T.description)
-    subtaskString <- intercalate "\n" <$> sequence (subtaskStringify <$> t ^. T.subtasks)
-    pure . unlines . filter (/= "") $ [nameString, dueString, descriptionString, subtaskString]
-
-listStringify :: List -> ReaderMarkdown
-listStringify list = do
-    symbol <- titleOutput <$> asks mdConfig
-    taskString <- concat <$> sequence (taskStringify <$> list ^. tasks)
-    pure $ concat [symbol, " ", list ^. title, "\n\n", taskString]
-
-stringify :: Lists -> ReaderMarkdown
-stringify ls = intercalate "\n" <$> sequence (listStringify <$> ls)

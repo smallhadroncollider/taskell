@@ -45,7 +45,8 @@ library:
   - Events.State.Types
   - Events.State.Types.Mode
   - IO.Config.Markdown
-  - IO.Markdown.Internal
+  - IO.Markdown.Parser
+  - IO.Markdown.Serializer
   - IO.HTTP.GitHub
   - IO.HTTP.Trello.List
   - IO.HTTP.Trello.ChecklistItem
