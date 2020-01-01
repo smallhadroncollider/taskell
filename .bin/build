@@ -16,6 +16,19 @@ if [ -z "$1" ]; then
     exit
 fi
 
+# stash any changes
+git stash
+
+# check cabal build works
+cabal build
+
+if [ $? -ne 0 ]
+then
+    git stash pop
+    echo "\033[0;31mCabal build failed\033[0m"
+    exit
+fi
+
 # make sure latest changes pushed to github
 git push --all && git push --tags
 
@@ -74,6 +87,9 @@ echo "
 
 echo "Release info copied to clipboard"
 
+# add to Hackage
+stack upload .
+
 # Homebrew Pull Request
 brew update
 brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
@@ -86,3 +102,6 @@ title: {{ site.name }}
 " > index.md && cat ../../README.md >> index.md && bundle exec jekyll build)
 (cd docs/html/_site && git add . && git commit -m "Latest Build" && git push)
 (cd docs/html && bundle exec cap production deploy)
+
+# unstash
+git stash pop
