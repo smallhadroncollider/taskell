@@ -17,6 +17,8 @@ module Data.Taskell.Date
 
 import ClassyPrelude
 
+import Control.Monad.Fail (MonadFail)
+
 import Data.Time.LocalTime (ZonedTime (ZonedTime))
 import Data.Time.Zones     (TZ, localTimeToUTCTZ, timeZoneForUTCTime, utcToLocalTimeTZ)
 
@@ -93,7 +95,7 @@ timeToOutputLocal _ (DueDate day)   = format dateFormat day
 timeToOutputLocal tz (DueTime time) = format timeFormat (utcToZonedTime tz time)
 
 -- input
-parseT :: (Monad m, ParseTime t) => String -> Text -> m t
+parseT :: (Monad m, MonadFail m, ParseTime t) => String -> Text -> m t
 parseT fmt txt = parseTimeM False defaultTimeLocale fmt (unpack txt)
 
 parseDate :: Text -> Maybe Due
