@@ -1,7 +1,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module IO.Markdown.Serializer where
+module IO.Markdown.Serializer
+    ( serialize
+    , MarkdownInfo(MarkdownInfo)
+    ) where
 
 import ClassyPrelude
 

@@ -8,18 +8,22 @@ module IO.Markdown.ParserTest
 import ClassyPrelude
 
 import Test.Tasty
-import Test.Tasty.ExpectedFailure (ignoreTest)
+
 import Test.Tasty.HUnit
 
-import Control.Lens ((&), (.~))
+import Control.Lens       ((&), (.~))
+import Data.Taskell.Date  (textToTime)
+import Data.Taskell.List  (create)
+import Data.Taskell.Lists (Lists, appendToLast, newList)
 
-import           Data.Taskell.Date    (textToTime)
-import           Data.Taskell.Lists   (Lists, appendToLast, newList)
 import qualified Data.Taskell.Subtask as ST (new)
 import           Data.Taskell.Task    (Task, addSubtask, due, new, setDescription)
-import qualified IO.Config            as C (defaultConfig)
-import           IO.Config.Markdown   (Config (..), defaultConfig)
-import           IO.Markdown.Parser   (parse, start)
+import           IO.Config.Markdown   (Config (Config), defaultConfig, descriptionOutput, dueOutput,
+                                       localTimes, subtaskOutput, taskOutput, titleOutput)
+import           IO.Markdown.Parser   (parse)
+
+err :: Either Text Lists
+err = Left "Could not parse file."
 
 -- alternative markdown configs
 alternativeConfig :: Config
@@ -42,6 +46,11 @@ list = newList "Test" empty
 
 listWithItem :: Lists
 listWithItem = appendToLast task list
+
+multiList :: Lists
+multiList =
+    fromList
+        [create "Test" (fromList [new "Test Item"]), create "Test 2" (fromList [new "Test Item 2"])]
 
 makeSubTask :: Text -> Bool -> Lists
 makeSubTask t b = appendToLast (addSubtask (ST.new t b) task) list
@@ -70,172 +79,122 @@ test_parser =
     testGroup
         "IO.Markdown"
         [ testGroup
-              "Line Parsing"
-              [ testGroup
-                    "Default Format"
-                    [ testCase
-                          "List Title"
-                          (assertEqual
-                               "One list"
-                               (list, [])
-                               (start defaultConfig (empty, []) ("## Test", 1)))
-                    , testCase
-                          "Blank line"
-                          (assertEqual
-                               "Nothing"
-                               (empty, [])
-                               (start defaultConfig (empty, []) ("", 1)))
-                    , testCase
-                          "Just spaces"
-                          (assertEqual
-                               "Nothing"
-                               (empty, [])
-                               (start defaultConfig (empty, []) ("        ", 1)))
-                    , testCase
-                          "Error"
-                          (assertEqual
-                               "Error on line 1"
-                               (empty, [1])
-                               (start defaultConfig (empty, []) ("Test", 1)))
-                    , testCase
-                          "List item"
-                          (assertEqual
-                               "List item"
-                               (listWithItem, [])
-                               (start defaultConfig (list, []) ("- Test Item", 1)))
-                    , testCase
-                          "Summary"
-                          (assertEqual
-                               "Summary"
-                               (listWithSummaryItem, [])
-                               (start defaultConfig (listWithItem, []) ("    > Summary", 1)))
-                    , testCase
-                          "Due Date"
-                          (assertEqual
-                               "Due Date"
-                               (listWithDueDateItem, [])
-                               (start defaultConfig (listWithItem, []) ("    @ 2018-04-12", 1)))
-                    , testCase
-                          "Sub-Task"
-                          (assertEqual
-                               "List item with Sub-Task"
-                               (makeSubTask "Blah" False, [])
-                               (start defaultConfig (listWithItem, []) ("    * Blah", 1)))
-                    , testCase
-                          "Complete Sub-Task"
-                          (assertEqual
-                               "List item with Sub-Task"
-                               (makeSubTask "Blah" True, [])
-                               (start defaultConfig (listWithItem, []) ("    * [x] Blah", 1)))
-                    , ignoreTest $
-                      testCase
-                          "List item without list"
-                          (assertEqual
-                               "Parse Error"
-                               (empty, [1])
-                               (start defaultConfig (empty, []) ("- Test Item", 1)))
-                    , ignoreTest $
-                      testCase
-                          "Sub task without list item"
-                          (assertEqual
-                               "Parse Error"
-                               (list, [1])
-                               (start defaultConfig (list, []) ("    * Blah", 1)))
-                    ]
-              , testGroup
-                    "Alternative Format"
-                    [ testCase
-                          "List Title"
-                          (assertEqual
-                               "One list"
-                               (list, [])
-                               (start alternativeConfig (empty, []) ("## Test", 1)))
-                    , testCase
-                          "Blank line"
-                          (assertEqual
-                               "Nothing"
-                               (empty, [])
-                               (start alternativeConfig (empty, []) ("", 1)))
-                    , testCase
-                          "Just spaces"
-                          (assertEqual
-                               "Nothing"
-                               (empty, [])
-                               (start alternativeConfig (empty, []) ("        ", 1)))
-                    , testCase
-                          "Error"
-                          (assertEqual
-                               "Error on line 1"
-                               (empty, [1])
-                               (start alternativeConfig (empty, []) ("* Test", 1)))
-                    , testCase
-                          "List item"
-                          (assertEqual
-                               "List item"
-                               (listWithItem, [])
-                               (start alternativeConfig (list, []) ("### Test Item", 1)))
-                    , testCase
-                          "Sub-Task"
-                          (assertEqual
-                               "List item with Sub-Task"
-                               (makeSubTask "Blah" False, [])
-                               (start alternativeConfig (listWithItem, []) ("- [ ] Blah", 1)))
-                    , testCase
-                          "Complete Sub-Task"
-                          (assertEqual
-                               "List item with Sub-Task"
-                               (makeSubTask "Blah" True, [])
-                               (start alternativeConfig (listWithItem, []) ("- [x] Blah", 1)))
-                    , testCase
-                          "Blank Sub-Task"
-                          (assertEqual
-                               "List item with blank Sub-Task"
-                               (makeSubTask "" True, [])
-                               (start alternativeConfig (listWithItem, []) ("- [x] ", 1)))
-                    , testCase
-                          "Sub-Task (old style)"
-                          (assertEqual
-                               "List item with Sub-Task"
-                               (makeSubTask "Blah" False, [])
-                               (start alternativeConfig (listWithItem, []) ("- Blah", 1)))
-                    ]
-              ]
-        , testGroup
-              "Parsing"
+              "Default Format"
               [ testCase
                     "List Title"
-                    (assertEqual
-                         "One empty list"
-                         (Right list)
-                         (parse C.defaultConfig (encodeUtf8 "## Test")))
+                    (assertEqual "One list" (Right list) (parse defaultConfig "## Test"))
               , testCase
-                    "List Items"
+                    "List item"
                     (assertEqual
-                         "List with item"
+                         "List item"
                          (Right listWithItem)
-                         (parse C.defaultConfig (encodeUtf8 "## Test\n- Test Item")))
+                         (parse defaultConfig "## Test\n\n- Test Item"))
               , testCase
-                    "List Item with Summary"
+                    "Multiple Lists"
                     (assertEqual
-                         "List item with a summary"
+                         "List item"
+                         (Right multiList)
+                         (parse defaultConfig "## Test\n\n- Test Item\n\n## Test 2\n\n- Test Item 2"))
+              , testCase
+                    "Summary"
+                    (assertEqual
+                         "Summary"
                          (Right listWithSummaryItem)
-                         (parse C.defaultConfig (encodeUtf8 "## Test\n- Test Item\n    > Summary")))
-              , testCase
-                    "Parsing Errors"
-                    (assertEqual
-                         "Errors"
-                         (Left "could not parse line(s) 3, 5")
-                         (parse
-                              C.defaultConfig
-                              (encodeUtf8 "## Test\n- Test Item\n* Spoon\n- Test Item\nCow")))
+                         (parse defaultConfig "## Test\n\n- Test Item\n    > Summary"))
               , testCase
                     "List Item with multi-line Summary"
                     (assertEqual
                          "List item with a summary"
                          (Right listWithMultiLineSummaryItem)
                          (parse
-                              C.defaultConfig
-                              (encodeUtf8
-                                   "## Test\n- Test Item\n    > Summary Line 1\n    > Summary Line 2")))
+                              defaultConfig
+                              "## Test\n\n- Test Item\n    > Summary Line 1\n    > Summary Line 2"))
+              , testCase
+                    "Due Date"
+                    (assertEqual
+                         "Due Date"
+                         (Right listWithDueDateItem)
+                         (parse defaultConfig "## Test\n\n- Test Item\n    @ 2018-04-12"))
+              , testCase
+                    "Sub-Task"
+                    (assertEqual
+                         "List item with Sub-Task"
+                         (Right (makeSubTask "Blah" False))
+                         (parse defaultConfig "## Test\n\n- Test Item\n    * [ ] Blah"))
+              , testCase
+                    "Complete Sub-Task"
+                    (assertEqual
+                         "List item with Sub-Task"
+                         (Right (makeSubTask "Blah" True))
+                         (parse defaultConfig "## Test\n\n- Test Item\n    * [x] Blah"))
+              ]
+        , testGroup
+              "Alternative Format"
+              [ testCase
+                    "List Title"
+                    (assertEqual "One list" (Right list) (parse alternativeConfig "## Test"))
+              , testCase
+                    "List item"
+                    (assertEqual
+                         "List item"
+                         (Right listWithItem)
+                         (parse alternativeConfig "## Test\n\n### Test Item"))
+              , testCase
+                    "Multiple Lists"
+                    (assertEqual
+                         "List item"
+                         (Right multiList)
+                         (parse
+                              alternativeConfig
+                              "## Test\n\n### Test Item\n\n## Test 2\n\n### Test Item 2"))
+              , testCase
+                    "Summary"
+                    (assertEqual
+                         "Summary"
+                         (Right listWithSummaryItem)
+                         (parse alternativeConfig "## Test\n\n### Test Item\n> Summary"))
+              , testCase
+                    "List Item with multi-line Summary"
+                    (assertEqual
+                         "List item with a summary"
+                         (Right listWithMultiLineSummaryItem)
+                         (parse
+                              alternativeConfig
+                              "## Test\n\n### Test Item\n> Summary Line 1\n> Summary Line 2"))
+              , testCase
+                    "Due Date"
+                    (assertEqual
+                         "Due Date"
+                         (Right listWithDueDateItem)
+                         (parse alternativeConfig "## Test\n\n### Test Item\n@ 2018-04-12"))
+              , testCase
+                    "Sub-Task"
+                    (assertEqual
+                         "List item with Sub-Task"
+                         (Right (makeSubTask "Blah" False))
+                         (parse alternativeConfig "## Test\n\n### Test Item\n- [ ] Blah"))
+              , testCase
+                    "Complete Sub-Task"
+                    (assertEqual
+                         "List item with Sub-Task"
+                         (Right (makeSubTask "Blah" True))
+                         (parse alternativeConfig "## Test\n\n### Test Item\n- [x] Blah"))
+              ]
+        , testGroup
+              "Errors"
+              [ testCase "Blank line" (assertEqual "Parse Error" err (parse defaultConfig ""))
+              , testCase
+                    "Just spaces"
+                    (assertEqual "Parse Error" err (parse defaultConfig "        "))
+              , testCase
+                    "Just whitespace"
+                    (assertEqual "Parse Error" err (parse defaultConfig "  \n  \n \t    "))
+              , testCase "Error" (assertEqual "Parse Error" err (parse defaultConfig "Test"))
+              , testCase
+                    "List item without list"
+                    (assertEqual "Parse Error" err (parse defaultConfig "- Test Item"))
+              , testCase
+                    "Sub task without list item"
+                    (assertEqual "Parse Error" err (parse defaultConfig "## Test\n    * Blah"))
               ]
         ]

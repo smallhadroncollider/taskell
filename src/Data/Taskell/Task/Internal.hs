@@ -27,6 +27,9 @@ type Update = Task -> Task
 $(makeLenses ''Task)
 
 -- operations
+create :: Text -> Maybe Due -> Maybe Text -> Seq ST.Subtask -> Task
+create name' due' description' subtasks' = Task name' description' subtasks' due'
+
 blank :: Task
 blank = Task "" Nothing empty Nothing
 

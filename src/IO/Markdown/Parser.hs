@@ -1,98 +1,67 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module IO.Markdown.Parser where
+module IO.Markdown.Parser
+    ( parse
+    ) where
 
 import ClassyPrelude
 
-import Control.Lens ((.~))
+import Data.Attoparsec.Text hiding (parse)
 
-import           Data.Sequence      (adjust')
-import qualified Data.Text          as T (strip)
-import           Data.Text.Encoding (decodeUtf8With)
+import qualified Data.Taskell.Date    as D (Due, textToTime)
+import qualified Data.Taskell.List    as L (List, create)
+import qualified Data.Taskell.Lists   as LS (Lists)
+import qualified Data.Taskell.Subtask as ST (Subtask, new)
+import qualified Data.Taskell.Task    as T (Task, create)
 
-import Data.Time.Zones (TZ)
+import IO.Config.Markdown (Config, descriptionOutput, dueOutput, subtaskOutput, taskOutput,
+                           titleOutput)
+import Utility.Parser     (lexeme, line)
 
-import           Data.Taskell.Date    (textToTime)
-import           Data.Taskell.List    (count, updateFn)
-import           Data.Taskell.Lists   (Lists, appendToLast, newList)
-import qualified Data.Taskell.Subtask as ST (new)
-import qualified Data.Taskell.Task    as T (addSubtask, appendDescription, due, new)
+-- config symbol parsing
+type Symbol = (Config -> Text) -> Parser ()
 
-import qualified IO.Config          as C (Config, markdown)
-import           IO.Config.Markdown (Config, descriptionOutput, dueOutput, subtaskOutput,
-                                     taskOutput, titleOutput)
+symP :: Config -> Symbol
+symP config fn = string (fn config) *> char ' ' $> ()
 
-data MarkdownInfo = MarkdownInfo
-    { mdTZ     :: TZ
-    , mdConfig :: Config
-    }
+-- utility functions
+emptyMay :: (MonoFoldable a) => a -> Maybe a
+emptyMay a =
+    if null a
+        then Nothing
+        else Just a
 
-type ReaderMarkdown = Reader MarkdownInfo Text
+-- parsers
+subtaskCompleteP :: Parser Bool
+subtaskCompleteP = (== 'x') <$> (char '[' *> (char 'x' <|> char ' ') <* char ']' <* char ' ')
 
--- parse code
-addSubItem :: Text -> Lists -> Lists
-addSubItem t ls = adjust' updateList i ls
-  where
-    i = length ls - 1
-    st
-        | "[ ] " `isPrefixOf` t = ST.new (drop 4 t) False
-        | "[x] " `isPrefixOf` t = ST.new (drop 4 t) True
-        | otherwise = ST.new t False
-    updateList l = updateFn j (T.addSubtask st) l
-      where
-        j = count l - 1
+subtaskP :: Symbol -> Parser ST.Subtask
+subtaskP sym = flip ST.new <$> (sym subtaskOutput *> subtaskCompleteP) <*> line
 
-addDescription :: Text -> Lists -> Lists
-addDescription t ls = adjust' updateList i ls
-  where
-    i = length ls - 1
-    updateList l = updateFn j (T.appendDescription t) l
-      where
-        j = count l - 1
+taskDescriptionP :: Symbol -> Parser (Maybe Text)
+taskDescriptionP sym = emptyMay <$> (intercalate "\n" <$> many' (sym descriptionOutput *> line))
 
-addDue :: Text -> Lists -> Lists
-addDue t ls = adjust' updateList i ls
-  where
-    i = length ls - 1
-    updateList l = updateFn j (T.due .~ textToTime t) l
-      where
-        j = count l - 1
+dueP :: Symbol -> Parser (Maybe D.Due)
+dueP sym = (D.textToTime =<<) <$> optional (sym dueOutput *> line)
 
-prefix :: Config -> Text -> (Config -> Text) -> (Text -> Lists -> Lists) -> Maybe (Lists -> Lists)
-prefix config str get set
-    | pre `isPrefixOf` str = Just $ set (drop (length pre) str)
-    | otherwise = Nothing
-  where
-    pre = get config `snoc` ' '
+taskNameP :: Symbol -> Parser Text
+taskNameP sym = sym taskOutput *> line
 
-matches :: [(Config -> Text, Text -> Lists -> Lists)]
-matches =
-    [ (titleOutput, newList)
-    , (taskOutput, appendToLast . T.new)
-    , (descriptionOutput, addDescription)
-    , (dueOutput, addDue)
-    , (subtaskOutput, addSubItem)
-    ]
+taskP :: Symbol -> Parser T.Task
+taskP sym =
+    T.create <$> taskNameP sym <*> dueP sym <*> taskDescriptionP sym <*>
+    (fromList <$> many' (subtaskP sym))
 
-start :: Config -> (Lists, [Int]) -> (Text, Int) -> (Lists, [Int])
-start config (current, errs) (text, line) =
-    case find isJust $ uncurry (prefix config text) <$> matches of
-        Just (Just set) -> (set current, errs)
-        _ ->
-            if not (null (T.strip text))
-                then (current, errs <> [line])
-                else (current, errs)
+listTitleP :: Symbol -> Parser Text
+listTitleP sym = lexeme $ sym titleOutput *> line
 
-decodeError :: String -> Maybe Word8 -> Maybe Char
-decodeError _ _ = Just '\65533'
+listP :: Symbol -> Parser L.List
+listP sym = L.create <$> listTitleP sym <*> (fromList <$> many' (taskP sym))
 
-parse :: C.Config -> ByteString -> Either Text Lists
-parse config s = do
-    let lns = lines $ decodeUtf8With decodeError s
-    let fn = start (C.markdown config)
-    let acc = (empty, [])
-    let (lists, errs) = foldl' fn acc $ zip lns [1 ..]
-    if null errs
-        then Right lists
-        else Left $ "could not parse line(s) " <> intercalate ", " (tshow <$> errs)
+markdownP :: Symbol -> Parser LS.Lists
+markdownP sym = fromList <$> many1 (listP sym) <* endOfInput
+
+-- parse
+parse :: Config -> Text -> Either Text LS.Lists
+parse config txt = first (const "Could not parse file.") (parseOnly (markdownP (symP config)) txt)

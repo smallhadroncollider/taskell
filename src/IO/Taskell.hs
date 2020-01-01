@@ -8,6 +8,7 @@ import ClassyPrelude
 
 import Control.Monad.Reader (runReader)
 import Data.FileEmbed       (embedFile)
+import Data.Text.Encoding   (decodeUtf8With)
 import System.Directory     (doesFileExist, getCurrentDirectory)
 
 import Data.Time.Zones (TZ)
@@ -150,5 +151,9 @@ writeData tz config tasks path = void (writeFile path output)
     output = encodeUtf8 $ runReader (serialize tasks) (MarkdownInfo tz (markdown config))
 
 -- reads json file
+decodeError :: String -> Maybe Word8 -> Maybe Char
+decodeError _ _ = Just '\65533'
+
 readData :: FilePath -> ReaderConfig (Either Text Lists)
-readData path = parse <$> asks ioConfig <*> readFile path
+readData path =
+    parse <$> (markdown <$> asks ioConfig) <*> (decodeUtf8With decodeError <$> readFile path)
