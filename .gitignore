@@ -8,6 +8,7 @@ large.md
 .stack-work/
 .stack-work-profile/
 .stack-build/
+dist-newstyle/
 releases/
 files/
 homebrew-taskell/

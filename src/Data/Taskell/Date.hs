@@ -17,6 +17,8 @@ module Data.Taskell.Date
 
 import ClassyPrelude
 
+import Control.Monad.Fail (MonadFail)
+
 import Data.Time.LocalTime (ZonedTime (ZonedTime))
 import Data.Time.Zones     (TZ, localTimeToUTCTZ, timeZoneForUTCTime, utcToLocalTimeTZ)
 
@@ -33,7 +35,7 @@ data Due
 instance Ord Due where
     compare (DueTime t) (DueDate d)   = t `compare` UTCTime d 0
     compare (DueDate d) (DueTime t)   = UTCTime d 0 `compare` t
-    compare (DueDate d1) (DueDate d2) = UTCTime d1 0 `compare` UTCTime d2 0
+    compare (DueDate d1) (DueDate d2) = d1 `compare` d2
     compare (DueTime t1) (DueTime t2) = t1 `compare` t2
 
 data Deadline
@@ -93,7 +95,7 @@ timeToOutputLocal _ (DueDate day)   = format dateFormat day
 timeToOutputLocal tz (DueTime time) = format timeFormat (utcToZonedTime tz time)
 
 -- input
-parseT :: (Monad m, ParseTime t) => String -> Text -> m t
+parseT :: (Monad m, MonadFail m, ParseTime t) => String -> Text -> m t
 parseT fmt txt = parseTimeM False defaultTimeLocale fmt (unpack txt)
 
 parseDate :: Text -> Maybe Due
