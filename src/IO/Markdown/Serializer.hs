@@ -28,52 +28,65 @@ data MarkdownInfo = MarkdownInfo
     , mdConfig :: Config
     }
 
-type ReaderMarkdown = Reader MarkdownInfo Text
+type ReaderMarkdown = Reader MarkdownInfo
 
-subtaskSymbol :: Bool -> Text
-subtaskSymbol True  = "[x]"
-subtaskSymbol False = "[ ]"
+-- utility functions
+askConf :: (Config -> a) -> ReaderMarkdown a
+askConf fn = fn <$> asks mdConfig
 
-subtaskStringify :: ST.Subtask -> ReaderMarkdown
-subtaskStringify st = do
-    symbol <- subtaskOutput <$> asks mdConfig
-    pure . concat $ [symbol, " ", subtaskSymbol (st ^. ST.complete), " ", st ^. ST.name]
+strMay :: (Applicative m) => (a -> m Text) -> Maybe a -> m Text
+strMay _ Nothing   = pure ""
+strMay fn (Just a) = fn a
 
-descriptionStringify :: Text -> ReaderMarkdown
-descriptionStringify desc = do
-    symbol <- descriptionOutput <$> asks mdConfig
-    let add d = concat [symbol, " ", d]
-    pure . intercalate "\n" $ add <$> T.splitOn "\n" desc
+space :: Text -> Text -> Text
+space symbol txt = symbol <> " " <> txt
 
-dueStringify :: Due -> ReaderMarkdown
-dueStringify time = do
-    symbol <- dueOutput <$> asks mdConfig
-    useLocal <- localTimes <$> asks mdConfig
-    tz <- asks mdTZ
-    let fn =
-            if useLocal
-                then timeToOutputLocal tz
-                else timeToOutput
-    pure $ concat [symbol, " ", fn time]
+timeFn :: ReaderMarkdown (Due -> Text)
+timeFn = bool timeToOutput <$> (timeToOutputLocal <$> asks mdTZ) <*> askConf localTimes
 
-nameStringify :: Text -> ReaderMarkdown
-nameStringify desc = do
-    symbol <- taskOutput <$> asks mdConfig
-    pure $ concat [symbol, " ", desc]
+-- serializers
+subtaskCompleteS :: Bool -> Text
+subtaskCompleteS True  = "[x]"
+subtaskCompleteS False = "[ ]"
 
-taskStringify :: T.Task -> ReaderMarkdown
-taskStringify t = do
-    nameString <- nameStringify (t ^. T.name)
-    dueString <- fromMaybe "" <$> sequence (dueStringify <$> t ^. T.due)
-    descriptionString <- fromMaybe "" <$> sequence (descriptionStringify <$> t ^. T.description)
-    subtaskString <- intercalate "\n" <$> sequence (subtaskStringify <$> t ^. T.subtasks)
-    pure . unlines . filter (/= "") $ [nameString, dueString, descriptionString, subtaskString]
+subtaskS :: ST.Subtask -> ReaderMarkdown Text
+subtaskS st = do
+    symbol <- askConf subtaskOutput
+    pure $ unwords [symbol, subtaskCompleteS (st ^. ST.complete), st ^. ST.name]
 
-listStringify :: List -> ReaderMarkdown
-listStringify list = do
-    symbol <- titleOutput <$> asks mdConfig
-    taskString <- concat <$> sequence (taskStringify <$> list ^. tasks)
-    pure $ concat [symbol, " ", list ^. title, "\n\n", taskString]
+subtasksS :: Seq ST.Subtask -> ReaderMarkdown Text
+subtasksS sts = intercalate "\n" <$> sequence (subtaskS <$> sts)
 
-serialize :: Lists -> ReaderMarkdown
-serialize ls = intercalate "\n" <$> sequence (listStringify <$> ls)
+descriptionS :: Text -> ReaderMarkdown Text
+descriptionS desc = do
+    symbol <- askConf descriptionOutput
+    pure . intercalate "\n" $ space symbol <$> T.splitOn "\n" desc
+
+dueS :: Due -> ReaderMarkdown Text
+dueS due = do
+    symbol <- askConf dueOutput
+    fn <- timeFn
+    pure $ space symbol (fn due)
+
+nameS :: Text -> ReaderMarkdown Text
+nameS desc = space <$> askConf taskOutput <*> pure desc
+
+taskS :: T.Task -> ReaderMarkdown Text
+taskS t =
+    unlines . filter (/= "") <$>
+    sequence
+        [ nameS (t ^. T.name)
+        , strMay dueS (t ^. T.due)
+        , strMay descriptionS (t ^. T.description)
+        , subtasksS (t ^. T.subtasks)
+        ]
+
+listS :: List -> ReaderMarkdown Text
+listS list = do
+    symbol <- askConf titleOutput
+    taskString <- concat <$> sequence (taskS <$> list ^. tasks)
+    pure . space symbol $ concat [list ^. title, "\n\n", taskString]
+
+-- serialize
+serialize :: Lists -> ReaderMarkdown Text
+serialize ls = intercalate "\n" <$> sequence (listS <$> ls)
