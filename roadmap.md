@@ -40,6 +40,8 @@
 
 ## Features
 
+- Key binding to move to top of next/previous list
+    > Should be able to not have a key defined for bottom of list
 - Theming sub-tasks
     > Currently use other styling
     * [ ] Selected
@@ -65,11 +67,6 @@
     * [ ] Search should filter
     * [ ] Show list each task belongs to?
     * [x] Backspace (customisable) removes date
-- Configuration options
-    > See #54
-    * [ ] Padding
-    * [ ] Move to top of list - different key binding?
-    * [ ] Show toggle bar
 - Edit task text in DETAIL mode
     > Need to be able to select different parts of the DETAIL modal. Probably need to rethink Mode constructors.
 - Show remaining time on near dates
@@ -364,3 +361,7 @@
     > Use `stack sdist .` to generate cabal file
 - Relative dates days and weeks shouldn't include time?
 - Use Attoparsec for parsing
+- Configuration options
+    > See #54
+    * [x] Padding
+    * [x] Show toggle bar
