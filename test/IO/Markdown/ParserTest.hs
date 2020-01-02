@@ -209,6 +209,6 @@ test_parser =
               "File"
               (assertEqual
                    "Parses whole file"
-                   (Right "test\nLists: 6\nTasks: 201")
+                   (Right "test\nLists: 6\nTasks: 202")
                    (analyse "test" <$> parse defaultConfig file))
         ]

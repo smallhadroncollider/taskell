@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module IO.Markdown.SerializerTest
     ( test_serializer
@@ -12,6 +13,7 @@ import Test.Tasty.HUnit
 
 import Control.Lens         ((&), (.~))
 import Control.Monad.Reader (runReader)
+import Data.FileEmbed       (embedFile)
 
 import Data.Time.Zones     (utcTZ)
 import Data.Time.Zones.All (TZLabel (America__New_York), tzByLabel)
@@ -22,7 +24,12 @@ import           Data.Taskell.Lists     (Lists, appendToLast, newList)
 import qualified Data.Taskell.Subtask   as ST (new)
 import           Data.Taskell.Task      (Task, addSubtask, due, new, setDescription)
 import           IO.Config.Markdown     (Config (..), defaultConfig)
+import           IO.Markdown.Parser     (parse)
 import           IO.Markdown.Serializer (MarkdownInfo (MarkdownInfo), serialize)
+
+-- complete taskell file
+file :: Text
+file = decodeUtf8 $(embedFile "test/IO/data/roadmap.md")
 
 -- alternative markdown configs
 alternativeConfig :: Config
@@ -178,4 +185,10 @@ test_serializer =
                                     listWithDueTimeItem))
                     ]
               ]
+        , testCase
+              "Parse then serialize"
+              (assertEqual
+                   "Returns same text"
+                   (Right file)
+                   (serialize' defaultReader <$> parse defaultConfig file))
         ]
