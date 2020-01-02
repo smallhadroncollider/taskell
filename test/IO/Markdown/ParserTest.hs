@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module IO.Markdown.ParserTest
     ( test_parser
@@ -11,10 +12,12 @@ import Test.Tasty
 
 import Test.Tasty.HUnit
 
-import Control.Lens       ((&), (.~))
+import Control.Lens   ((&), (.~))
+import Data.FileEmbed (embedFile)
+
 import Data.Taskell.Date  (textToTime)
 import Data.Taskell.List  (create)
-import Data.Taskell.Lists (Lists, appendToLast, newList)
+import Data.Taskell.Lists (Lists, analyse, appendToLast, newList)
 
 import qualified Data.Taskell.Subtask as ST (new)
 import           Data.Taskell.Task    (Task, addSubtask, due, new, setDescription)
@@ -22,8 +25,13 @@ import           IO.Config.Markdown   (Config (Config), defaultConfig, descripti
                                        localTimes, subtaskOutput, taskOutput, titleOutput)
 import           IO.Markdown.Parser   (parse)
 
+-- error message
 err :: Either Text Lists
 err = Left "Could not parse file."
+
+-- complete taskell file
+file :: Text
+file = decodeUtf8 $(embedFile "test/IO/data/roadmap.md")
 
 -- alternative markdown configs
 alternativeConfig :: Config
@@ -197,4 +205,10 @@ test_parser =
                     "Sub task without list item"
                     (assertEqual "Parse Error" err (parse defaultConfig "## Test\n    * Blah"))
               ]
+        , testCase
+              "File"
+              (assertEqual
+                   "Parses whole file"
+                   (Right "test\nLists: 6\nTasks: 201")
+                   (analyse "test" <$> parse defaultConfig file))
         ]
