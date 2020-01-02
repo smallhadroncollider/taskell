@@ -92,7 +92,7 @@ stack upload .
 
 # Homebrew Pull Request
 brew update
-brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz"
+brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz" taskell
 
 # Update taskell.app website
 (cd docs/html && echo "---
