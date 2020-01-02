@@ -30,8 +30,8 @@ charP = lexeme $ BChar <$> anyChar
 bindingP :: Parser [Binding]
 bindingP = lexeme $ (keyP <|> charP) `sepBy` char ','
 
-line :: Parser [(Binding, ActionType)]
-line =
+lineP :: Parser [(Binding, ActionType)]
+lineP =
     stripComments $ do
         name <- read <$> word
         _ <- lexeme $ char '='
@@ -39,7 +39,7 @@ line =
         pure $ (, name) <$> binds
 
 bindingsP :: Parser Bindings
-bindingsP = stripComments $ concat <$> many' line
+bindingsP = stripComments $ concat <$> many' lineP
 
 -- run parser
 bindings :: Text -> Either Text Bindings
