@@ -1,7 +1,8 @@
 module IO.Markdown
     ( parse
-    , stringify
+    , serialize
     , MarkdownInfo(MarkdownInfo)
     ) where
 
-import IO.Markdown.Internal
+import IO.Markdown.Parser     (parse)
+import IO.Markdown.Serializer (MarkdownInfo (MarkdownInfo), serialize)

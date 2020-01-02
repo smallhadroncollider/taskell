@@ -8,6 +8,7 @@ import ClassyPrelude
 
 import Control.Monad.Reader (runReader)
 import Data.FileEmbed       (embedFile)
+import Data.Text.Encoding   (decodeUtf8With)
 import System.Directory     (doesFileExist, getCurrentDirectory)
 
 import Data.Time.Zones (TZ)
@@ -20,7 +21,7 @@ import           IO.Config.General (filename)
 import qualified IO.Config.GitHub  as GitHub (token)
 import qualified IO.Config.Trello  as Trello (token)
 
-import IO.Markdown (MarkdownInfo (MarkdownInfo), parse, stringify)
+import IO.Markdown (MarkdownInfo (MarkdownInfo), parse, serialize)
 
 import qualified IO.HTTP.GitHub as GitHub (GitHubIdentifier, getLists)
 import qualified IO.HTTP.Trello as Trello (TrelloBoardID, getLists)
@@ -147,8 +148,12 @@ createPath path = do
 writeData :: TZ -> Config -> Lists -> FilePath -> IO ()
 writeData tz config tasks path = void (writeFile path output)
   where
-    output = encodeUtf8 $ runReader (stringify tasks) (MarkdownInfo tz (markdown config))
+    output = encodeUtf8 $ runReader (serialize tasks) (MarkdownInfo tz (markdown config))
 
 -- reads json file
+decodeError :: String -> Maybe Word8 -> Maybe Char
+decodeError _ _ = Just '\65533'
+
 readData :: FilePath -> ReaderConfig (Either Text Lists)
-readData path = parse <$> asks ioConfig <*> readFile path
+readData path =
+    parse <$> (markdown <$> asks ioConfig) <*> (decodeUtf8With decodeError <$> readFile path)
