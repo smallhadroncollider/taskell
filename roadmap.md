@@ -366,3 +366,4 @@
     * [x] Padding
     * [x] Show toggle bar
 - Add info about relative dates to Readme
+- Refactor Draw/Main to remove `if` statement
