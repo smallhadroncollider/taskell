@@ -11,7 +11,8 @@ import Data.Attoparsec.Text
 
 import Data.Time.Clock (addUTCTime)
 
-import Utility.Parser (lexeme)
+import Data.Taskell.Date.Types (Due (DueTime))
+import Utility.Parser          (lexeme)
 
 -- relative date parsing
 minute :: Int
@@ -50,8 +51,8 @@ relativeP now =
         period <- fromIntegral . sum <$> many1 (sP <|> mP <|> hP <|> dP <|> wP)
         pure $ Just (addUTCTime period now)
 
-parseRelative :: UTCTime -> Text -> Either Text UTCTime
+parseRelative :: UTCTime -> Text -> Either Text Due
 parseRelative now text =
     case parseOnly (relativeP now) text of
-        Right (Just time) -> Right time
+        Right (Just time) -> Right (DueTime time)
         _                 -> Left "Could not parse date."

@@ -13,14 +13,15 @@ import Test.Tasty.HUnit
 import Data.Time.Calendar (fromGregorian)
 import Data.Time.Clock    (secondsToDiffTime)
 
+import Data.Taskell.Date                (Due (DueTime))
 import Data.Taskell.Date.RelativeParser (parseRelative)
 
-toTime :: (Integer, Int, Int) -> Integer -> UTCTime
-toTime (y, m, d) seconds = UTCTime (fromGregorian y m d) (secondsToDiffTime seconds)
+toTime :: (Integer, Int, Int) -> Integer -> Due
+toTime (y, m, d) seconds = DueTime $ UTCTime (fromGregorian y m d) (secondsToDiffTime seconds)
 
 -- 08:53:03 18th December 2019
 time :: UTCTime
-time = toTime (2019, 12, 18) 31983
+time = UTCTime (fromGregorian 2019 12 18) 31983
 
 -- tests
 test_relative_parser :: TestTree
