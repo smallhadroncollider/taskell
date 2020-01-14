@@ -26,25 +26,7 @@ import Data.Time.Calendar (diffDays)
 import Data.Time.Format   (FormatTime, ParseTime, formatTime, iso8601DateFormat, parseTimeM)
 
 import Data.Taskell.Date.RelativeParser (parseRelative)
-
-data Due
-    = DueTime UTCTime
-    | DueDate Day
-    deriving (Show, Eq)
-
-instance Ord Due where
-    compare (DueTime t) (DueDate d)   = t `compare` UTCTime d 0
-    compare (DueDate d) (DueTime t)   = UTCTime d 0 `compare` t
-    compare (DueDate d1) (DueDate d2) = d1 `compare` d2
-    compare (DueTime t1) (DueTime t2) = t1 `compare` t2
-
-data Deadline
-    = Passed
-    | Today
-    | Tomorrow
-    | ThisWeek
-    | Plenty
-    deriving (Show, Eq)
+import Data.Taskell.Date.Types          (Deadline (..), Due (..))
 
 -- formats
 dateFormat :: String
@@ -112,7 +94,7 @@ inputToTime :: TZ -> UTCTime -> Text -> Maybe Due
 inputToTime tz now txt =
     parseDate txt <?> (DueTime . localTimeToUTCTZ tz <$> parseT timeDisplayFormat txt) <?>
     case parseRelative now txt of
-        Right utc -> Just $ DueTime utc
+        Right due -> Just due
         Left _    -> Nothing
 
 isoToTime :: Text -> Maybe Due
