@@ -1,3 +1,6 @@
+# stop on any errors
+set -e
+
 workDir=".stack-build"
 branch=$(git rev-parse --abbrev-ref HEAD)
 
