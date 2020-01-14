@@ -275,6 +275,16 @@ You shouldn't try to assign the `1`-`9` keys, as it will not overwrite the defau
 
 Due dates must be input with the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM`. The date will not be accepted otherwise.
 
+You can also pass in relative times such as `1w 2d` (for 1 week and 2 days). Valid units are:
+
+- `s` (seconds)
+- `m` (minutes)
+- `h` (hours)
+- `d` (days)
+- `w` (weeks)
+
+These can be used in any combination. If the time is made up only of days and/or weeks, the due date will not include a time.
+
 By default times are stored in the Markdown file as UTC. If you would like local times (and are unlikely to open the file in lots of different timezones) then you can set `localTimes` to `true` in the `markdown` section of the [config file](#configuration). If you have this setting on and you change timezone, you'll get a diff on all your times the next time you make changes to the file.
 
 

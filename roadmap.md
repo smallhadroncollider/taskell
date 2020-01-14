@@ -365,3 +365,4 @@
     > See #54
     * [x] Padding
     * [x] Show toggle bar
+- Add info about relative dates to Readme
