@@ -1,4 +1,10 @@
-module IO.Config.General where
+module IO.Config.General
+    ( Config
+    , defaultConfig
+    , parser
+    , filename
+    , debug
+    ) where
 
 import ClassyPrelude
 
@@ -14,12 +20,11 @@ data Config = Config
 defaultConfig :: Config
 defaultConfig = Config {filename = "taskell.md", debug = False}
 
+filenameP :: SectionParser String
+filenameP = maybe (filename defaultConfig) unpack . (noEmpty =<<) <$> fieldMb "filename"
+
+debugP :: SectionParser Bool
+debugP = fieldFlagDef "debug" False
+
 parser :: IniParser Config
-parser =
-    fromMaybe defaultConfig <$>
-    sectionMb
-        "general"
-        (do filenameCf <-
-                maybe (filename defaultConfig) unpack . (noEmpty =<<) <$> fieldMb "filename"
-            debugCf <- fieldFlagDef "debug" False
-            pure Config {filename = filenameCf, debug = debugCf})
+parser = fromMaybe defaultConfig <$> sectionMb "general" (Config <$> filenameP <*> debugP)

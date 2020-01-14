@@ -1,4 +1,14 @@
-module IO.Config.Markdown where
+module IO.Config.Markdown
+    ( Config(Config)
+    , defaultConfig
+    , parser
+    , titleOutput
+    , taskOutput
+    , descriptionOutput
+    , dueOutput
+    , subtaskOutput
+    , localTimes
+    ) where
 
 import ClassyPrelude
 
@@ -26,31 +36,31 @@ defaultConfig =
     , localTimes = False
     }
 
+titleOutputP :: SectionParser Text
+titleOutputP = fromMaybe (titleOutput defaultConfig) . (noEmpty . parseText =<<) <$> fieldMb "title"
+
+taskOutputP :: SectionParser Text
+taskOutputP = fromMaybe (taskOutput defaultConfig) . (noEmpty . parseText =<<) <$> fieldMb "task"
+
+descriptionOutputP :: SectionParser Text
+descriptionOutputP =
+    fromMaybe (descriptionOutput defaultConfig) . (noEmpty . parseText =<<) <$> fieldMb "summary"
+
+dueOutputP :: SectionParser Text
+dueOutputP = fromMaybe (dueOutput defaultConfig) . (noEmpty . parseText =<<) <$> fieldMb "due"
+
+subtaskOutputP :: SectionParser Text
+subtaskOutputP =
+    fromMaybe (subtaskOutput defaultConfig) . (noEmpty . parseText =<<) <$> fieldMb "subtask"
+
+localTimesP :: SectionParser Bool
+localTimesP = fieldFlagDef "localTimes" (localTimes defaultConfig)
+
 parser :: IniParser Config
 parser =
     fromMaybe defaultConfig <$>
     sectionMb
         "markdown"
-        (do titleOutputCf <-
-                fromMaybe (titleOutput defaultConfig) . (noEmpty . parseText =<<) <$>
-                fieldMb "title"
-            taskOutputCf <-
-                fromMaybe (taskOutput defaultConfig) . (noEmpty . parseText =<<) <$> fieldMb "task"
-            descriptionOutputCf <-
-                fromMaybe (descriptionOutput defaultConfig) . (noEmpty . parseText =<<) <$>
-                fieldMb "summary"
-            dueOutputCf <-
-                fromMaybe (dueOutput defaultConfig) . (noEmpty . parseText =<<) <$> fieldMb "due"
-            subtaskOutputCf <-
-                fromMaybe (subtaskOutput defaultConfig) . (noEmpty . parseText =<<) <$>
-                fieldMb "subtask"
-            localTimesCf <- fieldFlagDef "localTimes" (localTimes defaultConfig)
-            pure
-                Config
-                { titleOutput = titleOutputCf
-                , taskOutput = taskOutputCf
-                , descriptionOutput = descriptionOutputCf
-                , dueOutput = dueOutputCf
-                , subtaskOutput = subtaskOutputCf
-                , localTimes = localTimesCf
-                })
+        (Config <$> titleOutputP <*> taskOutputP <*> descriptionOutputP <*> dueOutputP <*>
+         subtaskOutputP <*>
+         localTimesP)

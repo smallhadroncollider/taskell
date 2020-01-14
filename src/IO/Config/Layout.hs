@@ -1,4 +1,13 @@
-module IO.Config.Layout where
+module IO.Config.Layout
+    ( Config
+    , defaultConfig
+    , parser
+    , padding
+    , columnWidth
+    , columnPadding
+    , descriptionIndicator
+    , statusBar
+    ) where
 
 import ClassyPrelude
 
