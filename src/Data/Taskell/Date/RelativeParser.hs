@@ -11,10 +11,14 @@ import Data.Attoparsec.Text
 
 import Data.Time.Clock (addUTCTime)
 
-import Data.Taskell.Date.Types (Due (DueTime))
-import Utility.Parser          (lexeme)
+import Data.Taskell.Date.Types (Due (DueDate, DueTime))
+import Utility.Parser          (lexeme, only)
 
--- relative date parsing
+-- utility functions
+addP :: (Integral a) => Parser a -> UTCTime -> Parser UTCTime
+addP p now = ($ now) . addUTCTime . fromIntegral . sum <$> many1 p
+
+-- relative time parsing
 minute :: Int
 minute = 60
 
@@ -27,32 +31,37 @@ day = hour * 24
 week :: Int
 week = day * 7
 
-periodP :: Char -> Parser Int
-periodP c = lexeme decimal <* char c
+timePeriodP :: Char -> Parser Int
+timePeriodP c = lexeme decimal <* char c
 
 wP :: Parser Int
-wP = (* week) <$> periodP 'w'
+wP = (* week) <$> timePeriodP 'w'
 
 dP :: Parser Int
-dP = (* day) <$> periodP 'd'
+dP = (* day) <$> timePeriodP 'd'
 
 hP :: Parser Int
-hP = (* hour) <$> periodP 'h'
+hP = (* hour) <$> timePeriodP 'h'
 
 mP :: Parser Int
-mP = (* minute) <$> periodP 'm'
+mP = (* minute) <$> timePeriodP 'm'
 
 sP :: Parser Int
-sP = periodP 's'
+sP = timePeriodP 's'
 
-relativeP :: UTCTime -> Parser (Maybe UTCTime)
-relativeP now =
-    lexeme $ do
-        period <- fromIntegral . sum <$> many1 (sP <|> mP <|> hP <|> dP <|> wP)
-        pure $ Just (addUTCTime period now)
+timeP :: UTCTime -> Parser (Maybe Due)
+timeP now = only . lexeme $ Just . DueTime <$> addP (sP <|> mP <|> hP <|> dP <|> wP) now
+
+-- relative date parsing
+dateP :: UTCTime -> Parser (Maybe Due)
+dateP now = only . lexeme $ Just . DueDate . utctDay <$> addP (dP <|> wP) now
+
+-- relative parser
+relativeP :: UTCTime -> Parser (Maybe Due)
+relativeP now = dateP now <|> timeP now
 
 parseRelative :: UTCTime -> Text -> Either Text Due
 parseRelative now text =
     case parseOnly (relativeP now) text of
-        Right (Just time) -> Right (DueTime time)
-        _                 -> Left "Could not parse date."
+        Right (Just due) -> Right due
+        _                -> Left "Could not parse date."

@@ -6,6 +6,9 @@ import ClassyPrelude
 
 import Data.Attoparsec.Text
 
+only :: Parser a -> Parser a
+only p = p <* endOfInput
+
 lexeme :: Parser a -> Parser a
 lexeme p = skipSpace *> p <* skipSpace
 
