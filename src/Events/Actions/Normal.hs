@@ -33,6 +33,7 @@ events
     , (A.Left, left)
     , (A.Right, right)
     , (A.Bottom, bottom)
+    , (A.Top, top)
     -- new tasks
     , (A.New, (startCreate =<<) . (newItem =<<) . store)
     , (A.NewAbove, (startCreate =<<) . (above =<<) . store)
