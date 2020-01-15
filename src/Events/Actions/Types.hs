@@ -17,6 +17,7 @@ data ActionType
     | Left
     | Right
     | Bottom
+    | Top
     | New
     | NewAbove
     | NewBelow
@@ -56,6 +57,7 @@ read "next"       = Next
 read "left"       = Left
 read "right"      = Right
 read "bottom"     = Bottom
+read "top"        = Top
 read "new"        = New
 read "newAbove"   = NewAbove
 read "newBelow"   = NewBelow

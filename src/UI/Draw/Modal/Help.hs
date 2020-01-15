@@ -24,6 +24,7 @@ descriptions =
     , ([A.Due], "Show tasks with due dates")
     , ([A.Previous, A.Next, A.Left, A.Right], "Move down / up / left / right")
     , ([A.Bottom], "Go to bottom of list")
+    , ([A.Top], "Go to top of list")
     , ([A.New], "Add a task")
     , ([A.NewAbove, A.NewBelow], "Add a task above / below")
     , ([A.Duplicate], "Duplicate a task")

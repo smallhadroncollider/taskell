@@ -24,6 +24,7 @@ module Events.State
     , above
     , below
     , bottom
+    , top
     , previous
     , duplicate
     , next
@@ -205,6 +206,12 @@ bottom = pure . selectLast
 
 selectLast :: InternalStateful
 selectLast state = setIndex state (countCurrent state - 1)
+
+top :: Stateful
+top = pure . selectFirst
+
+selectFirst :: InternalStateful
+selectFirst state = setIndex state (0)
 
 removeBlank :: Stateful
 removeBlank state = do
