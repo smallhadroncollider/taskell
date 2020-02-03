@@ -3,29 +3,33 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module IO.HTTP.GitHub.Card
-    ( Card
-    , cardToTask
+    ( MaybeCard(MaybeCard)
+    , maybeCardToTask
+    , content_url
     ) where
 
 import ClassyPrelude
 
 import Control.Lens (makeLenses, (^.))
-
-import Data.Text (replace)
+import Data.Text    (replace)
 
 import qualified Data.Taskell.Task as T (Task, new)
 import           IO.HTTP.Aeson     (deriveFromJSON)
 
-data Card = Card
-    { _note :: Text
+data MaybeCard = MaybeCard
+    { _note        :: Maybe Text
+    , _content_url :: Maybe Text
     } deriving (Eq, Show)
 
 -- strip underscores from field labels
-$(deriveFromJSON ''Card)
+$(deriveFromJSON ''MaybeCard)
 
 -- create lenses
-$(makeLenses ''Card)
+$(makeLenses ''MaybeCard)
 
 -- operations
-cardToTask :: Card -> T.Task
-cardToTask card = T.new $ replace "\r" "" $ replace "\n" " " (card ^. note)
+maybeCardToTask :: MaybeCard -> Maybe T.Task
+maybeCardToTask card =
+    case card ^. note of
+        Just txt -> Just . T.new $ replace "\r" "" $ replace "\n" " " txt
+        Nothing  -> Nothing

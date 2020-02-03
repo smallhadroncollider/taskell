@@ -24,12 +24,14 @@ import Network.HTTP.Simple       (getResponseBody, getResponseHeader, getRespons
 import Network.HTTP.Types.Header (HeaderName)
 
 import IO.HTTP.Aeson          (parseError)
-import IO.HTTP.GitHub.Card    (Card)
+import IO.HTTP.GitHub.Card    (MaybeCard, content_url, maybeCardToTask)
 import IO.HTTP.GitHub.Column  (Column, cardsURL, columnToList)
+import IO.HTTP.GitHub.Issue   (issueToTask)
 import IO.HTTP.GitHub.Project (Project, columnsURL, name)
 
 import Data.Taskell.List  (List)
 import Data.Taskell.Lists (Lists)
+import Data.Taskell.Task  (Task)
 
 type GitHubToken = Text
 
@@ -78,17 +80,36 @@ fetch' bs url = do
 fetch :: Text -> ReaderGitHubToken (Int, [ByteString])
 fetch = fetch' []
 
-getCards :: Text -> ReaderGitHubToken (Either Text [Card])
+fetchContent :: MaybeCard -> ReaderGitHubToken (Either Text Task)
+fetchContent card =
+    case maybeCardToTask card of
+        Just tsk -> pure $ Right tsk
+        Nothing ->
+            case card ^. content_url of
+                Nothing -> pure $ Left "Could not parse card"
+                Just url -> do
+                    (_, body) <- fetch url
+                    let iss = headMay body
+                    case iss of
+                        Nothing -> pure $ Left "Could not find card content"
+                        Just is -> pure . first parseError $ issueToTask <$> eitherDecodeStrict is
+
+getCards :: Text -> ReaderGitHubToken (Either Text [Task])
 getCards url = do
     (status, body) <- fetch url
-    pure $
-        case status of
-            200 ->
-                case concatEithers (eitherDecodeStrict <$> body) of
-                    Right cards -> Right cards
-                    Left err    -> Left (parseError err)
-            429 -> Left "Too many cards"
-            _ -> Left $ tshow status <> " error while fetching " <> url
+    case status of
+        200 ->
+            case concatEithers (eitherDecodeStrict <$> body) of
+                Right cards -> do
+                    cds <- sequence (fetchContent <$> cards)
+                    let (ls, rs) = partitionEithers cds
+                    pure $
+                        if null ls
+                            then Right rs
+                            else Left (unlines ls)
+                Left err -> pure $ Left (parseError err)
+        429 -> pure $ Left "Too many cards"
+        _ -> pure . Left $ tshow status <> " error while fetching " <> url
 
 addCard :: Column -> ReaderGitHubToken (Either Text List)
 addCard column = do

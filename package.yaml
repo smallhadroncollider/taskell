@@ -48,6 +48,7 @@ library:
   - IO.Markdown.Parser
   - IO.Markdown.Serializer
   - IO.HTTP.GitHub
+  - IO.HTTP.GitHub.Card
   - IO.HTTP.Trello.List
   - IO.HTTP.Trello.ChecklistItem
   - IO.Keyboard
