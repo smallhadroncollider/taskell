@@ -1,4 +1,9 @@
-module IO.Config.Trello where
+module IO.Config.Trello
+    ( Config
+    , defaultConfig
+    , parser
+    , token
+    ) where
 
 import ClassyPrelude
 
@@ -13,10 +18,8 @@ data Config = Config
 defaultConfig :: Config
 defaultConfig = Config {token = Nothing}
 
+tokenP :: SectionParser (Maybe TrelloToken)
+tokenP = fieldMb "token"
+
 parser :: IniParser Config
-parser =
-    fromMaybe defaultConfig <$>
-    sectionMb
-        "trello"
-        (do tokenCf <- fieldMb "token"
-            pure Config {token = tokenCf})
+parser = fromMaybe defaultConfig <$> sectionMb "trello" (Config <$> tokenP)

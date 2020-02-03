@@ -12,6 +12,10 @@
 ## Refactoring
 
 - Refactor Task `Update` to be `Task -> Maybe Task`?
+- Refactor IO.Github
+    * [x] Issue -> AutomatedCard
+    * [ ] Tidy up logic
+    * [ ] Less nesting
 - Add tests for IO.GitHub
 - Break up State module
     * [ ] More of logic should go into Task, List, and Lists
@@ -21,6 +25,8 @@
 ## Bugs
 
 - Help modal needs to wrap and scroll
+- Import GitHub descriptions should retain new lines
+    > Need to sort new line rendering first
 - Empty subtasks create "---" task
     > Feel like I added this for some reason, can't think why...
 - Pressing Esc while editing a task should go back to previous version?
@@ -40,13 +46,6 @@
 
 ## Features
 
-- Key binding to move to top of next/previous list
-    > Should be able to not have a key defined for bottom of list
-- Theming sub-tasks
-    > Currently use other styling
-    * [ ] Selected
-    * [ ] Not done
-    * [ ] Done
 - Define key binding info in one place
     > Currently all over the place
     * [ ] Bindings
@@ -124,6 +123,15 @@
 
 ## In Progress
 
+- Theming sub-tasks
+    > Currently use other styling
+    * [ ] Selected
+    * [ ] Not done
+    * [ ] Done
+- Top level `Taskell` namespace
+- Add `y` to relative date parsing
+- Key binding to move to top of next/previous list
+    > Should be able to not have a key defined for bottom of list
 
 ## Done
 
@@ -365,3 +373,6 @@
     > See #54
     * [x] Padding
     * [x] Show toggle bar
+- Add info about relative dates to Readme
+- Refactor Draw/Main to remove `if` statement
+- Refactor Config files to use applicatives

@@ -1,3 +1,6 @@
+# stop on any errors
+set -e
+
 workDir=".stack-build"
 branch=$(git rev-parse --abbrev-ref HEAD)
 
@@ -42,6 +45,8 @@ mkdir -p "releases/$1/taskell"
 # Mac
 stack build --work-dir "$workDir" --ghc-options -O3
 
+strip "$(stack path --local-install-root --work-dir $workDir)/bin/taskell" # remove tokens
+
 tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory="$(stack path --local-install-root --work-dir $workDir)/bin" "taskell"
 
 
@@ -51,6 +56,8 @@ stack build --work-dir "$workDir" --docker --ghc-options -O3
 
 LINUX_FULL_PATH=$(find "$workDir" -path "*linux*" -and -path "*bin/taskell")
 LINUX_PATH=${LINUX_FULL_PATH%"taskell"}
+
+strip "$LINUX_FULL_PATH" # remove tokens
 
 tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz"  --directory="$LINUX_PATH" "taskell"
 
@@ -90,9 +97,6 @@ echo "Release info copied to clipboard"
 # add to Hackage
 stack upload .
 
-# Homebrew Pull Request
-brew update
-brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz" taskell
 
 # Update taskell.app website
 (cd docs/html && echo "---
@@ -102,6 +106,12 @@ title: {{ site.name }}
 " > index.md && cat ../../README.md >> index.md && bundle exec jekyll build)
 (cd docs/html/_site && git add . && git commit -m "Latest Build" && git push)
 (cd docs/html && bundle exec cap production deploy)
+
+
+# Homebrew Pull Request
+brew update
+brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz" taskell
+
 
 # unstash
 git stash pop

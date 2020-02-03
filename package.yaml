@@ -1,5 +1,5 @@
 name: taskell
-version: '1.9.1.0'
+version: '1.9.2.0'
 category: Command Line Tools
 author: Mark Wales
 maintainer: mark@smallhadroncollider.com
@@ -48,6 +48,7 @@ library:
   - IO.Markdown.Parser
   - IO.Markdown.Serializer
   - IO.HTTP.GitHub
+  - IO.HTTP.GitHub.Card
   - IO.HTTP.Trello.List
   - IO.HTTP.Trello.ChecklistItem
   - IO.Keyboard

@@ -24,10 +24,5 @@ renderMain = do
     listWidgets <- toList <$> sequence (renderList `mapWithIndex` ls)
     pad <- padding <$> asks dsLayout
     let mainWidget = viewport RNLists Horizontal . padTopBottom pad $ hBox listWidgets
-    showStatusBar <- statusBar <$> asks dsLayout
-    sb <- renderStatusBar
-    let sb' =
-            if showStatusBar
-                then sb
-                else emptyWidget
-    renderSearch (mainWidget <=> sb')
+    sb <- bool emptyWidget <$> renderStatusBar <*> (statusBar <$> asks dsLayout)
+    renderSearch (mainWidget <=> sb)

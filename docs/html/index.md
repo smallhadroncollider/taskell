@@ -214,6 +214,9 @@ Taskell has a `config.ini` file:
 filename = taskell.md
 
 [layout]
+; top/bottom padding for the taskell window
+padding = 1
+
 ; the width of a column
 column_width = 30
 
@@ -224,6 +227,9 @@ column_padding = 3
 ; the icon to use when a task has a description
 ; the default icon may not display on all systems
 description_indicator = "≡"
+
+; whether to show the statusbar
+statusbar = true
 
 [markdown]
 ; the markdown to start a title line with

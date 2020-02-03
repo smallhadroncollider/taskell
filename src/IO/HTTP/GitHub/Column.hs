@@ -11,10 +11,10 @@ import ClassyPrelude
 
 import Control.Lens (Lens', makeLenses, (^.))
 
-import IO.HTTP.Aeson       (deriveFromJSON)
-import IO.HTTP.GitHub.Card (Card, cardToTask)
+import IO.HTTP.Aeson (deriveFromJSON)
 
 import qualified Data.Taskell.List as L (List, create)
+import qualified Data.Taskell.Task as T (Task)
 
 data Column = Column
     { _name      :: Text
@@ -31,5 +31,5 @@ $(makeLenses ''Column)
 cardsURL :: Lens' Column Text
 cardsURL = cards_url
 
-columnToList :: Column -> [Card] -> L.List
-columnToList ls cards = L.create (ls ^. name) (fromList $ cardToTask <$> cards)
+columnToList :: Column -> [T.Task] -> L.List
+columnToList ls tasks = L.create (ls ^. name) (fromList tasks)

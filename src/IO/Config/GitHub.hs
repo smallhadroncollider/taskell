@@ -1,4 +1,9 @@
-module IO.Config.GitHub where
+module IO.Config.GitHub
+    ( Config
+    , defaultConfig
+    , parser
+    , token
+    ) where
 
 import ClassyPrelude
 
@@ -13,10 +18,8 @@ data Config = Config
 defaultConfig :: Config
 defaultConfig = Config {token = Nothing}
 
+tokenP :: SectionParser (Maybe GitHubToken)
+tokenP = fieldMb "token"
+
 parser :: IniParser Config
-parser =
-    fromMaybe defaultConfig <$>
-    sectionMb
-        "github"
-        (do tokenCf <- fieldMb "token"
-            pure Config {token = tokenCf})
+parser = fromMaybe defaultConfig <$> sectionMb "github" (Config <$> tokenP)
