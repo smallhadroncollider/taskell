@@ -11,10 +11,10 @@ module IO.HTTP.GitHub.Card
 import ClassyPrelude
 
 import Control.Lens (makeLenses, (^.))
-import Data.Text    (replace)
 
-import qualified Data.Taskell.Task as T (Task, new)
-import           IO.HTTP.Aeson     (deriveFromJSON)
+import qualified Data.Taskell.Task      as T (Task, new)
+import           IO.HTTP.Aeson          (deriveFromJSON)
+import           IO.HTTP.GitHub.Utility (cleanUp)
 
 data MaybeCard = MaybeCard
     { _note        :: Maybe Text
@@ -29,4 +29,4 @@ $(makeLenses ''MaybeCard)
 
 -- operations
 maybeCardToTask :: MaybeCard -> Maybe T.Task
-maybeCardToTask card = T.new . replace "\r" "" . replace "\n" " " <$> card ^. note
+maybeCardToTask card = T.new . cleanUp <$> card ^. note

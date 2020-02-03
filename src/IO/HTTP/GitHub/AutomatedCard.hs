@@ -10,10 +10,10 @@ module IO.HTTP.GitHub.AutomatedCard
 import ClassyPrelude
 
 import Control.Lens (makeLenses, (^.))
-import Data.Text    (replace)
 
-import qualified Data.Taskell.Task as T (Task, new, setDescription)
-import           IO.HTTP.Aeson     (deriveFromJSON)
+import qualified Data.Taskell.Task      as T (Task, new, setDescription)
+import           IO.HTTP.Aeson          (deriveFromJSON)
+import           IO.HTTP.GitHub.Utility (cleanUp)
 
 data AutomatedCard = AutomatedCard
     { _title :: Text
@@ -28,6 +28,6 @@ $(makeLenses ''AutomatedCard)
 
 -- operations
 automatedCardToTask :: AutomatedCard -> T.Task
-automatedCardToTask automatedCard = T.setDescription (automatedCard ^. body) task
+automatedCardToTask automatedCard = T.setDescription (cleanUp (automatedCard ^. body)) task
   where
-    task = T.new $ replace "\r" "" $ replace "\n" " " (automatedCard ^. title)
+    task = T.new $ cleanUp (automatedCard ^. title)
