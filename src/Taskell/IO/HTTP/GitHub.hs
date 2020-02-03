@@ -11,7 +11,6 @@ module Taskell.IO.HTTP.GitHub
 import ClassyPrelude
 
 import Control.Lens  ((^.))
-import Data.Either   (lefts, rights)
 import Data.Sequence (mapWithIndex, (!?))
 import Data.Text     (splitOn, strip)
 
@@ -40,12 +39,9 @@ type GitHubIdentifier = Text
 type ReaderGitHubToken a = ReaderT GitHubToken IO a
 
 concatEithers :: [Either String [a]] -> Either String [a]
-concatEithers vals =
-    if null errors
-        then Right $ concat (rights vals)
-        else Left $ unlines errors
+concatEithers vals = bool (Left errs) (Right as) (null errs)
   where
-    errors = lefts vals
+    (errs, as) = bimap unlines concat $ partitionEithers vals
 
 root :: Text
 root = "https://api.github.com/"
@@ -70,8 +66,7 @@ fetchURL :: Text -> ReaderGitHubToken (Response ByteString)
 fetchURL url = do
     initialRequest <- lift $ parseRequest (unpack url)
     rHeaders <- headers
-    let request = initialRequest {requestHeaders = rHeaders}
-    lift $ httpBS request
+    lift . httpBS $ initialRequest {requestHeaders = rHeaders}
 
 fetch' :: [ByteString] -> Text -> ReaderGitHubToken (Int, [ByteString])
 fetch' bs url = do
@@ -103,11 +98,8 @@ getCards url = do
             case concatEithers (eitherDecodeStrict <$> body) of
                 Right cards -> do
                     cds <- sequence (fetchContent <$> cards)
-                    let (ls, rs) = partitionEithers cds
-                    pure $
-                        if null ls
-                            then Right rs
-                            else Left (unlines ls)
+                    let (ls, rs) = first unlines $ partitionEithers cds
+                    pure $ bool (Left ls) (Right rs) (null ls)
                 Left err -> pure $ Left (parseError err)
         429 -> pure $ Left "Too many cards"
         _ -> pure . Left $ tshow status <> " error while fetching " <> url
