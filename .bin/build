@@ -45,6 +45,8 @@ mkdir -p "releases/$1/taskell"
 # Mac
 stack build --work-dir "$workDir" --ghc-options -O3
 
+strip "$(stack path --local-install-root --work-dir $workDir)/bin/taskell" # remove tokens
+
 tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory="$(stack path --local-install-root --work-dir $workDir)/bin" "taskell"
 
 
@@ -54,6 +56,8 @@ stack build --work-dir "$workDir" --docker --ghc-options -O3
 
 LINUX_FULL_PATH=$(find "$workDir" -path "*linux*" -and -path "*bin/taskell")
 LINUX_PATH=${LINUX_FULL_PATH%"taskell"}
+
+strip "$LINUX_FULL_PATH" # remove tokens
 
 tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz"  --directory="$LINUX_PATH" "taskell"
 
