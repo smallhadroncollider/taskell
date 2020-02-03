@@ -2,9 +2,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module IO.HTTP.GitHub.Issue
-    ( Issue(Issue)
-    , issueToTask
+module IO.HTTP.GitHub.AutomatedCard
+    ( AutomatedCard(AutomatedCard)
+    , automatedCardToTask
     ) where
 
 import ClassyPrelude
@@ -15,19 +15,19 @@ import Data.Text    (replace)
 import qualified Data.Taskell.Task as T (Task, new, setDescription)
 import           IO.HTTP.Aeson     (deriveFromJSON)
 
-data Issue = Issue
+data AutomatedCard = AutomatedCard
     { _title :: Text
     , _body  :: Text
     } deriving (Eq, Show)
 
 -- strip underscores from field labels
-$(deriveFromJSON ''Issue)
+$(deriveFromJSON ''AutomatedCard)
 
 -- create lenses
-$(makeLenses ''Issue)
+$(makeLenses ''AutomatedCard)
 
 -- operations
-issueToTask :: Issue -> T.Task
-issueToTask issue = T.setDescription (issue ^. body) task
+automatedCardToTask :: AutomatedCard -> T.Task
+automatedCardToTask automatedCard = T.setDescription (automatedCard ^. body) task
   where
-    task = T.new $ replace "\r" "" $ replace "\n" " " (issue ^. title)
+    task = T.new $ replace "\r" "" $ replace "\n" " " (automatedCard ^. title)

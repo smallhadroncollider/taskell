@@ -23,11 +23,11 @@ import Network.HTTP.Simple       (getResponseBody, getResponseHeader, getRespons
                                   parseRequest)
 import Network.HTTP.Types.Header (HeaderName)
 
-import IO.HTTP.Aeson          (parseError)
-import IO.HTTP.GitHub.Card    (MaybeCard, content_url, maybeCardToTask)
-import IO.HTTP.GitHub.Column  (Column, cardsURL, columnToList)
-import IO.HTTP.GitHub.Issue   (issueToTask)
-import IO.HTTP.GitHub.Project (Project, columnsURL, name)
+import IO.HTTP.Aeson                (parseError)
+import IO.HTTP.GitHub.AutomatedCard (automatedCardToTask)
+import IO.HTTP.GitHub.Card          (MaybeCard, content_url, maybeCardToTask)
+import IO.HTTP.GitHub.Column        (Column, cardsURL, columnToList)
+import IO.HTTP.GitHub.Project       (Project, columnsURL, name)
 
 import Data.Taskell.List  (List)
 import Data.Taskell.Lists (Lists)
@@ -92,7 +92,8 @@ fetchContent card =
                     let iss = headMay body
                     case iss of
                         Nothing -> pure $ Left "Could not find card content"
-                        Just is -> pure . first parseError $ issueToTask <$> eitherDecodeStrict is
+                        Just is ->
+                            pure . first parseError $ automatedCardToTask <$> eitherDecodeStrict is
 
 getCards :: Text -> ReaderGitHubToken (Either Text [Task])
 getCards url = do
