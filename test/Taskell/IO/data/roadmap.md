@@ -7,26 +7,21 @@
     * [ ] Blog posts for updates
 - Add to Flatpack
     > https://opensource.com/article/19/10/how-build-flatpak-packaging
-- Use Shake instead of bash script
 
 ## Refactoring
 
+- 乤乭 乤亍 乤乭乫 乤乭亍乫 乤乭 乤乭亍
 - Refactor Task `Update` to be `Task -> Maybe Task`?
-- Refactor IO.Github
-    * [x] Issue -> AutomatedCard
-    * [ ] Tidy up logic
-    * [ ] Less nesting
-- Add tests for IO.GitHub
+- Use Attoparsec for parsing
+- Add tests for Taskell.IO.GitHub
 - Break up State module
     * [ ] More of logic should go into Task, List, and Lists
 - Parse checkItems Trello JSON using Aeson FromJSON rather than needing extra record type
 - Remove duplication of config - currently using ini and hard-coded defaults
+- Use Shake instead of bash script
 
 ## Bugs
 
-- Help modal needs to wrap and scroll
-- Import GitHub descriptions should retain new lines
-    > Need to sort new line rendering first
 - Empty subtasks create "---" task
     > Feel like I added this for some reason, can't think why...
 - Pressing Esc while editing a task should go back to previous version?
@@ -34,6 +29,7 @@
     > Sometimes defaults to 0, when there is something to be found
 - Very long words should get hyphenated
     > The cursor gets lost if a word is longer than the line - URLs in particular can cause issues
+- Help modal needs to wrap and scroll
 - Limit modal height based on content
 - Multiple spaces in a line don't show up as more than one, but are saved as more than one
 - Task description should be visible by default in task detail
@@ -46,6 +42,8 @@
 
 ## Features
 
+- Add Cabal test to build process
+    > Use `stack sdist .` to generate cabal file
 - Define key binding info in one place
     > Currently all over the place
     * [ ] Bindings
@@ -54,7 +52,6 @@
     * [ ] Generate bindings.ini from it
 - Somehow merge `event` and `events` in Actions that use bindings
     > Can one event trigger multiple separate state changes?
-    * [ ] Should support multi-key bindings like `gg`
 - Some way to just see tasks with due dates
     * [x] Sort by date
     * [x] Scrollable
@@ -66,9 +63,13 @@
     * [ ] Search should filter
     * [ ] Show list each task belongs to?
     * [x] Backspace (customisable) removes date
+- Configuration options
+    > See #54
+    * [ ] Padding
+    * [ ] Move to top of list - different key binding?
+    * [ ] Show toggle bar
 - Edit task text in DETAIL mode
     > Need to be able to select different parts of the DETAIL modal. Probably need to rethink Mode constructors.
-- Show remaining time on near dates
 - Pressing Undo in DUE mode should undo without leaving view
     > Fallthrough to NORMAL events more generally? Might require rethinking modes to separate behaviour and things being tracked?
 - Add a List widget for common actions between tasks and sub-tasks
@@ -123,14 +124,8 @@
 
 ## In Progress
 
-- Theming sub-tasks
-    > Currently use other styling
-    * [ ] Selected
-    * [ ] Not done
-    * [ ] Done
-- Add `y` to relative date parsing
-- Key binding to move to top of next/previous list
-    > Should be able to not have a key defined for bottom of list
+- Relative dates days and weeks shouldn't include time?
+- Show remaining time on near dates
 
 ## Done
 
@@ -204,7 +199,7 @@
 - `C` doesn't work properly
 - Custom colours
 - `.taskell` config file in home directory
-- Rename Persistence to IO.Taskell
+- Rename Persistence to Taskell.IO
 - List titles sometimes go missing
 - Use Template Haskell to import in config file templates
 - On `?` show keyboard commands
@@ -292,14 +287,14 @@
 - Update Task field naming
     * [x] Task: description -> name/title
     * [x] Task: summary -> description
-    * [x] UI.Modal.SubTasks -> UI.Modal.Detail
+    * [x] Taskell.UI.Modal.SubTasks -> Taskell.UI.Modal.Detail
 - The isBlank check on tasks could potentially delete a task with no description but which does have sub-tasks
 - Blank task names should appear as something
 - Use lenses for nested data
 - Add more tests
     * [x] Trello response parsing
 - Add GitHub Project support
-- Refactor IO.Taskell
+- Refactor Taskell.IO
     > Avoid repeating basically the same code for Trello and GitHub fetching
 - Add ability to list GitHub projects
     > Give an organisation or username and repo, list the possible projects to fetch - avoid having to look up the project ID manually first
@@ -317,7 +312,7 @@
 - Showing a specific task in search mode shows wrong task
     > Based on the index in the full list, rather than the filtered one. So will show the task from the full list if the indexes don't happen to match.
 - Can't remove dates
-- Tidy up load functions in IO.Taskell
+- Tidy up load functions in Taskell.IO
 - Getting stuck in INSERT mode when blank item
 - If an item isn't created, then selection gets lost
 - Search navigation issues
@@ -356,7 +351,7 @@
     * [x] Markdown needs to use actual timezone
     * [x] Need to use parser
     * [x] Trello time parsing
-- Use ReaderConfig in IO.Markdown.Internal stringify functions
+- Use ReaderConfig in Taskell.IO.Markdown.Internal stringify functions
 - Add test for subtask linebreaks to MarkdownTest
 - Config option to always use UTC for markdown output
 - Check times work no matter what timezone
@@ -364,15 +359,3 @@
 - Date validation
 - Check order of due items
 - Trim spaces for date input
-- Add Cabal test to build process
-    > Use `stack sdist .` to generate cabal file
-- Relative dates days and weeks shouldn't include time?
-- Use Attoparsec for parsing
-- Configuration options
-    > See #54
-    * [x] Padding
-    * [x] Show toggle bar
-- Add info about relative dates to Readme
-- Refactor Draw/Main to remove `if` statement
-- Refactor Config files to use applicatives
-- Top level `Taskell` namespace
