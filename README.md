@@ -44,8 +44,6 @@ You can install Taskell on your Mac using [Homebrew](https://brew.sh):
 brew install taskell
 ```
 
-There are usually bottles (binaries) available. If these are not available for your computer, Homebrew will build Taskell from scratch, which can take a while, particularly on older machines. Occasionally the build fails the first time, but usually works on a second attempt.
-
 ### Debian/Ubuntu
 
 [A `.deb` package is available for Debian/Ubuntu](https://github.com/smallhadroncollider/taskell/releases). Download it and install with `dpkg -i <package-name>`. You may also need to install the `libtinfo5` package (`sudo apt install libtinfo5`).
