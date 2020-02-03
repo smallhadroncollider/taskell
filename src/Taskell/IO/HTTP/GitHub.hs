@@ -19,8 +19,8 @@ import Data.Aeson
 import Taskell.UI.CLI (prompt)
 
 import Network.HTTP.Client       (requestHeaders)
-import Network.HTTP.Simple       (getResponseBody, getResponseHeader, getResponseStatusCode, httpBS,
-                                  parseRequest)
+import Network.HTTP.Simple       (Response, getResponseBody, getResponseHeader,
+                                  getResponseStatusCode, httpBS, parseRequest)
 import Network.HTTP.Types.Header (HeaderName)
 
 import Taskell.IO.HTTP.Aeson                (parseError)
@@ -66,12 +66,16 @@ getNextLink bs = do
     next <- find (isSuffixOf rel) lnks
     stripPrefix "<" =<< stripSuffix (">; " <> rel) (strip next)
 
-fetch' :: [ByteString] -> Text -> ReaderGitHubToken (Int, [ByteString])
-fetch' bs url = do
+fetchURL :: Text -> ReaderGitHubToken (Response ByteString)
+fetchURL url = do
     initialRequest <- lift $ parseRequest (unpack url)
     rHeaders <- headers
     let request = initialRequest {requestHeaders = rHeaders}
-    response <- lift $ httpBS request
+    lift $ httpBS request
+
+fetch' :: [ByteString] -> Text -> ReaderGitHubToken (Int, [ByteString])
+fetch' bs url = do
+    response <- fetchURL url
     let responses = bs <> [getResponseBody response]
     case getNextLink (getResponseHeader "Link" response) of
         Nothing  -> pure (getResponseStatusCode response, responses)
@@ -88,11 +92,8 @@ fetchContent card =
             case card ^. content_url of
                 Nothing -> pure $ Left "Could not parse card"
                 Just url -> do
-                    (_, body) <- fetch url
-                    case headMay body of
-                        Nothing -> pure $ Left "Could not find card content"
-                        Just is ->
-                            pure . first parseError $ automatedCardToTask <$> eitherDecodeStrict is
+                    body <- getResponseBody <$> fetchURL url
+                    pure . first parseError $ automatedCardToTask <$> eitherDecodeStrict body
 
 getCards :: Text -> ReaderGitHubToken (Either Text [Task])
 getCards url = do
