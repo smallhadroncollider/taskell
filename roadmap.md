@@ -46,13 +46,6 @@
 
 ## Features
 
-- Key binding to move to top of next/previous list
-    > Should be able to not have a key defined for bottom of list
-- Theming sub-tasks
-    > Currently use other styling
-    * [ ] Selected
-    * [ ] Not done
-    * [ ] Done
 - Define key binding info in one place
     > Currently all over the place
     * [ ] Bindings
@@ -130,6 +123,15 @@
 
 ## In Progress
 
+- Theming sub-tasks
+    > Currently use other styling
+    * [ ] Selected
+    * [ ] Not done
+    * [ ] Done
+- Top level `Taskell` namespace
+- Add `y` to relative date parsing
+- Key binding to move to top of next/previous list
+    > Should be able to not have a key defined for bottom of list
 
 ## Done
 
