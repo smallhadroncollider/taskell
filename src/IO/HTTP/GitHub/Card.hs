@@ -29,7 +29,4 @@ $(makeLenses ''MaybeCard)
 
 -- operations
 maybeCardToTask :: MaybeCard -> Maybe T.Task
-maybeCardToTask card =
-    case card ^. note of
-        Just txt -> Just . T.new $ replace "\r" "" $ replace "\n" " " txt
-        Nothing  -> Nothing
+maybeCardToTask card = T.new . replace "\r" "" . replace "\n" " " <$> card ^. note

@@ -89,8 +89,7 @@ fetchContent card =
                 Nothing -> pure $ Left "Could not parse card"
                 Just url -> do
                     (_, body) <- fetch url
-                    let iss = headMay body
-                    case iss of
+                    case headMay body of
                         Nothing -> pure $ Left "Could not find card content"
                         Just is ->
                             pure . first parseError $ automatedCardToTask <$> eitherDecodeStrict is
