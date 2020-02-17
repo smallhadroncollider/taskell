@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Taskell.Events.Actions
     ( event
     , generateActions

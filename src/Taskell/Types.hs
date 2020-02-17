@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Taskell.Types where
 
 import ClassyPrelude

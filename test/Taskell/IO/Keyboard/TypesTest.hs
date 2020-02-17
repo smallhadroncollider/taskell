@@ -1,6 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
-
 module Taskell.IO.Keyboard.TypesTest
     ( test_types
     ) where

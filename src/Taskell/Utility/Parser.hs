@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Taskell.Utility.Parser where
 
 import ClassyPrelude

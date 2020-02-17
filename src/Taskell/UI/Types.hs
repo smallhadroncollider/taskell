@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Taskell.UI.Types where
 
 import ClassyPrelude (Eq, Int, Ord, Show)

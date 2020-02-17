@@ -1,6 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
-
 module Taskell.Events.Actions.Types where
 
 import ClassyPrelude hiding (Left, Nothing, Right)

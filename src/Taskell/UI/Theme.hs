@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Taskell.UI.Theme
     ( titleAttr
     , statusBarAttr

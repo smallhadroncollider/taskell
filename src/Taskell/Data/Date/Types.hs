@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Taskell.Data.Date.Types
     ( Deadline(..)
     , Due(..)

@@ -14,3 +14,6 @@ columns: 100
 language_extensions:
   - OverloadedStrings
   - NoImplicitPrelude
+  - TupleSections
+  - LambdaCase
+  - RankNTypes

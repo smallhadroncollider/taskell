@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Taskell.Events.State.Types.Mode where
 
 import ClassyPrelude

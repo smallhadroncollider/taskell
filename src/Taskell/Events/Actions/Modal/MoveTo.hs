@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Taskell.Events.Actions.Modal.MoveTo
     ( event
     ) where

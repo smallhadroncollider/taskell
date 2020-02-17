@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Taskell.UI.Draw.Modal
     ( renderModal
     ) where

@@ -16,6 +16,9 @@ extra-source-files:
 default-extensions:
 - OverloadedStrings
 - NoImplicitPrelude
+- TupleSections
+- LambdaCase
+- RankNTypes
 
 dependencies:
 - classy-prelude
