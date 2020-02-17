@@ -302,7 +302,7 @@ You can edit Taskell's colour-scheme by editing `theme.ini`:
 title.fg = green
 
 ; status bar
-statusBar.bg = magenta
+statusBar.bg = blue
 statusBar.fg = black
 
 ; current list title
@@ -310,6 +310,17 @@ titleCurrent.fg = blue
 
 ; current task
 taskCurrent.fg = magenta
+
+; subtasks
+; selected
+subtaskCurrent.fg = magenta
+; incomplete
+subtaskIncomplete.fg = blue
+; complete
+subtaskComplete.fg = yellow
+
+; disabled
+disabled.fg = yellow
 ```
 
 You can also change the background and default text colour:
