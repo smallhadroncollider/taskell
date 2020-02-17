@@ -3,6 +3,9 @@ module Taskell.UI.Theme
     , statusBarAttr
     , titleCurrentAttr
     , taskCurrentAttr
+    , subtaskCurrentAttr
+    , subtaskCompleteAttr
+    , subtaskIncompleteAttr
     , taskAttr
     , disabledAttr
     , dlToAttr
@@ -32,6 +35,15 @@ taskCurrentAttr = attrName "taskCurrent"
 taskAttr :: AttrName
 taskAttr = attrName "task"
 
+subtaskCurrentAttr :: AttrName
+subtaskCurrentAttr = attrName "subtaskCurrent"
+
+subtaskCompleteAttr :: AttrName
+subtaskCompleteAttr = attrName "subtaskComplete"
+
+subtaskIncompleteAttr :: AttrName
+subtaskIncompleteAttr = attrName "subtaskIncomplete"
+
 disabledAttr :: AttrName
 disabledAttr = attrName "disabled"
 
@@ -60,6 +72,10 @@ defaultTheme =
         [ (statusBarAttr, black `on` green)
         , (titleAttr, fg green)
         , (titleCurrentAttr, fg blue)
+        , (taskCurrentAttr, fg magenta)
+        , (subtaskCurrentAttr, fg magenta)
+        , (subtaskIncompleteAttr, fg blue)
+        , (subtaskCompleteAttr, fg yellow)
         , (taskCurrentAttr, fg magenta)
         , (disabledAttr, fg yellow)
         , (dlDue, fg red)

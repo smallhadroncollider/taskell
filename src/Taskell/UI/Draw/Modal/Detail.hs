@@ -21,8 +21,8 @@ import           Taskell.Events.State.Types        (time, timeZone)
 import           Taskell.Events.State.Types.Mode   (DetailItem (..))
 import           Taskell.UI.Draw.Field             (Field, textField, widgetFromMaybe)
 import           Taskell.UI.Draw.Types             (DrawState (..), ModalWidget, TWidget)
-import           Taskell.UI.Theme                  (disabledAttr, dlToAttr, taskCurrentAttr,
-                                                    titleCurrentAttr)
+import           Taskell.UI.Theme                  (disabledAttr, dlToAttr, subtaskCompleteAttr,
+                                                    subtaskCurrentAttr, subtaskIncompleteAttr)
 
 renderSubtask :: Maybe Field -> DetailItem -> Int -> ST.Subtask -> TWidget
 renderSubtask f current i subtask = padBottom (Pad 1) $ prefix <+> final
@@ -35,8 +35,10 @@ renderSubtask f current i subtask = padBottom (Pad 1) $ prefix <+> final
     attr =
         withAttr
             (if cur
-                 then taskCurrentAttr
-                 else titleCurrentAttr)
+                 then subtaskCurrentAttr
+                 else (if done
+                           then subtaskCompleteAttr
+                           else subtaskIncompleteAttr))
     prefix =
         attr . txt $
         if done
@@ -45,8 +47,7 @@ renderSubtask f current i subtask = padBottom (Pad 1) $ prefix <+> final
     widget = textField (subtask ^. ST.name)
     final
         | cur = visible . attr $ widgetFromMaybe widget f
-        | not done = attr widget
-        | otherwise = widget
+        | otherwise = attr widget
 
 renderSummary :: Maybe Field -> DetailItem -> Task -> TWidget
 renderSummary f i task = padTop (Pad 1) $ padBottom (Pad 2) w'
