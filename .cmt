@@ -1,0 +1,25 @@
+# input parts
+{
+    "Type" = [
+        "feat",
+        "fix",
+        "docs",
+        "style",
+        "refactor",
+        "test",
+        "chore"
+    ]
+    "Body" = !@
+}
+
+# predefined messages
+{
+    r = "docs: updates Stack resolver"
+    vb = "chore: version bump"
+    readme = "docs: updates readme"
+}
+
+# output format
+${Type}: ${*}
+
+${Body}
