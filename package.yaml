@@ -1,5 +1,5 @@
 name: taskell
-version: '1.9.2.0'
+version: '1.9.3.0'
 category: Command Line Tools
 author: Mark Wales
 maintainer: mark@smallhadroncollider.com
@@ -12,10 +12,15 @@ github: smallhadroncollider/taskell
 extra-source-files:
 - README.md
 - templates/*
+- test/Taskell/IO/data/*.json
+- test/Taskell/IO/Keyboard/data/bindings.ini
 
 default-extensions:
 - OverloadedStrings
 - NoImplicitPrelude
+- TupleSections
+- LambdaCase
+- RankNTypes
 
 dependencies:
 - classy-prelude
@@ -23,39 +28,39 @@ dependencies:
 library:
   source-dirs: src
   exposed-modules:
-  - App
-  - Events.State
-  - IO.Config
-  - IO.Taskell
+  - Taskell
+  - Taskell.Events.State
+  - Taskell.IO.Config
+  - Taskell.IO
 
   # tests
-  - Data.Taskell.Date
-  - Data.Taskell.Date.RelativeParser
-  - Data.Taskell.List
-  - Data.Taskell.List.Internal
-  - Data.Taskell.Lists
-  - Data.Taskell.Lists.Internal
-  - Data.Taskell.Seq
-  - Data.Taskell.Subtask
-  - Data.Taskell.Subtask.Internal
-  - Data.Taskell.Task
-  - Data.Taskell.Task.Internal
-  - Events.Actions.Types
-  - Events.State.History
-  - Events.State.Types
-  - Events.State.Types.Mode
-  - IO.Config.Markdown
-  - IO.Markdown.Parser
-  - IO.Markdown.Serializer
-  - IO.HTTP.GitHub
-  - IO.HTTP.GitHub.Card
-  - IO.HTTP.Trello.List
-  - IO.HTTP.Trello.ChecklistItem
-  - IO.Keyboard
-  - IO.Keyboard.Parser
-  - IO.Keyboard.Types
-  - UI.Draw.Field
-  - Types
+  - Taskell.Data.Date
+  - Taskell.Data.Date.RelativeParser
+  - Taskell.Data.List
+  - Taskell.Data.List.Internal
+  - Taskell.Data.Lists
+  - Taskell.Data.Lists.Internal
+  - Taskell.Data.Seq
+  - Taskell.Data.Subtask
+  - Taskell.Data.Subtask.Internal
+  - Taskell.Data.Task
+  - Taskell.Data.Task.Internal
+  - Taskell.Events.Actions.Types
+  - Taskell.Events.State.History
+  - Taskell.Events.State.Types
+  - Taskell.Events.State.Types.Mode
+  - Taskell.IO.Config.Markdown
+  - Taskell.IO.Markdown.Parser
+  - Taskell.IO.Markdown.Serializer
+  - Taskell.IO.HTTP.GitHub
+  - Taskell.IO.HTTP.GitHub.Card
+  - Taskell.IO.HTTP.Trello.List
+  - Taskell.IO.HTTP.Trello.ChecklistItem
+  - Taskell.IO.Keyboard
+  - Taskell.IO.Keyboard.Parser
+  - Taskell.IO.Keyboard.Types
+  - Taskell.UI.Draw.Field
+  - Taskell.Types
 
   dependencies:
   - base <=5

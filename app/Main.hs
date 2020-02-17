@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Main where
 
 import ClassyPrelude
@@ -8,10 +6,10 @@ import System.Exit (die)
 
 import Data.Time.Zones (loadLocalTZ)
 
-import App          (go)
-import Events.State (create)
-import IO.Config    (setup)
-import IO.Taskell   (IOInfo (IOInfo), Next (..), load)
+import Taskell              (go)
+import Taskell.Events.State (create)
+import Taskell.IO           (IOInfo (IOInfo), Next (..), load)
+import Taskell.IO.Config    (setup)
 
 main :: IO ()
 main = do

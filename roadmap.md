@@ -128,7 +128,6 @@
     * [ ] Selected
     * [ ] Not done
     * [ ] Done
-- Top level `Taskell` namespace
 - Add `y` to relative date parsing
 - Key binding to move to top of next/previous list
     > Should be able to not have a key defined for bottom of list
@@ -376,3 +375,4 @@
 - Add info about relative dates to Readme
 - Refactor Draw/Main to remove `if` statement
 - Refactor Config files to use applicatives
+- Top level `Taskell` namespace

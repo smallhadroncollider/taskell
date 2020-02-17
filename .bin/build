@@ -57,8 +57,6 @@ stack build --work-dir "$workDir" --docker --ghc-options -O3
 LINUX_FULL_PATH=$(find "$workDir" -path "*linux*" -and -path "*bin/taskell")
 LINUX_PATH=${LINUX_FULL_PATH%"taskell"}
 
-strip "$LINUX_FULL_PATH" # remove tokens
-
 tar -czvf "releases/$1/taskell-$1_x86-64-linux.tar.gz"  --directory="$LINUX_PATH" "taskell"
 
 mkdir -p "releases/$1/taskell/DEBIAN"
