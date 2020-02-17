@@ -12,6 +12,8 @@ github: smallhadroncollider/taskell
 extra-source-files:
 - README.md
 - templates/*
+- test/Taskell/IO/data/*.json
+- test/Taskell/IO/Keyboard/data/bindings.ini
 
 default-extensions:
 - OverloadedStrings
