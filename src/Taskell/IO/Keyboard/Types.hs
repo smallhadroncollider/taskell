@@ -1,11 +1,7 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
-
 module Taskell.IO.Keyboard.Types where
 
 import ClassyPrelude
 
-import Data.Map.Strict           (Map)
 import Graphics.Vty.Input.Events (Event (..), Key (..))
 
 import qualified Taskell.Events.Actions.Types as A (ActionType)

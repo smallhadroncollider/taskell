@@ -7,8 +7,7 @@ import ClassyPrelude
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Data.Time.Calendar (fromGregorian)
-import Data.Time.Clock    (secondsToDiffTime)
+import Data.Time.Clock (secondsToDiffTime)
 
 import Taskell.Data.Date                (Due (DueDate, DueTime))
 import Taskell.Data.Date.RelativeParser (parseRelative)

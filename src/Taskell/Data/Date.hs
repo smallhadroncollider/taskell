@@ -20,7 +20,7 @@ import Data.Time.LocalTime (ZonedTime (ZonedTime))
 import Data.Time.Zones     (TZ, localTimeToUTCTZ, timeZoneForUTCTime, utcToLocalTimeTZ)
 
 import Data.Time.Calendar (diffDays)
-import Data.Time.Format   (FormatTime, ParseTime, formatTime, iso8601DateFormat, parseTimeM)
+import Data.Time.Format   (FormatTime, ParseTime, iso8601DateFormat)
 
 import Taskell.Data.Date.RelativeParser (parseRelative)
 import Taskell.Data.Date.Types          (Deadline (..), Due (..))
