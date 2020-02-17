@@ -29,8 +29,10 @@ module Taskell.Events.State
     , right
     , up
     , down
-    , moveLeft
-    , moveRight
+    , moveLeftTop
+    , moveRightTop
+    , moveLeftBottom
+    , moveRightBottom
     , moveToLast
     , delete
     , selectList
@@ -231,21 +233,27 @@ up = moveVertical (-1)
 down :: Stateful
 down = moveVertical 1
 
-moveHorizontal :: Int -> State -> Maybe State
-moveHorizontal idx state =
-    fixIndex . setLists state <$> Lists.changeList (state ^. current) (state ^. lists) idx
+moveHorizontal :: Int -> Lists.ListPosition -> State -> Maybe State
+moveHorizontal idx pos state =
+    fixIndex . setLists state <$> Lists.changeList pos (state ^. current) (state ^. lists) idx
 
-moveLeft :: Stateful
-moveLeft = moveHorizontal (-1)
+moveLeftBottom :: Stateful
+moveLeftBottom = moveHorizontal (-1) Lists.Bottom
 
-moveRight :: Stateful
-moveRight = moveHorizontal 1
+moveRightBottom :: Stateful
+moveRightBottom = moveHorizontal 1 Lists.Bottom
+
+moveLeftTop :: Stateful
+moveLeftTop = moveHorizontal (-1) Lists.Top
+
+moveRightTop :: Stateful
+moveRightTop = moveHorizontal 1 Lists.Top
 
 moveToLast :: Stateful
 moveToLast state =
     if idx == cur
         then pure state
-        else moveHorizontal (idx - cur) state
+        else moveHorizontal (idx - cur) Lists.Bottom state
   where
     idx = length (state ^. lists) - 1
     cur = getCurrentList state
@@ -350,7 +358,7 @@ moveTo' li state = do
     if li == cur || li < 0 || li >= length (state ^. lists)
         then Nothing
         else do
-            s <- moveHorizontal (li - cur) state
+            s <- moveHorizontal (li - cur) Lists.Bottom state
             pure . selectLast $ setCurrentList s li
 
 moveTo :: Char -> Stateful

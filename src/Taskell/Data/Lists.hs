@@ -1,5 +1,6 @@
 module Taskell.Data.Lists
     ( Lists
+    , ListPosition(..)
     , initial
     , updateLists
     , count

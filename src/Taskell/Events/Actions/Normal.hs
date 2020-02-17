@@ -48,8 +48,10 @@ events
     -- moving tasks
     , (A.MoveUp, (write =<<) . (up =<<) . store)
     , (A.MoveDown, (write =<<) . (down =<<) . store)
-    , (A.MoveLeft, (write =<<) . (bottom =<<) . (left =<<) . (moveLeft =<<) . store)
-    , (A.MoveRight, (write =<<) . (bottom =<<) . (right =<<) . (moveRight =<<) . store)
+    , (A.MoveLeftTop, (write =<<) . (top =<<) . (left =<<) . (moveLeftTop =<<) . store)
+    , (A.MoveRightTop, (write =<<) . (top =<<) . (right =<<) . (moveRightTop =<<) . store)
+    , (A.MoveLeftBottom, (write =<<) . (bottom =<<) . (left =<<) . (moveLeftBottom =<<) . store)
+    , (A.MoveRightBottom, (write =<<) . (bottom =<<) . (right =<<) . (moveRightBottom =<<) . store)
     , (A.Complete, (write =<<) . (moveToLast =<<) . (clearDate =<<) . store)
     , (A.MoveMenu, showMoveTo)
     -- lists

@@ -91,7 +91,7 @@ test_lists =
                                          , T.new "2"
                                          ]
                                    ]))
-                         (changeList (ListIndex 1, TaskIndex 1) testLists 1))
+                         (changeList Bottom (ListIndex 1, TaskIndex 1) testLists 1))
               , testCase
                     "left"
                     (assertEqual
@@ -112,19 +112,19 @@ test_lists =
                                          [T.new "1", (T.due .~ textToTime "2018-12-03") (T.new "3")]
                                    , list3
                                    ]))
-                         (changeList (ListIndex 1, TaskIndex 1) testLists (-1)))
+                         (changeList Bottom (ListIndex 1, TaskIndex 1) testLists (-1)))
               , testCase
                     "out of bounds list"
                     (assertEqual
                          "Nothing"
                          Nothing
-                         (changeList (ListIndex 5, TaskIndex 1) testLists 1))
+                         (changeList Bottom (ListIndex 5, TaskIndex 1) testLists 1))
               , testCase
                     "out of bounds task"
                     (assertEqual
                          "Nothing"
                          Nothing
-                         (changeList (ListIndex 1, TaskIndex 10) testLists 1))
+                         (changeList Bottom (ListIndex 1, TaskIndex 10) testLists 1))
               ]
         , testCase
               "newList"

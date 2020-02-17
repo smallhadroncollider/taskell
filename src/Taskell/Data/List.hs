@@ -12,6 +12,7 @@ module Taskell.Data.List
     , newAt
     , duplicate
     , append
+    , prepend
     , extract
     , updateFn
     , update

@@ -6,7 +6,7 @@ import Control.Lens  ((^.))
 import Data.Sequence as S (adjust', deleteAt, update, (!?), (|>))
 
 import qualified Taskell.Data.List as L (List, Update, append, clearDue, count, due, empty, extract,
-                                         searchFor)
+                                         prepend, searchFor)
 import qualified Taskell.Data.Seq  as S
 import qualified Taskell.Data.Task as T (Task, due)
 import           Taskell.Types     (ListIndex (ListIndex), Pointer, TaskIndex (TaskIndex))
@@ -14,6 +14,10 @@ import           Taskell.Types     (ListIndex (ListIndex), Pointer, TaskIndex (T
 type Lists = Seq L.List
 
 type Update = Lists -> Lists
+
+data ListPosition
+    = Top
+    | Bottom
 
 initial :: Lists
 initial = fromList [L.empty "To Do", L.empty "Done"]
@@ -39,11 +43,15 @@ updateFn (ListIndex idx) fn = adjust' fn idx
 get :: Lists -> Int -> Maybe L.List
 get = (!?)
 
-changeList :: Pointer -> Lists -> Int -> Maybe Lists
-changeList (ListIndex list, TaskIndex idx) tasks dir = do
+changeList :: ListPosition -> Pointer -> Lists -> Int -> Maybe Lists
+changeList pos (ListIndex list, TaskIndex idx) tasks dir = do
     let next = list + dir
+    let fn =
+            case pos of
+                Top    -> L.prepend
+                Bottom -> L.append
     (from, task) <- L.extract idx =<< tasks !? list -- extract current task
-    to <- L.append task <$> tasks !? next -- get next list and append task
+    to <- fn task <$> tasks !? next -- get next list and append task
     pure . updateLists next to $ updateLists list from tasks -- update lists
 
 newList :: Text -> Update

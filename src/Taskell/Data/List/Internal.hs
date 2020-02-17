@@ -6,7 +6,7 @@ import ClassyPrelude
 
 import Control.Lens (element, makeLenses, (%%~), (%~), (&), (.~), (^.), (^?))
 
-import Data.Sequence as S (adjust', deleteAt, insertAt, update, (|>))
+import Data.Sequence as S (adjust', deleteAt, insertAt, update, (<|), (|>))
 
 import qualified Taskell.Data.Seq  as S
 import qualified Taskell.Data.Task as T (Task, Update, blank, clearDue, contains, due, duplicate)
@@ -52,7 +52,10 @@ duplicate idx list = do
     pure $ list & tasks %~ S.insertAt idx task
 
 append :: T.Task -> Update
-append task = tasks %~ (|> task)
+append task = tasks %~ (S.|> task)
+
+prepend :: T.Task -> Update
+prepend task = tasks %~ (task S.<|)
 
 extract :: Int -> List -> Maybe (List, T.Task)
 extract idx list = do
