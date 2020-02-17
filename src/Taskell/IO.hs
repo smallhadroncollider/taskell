@@ -1,17 +1,14 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Taskell.IO where
 
 import ClassyPrelude
 
 import Control.Monad.Reader (runReader)
-import Data.FileEmbed       (embedFile)
 import Data.Text.Encoding   (decodeUtf8With)
 import System.Directory     (doesFileExist, getCurrentDirectory)
 
 import Data.Time.Zones (TZ)
 
-import Taskell.Config     (usage, version)
+import Taskell.Config     (githubUsage, trelloUsage, usage, version)
 import Taskell.Data.Lists (Lists, analyse, initial)
 
 import           Taskell.IO.Config         (Config, general, github, markdown, trello)
@@ -106,18 +103,10 @@ createRemote tokenFn missingToken getFn identifier path = do
                     bool (pure Exit) (Load path ls <$ lift (writeData tz config ls path))
 
 createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
-createTrello =
-    createRemote
-        (Trello.token . trello)
-        (decodeUtf8 $(embedFile "templates/trello-token.txt"))
-        Trello.getLists
+createTrello = createRemote (Trello.token . trello) trelloUsage Trello.getLists
 
 createGitHub :: GitHub.GitHubIdentifier -> FilePath -> ReaderConfig Next
-createGitHub =
-    createRemote
-        (GitHub.token . github)
-        (decodeUtf8 $(embedFile "templates/github-token.txt"))
-        GitHub.getLists
+createGitHub = createRemote (GitHub.token . github) githubUsage GitHub.getLists
 
 exists :: Text -> ReaderConfig (Maybe FilePath)
 exists filepath = do
