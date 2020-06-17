@@ -57,7 +57,7 @@ listP :: Symbol -> Parser L.List
 listP sym = L.create <$> listTitleP sym <*> (fromList <$> many' (taskP sym))
 
 markdownP :: Symbol -> Parser LS.Lists
-markdownP sym = fromList <$> many1 (listP sym) <* endOfInput
+markdownP sym = fromList <$> many1 (listP sym) <* skipSpace <* endOfInput
 
 -- parse
 parse :: Config -> Text -> Either Text LS.Lists

@@ -4,10 +4,19 @@ module Taskell.Config where
 
 import ClassyPrelude
 
-import Data.FileEmbed (embedFile)
+import           Data.FileEmbed             (embedFile)
+import           Data.Version               (showVersion)
+import           Language.Haskell.TH.Syntax (liftString)
+import qualified Paths_taskell              (version)
 
 version :: Text
-version = "1.9.3"
+version = $(liftString $ showVersion Paths_taskell.version)
+
+trelloUsage :: Text
+trelloUsage = decodeUtf8 $(embedFile "templates/trello-token.txt")
+
+githubUsage :: Text
+githubUsage = decodeUtf8 $(embedFile "templates/github-token.txt")
 
 usage :: Text
 usage = decodeUtf8 $(embedFile "templates/usage.txt")

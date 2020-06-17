@@ -134,6 +134,12 @@ test_parser =
                          "List item with Sub-Task"
                          (Right (makeSubTask "Blah" True))
                          (parse defaultConfig "## Test\n\n- Test Item\n    * [x] Blah"))
+              , testCase
+                    "Line break at end"
+                    (assertEqual
+                         "List item"
+                         (Right listWithItem)
+                         (parse defaultConfig "## Test\n\n- Test Item\n\n"))
               ]
         , testGroup
               "Alternative Format"
