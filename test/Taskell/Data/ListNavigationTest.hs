@@ -7,8 +7,8 @@ import ClassyPrelude as CP
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import           Taskell.Data.List.Internal as L
-import qualified Taskell.Data.Task          as T (Task, new)
+import           Taskell.Data.List as L
+import qualified Taskell.Data.Task as T (Task, new)
 
 taskSeq :: Seq T.Task
 taskSeq =

@@ -11,9 +11,9 @@ import Test.Tasty.HUnit
 
 import Data.Time.Calendar (fromGregorianValid)
 
-import           Taskell.Data.Date          (Due (DueDate))
-import qualified Taskell.Data.Subtask       as ST (name, new)
-import           Taskell.Data.Task.Internal
+import           Taskell.Data.Date    (Due (DueDate))
+import qualified Taskell.Data.Subtask as ST (name, new)
+import           Taskell.Data.Task
 
 desc :: Maybe Text
 desc = Just "A very boring description"

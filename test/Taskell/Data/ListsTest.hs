@@ -9,11 +9,11 @@ import Test.Tasty.HUnit
 
 import Control.Lens ((.~))
 
-import           Taskell.Data.Date           (textToTime)
-import qualified Taskell.Data.List           as L
-import           Taskell.Data.Lists.Internal
-import qualified Taskell.Data.Task           as T
-import           Taskell.Types               (ListIndex (ListIndex), TaskIndex (TaskIndex))
+import           Taskell.Data.Date  (textToTime)
+import qualified Taskell.Data.List  as L
+import           Taskell.Data.Lists
+import qualified Taskell.Data.Task  as T
+import           Taskell.Types      (ListIndex (ListIndex), TaskIndex (TaskIndex))
 
 -- test data
 list1, list2, list3 :: L.List
