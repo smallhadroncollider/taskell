@@ -3,7 +3,7 @@ title:        taskell
 tagline:      Command-line Kanban board/task management
 baseurl:      ""
 locale:       "en"
-version:      1.9.4
+version:      1.10.0
 destination:  _site/public
 exclude:      [deployment, Capfile, log, Gemfile, Gemfile.lock]
 

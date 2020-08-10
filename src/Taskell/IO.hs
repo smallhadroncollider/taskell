@@ -11,7 +11,8 @@ import Data.Time.Zones (TZ)
 import Taskell.Config     (githubUsage, trelloUsage, usage, version)
 import Taskell.Data.Lists (Lists, analyse, initial)
 
-import           Taskell.IO.Config         (Config, general, github, markdown, trello)
+import           Taskell.IO.Config         (Config, general, getDir, github, markdown, templatePath,
+                                            trello)
 import           Taskell.IO.Config.General (filename)
 import qualified Taskell.IO.Config.GitHub  as GitHub (token)
 import qualified Taskell.IO.Config.Trello  as Trello (token)
@@ -129,7 +130,9 @@ createPath :: FilePath -> ReaderConfig ()
 createPath path = do
     config <- asks ioConfig
     tz <- asks ioTZ
-    lift (writeData tz config initial path)
+    template <- readData =<< templatePath <$> lift getDir
+    let ls = either (const initial) id template
+    lift (writeData tz config ls path)
 
 -- writes Tasks to json file
 writeData :: TZ -> Config -> Lists -> FilePath -> IO ()

@@ -68,6 +68,9 @@ themePath = (</> "theme.ini")
 configPath :: FilePath -> FilePath
 configPath = (</> "config.ini")
 
+templatePath :: FilePath -> FilePath
+templatePath = (</> "template.md")
+
 bindingsPath :: FilePath -> FilePath
 bindingsPath = (</> "bindings.ini")
 
@@ -80,6 +83,7 @@ setup
     -- create config files
     create (configPath dir) $(embedFile "templates/config.ini")
     create (themePath dir) $(embedFile "templates/theme.ini")
+    create (templatePath dir) $(embedFile "templates/template.md")
     create (bindingsPath dir) $(embedFile "templates/bindings.ini")
     -- get config
     getConfig

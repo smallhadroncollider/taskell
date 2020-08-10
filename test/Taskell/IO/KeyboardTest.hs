@@ -15,7 +15,7 @@ import Data.Time.Clock (secondsToDiffTime)
 import Data.Time.Zones (utcTZ)
 
 import Graphics.Vty.Input.Events       (Event (..), Key (..))
-import Taskell.Data.Lists.Internal     (initial)
+import Taskell.Data.Lists              (initial)
 import Taskell.Events.Actions.Types    as A
 import Taskell.Events.State            (create, quit)
 import Taskell.Events.State.Types      (State, Stateful, mode)

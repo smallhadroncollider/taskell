@@ -1,5 +1,5 @@
 name: taskell
-version: '1.9.4'
+version: '1.10.0'
 category: Command Line Tools
 author: Mark Wales
 maintainer: mark@smallhadroncollider.com
@@ -13,6 +13,7 @@ extra-source-files:
 - README.md
 - templates/*
 - test/Taskell/IO/data/*.json
+- test/Taskell/IO/data/*.md
 - test/Taskell/IO/Keyboard/data/bindings.ini
 
 default-extensions:
@@ -37,14 +38,10 @@ library:
   - Taskell.Data.Date
   - Taskell.Data.Date.RelativeParser
   - Taskell.Data.List
-  - Taskell.Data.List.Internal
   - Taskell.Data.Lists
-  - Taskell.Data.Lists.Internal
   - Taskell.Data.Seq
   - Taskell.Data.Subtask
-  - Taskell.Data.Subtask.Internal
   - Taskell.Data.Task
-  - Taskell.Data.Task.Internal
   - Taskell.Events.Actions.Types
   - Taskell.Events.State.History
   - Taskell.Events.State.Types

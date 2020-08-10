@@ -9,8 +9,8 @@ import Control.Lens ((.~))
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import           Taskell.Data.List.Internal as L
-import qualified Taskell.Data.Task          as T (Task, blank, name, new)
+import           Taskell.Data.List as L
+import qualified Taskell.Data.Task as T (Task, blank, name, new)
 
 emptyList :: List
 emptyList = L.empty "Test"

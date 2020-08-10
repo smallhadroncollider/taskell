@@ -7,7 +7,7 @@ import ClassyPrelude
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Taskell.Data.Subtask.Internal
+import Taskell.Data.Subtask
 
 -- tests
 test_subtask :: TestTree
