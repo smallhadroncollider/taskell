@@ -20,7 +20,7 @@ data ListPosition
     | Bottom
 
 initial :: Lists
-initial = fromList [L.empty "To Do", L.empty "Done"]
+initial = fromList []
 
 updateLists :: Int -> L.List -> Update
 updateLists = S.update

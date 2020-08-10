@@ -43,12 +43,7 @@ test_lists :: TestTree
 test_lists =
     testGroup
         "Data.Taskell.Lists"
-        [ testCase
-              "initial"
-              (assertEqual
-                   "Returns To Do and Done lists"
-                   (fromList [L.empty "To Do", L.empty "Done"])
-                   initial)
+        [ testCase "initial" (assertEqual "Returns empty" (fromList []) initial)
         , testCase
               "updateLists"
               (assertEqual
