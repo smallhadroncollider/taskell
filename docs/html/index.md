@@ -262,6 +262,10 @@ subtask = "-"
 
 **Warning**: currently if you change your `[markdown]` settings any older files stored with different settings will not be readable.
 
+### Template
+
+You can edit the `template.md` config file to change what a new taskell file looks like.
+
 ### Controls
 
 You can edit keyboard bindings in the `bindings.ini` config file.
