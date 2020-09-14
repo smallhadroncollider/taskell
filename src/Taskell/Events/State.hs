@@ -65,6 +65,7 @@ import ClassyPrelude hiding (delete)
 import Control.Lens ((%~), (&), (.~), (?~), (^.))
 
 import Data.Char       (digitToInt, ord)
+import Data.Text       (strip)
 import Data.Time.Zones (TZ)
 
 import qualified Taskell.Data.List  as L (List, deleteTask, duplicate, getTask, move, nearest, new,
@@ -150,7 +151,7 @@ setCurrentTask task state = setList state . L.update (getIndex state) task <$> g
 
 setCurrentTaskText :: Text -> Stateful
 setCurrentTaskText text state =
-    flip setCurrentTask state =<< (name .~ text) <$> getCurrentTask state
+    flip setCurrentTask state =<< (name .~ strip text) <$> getCurrentTask state
 
 startCreate :: Stateful
 startCreate = pure . (mode .~ Insert ITask ICreate blankField)
