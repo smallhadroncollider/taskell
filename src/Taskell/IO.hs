@@ -122,8 +122,7 @@ fileExists path = lift $ doesFileExist path
 
 promptCreate :: FilePath -> ReaderConfig Bool
 promptCreate path = do
-    cwd <- lift $ pack <$> getCurrentDirectory
-    lift $ promptYN PromptYes $ concat ["Create ", cwd, "/", pack path, "?"]
+    lift $ promptYN PromptYes $ concat ["Create ", pack path, "?"]
 
 -- creates taskell file
 createPath :: FilePath -> ReaderConfig ()
