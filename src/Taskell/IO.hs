@@ -4,7 +4,8 @@ import ClassyPrelude
 
 import Control.Monad.Reader (runReader)
 import Data.Text.Encoding   (decodeUtf8With)
-import System.Directory     (doesFileExist, getCurrentDirectory)
+import System.Directory     (doesFileExist, doesDirectoryExist, canonicalizePath, makeRelativeToCurrentDirectory)
+import Data.Either (fromRight)
 
 import Data.Time.Zones (TZ)
 
@@ -38,14 +39,23 @@ data Next
            Lists
     | Exit
 
+
+getPath :: Text -> ReaderConfig FilePath
+getPath path = do
+    config <- asks ioConfig
+    canonicial <- lift $ canonicalizePath (unpack path)
+    let defaultFilename = filename (general config)
+    isDir <- lift $ doesDirectoryExist canonicial
+    pure $ if isDir then canonicial </> defaultFilename else canonicial
+
 parseArgs :: [Text] -> ReaderConfig Next
 parseArgs ["-v"]                   = pure $ Output version
 parseArgs ["-h"]                   = pure $ Output usage
-parseArgs ["-t", boardID, file]    = loadTrello boardID file
-parseArgs ["-g", identifier, file] = loadGitHub identifier file
-parseArgs ["-i", file]             = fileInfo file
-parseArgs [file]                   = loadFile file
-parseArgs []                       = (pack . filename . general <$> asks ioConfig) >>= loadFile
+parseArgs ["-t", boardID, file]    = getPath file >>= loadTrello boardID
+parseArgs ["-g", identifier, file] = getPath file >>= loadGitHub identifier
+parseArgs ["-i", file]             = getPath file >>= fileInfo
+parseArgs [file]                   = getPath file >>= loadFile
+parseArgs []                       = getPath "" >>= loadFile
 parseArgs _                        = pure $ Error (unlines ["Invalid options", "", usage])
 
 load :: ReaderConfig Next
@@ -54,34 +64,41 @@ load = getArgs >>= parseArgs
 colonic :: FilePath -> Text -> Text
 colonic path = ((pack path <> ": ") <>)
 
-loadFile :: Text -> ReaderConfig Next
+createLoad :: FilePath -> Lists -> ReaderConfig Next
+createLoad path lists = do
+    relative <- lift $ makeRelativeToCurrentDirectory path
+    pure $ Load relative lists
+
+loadFile :: FilePath -> ReaderConfig Next
 loadFile filepath = do
     mPath <- exists filepath
     case mPath of
         Nothing   -> pure Exit
-        Just path -> either (Error . colonic path) (Load path) <$> readData path
+        Just path -> do
+            lists <- readData path
+            case lists of
+                Left err -> pure $ Error (colonic path err)
+                Right ls -> createLoad path ls
 
-loadRemote :: (token -> FilePath -> ReaderConfig Next) -> token -> Text -> ReaderConfig Next
-loadRemote createFn identifier filepath = do
-    let path = unpack filepath
+loadRemote :: (token -> FilePath -> ReaderConfig Next) -> token -> FilePath -> ReaderConfig Next
+loadRemote createFn identifier path = do
     exists' <- fileExists path
     if exists'
-        then pure $ Error (filepath <> " already exists")
+        then pure $ Error (pack path <> " already exists")
         else createFn identifier path
 
-loadTrello :: Trello.TrelloBoardID -> Text -> ReaderConfig Next
+loadTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
 loadTrello = loadRemote createTrello
 
-loadGitHub :: GitHub.GitHubIdentifier -> Text -> ReaderConfig Next
+loadGitHub :: GitHub.GitHubIdentifier -> FilePath -> ReaderConfig Next
 loadGitHub = loadRemote createGitHub
 
-fileInfo :: Text -> ReaderConfig Next
-fileInfo filepath = do
-    let path = unpack filepath
+fileInfo :: FilePath -> ReaderConfig Next
+fileInfo path = do
     exists' <- fileExists path
     if exists'
-        then either (Error . colonic path) (Output . analyse filepath) <$> readData path
-        else pure $ Error (filepath <> " does not exist")
+        then either (Error . colonic path) (Output . analyse (pack path)) <$> readData path
+        else pure $ Error (pack path <> " does not exist")
 
 createRemote ::
        (Config -> Maybe token)
@@ -99,9 +116,8 @@ createRemote tokenFn missingToken getFn identifier path = do
             lists <- lift $ runReaderT (getFn identifier) token
             case lists of
                 Left txt -> pure $ Error txt
-                Right ls ->
-                    promptCreate path >>=
-                    bool (pure Exit) (Load path ls <$ lift (writeData tz config ls path))
+                Right ls -> do
+                    promptCreate path >>= bool (pure Exit) (lift (writeData tz config ls path) >> createLoad path ls)
 
 createTrello :: Trello.TrelloBoardID -> FilePath -> ReaderConfig Next
 createTrello = createRemote (Trello.token . trello) trelloUsage Trello.getLists
@@ -109,9 +125,8 @@ createTrello = createRemote (Trello.token . trello) trelloUsage Trello.getLists
 createGitHub :: GitHub.GitHubIdentifier -> FilePath -> ReaderConfig Next
 createGitHub = createRemote (GitHub.token . github) githubUsage GitHub.getLists
 
-exists :: Text -> ReaderConfig (Maybe FilePath)
-exists filepath = do
-    let path = unpack filepath
+exists :: FilePath -> ReaderConfig (Maybe FilePath)
+exists path = do
     exists' <- fileExists path
     if exists'
         then pure $ Just path
@@ -121,17 +136,15 @@ fileExists :: FilePath -> ReaderConfig Bool
 fileExists path = lift $ doesFileExist path
 
 promptCreate :: FilePath -> ReaderConfig Bool
-promptCreate path = do
-    cwd <- lift $ pack <$> getCurrentDirectory
-    lift $ promptYN PromptYes $ concat ["Create ", cwd, "/", pack path, "?"]
+promptCreate path = lift $ promptYN PromptYes $ concat ["Create ", pack path, "?"]
 
 -- creates taskell file
 createPath :: FilePath -> ReaderConfig ()
 createPath path = do
     config <- asks ioConfig
     tz <- asks ioTZ
-    template <- readData =<< templatePath <$> lift getDir
-    let ls = either (const initial) id template
+    template <- readData . templatePath =<< lift getDir
+    let ls = fromRight initial template
     lift (writeData tz config ls path)
 
 -- writes Tasks to json file
