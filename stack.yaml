@@ -1,6 +1,6 @@
-resolver: lts-16.14
+resolver: lts-17.8
 pvp-bounds: both
 packages:
   - .
 extra-deps:
-  - tz-0.1.3.3
+  - tz-0.1.3.5
