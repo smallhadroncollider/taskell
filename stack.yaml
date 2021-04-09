@@ -1,5 +1,5 @@
 resolver: lts-17.8
-pvp-bounds: both
+pvp-bounds: lower
 packages:
   - .
 extra-deps:
