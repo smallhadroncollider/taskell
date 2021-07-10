@@ -74,4 +74,5 @@ defaultBindings =
     , (BChar 'X', A.ListDelete)
     , (BChar '>', A.ListRight)
     , (BChar '<', A.ListLeft)
+    , (BChar 'T', A.CompleteToTop)
     ]

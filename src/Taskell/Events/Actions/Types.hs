@@ -32,6 +32,7 @@ data ActionType
     | MoveLeftBottom
     | MoveRightBottom
     | Complete
+    | CompleteToTop
     | MoveMenu
     | ListNew
     | ListEdit
@@ -76,6 +77,7 @@ read "moveRight"       = MoveRightBottom
 read "moveLeftBottom"  = MoveLeftBottom
 read "moveRightBottom" = MoveRightBottom
 read "complete"        = Complete
+read "completeToTop"   = CompleteToTop
 read "moveMenu"        = MoveMenu
 read "listNew"         = ListNew
 read "listEdit"        = ListEdit

@@ -35,6 +35,8 @@ descriptions =
     , ([A.MoveLeftTop, A.MoveRightTop], "Shift task left / right (to top of list)")
     , ( [A.Complete]
       , "Move task to last list and remove any due dates / Mark subtask as (in)complete")
+    , ([A.CompleteToTop]
+      , "Move task to the top of last list and remove any due dates / Mark subtask as (in)complete")
     , ([A.MoveMenu], "Move task to specific list")
     , ([A.Delete], "Delete task")
     , ([A.Undo], "Undo")
