@@ -1,4 +1,5 @@
-resolver: lts-17.8
+resolver: nightly-2021-07-14
+allow-newer: true
 pvp-bounds: lower
 packages:
   - .
