@@ -33,7 +33,7 @@ module Taskell.Events.State
     , moveRightTop
     , moveLeftBottom
     , moveRightBottom
-    , moveToLast
+    , moveToLastBottom
     , moveToLastTop
     , delete
     , selectList
@@ -251,23 +251,20 @@ moveLeftTop = moveHorizontal (-1) Lists.Top
 moveRightTop :: Stateful
 moveRightTop = moveHorizontal 1 Lists.Top
 
-moveToLast :: Stateful
-moveToLast state =
-    if idx == cur
-        then pure state
-        else moveHorizontal (idx - cur) Lists.Bottom state
+moveToLast :: Lists.ListPosition -> Stateful
+moveToLast pos state =
+  if idx == cur
+      then pure state
+      else moveHorizontal (idx - cur) pos state
   where
     idx = length (state ^. lists) - 1
     cur = getCurrentList state
 
+moveToLastBottom :: Stateful
+moveToLastBottom = moveToLast Lists.Bottom
+
 moveToLastTop :: Stateful
-moveToLastTop state =
-  if idx == cur
-      then pure state
-      else moveHorizontal (idx - cur) Lists.Top state
-  where
-    idx = length (state ^. lists) - 1
-    cur = getCurrentList state
+moveToLastTop = moveToLast Lists.Top
 
 selectList :: Char -> Stateful
 selectList idx state =
