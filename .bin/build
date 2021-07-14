@@ -1,13 +1,20 @@
 # stop on any errors
 set -e
 
+#----------------------------------------------------------------------------
+
+ghcVersion="9.0.1"
 workDir=".stack-build"
 branch=$(git rev-parse --abbrev-ref HEAD)
+
+#----------------------------------------------------------------------------
 
 if [ $branch != "master" ]; then
     echo "\033[0;31mMust be on master branch\033[0m"
     exit
 fi
+
+#----------------------------------------------------------------------------
 
 if [ ! -d "$workDir" ]; then
     echo "\033[0;31mMust be run in project root\033[0m"
@@ -19,8 +26,12 @@ if [ -z "$1" ]; then
     exit
 fi
 
+#----------------------------------------------------------------------------
+
 # stash any changes
 git stash
+
+#----------------------------------------------------------------------------
 
 # check cabal build works
 cabal build
@@ -32,8 +43,12 @@ then
     exit
 fi
 
+#----------------------------------------------------------------------------
+
 # make sure latest changes pushed to github
 git push --all && git push --tags
+
+#----------------------------------------------------------------------------
 
 # clean out previous build attempts
 rm -rf "$workDir/install"
@@ -42,6 +57,8 @@ rm -rf "$workDir/install"
 rm -rf "releases/$1/taskell"
 mkdir -p "releases/$1/taskell"
 
+#----------------------------------------------------------------------------
+
 # Mac
 stack build --work-dir "$workDir" --ghc-options -O3
 
@@ -49,10 +66,12 @@ strip "$(stack path --local-install-root --work-dir $workDir)/bin/taskell" # rem
 
 tar -czvf "releases/$1/taskell-$1_x86-64-mac.tar.gz" --directory="$(stack path --local-install-root --work-dir $workDir)/bin" "taskell"
 
+#----------------------------------------------------------------------------
+
 
 # Linux
-stack docker pull
-stack build --work-dir "$workDir" --docker --ghc-options -O3
+docker pull "haskell:$ghcVersion"
+stack build --work-dir "$workDir" --docker --docker-image "haskell:$ghcVersion" --ghc-options -O3
 
 LINUX_FULL_PATH=$(find "$workDir" -path "*linux*" -and -path "*bin/taskell")
 LINUX_PATH=${LINUX_FULL_PATH%"taskell"}
@@ -74,6 +93,8 @@ docker run -v "$PWD/releases/$1":/usr/src/app -w /usr/src/app debian dpkg-deb --
 
 mv "releases/$1/taskell.deb" "releases/$1/taskell-$1_x86-64-linux.deb"
 
+#----------------------------------------------------------------------------
+
 # Release Template
 rm -rf "releases/$1/taskell"
 
@@ -92,24 +113,18 @@ echo "
 
 echo "Release info copied to clipboard"
 
+#----------------------------------------------------------------------------
+
 # add to Hackage
 stack upload .
 
-
-# Update taskell.app website
-(cd docs/html && echo "---
-layout: default
-title: {{ site.name }}
----
-" > index.md && cat ../../README.md >> index.md && bundle exec jekyll build)
-(cd docs/html/_site && git add . && git commit -m "Latest Build" && git push)
-(cd docs/html && bundle exec cap production deploy)
-
+#----------------------------------------------------------------------------
 
 # Homebrew Pull Request
 brew update
 brew bump-formula-pr --url="https://github.com/smallhadroncollider/taskell/archive/$1.tar.gz" taskell
 
+#----------------------------------------------------------------------------
 
 # unstash
 git stash pop
