@@ -52,7 +52,8 @@ events
     , (A.MoveRightTop, (write =<<) . (top =<<) . (right =<<) . (moveRightTop =<<) . store)
     , (A.MoveLeftBottom, (write =<<) . (bottom =<<) . (left =<<) . (moveLeftBottom =<<) . store)
     , (A.MoveRightBottom, (write =<<) . (bottom =<<) . (right =<<) . (moveRightBottom =<<) . store)
-    , (A.Complete, (write =<<) . (moveToLast =<<) . (clearDate =<<) . store)
+    , (A.Complete, (write =<<) . (moveToLastBottom =<<) . (clearDate =<<) . store)
+    , (A.CompleteToTop, (write =<<) . (moveToLastTop =<<) . (clearDate =<<) . store)
     , (A.MoveMenu, showMoveTo)
     -- lists
     , (A.ListNew, (createListStart =<<) . store)

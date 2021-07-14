@@ -66,6 +66,7 @@ iniResult =
     , (BChar 'H', A.MoveLeftBottom)
     , (BChar 'L', A.MoveRightBottom)
     , (BKey "Space", A.Complete)
+    , (BChar 'T', A.CompleteToTop)
     , (BChar 'm', A.MoveMenu)
     , (BChar 'N', A.ListNew)
     , (BChar 'E', A.ListEdit)

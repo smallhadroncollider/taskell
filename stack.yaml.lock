@@ -3,17 +3,17 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages:
-- completed:
-    hackage: tz-0.1.3.5@sha256:fb17ca50a7d943e511c0ca70342dc83f66aa2532de2745632f1f5f9b1ad783c4,5086
-    pantry-tree:
-      size: 1179
-      sha256: 6482698ea1b1a93bd684fca35836b35e8cdf53fe51b0fa6b215afa7da1f983a6
-  original:
-    hackage: tz-0.1.3.5
 snapshots:
-- completed:
-    size: 565720
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/8.yaml
-    sha256: 76bf8992ff8dfe6eda9c02f81866138c2369344d5011ab39ae403457c4448b03
-  original: lts-17.8
+- original: nightly-2021-07-14
+  completed:
+    sha256: 2005455f5d812ceb95560b708f006157533714bef631af52a3dd678d7dde32aa
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2021/7/14.yaml
+    size: 555978
+packages:
+- original:
+    hackage: tz-0.1.3.5
+  completed:
+    pantry-tree:
+      sha256: 6482698ea1b1a93bd684fca35836b35e8cdf53fe51b0fa6b215afa7da1f983a6
+      size: 1179
+    hackage: tz-0.1.3.5@sha256:fb17ca50a7d943e511c0ca70342dc83f66aa2532de2745632f1f5f9b1ad783c4,5086

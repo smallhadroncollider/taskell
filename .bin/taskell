@@ -1,1 +1,1 @@
-stack build --test && stack install > /dev/null && ~/.local/bin/taskell $@
+stack build && stack install > /dev/null && ~/.local/bin/taskell $@

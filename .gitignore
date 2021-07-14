@@ -5,9 +5,7 @@ taskell.aux
 taskell.ps
 test.md
 large.md
-.stack-work/
-.stack-work-profile/
-.stack-build/
+.stack-*/
 dist-newstyle/
 releases/
 files/
