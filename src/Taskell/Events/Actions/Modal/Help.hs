@@ -16,5 +16,5 @@ events :: Actions
 events = [(A.Quit, quit)]
 
 event :: Event -> Stateful
-event (EvKey _ _) = normalMode
+event (EvKey KEsc _) = normalMode
 event _           = pure
