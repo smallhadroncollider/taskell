@@ -8,12 +8,14 @@ import Brick
 import Data.Text as T (justifyRight)
 
 import Taskell.Events.Actions.Types as A (ActionType (..))
-import Taskell.IO.Keyboard.Types    (bindingsToText)
 
-import Taskell.IO.Keyboard.Types (Bindings)
+import Taskell.IO.Keyboard.Types (Bindings, bindingsToText)
 import Taskell.UI.Draw.Field     (textField)
-import Taskell.UI.Draw.Types     (DrawState (dsBindings), ModalWidget, TWidget)
+import Taskell.UI.Draw.Types     (DrawState (dsBindings, dsState), ModalWidget, TWidget)
 import Taskell.UI.Theme          (taskCurrentAttr)
+import Control.Lens ((^.))
+import Taskell.Events.State.Types (mode)
+import qualified Taskell.Events.State.Types.Mode as M
 
 descriptions :: [([ActionType], Text)]
 descriptions =
@@ -61,10 +63,24 @@ line m (l, r) = left <+> right
     left = padRight (Pad 2) . withAttr taskCurrentAttr . txt $ justifyRight m ' ' l
     right = textField r
 
-help :: ModalWidget
-help = do
+help :: M.HelpScrollPosition -> ModalWidget
+help s = do
     bindings <- asks dsBindings
     let ls = format <$> generate bindings
     let m = foldl' max 0 $ length . fst <$> ls
-    let w = vBox $ line m <$> ls
+    let w = vBox $ applyScroll s $ line m <$> ls
     pure ("Controls", w)
+
+applyScroll :: M.HelpScrollPosition -> [TWidget] -> [TWidget]
+applyScroll _ [] = []
+applyScroll sp list@(x:xs) =
+  case sp of
+    M.Top ->
+      visible x : xs
+    M.Bottom ->
+      updateLast visible xs
+  where
+    updateLast :: (a -> a) -> [a] -> [a]
+    updateLast _ [] = []
+    updateLast f [k] = [f k]
+    updateLast f (y: ys) = y : updateLast f ys
