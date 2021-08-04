@@ -43,7 +43,7 @@ event actions e state = do
                 Normal                        -> lookup e $ normal actions
                 Modal (Detail _ DetailNormal) -> lookup e $ detail actions
                 Modal Due {}                  -> lookup e $ due actions
-                Modal Help                    -> lookup e $ help actions
+                Modal (Help _)                -> lookup e $ help actions
                 _                             -> Nothing
     fromMaybe state $
         case mEv of

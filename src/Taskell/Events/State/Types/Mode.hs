@@ -17,8 +17,13 @@ data DetailItem
     | DetailDate
     deriving (Eq, Show)
 
+data HelpScrollPosition
+    = Top
+    | Bottom
+    deriving (Eq, Show)
+
 data ModalType
-    = Help
+    = Help HelpScrollPosition
     | MoveTo
     | Due (Seq (Pointer, Task))
           Int
