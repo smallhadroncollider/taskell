@@ -78,7 +78,7 @@ import           Taskell.Types
 import qualified Taskell.Events.State.History    as History (redo, store, undo)
 import           Taskell.Events.State.Types
 import           Taskell.Events.State.Types.Mode (InsertMode (..), InsertType (..), ModalType (..),
-                                                  Mode (..))
+                                                  Mode (..), HelpScrollPosition(..))
 import           Taskell.UI.Draw.Field           (Field, blankField, getText, textToField)
 
 type InternalStateful = State -> State
@@ -405,7 +405,7 @@ appendSearch genField state = do
 
 -- help
 showHelp :: Stateful
-showHelp = pure . (mode .~ Modal Help)
+showHelp = pure . (mode .~ Modal (Help Top))
 
 showMoveTo :: Stateful
 showMoveTo state = const (state & mode .~ Modal MoveTo) <$> getCurrentTask state

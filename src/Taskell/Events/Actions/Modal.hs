@@ -18,7 +18,7 @@ import qualified Taskell.Events.Actions.Modal.MoveTo as MoveTo
 event :: Event -> Stateful
 event e s =
     case s ^. mode of
-        Modal Help      -> Help.event e s
+        Modal Help {}   -> Help.event e s
         Modal Detail {} -> Detail.event e s
         Modal MoveTo    -> MoveTo.event e s
         Modal Due {}    -> Due.event e s
