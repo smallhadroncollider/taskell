@@ -115,7 +115,6 @@ handleVtyEvent (send, trigger) actions previousState e = do
     let state = event actions e previousState
     when (previousState ^. searchTerm /= state ^. searchTerm) invalidateCache
     case previousState ^. mode of
-        (Modal Help)             -> handleHelpModalScroll state e
         (Modal MoveTo)           -> clearAllTitles previousState
         (Insert ITask ICreate _) -> clearList previousState
         _                        -> pure ()
@@ -125,17 +124,6 @@ handleVtyEvent (send, trigger) actions previousState e = do
         (Modal MoveTo) -> clearAllTitles state *> next send state
         (Insert ITask ICreate _) -> clearList state *> next send state
         _ -> clearCache previousState *> clearCache state *> next send state
-
-handleHelpModalScroll :: State -> Event -> EventM ResourceName ()
-handleHelpModalScroll s (EvKey KUp []) = do
-  let vp = viewportScroll RNModal
-  vScrollBy vp (-1)
-  pure ()
-handleHelpModalScroll s (EvKey KDown []) = do
-  let vp = viewportScroll RNModal
-  vScrollBy vp 1
-  pure ()
-handleHelpModalScroll s _ = pure ()
 
 getHeight :: EventM ResourceName Int
 getHeight = snd <$> (liftIO . displayBounds =<< outputIface <$> getVtyHandle)
