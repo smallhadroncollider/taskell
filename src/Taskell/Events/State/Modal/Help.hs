@@ -12,7 +12,7 @@ import Taskell.Events.State.Types.Mode
   )
 
 moveHelpMenuUp :: Stateful
-moveHelpMenuUp = pure . (mode .~ Modal (Help Top))
+moveHelpMenuUp = pure . (mode .~ Modal (Help Bottom))
 
 moveHelpMenuDown :: Stateful
-moveHelpMenuDown = pure . (mode .~ Modal (Help Bottom))
+moveHelpMenuDown = pure . (mode .~ Modal (Help Top))
