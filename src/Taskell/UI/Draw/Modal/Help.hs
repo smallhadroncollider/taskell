@@ -16,6 +16,7 @@ import Taskell.UI.Theme          (taskCurrentAttr)
 import Control.Lens ((^.))
 import Taskell.Events.State.Types (mode)
 import qualified Taskell.Events.State.Types.Mode as M
+import Taskell.Data.Utility (updateLast)
 
 descriptions :: [([ActionType], Text)]
 descriptions =
@@ -73,14 +74,9 @@ help s = do
 
 applyScroll :: M.HelpScrollPosition -> [TWidget] -> [TWidget]
 applyScroll _ [] = []
-applyScroll sp list@(x:xs) =
+applyScroll sp (x:xs) =
   case sp of
     M.Top ->
       visible x : xs
     M.Bottom ->
       updateLast visible xs
-  where
-    updateLast :: (a -> a) -> [a] -> [a]
-    updateLast _ [] = []
-    updateLast f [k] = [f k]
-    updateLast f (y: ys) = y : updateLast f ys
