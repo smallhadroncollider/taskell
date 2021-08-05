@@ -14,7 +14,7 @@ import Brick
 import Brick.BChan               (BChan, newBChan, writeBChan)
 import Graphics.Vty              (Mode (BracketedPaste), defaultConfig, displayBounds, mkVty,
                                   outputIface, setMode, supportsMode)
-import Graphics.Vty.Input.Events (Event (..), Key(KUp, KDown))
+import Graphics.Vty.Input.Events (Event (..))
 
 import qualified Control.FoldDebounce as Debounce
 
