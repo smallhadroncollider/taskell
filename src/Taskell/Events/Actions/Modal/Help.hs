@@ -24,5 +24,4 @@ events =
   ]
 
 event :: Event -> Stateful
-event (EvKey KEsc _) = normalMode
-event _ = pure
+event _ = normalMode
