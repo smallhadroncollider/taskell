@@ -11,10 +11,8 @@ import Taskell.Events.Actions.Types as A (ActionType (..))
 
 import Taskell.IO.Keyboard.Types (Bindings, bindingsToText)
 import Taskell.UI.Draw.Field     (textField)
-import Taskell.UI.Draw.Types     (DrawState (dsBindings, dsState), ModalWidget, TWidget)
+import Taskell.UI.Draw.Types     (DrawState (dsBindings), ModalWidget, TWidget)
 import Taskell.UI.Theme          (taskCurrentAttr)
-import Control.Lens ((^.))
-import Taskell.Events.State.Types (mode)
 import qualified Taskell.Events.State.Types.Mode as M
 import Taskell.Data.Utility (updateLast)
 
