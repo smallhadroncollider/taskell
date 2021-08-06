@@ -40,7 +40,7 @@ modeToText fld md = do
                              Nothing -> "NORMAL"
                              Just _  -> "NORMAL + SEARCH"
                      Insert {} -> "INSERT"
-                     Modal Help -> "HELP"
+                     Modal (Help _) -> "HELP"
                      Modal MoveTo -> "MOVE"
                      Modal Detail {} -> "DETAIL"
                      Modal Due {} -> "DUE"
