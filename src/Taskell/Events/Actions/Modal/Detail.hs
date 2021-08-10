@@ -55,8 +55,7 @@ insert (EvKey KEnter _) s = do
         DetailDescription -> (write =<<) $ finishDescription s
         DetailDate -> (write =<<) $ finishDue s
         (DetailItem _) ->
-            (Detail.lastSubtask =<<) . (Detail.newItem =<<) . (store =<<) . (write =<<) $
-            finishSubtask s
+             (Detail.newBelow =<<) . (write =<<)  $ finishSubtask s
 insert e s = updateField (F.event e) s
 
 event :: Event -> Stateful
