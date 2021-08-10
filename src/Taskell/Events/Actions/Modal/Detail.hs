@@ -14,6 +14,7 @@ import           Taskell.Events.State.Modal.Detail as Detail
 import           Taskell.Events.State.Types
 import           Taskell.Events.State.Types.Mode   (DetailItem (..), DetailMode (..))
 import           Taskell.IO.Keyboard.Types         (Actions)
+import           Taskell.Events.State.Modal.Detail (getCurrentSubtask)
 import qualified Taskell.UI.Draw.Field             as F (event)
 
 events :: Actions
@@ -27,6 +28,8 @@ events
     , (A.MoveUp, (write =<<) . (up =<<) . store)
     , (A.MoveDown, (write =<<) . (down =<<) . store)
     , (A.New, (Detail.insertMode =<<) . (Detail.lastSubtask =<<) . (Detail.newItem =<<) . store)
+    , (A.NewAbove, Detail.newAbove)
+    , (A.NewBelow, Detail.newBelow)
     , (A.Edit, (Detail.insertMode =<<) . store)
     , (A.Complete, (write =<<) . (setComplete =<<) . store)
     , (A.Delete, (write =<<) . (Detail.remove =<<) . store)

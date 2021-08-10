@@ -6,6 +6,7 @@ module Taskell.Events.State.Modal.Detail
     , showDetail
     , getCurrentItem
     , getCurrentMode
+    , getCurrentSubtask
     , getField
     , setComplete
     , remove
@@ -13,11 +14,15 @@ module Taskell.Events.State.Modal.Detail
     , editDescription
     , editDue
     , newItem
+    , newItemAtIndex
     , nextSubtask
     , previousSubtask
     , lastSubtask
+    , subTaskAtIndex
     , up
     , down
+    , newAbove
+    , newBelow
     ) where
 
 import ClassyPrelude
@@ -29,12 +34,28 @@ import qualified Taskell.Data.Seq                as S
 import qualified Taskell.Data.Subtask            as ST (blank, name, toggle)
 import           Taskell.Data.Task               (Task, addSubtask, countSubtasks, description, due,
                                                   getSubtask, removeSubtask, setDescription, setDue,
-                                                  subtasks, updateSubtask)
-import           Taskell.Events.State            (getCurrentTask, setCurrentTask)
+                                                  subtasks, updateSubtask, addSubtaskAtIndex)
+import           Taskell.Events.State            (getCurrentTask, setCurrentTask, store)
 import           Taskell.Events.State.Types      (State, Stateful, mode, time, timeZone)
 import           Taskell.Events.State.Types.Mode (DetailItem (..), DetailMode (..),
                                                   ModalType (Detail), Mode (Modal))
 import           Taskell.UI.Draw.Field           (Field, blankField, getText, textToField)
+
+newAbove :: Stateful
+newAbove state = do
+  index <- getCurrentSubtask state
+  store state
+    >>= newItemAtIndex index
+    >>= subTaskAtIndex index
+    >>= insertMode
+
+newBelow :: Stateful
+newBelow state = do
+  index <- (+1) <$> getCurrentSubtask state
+  store state
+    >>= newItemAtIndex index
+    >>= subTaskAtIndex index
+    >>= insertMode
 
 updateField :: (Field -> Field) -> Stateful
 updateField fieldEvent s =
@@ -139,6 +160,11 @@ newItem state = do
     task <- addSubtask ST.blank <$> getCurrentTask state
     setCurrentTask task state
 
+newItemAtIndex :: Int -> Stateful
+newItemAtIndex index state = do
+    task <- addSubtaskAtIndex index ST.blank <$> getCurrentTask state
+    setCurrentTask task state
+
 -- list navigation
 changeSubtask :: Int -> Stateful
 changeSubtask inc state = do
@@ -150,6 +176,9 @@ nextSubtask = changeSubtask 1
 
 previousSubtask :: Stateful
 previousSubtask = changeSubtask (-1)
+
+subTaskAtIndex :: Int -> Stateful
+subTaskAtIndex index state = setIndex state index
 
 lastSubtask :: Stateful
 lastSubtask state = lastIndex state >>= setIndex state
