@@ -6,7 +6,7 @@ import ClassyPrelude
 
 import Control.Lens (ix, makeLenses, (%~), (&), (.~), (?~), (^.), (^?))
 
-import           Data.Sequence        as S (adjust', deleteAt, (|>))
+import           Data.Sequence        as S (adjust', deleteAt, (|>), insertAt)
 import           Data.Text            (strip)
 import           Data.Time.Zones      (TZ)
 import           Taskell.Data.Date    (Due (..), inputToTime)
@@ -62,6 +62,10 @@ clearDue task = task & due .~ Nothing
 
 getSubtask :: Int -> Task -> Maybe ST.Subtask
 getSubtask idx = (^? subtasks . ix idx)
+
+addSubtaskAtIndex :: Int -> ST.Subtask -> Update
+addSubtaskAtIndex index subtask =
+    subtasks %~ S.insertAt index subtask
 
 addSubtask :: ST.Subtask -> Update
 addSubtask subtask = subtasks %~ (|> subtask)
