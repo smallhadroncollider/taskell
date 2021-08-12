@@ -4,20 +4,22 @@ module Taskell.Data.Task where
 
 import ClassyPrelude
 
-import Control.Lens (ix, makeLenses, (%~), (&), (.~), (?~), (^.), (^?))
+import Control.Lens ((%~), (&), (.~), (?~), (^.), (^?), ix, makeLenses)
 
-import           Data.Sequence        as S (adjust', deleteAt, (|>))
-import           Data.Text            (strip)
-import           Data.Time.Zones      (TZ)
-import           Taskell.Data.Date    (Due (..), inputToTime)
+import Data.Sequence as S ((|>), adjust', deleteAt, insertAt)
+import Data.Text (strip)
+import Data.Time.Zones (TZ)
+import Taskell.Data.Date (Due(..), inputToTime)
 import qualified Taskell.Data.Subtask as ST (Subtask, Update, complete, duplicate, name)
 
-data Task = Task
-    { _name        :: Text
-    , _description :: Maybe Text
-    , _subtasks    :: Seq ST.Subtask
-    , _due         :: Maybe Due
-    } deriving (Show, Eq)
+data Task =
+    Task
+        { _name :: Text
+        , _description :: Maybe Text
+        , _subtasks :: Seq ST.Subtask
+        , _due :: Maybe Due
+        }
+    deriving (Show, Eq)
 
 type Update = Task -> Task
 
@@ -43,7 +45,7 @@ setDescription text =
 
 maybeAppend :: Text -> Maybe Text -> Maybe Text
 maybeAppend text (Just current) = Just (concat [current, "\n", text])
-maybeAppend text Nothing        = Just text
+maybeAppend text Nothing = Just text
 
 appendDescription :: Text -> Update
 appendDescription text =
@@ -62,6 +64,9 @@ clearDue task = task & due .~ Nothing
 
 getSubtask :: Int -> Task -> Maybe ST.Subtask
 getSubtask idx = (^? subtasks . ix idx)
+
+addSubtaskAtIndex :: Int -> ST.Subtask -> Update
+addSubtaskAtIndex idx subtask = subtasks %~ S.insertAt idx subtask
 
 addSubtask :: ST.Subtask -> Update
 addSubtask subtask = subtasks %~ (|> subtask)

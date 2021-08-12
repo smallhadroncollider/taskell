@@ -33,6 +33,9 @@ Follow [@taskellcli](https://twitter.com/taskellcli) on Twitter for updates
         - [Due Dates](#due-dates)
     - [Theming](#theming)
 - [Roadmap](#roadmap)
+- [Contributing](#contributing)
+    - [Core Contributors](#core-contributors)
+- [Acknowledgements](#acknowledgements)
 
 ## Installation
 
@@ -342,11 +345,18 @@ The available colours are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`,
 
 See [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) for planned features
 
-### Contributing
+---
+
+## Contributing
 
 Please check the [roadmap.md](https://github.com/smallhadroncollider/taskell/blob/develop/roadmap.md) before adding any bugs/feature requests to Issues.
 
 Anyone is welcome to contribute to the project, but please read through [CONTRIBUTING.md](https://github.com/smallhadroncollider/taskell/blob/master/CONTRIBUTING.md) and make sure that you agree with the [Code of Conduct](https://github.com/smallhadroncollider/taskell/blob/master/CODE_OF_CONDUCT.md) before getting involved.
+
+### Core Contributors
+
+- Mark Wales ([@smallhadroncollider](https://github.com/smallhadroncollider))
+- Ali Ahmed ([@AliNisarAhmed](https://github.com/AliNisarAhmed))
 
 ---
 
