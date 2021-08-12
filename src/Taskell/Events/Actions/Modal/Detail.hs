@@ -7,15 +7,14 @@ module Taskell.Events.Actions.Modal.Detail
 
 import ClassyPrelude
 
-import           Graphics.Vty.Input.Events
-import           Taskell.Events.Actions.Types      as A (ActionType (..))
-import           Taskell.Events.State              (clearDate, normalMode, quit, store, undo, write)
-import           Taskell.Events.State.Modal.Detail as Detail
-import           Taskell.Events.State.Types
-import           Taskell.Events.State.Types.Mode   (DetailItem (..), DetailMode (..))
-import           Taskell.IO.Keyboard.Types         (Actions)
-import           Taskell.Events.State.Modal.Detail (getCurrentSubtask)
-import qualified Taskell.UI.Draw.Field             as F (event)
+import Graphics.Vty.Input.Events
+import Taskell.Events.Actions.Types as A (ActionType(..))
+import Taskell.Events.State (clearDate, normalMode, quit, store, undo, write)
+import Taskell.Events.State.Modal.Detail as Detail
+import Taskell.Events.State.Types
+import Taskell.Events.State.Types.Mode (DetailItem(..), DetailMode(..))
+import Taskell.IO.Keyboard.Types (Actions)
+import qualified Taskell.UI.Draw.Field as F (event)
 
 events :: Actions
 events
@@ -40,27 +39,26 @@ events
 
 normal :: Event -> Stateful
 normal (EvKey KEsc _) = normalMode
-normal _              = pure
+normal _ = pure
 
 insert :: Event -> Stateful
 insert (EvKey KEsc _) s = do
     item <- getCurrentItem s
     case item of
         DetailDescription -> (write =<<) $ finishDescription s
-        DetailDate        -> showDetail s
-        (DetailItem _)    -> (write =<<) . (showDetail =<<) $ finishSubtask s
+        DetailDate -> showDetail s
+        (DetailItem _) -> (write =<<) . (showDetail =<<) $ finishSubtask s
 insert (EvKey KEnter _) s = do
     item <- getCurrentItem s
     case item of
         DetailDescription -> (write =<<) $ finishDescription s
         DetailDate -> (write =<<) $ finishDue s
-        (DetailItem _) ->
-             (Detail.newBelow =<<) . (write =<<)  $ finishSubtask s
+        (DetailItem _) -> (Detail.newBelow =<<) . (write =<<) $ finishSubtask s
 insert e s = updateField (F.event e) s
 
 event :: Event -> Stateful
 event e s = do
     m <- getCurrentMode s
     case m of
-        DetailNormal     -> normal e s
+        DetailNormal -> normal e s
         (DetailInsert _) -> insert e s

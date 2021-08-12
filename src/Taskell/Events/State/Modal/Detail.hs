@@ -29,33 +29,42 @@ import ClassyPrelude
 
 import Control.Lens ((&), (.~), (^.))
 
-import           Taskell.Data.Date               (timeToDisplay)
-import qualified Taskell.Data.Seq                as S
-import qualified Taskell.Data.Subtask            as ST (blank, name, toggle)
-import           Taskell.Data.Task               (Task, addSubtask, countSubtasks, description, due,
-                                                  getSubtask, removeSubtask, setDescription, setDue,
-                                                  subtasks, updateSubtask, addSubtaskAtIndex)
-import           Taskell.Events.State            (getCurrentTask, setCurrentTask, store)
-import           Taskell.Events.State.Types      (State, Stateful, mode, time, timeZone)
-import           Taskell.Events.State.Types.Mode (DetailItem (..), DetailMode (..),
-                                                  ModalType (Detail), Mode (Modal))
-import           Taskell.UI.Draw.Field           (Field, blankField, getText, textToField)
+import Taskell.Data.Date (timeToDisplay)
+import qualified Taskell.Data.Seq as S
+import qualified Taskell.Data.Subtask as ST (blank, name, toggle)
+import Taskell.Data.Task
+    ( Task
+    , addSubtask
+    , addSubtaskAtIndex
+    , countSubtasks
+    , description
+    , due
+    , getSubtask
+    , removeSubtask
+    , setDescription
+    , setDue
+    , subtasks
+    , updateSubtask
+    )
+import Taskell.Events.State (getCurrentTask, setCurrentTask, store)
+import Taskell.Events.State.Types (State, Stateful, mode, time, timeZone)
+import Taskell.Events.State.Types.Mode
+    ( DetailItem(..)
+    , DetailMode(..)
+    , ModalType(Detail)
+    , Mode(Modal)
+    )
+import Taskell.UI.Draw.Field (Field, blankField, getText, textToField)
 
 newAbove :: Stateful
 newAbove state = do
-  index <- getCurrentSubtask state
-  store state
-    >>= newItemAtIndex index
-    >>= subTaskAtIndex index
-    >>= insertMode
+    idx <- getCurrentSubtask state
+    store state >>= newItemAtIndex idx >>= subTaskAtIndex idx >>= insertMode
 
 newBelow :: Stateful
 newBelow state = do
-  index <- (+1) <$> getCurrentSubtask state
-  store state
-    >>= newItemAtIndex index
-    >>= subTaskAtIndex index
-    >>= insertMode
+    idx <- (+ 1) <$> getCurrentSubtask state
+    store state >>= newItemAtIndex idx >>= subTaskAtIndex idx >>= insertMode
 
 updateField :: (Field -> Field) -> Stateful
 updateField fieldEvent s =
@@ -99,25 +108,25 @@ getCurrentSubtask :: State -> Maybe Int
 getCurrentSubtask state =
     case state ^. mode of
         Modal (Detail (DetailItem i) _) -> Just i
-        _                               -> Nothing
+        _ -> Nothing
 
 getCurrentItem :: State -> Maybe DetailItem
 getCurrentItem state =
     case state ^. mode of
         Modal (Detail item _) -> Just item
-        _                     -> Nothing
+        _ -> Nothing
 
 getCurrentMode :: State -> Maybe DetailMode
 getCurrentMode state =
     case state ^. mode of
         Modal (Detail _ m) -> Just m
-        _                  -> Nothing
+        _ -> Nothing
 
 getField :: State -> Maybe Field
 getField state =
     case state ^. mode of
         Modal (Detail _ (DetailInsert f)) -> Just f
-        _                                 -> Nothing
+        _ -> Nothing
 
 setComplete :: Stateful
 setComplete state = do
@@ -161,8 +170,8 @@ newItem state = do
     setCurrentTask task state
 
 newItemAtIndex :: Int -> Stateful
-newItemAtIndex index state = do
-    task <- addSubtaskAtIndex index ST.blank <$> getCurrentTask state
+newItemAtIndex idx state = do
+    task <- addSubtaskAtIndex idx ST.blank <$> getCurrentTask state
     setCurrentTask task state
 
 -- list navigation
@@ -178,7 +187,7 @@ previousSubtask :: Stateful
 previousSubtask = changeSubtask (-1)
 
 subTaskAtIndex :: Int -> Stateful
-subTaskAtIndex index state = setIndex state index
+subTaskAtIndex idx state = setIndex state idx
 
 lastSubtask :: Stateful
 lastSubtask state = lastIndex state >>= setIndex state
