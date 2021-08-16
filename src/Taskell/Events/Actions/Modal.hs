@@ -14,6 +14,7 @@ import qualified Taskell.Events.Actions.Modal.Detail as Detail
 import qualified Taskell.Events.Actions.Modal.Due    as Due
 import qualified Taskell.Events.Actions.Modal.Help   as Help
 import qualified Taskell.Events.Actions.Modal.MoveTo as MoveTo
+import qualified Taskell.Events.Actions.Modal.TaskList as TaskList
 
 event :: Event -> Stateful
 event e s =
@@ -22,4 +23,5 @@ event e s =
         Modal Detail {} -> Detail.event e s
         Modal MoveTo    -> MoveTo.event e s
         Modal Due {}    -> Due.event e s
+        Modal TaskList {} -> TaskList.event e s
         _               -> pure s

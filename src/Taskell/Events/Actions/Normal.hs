@@ -15,6 +15,7 @@ import Taskell.Events.State.Modal.Detail (editDue, showDetail)
 import Taskell.Events.State.Modal.Due    (showDue)
 import Taskell.Events.State.Types        (Stateful)
 import Taskell.IO.Keyboard.Types         (Actions)
+import Taskell.Events.State.Modal.TaskList (showTaskList)
 
 events :: Actions
 events
@@ -26,6 +27,7 @@ events
     , (A.Search, searchMode)
     , (A.Help, showHelp)
     , (A.Due, showDue)
+    , (A.TaskList, showTaskList)
         -- navigation
     , (A.Previous, previous)
     , (A.Next, next)

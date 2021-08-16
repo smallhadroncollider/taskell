@@ -42,6 +42,7 @@ defaultBindings =
     , (BChar 'r', A.Redo)
     , (BChar '/', A.Search)
     , (BChar '!', A.Due)
+    , (BChar 'S', A.TaskList)
     , (BChar '?', A.Help)
     , (BChar 'k', A.Previous)
     , (BChar 'j', A.Next)

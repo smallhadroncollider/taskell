@@ -8,6 +8,7 @@ data ActionType
     | Redo
     | Search
     | Due
+    | TaskList
     | Help
     | Previous
     | Next
@@ -51,6 +52,7 @@ read "undo"            = Undo
 read "redo"            = Redo
 read "search"          = Search
 read "due"             = Due
+read "taskList"        = TaskList
 read "help"            = Help
 read "previous"        = Previous
 read "next"            = Next
