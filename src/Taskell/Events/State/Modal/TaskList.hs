@@ -1,16 +1,14 @@
-module Taskell.Events.State.Modal.TaskList where 
+module Taskell.Events.State.Modal.TaskList where
 
-import ClassyPrelude 
-
+import ClassyPrelude
+import Control.Lens ((&), (.~), (^.))
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
-import Taskell.Events.State.Types (Stateful, mode)
-import Control.Lens ((&), (.~))
-import Taskell.Events.State.Types.Mode (ModalType(TaskList), Mode (Modal))
+import qualified Taskell.Data.Lists as L
+import Taskell.Events.State.Types (Stateful, lists, mode)
+import Taskell.Events.State.Types.Mode (ModalType (TaskList), Mode (Modal))
 
-showTaskList :: Stateful 
-showTaskList state = setMode Seq.empty 0 state
-  where 
+showTaskList :: Stateful
+showTaskList state = setMode (L.subTaskList $ state ^. lists) 0 state
+  where
     setMode due pos state = pure $ state & mode .~ Modal (TaskList due pos)
-
-

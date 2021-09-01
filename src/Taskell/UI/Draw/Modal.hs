@@ -42,5 +42,5 @@ renderModal = do
         Modal Detail {}              -> surround =<< detail
         Modal MoveTo                 -> surround =<< moveTo
         Modal (Due tasks selected)   -> surround =<< due tasks selected
-        Modal TaskList {}            -> surround =<< taskList
+        Modal (TaskList t s)         -> surround =<< taskList t s
         _                            -> pure emptyWidget
