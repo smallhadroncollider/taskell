@@ -1,3 +1,5 @@
+> I'm going to be taking a break from development of Taskell for a while. Trying to do it alongside my day job was proving a bit much. Feel free to continue to submit issues, but I won't be able to work on any of them immediately. Pull requests also welcome. Thanks for understanding 🙂
+
 # Taskell
 
 [![Build Status](https://travis-ci.org/smallhadroncollider/taskell.svg?branch=master)](https://travis-ci.org/smallhadroncollider/taskell)
