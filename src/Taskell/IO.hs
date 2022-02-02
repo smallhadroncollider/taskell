@@ -9,7 +9,11 @@ import Data.Either (fromRight)
 
 import Data.Time.Zones (TZ)
 
-import Taskell.Config     (githubUsage, trelloUsage, usage, version)
+import Options.Applicative (Parser, ParserInfo, ParserPrefs (..),
+                            switch, strOption, strArgument, long, short, metavar, help,
+                            info, helper, headerDoc, customExecParser, defaultPrefs)
+
+import Taskell.Config     (githubUsage, trelloUsage, version)
 import Taskell.Data.Lists (Lists, analyse, initial)
 
 import           Taskell.IO.Config         (Config, general, getDir, github, markdown, templatePath,
@@ -48,18 +52,58 @@ getPath path = do
     isDir <- lift $ doesDirectoryExist canonicial
     pure $ if isDir then canonicial </> defaultFilename else canonicial
 
-parseArgs :: [Text] -> ReaderConfig Next
-parseArgs ["-v"]                   = pure $ Output version
-parseArgs ["-h"]                   = pure $ Output usage
-parseArgs ["-t", boardID, file]    = getPath file >>= loadTrello boardID
-parseArgs ["-g", identifier, file] = getPath file >>= loadGitHub identifier
-parseArgs ["-i", file]             = getPath file >>= fileInfo
-parseArgs [file]                   = getPath file >>= loadFile
-parseArgs []                       = getPath "" >>= loadFile
-parseArgs _                        = pure $ Error (unlines ["Invalid options", "", usage])
+-- | Parse command-line arguments to an action
+commandLineArgsParser :: Parser (ReaderConfig Next)
+commandLineArgsParser = foldl' (<|>) noArgs
+    [ openBoardFile <$> fileParser
+
+    , pure (Output version) <$
+          switch (short 'v' <> long "version" <> help "Show version number")
+
+    , (\boardID file -> getPath file >>= loadTrello boardID)
+          <$> strOption
+                  ( short 't'
+                  <> long "trello"
+                  <> metavar "<trello-board-id>"
+                  <> help "Create a new taskell file from the given Trello board ID"
+                  )
+          <*> fileParser
+
+    , (\identifier file -> getPath file >>= loadGitHub identifier)
+          <$> strOption
+                  ( short 'g'
+                  <> long "github"
+                  <> metavar "[orgs/<org> | repos/<username>/<repo>]"
+                  <> help "Create a new taskell file from the given GitHub identifier"
+                  )
+          <*> fileParser
+
+    , fmap (getPath >=> fileInfo) $
+          switch
+              ( short 'i'
+              <> long "info"
+              <> help "Display information about a file"
+              )
+          *> fileParser
+    ]
+    where
+        fileParser = strArgument $ metavar "file"
+        openBoardFile = getPath >=> loadFile
+
+        -- | Open default board file
+        noArgs = pure $ openBoardFile mempty
+
+commandLineArgsParserInfo :: ParserInfo (ReaderConfig Next)
+commandLineArgsParserInfo =
+    info (helper <*> commandLineArgsParser) $
+        headerDoc (Just "Taskell - A CLI kanban board/task manager")
 
 load :: ReaderConfig Next
-load = getArgs >>= parseArgs
+load =
+    join . liftIO $
+        customExecParser
+            defaultPrefs { prefShowHelpOnError = True }
+            commandLineArgsParserInfo
 
 colonic :: FilePath -> Text -> Text
 colonic path = ((pack path <> ": ") <>)
