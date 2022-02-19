@@ -75,6 +75,7 @@ library:
   - http-types
   - lens
   - mtl
+  - optparse-applicative
   - template-haskell
   - text
   - time
