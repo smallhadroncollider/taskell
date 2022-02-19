@@ -27,6 +27,7 @@ data ModalType
     | MoveTo
     | Due (Seq (Pointer, Task))
           Int
+    | TaskList (Seq (Pointer, Task)) Int
     | Detail DetailItem
              DetailMode
     deriving (Eq, Show)

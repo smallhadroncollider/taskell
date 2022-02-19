@@ -11,4 +11,5 @@ data ResourceName
     | RNLists
     | RNModal
     | RNDue Int
+    | RNTaskList Int
     deriving (Show, Eq, Ord)

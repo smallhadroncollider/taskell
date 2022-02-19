@@ -16,13 +16,14 @@ import Taskell.Events.State.Types.Mode (DetailMode (..), ModalType (..), Mode (.
 import Taskell.IO.Keyboard       (generate)
 import Taskell.IO.Keyboard.Types (Bindings, BoundActions)
 
-import qualified Taskell.Events.Actions.Insert       as Insert
-import qualified Taskell.Events.Actions.Modal        as Modal
-import qualified Taskell.Events.Actions.Modal.Detail as Detail
-import qualified Taskell.Events.Actions.Modal.Due    as Due
-import qualified Taskell.Events.Actions.Modal.Help   as Help
-import qualified Taskell.Events.Actions.Normal       as Normal
-import qualified Taskell.Events.Actions.Search       as Search
+import qualified Taskell.Events.Actions.Insert             as Insert
+import qualified Taskell.Events.Actions.Modal              as Modal
+import qualified Taskell.Events.Actions.Modal.Detail       as Detail
+import qualified Taskell.Events.Actions.Modal.Due          as Due
+import qualified Taskell.Events.Actions.Modal.Help         as Help
+import qualified Taskell.Events.Actions.Normal             as Normal
+import qualified Taskell.Events.Actions.Search             as Search
+import qualified Taskell.Events.Actions.Modal.TaskList     as TaskList
 
 -- takes an event and returns a Maybe State
 event' :: Event -> Stateful
@@ -44,6 +45,7 @@ event actions e state = do
                 Modal (Detail _ DetailNormal) -> lookup e $ detail actions
                 Modal Due {}                  -> lookup e $ due actions
                 Modal (Help _)                -> lookup e $ help actions
+                Modal TaskList {}             -> lookup e $ taskList actions
                 _                             -> Nothing
     fromMaybe state $
         case mEv of
@@ -55,6 +57,7 @@ data ActionSets = ActionSets
     , detail :: BoundActions
     , help   :: BoundActions
     , due    :: BoundActions
+    , taskList :: BoundActions
     }
 
 generateActions :: Bindings -> ActionSets
@@ -64,4 +67,5 @@ generateActions bindings =
     , detail = generate bindings Detail.events
     , help = generate bindings Help.events
     , due = generate bindings Due.events
+    , taskList = generate bindings TaskList.events
     }

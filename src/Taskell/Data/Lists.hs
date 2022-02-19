@@ -6,10 +6,11 @@ import Control.Lens  ((^.))
 import Data.Sequence as S (adjust', deleteAt, update, (!?), (|>))
 
 import qualified Taskell.Data.List as L (List, Update, append, clearDue, count, due, empty, extract,
-                                         prepend, searchFor)
+                                         prepend, searchFor, tasks)
 import qualified Taskell.Data.Seq  as S
 import qualified Taskell.Data.Task as T (Task, due)
 import           Taskell.Types     (ListIndex (ListIndex), Pointer, TaskIndex (TaskIndex))
+import Taskell.Data.List (List(List))
 
 type Lists = Seq L.List
 
@@ -33,6 +34,20 @@ due lists = sortOn ((^. T.due) . snd) dues
   where
     format x lst = (\(y, t) -> ((ListIndex x, y), t)) <$> L.due lst
     dues = concat $ format S.<#> lists
+
+-- TODO: Refactor
+subTaskList :: Lists -> Seq (Pointer, T.Task)
+subTaskList lists = seqs
+  where
+    seqs :: Seq (Pointer, T.Task)
+    seqs = concat $ format S.<#> lists
+    format :: Int -> L.List -> Seq (Pointer, T.Task)
+    format idx lst = (\(y, t) -> ( (ListIndex idx, y), t)) <$> taskList2 lst
+    taskList2 :: L.List -> Seq (TaskIndex, T.Task)
+    taskList2 (List title tasks) = taskList3 S.<#> tasks
+    taskList3 :: Int -> T.Task -> (TaskIndex, T.Task)
+    taskList3 index task = (TaskIndex index, task)
+
 
 clearDue :: Pointer -> Update
 clearDue (idx, tsk) = updateFn idx (L.clearDue tsk)

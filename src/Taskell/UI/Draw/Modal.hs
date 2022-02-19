@@ -17,6 +17,7 @@ import Taskell.UI.Draw.Modal.Detail    (detail)
 import Taskell.UI.Draw.Modal.Due       (due)
 import Taskell.UI.Draw.Modal.Help      (help)
 import Taskell.UI.Draw.Modal.MoveTo    (moveTo)
+import Taskell.UI.Draw.Modal.TaskList  (taskList)
 import Taskell.UI.Draw.Types           (DSWidget, DrawState (dsState), TWidget)
 import Taskell.UI.Theme                (titleAttr)
 import Taskell.UI.Types                (ResourceName (..))
@@ -41,4 +42,5 @@ renderModal = do
         Modal Detail {}              -> surround =<< detail
         Modal MoveTo                 -> surround =<< moveTo
         Modal (Due tasks selected)   -> surround =<< due tasks selected
+        Modal (TaskList t s)         -> surround =<< taskList t s
         _                            -> pure emptyWidget
