@@ -90,6 +90,10 @@ If none of the above options work you can build taskell using [Stack](https://do
 #### Tips
 
 - If you're using a simple two-column "To Do" and "Done" then use the space bar to mark an item as complete while staying in the "To Do" list. If you're using a more complicated column setup then you will want to use `H`/`L` to move tasks between columns.
+- Add this alias to your shell configuration to use always the same file.
+  ```
+  alias t='taskell ${HOME}/taskell.md'
+  ```
 
 ### Storage
 
