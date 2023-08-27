@@ -87,6 +87,30 @@ If none of the above options work you can build taskell using [Stack](https://do
 - `-t <trello-board-id>`: import a Trello board ([see below](#importing-trello-boards))
 - `-g <github-project-id>`: import a GitHub project ([see below](#importing-github-projects))
 
+### Keybinds
+
+#### main panel
+
+| key     | effect              |
+| -       | -                   |
+| `a`     | add task            |
+| `e`     | edit the task title |
+| `m`     | move task           |
+| `hjkl`  | move as vim         |
+| `ENTER` | edit task           |
+| `ESC`   | normal mode         |
+
+#### editing task
+
+| key     | effect                |
+| -       | -                     |
+| `a`     | add sub task          |
+| `jk`    | up/down in subtask    |
+| `SPACE` | toggle task           |
+| `ENTER` | edit the description  |
+| `e`     | edit the subtask name |
+
+
 #### Tips
 
 - If you're using a simple two-column "To Do" and "Done" then use the space bar to mark an item as complete while staying in the "To Do" list. If you're using a more complicated column setup then you will want to use `H`/`L` to move tasks between columns.
