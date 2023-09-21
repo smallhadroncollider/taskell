@@ -30,6 +30,7 @@ Follow [@taskellcli](https://twitter.com/taskellcli) on Twitter for updates
 - [Installation](#installation)
 - [Using Taskell](#using-taskell)
     - [Options](#options)
+    - [Keybinds](#Keybinds)
     - [Storage](#storage)
     - [Importing Trello Boards](#importing-trello-boards)
     - [Importing GitHub Projects](#importing-github-projects)
