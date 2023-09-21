@@ -111,7 +111,6 @@ If none of the above options work you can build taskell using [Stack](https://do
 | `ENTER` | edit the description  |
 | `e`     | edit the subtask name |
 
-
 #### moving task
 
 | key | effect     |
