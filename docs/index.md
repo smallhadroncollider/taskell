@@ -30,6 +30,7 @@ Follow [@taskellcli](https://twitter.com/taskellcli) on Twitter for updates
 - [Installation](#installation)
 - [Using Taskell](#using-taskell)
     - [Options](#options)
+    - [Keybinds](#Keybinds)
     - [Storage](#storage)
     - [Importing Trello Boards](#importing-trello-boards)
     - [Importing GitHub Projects](#importing-github-projects)
@@ -86,6 +87,40 @@ If none of the above options work you can build taskell using [Stack](https://do
 - `-v`: show version number
 - `-t <trello-board-id>`: import a Trello board ([see below](#importing-trello-boards))
 - `-g <github-project-id>`: import a GitHub project ([see below](#importing-github-projects))
+
+### Keybinds
+
+#### main panel
+
+| key     | effect              |
+| -       | -                   |
+| `a`     | add task            |
+| `e`     | edit the task title |
+| `m`     | move task           |
+| `hjkl`  | move as vim         |
+| `ENTER` | edit task           |
+| `ESC`   | normal mode         |
+| `N`     | create a new column |
+
+#### editing task
+
+| key     | effect                |
+| -       | -                     |
+| `a`     | add sub task          |
+| `jk`    | up/down in subtask    |
+| `SPACE` | toggle task           |
+| `ENTER` | edit the description  |
+| `e`     | edit the subtask name |
+| `D`     | delete a task         |
+
+#### moving task
+
+| key | effect     |
+| -   | -          |
+| `H` | move left  |
+| `J` | move down  |
+| `K` | move up    |
+| `L` | move right |
 
 #### Tips
 
