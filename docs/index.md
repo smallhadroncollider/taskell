@@ -100,6 +100,7 @@ If none of the above options work you can build taskell using [Stack](https://do
 | `hjkl`  | move as vim         |
 | `ENTER` | edit task           |
 | `ESC`   | normal mode         |
+| `N`     | create a new column |
 
 #### editing task
 
@@ -110,6 +111,7 @@ If none of the above options work you can build taskell using [Stack](https://do
 | `SPACE` | toggle task           |
 | `ENTER` | edit the description  |
 | `e`     | edit the subtask name |
+| `D`     | delete a task         |
 
 #### moving task
 
